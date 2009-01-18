@@ -60,6 +60,7 @@ bool cMySQL::Connect(string &host, string &user, string &pass, string &data)
 		return false;
 	}
 	mysql_query(mDBHandle, "SET NAMES 'utf8'");
+	mysql_query(mDBHandle, "SET CHARACTER SET utf8");
 	//SET CHARACTER SET utf8
 	return true;
 }
