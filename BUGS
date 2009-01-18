@@ -1,0 +1,1 @@
+* does not work (yet) on 2.95 g++ compilers and earlier, because of a string::data() API

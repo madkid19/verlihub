@@ -1,0 +1,33 @@
+Hi,
+
+this plugin processes each chet message, and replaces given characters by other given characters. A littble bit like 'tr' command.
+
+Settings:
+---------
+
+verlihub's SetupList table is used. You need to add two variables in it.. if you wanna se only lower case chars in chat then do this in mysql..
+
+INSERT INTO SetupList VALUES ('pi_diakritika','replace_from','ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+INSERT INTO SetupList VALUES ('pi_diakritika','replace_to'  ,'abcdefghijklmnopqrstuvwxyz');
+
+then corresponding to the order in the given string lest's say the 'I' will be transofrmed into 'i' ...
+got it?
+
+enjoy.
+
+Note, You might have problems with the encoding of characters if you are using myadmin...
+These settings are read from database only on reloding of plugin, see command !plugreload
+
+
+Loading plugin:
+---------------
+
+verlihub now has some commands
+!plugin <filename_with_path/libdiakritika_pi.so>
+!plugout Diakritika1.0
+!pluglist all
+!plugreload Diakritika1.0
+
+if you wanna hub premanently load this plugin, just copy (or symlink) it into the .verlihub/plugins directory (with extention  = .so)
+
+You are looking for the file.so ??? ls .libs

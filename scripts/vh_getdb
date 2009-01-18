@@ -1,0 +1,107 @@
+#!/bin/bash
+
+prefix=/usr/local
+exec_prefix=${prefix}
+bindir=${exec_prefix}/bin
+
+confdir=`$bindir/vh_getcfg`
+dbconf="$confdir/dbconfig"
+
+version="$0 version 1.1 for verlihub 0.9.8e"
+db_host=localhost
+db_user=verlihub
+db_data=verlihub
+this=$0
+
+if [ ! -f $dbconf ]; then
+	echo "You have a problem, $dbconf does not exist as it is supposed to."
+	exit 1;
+fi;
+	
+function GetVarFromConf
+{
+	tmp=`grep -E "$1 ?=" $dbconf` && equal="$tmp" || equal="$2"
+	echo "$equal"|sed -e 's/.*= *//'
+}
+
+db_pass=`GetVarFromConf "db_pass" ""`
+db_host=`GetVarFromConf "db_host" $db_host`
+db_user=`GetVarFromConf "db_user" $db_user`
+db_data=`GetVarFromConf "db_data" $db_data`
+
+function die { echo "$1"; exit 1; }
+function usage
+{
+	echo Usage of $this
+	echo "This is used to get verlihub's database settings informations"
+	echo "$this [OPTIONS]"
+	echo "       --connect             Connects to the database"
+	echo "       --print               Prints the connection command"
+	echo "       --query <query>       Executes the given mysql query"
+	echo "       --printquery <query>  Prints the command for a given query"
+	echo "       --gethost             Prints only the mysql hostname"
+	echo "       --getdata             Prints only the mysql database name"
+	echo "       --getuser             Prints only the mysql username"
+	echo "       --getpass             Prints only the mysql password"
+	echo "       --testtable <table>   Test if given table exists"
+	echo "       --script <filename>   Insert a given script into database"
+	echo "       --version             print version information"
+	echo "       --help                Show this help"
+	echo
+	echo "      Verliba - 2004-2005"
+}
+
+function print { echo "mysql -h $db_host -D $db_data -u $db_user -p$db_pass $1"; }
+function connect { /bin/bash -c "`print` $1" && return 0 || return 1; }
+function query { connect "--execute=\"$1\"" && return 0 || return 1; }
+function script { connect " < \"$1\"" && return 0 || return 1; }
+function gethost { echo $db_host; }
+function getdata { echo $db_data; }
+function getuser { echo $db_user; }
+function getpass { echo $db_pass; }
+function version { 
+	echo $this v$version; 
+	echo Verlihub 0.9.8e;
+}
+function testtable # (table)
+{
+	query "desc $1" &> /dev/null || return 1;
+	return 0;
+}
+
+
+
+case "_$1" in
+	"_") connect ;;
+	"_--help") 
+		usage ;;
+	"_--version")
+		version ;;
+	"_--print")
+		print ;;
+	"_--connect")
+		connect ;;
+	"_--query")
+		query "$2" || exit 1;;
+	"_--printquery")
+		print "$2";;
+	"_--gethost")
+		gethost ;;
+	"_--getdata")
+		getdata ;;
+	"_--getuser")
+		getuser ;;
+	"_--getpass")
+		getpass ;;
+	"_--testtable")
+		testtable "$2" || exit 1;;
+	"_--script")
+		script "$2" || exit 1 ;;
+	*)
+		echo "Unknown option $1, try $this --help"
+		exit 1;
+esac;	
+
+
+exit 0
+

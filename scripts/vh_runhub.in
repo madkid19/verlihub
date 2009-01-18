@@ -1,0 +1,117 @@
+#!@BASH_PATH@
+
+function die
+{
+  echo ERROR: $1
+  exit 1
+}
+
+listen=
+restart=false
+stop=false
+daemon=false
+
+while [ "$1" != "${1##-}" ]; do
+	case $1 in
+		--port) listen=$2; shift 2; ;;
+		--port=?*) listen=${1#--port=}; shift; ;;
+		--config) VERLIHUB_CFG=$2 ; shift 2; ;;
+		--config=?*) VERLIHUB_CFG=${1#--config=}; shift; ;;
+		--daemon)	daemon=true; shift ;;
+		--restart) restart=true; shift ;;
+		--stop) stop=true; shift ;;
+		-f) restart=true; shift ;;
+		-s) stop=true; shift ;;
+		*) die "usage ..."
+		;;
+	esac
+done
+
+needfiles="dbconfig motd help_usr faq rules"
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+LD_RUNPATH=$LD_RUNPATH:@libdir@
+
+confdir=`$bindir/vh_getcfg` || die "fix your problem with vh_getcfg, maybe just run vh_install first"
+exepath=$bindir/ # default location for the hub config directory
+pidfile=$confdir/pid
+logfile=$confdir/log
+errfile=$confdir/err
+psname=vh_restart
+launcher=$bindir/$psname
+killsig=
+
+function IsRunning
+{
+	running=false
+	if [ -e $pidfile ]; then
+		oldpid=`cat $pidfile`
+		ps -p $oldpid |grep $psname> /dev/null && running=true
+	fi;
+}
+
+# check config dir
+if [ ! -d $confdir ]; then
+	echo FATAL ERROR: missing configuration directory $confdir
+	echo You must run verlihub from the directory that contains configuration	dir:$confdir
+	exit 1
+fi;
+
+# check the pid file
+IsRunning
+
+$running && ! $restart && ! $stop && \
+	die "Hub is already running with pid $oldpid use $0 --restart"
+
+
+if $running; then
+	echo "Killing old process ($oldpid)"
+	kill $killsig $oldpid
+	rm -f $pidfile
+fi;
+
+# if it's only to stop
+$stop && exit 0
+
+# chechk files
+if ! $daemon; then 
+	for f in $needfiles ; do
+		file=$confdir/$f
+		if [ ! -e $file ]; then
+			echo "WARNING: missing file	$file maybe you'll need it"
+		fi;
+	done;
+fi
+
+# count master users
+admin_count=`$bindir/vh_getdb --query "select count(*) from reglist where class >= 10" | egrep "[0-9]"` || die "run vh_install first, or you have proble with mysql"
+if [[ $admin_count == "0" ]]; then
+  echo "You need at least one master user"
+  echo "Run command: vh_regnick -f -c 10 -n \"<yournick>\" -p \"<yourpass>\""
+  echo "<yournick> and <yourpass> must be replaced"
+  exit 1
+fi;
+
+# backup logs
+[ -e $errfile ] && mv -f $errfile $errfile.old
+[ -e $logfile ] && mv -f $logfile $logfile.old
+
+# run it
+$launcher $exepath"verlihub" >$logfile 2>$errfile &
+pid=$!
+disown $pid
+echo Runnig with pid $pid
+echo $pid > $pidfile
+echo -n Waiting 2 second..
+sleep 2
+IsRunning
+if [[ $running == 0 ]]; then
+	echo "ERROR: Hub is not running, see $logfile and $errfile"
+	rm -f $pidfile
+	exit 1
+else
+  echo "OK"
+	exit 0
+fi

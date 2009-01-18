@@ -1,0 +1,15 @@
+
+This file contains the text that will be displayed to users upon entering the hub.
+Change it to suit your needs or use the file trigger definition to store your motd.
+
+Welcome to Verlihub
+
+
++rules       -- Displays a listing of the hub rules.
++faq         -- Displays a list of helpful links if you are having trouble.
++motd        -- Redisplays this message.
++help        -- Displays a list of all commands available to you. Dependent upon user type.
+
+
+The verlihub project's homepage is located at http://www.verlihub-project.org
+The verlihub forums are located at http://verlihubforums.com

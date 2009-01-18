@@ -1,0 +1,92 @@
+#!/bin/bash
+
+#bash ".verlihub/dbconfig"
+#echo $db_pass
+#exit 1
+
+if [ "$1" == "" ]; then
+	echo Usage $0 -n nick -p pass -c class
+	exit 1
+fi;
+
+if [ "$VERLIHUB_DB_DATA" != "" ]; then
+	dbdata=$VERLIHUB_DB_DATA
+else
+	dbdata=verlihub
+fi
+if [ "$VERLIHUB_DB_PASS" != "" ]; then
+	dbpass=$VERLIHUB_DB_PASS
+else
+	dbpass=verlihub
+fi
+if [ "$VERLIHUB_DB_USER" != "" ]; then
+	dbuser=$VERLIHUB_DB_user
+else
+	dbuser=verlihub
+fi
+
+doit=0
+
+
+while [ "$1" != "" ]; do
+	case "$1" in
+		-p)
+			shift;
+			password=$1
+			echo password is $password
+		;; 
+		-n)
+			shift;
+			nick=$1
+			echo nick is $nick
+		;; 
+		-a)
+			shift;
+			myaddress=$1
+			echo Hub address is $myaddress
+		;;
+		-f)
+			echo will invoke the command
+			doit=1
+		;;
+		*)
+			echo unknown parameter $1
+		;;
+	esac;
+	shift;
+done;
+
+if [ "$nick" == "" ]; then
+	echo Specify nickname with -n nick
+	exit 1
+fi;
+echo Registering hublist pinger...
+wget -o /dev/null -O $TMP/regpinger "\"http://www.hublist.org/registerpinger.php?address=$myhubaddress&nick=$nick&pass=$password\""
+cat $TMP/regpinger
+rm -f $TMP/regpinger
+echo 
+exit 0;
+
+fields="reg_date,reg_op,nick"
+values="unix_timestamp(now()),'admin_$USER','$nick'"
+
+if [ "$class" != "" ]; then
+	fields="$fields,class"
+	values="$values,$class"
+fi;
+
+if [ "$password" != "" ]; then
+	fields="$fields,login_pwd,pwd_change,pwd_crypt"
+	values="$values,encrypt('$password'),0,1"
+fi;
+
+query="INSERT INTO reglist ($fields) VALUES ($values)";
+
+dbcmd="mysql -u $dbuser -D $dbdata -p$dbpass -e \"$query\""
+if [ $doit == 1 ]; then
+	/bin/bash -c "$dbcmd"
+else
+	echo Use following command
+	echo $dbcmd
+fi
+

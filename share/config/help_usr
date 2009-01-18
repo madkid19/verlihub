@@ -1,0 +1,12 @@
+
+As a regular user, you may use these commands in the hub:
+
++rules                   -- Displays a listing of the hub rules.
++faq                     -- Displays a list of helpful links if you are having trouble.
++motd                    -- Displays the Message of the Day.
++help                    -- Displays a list of all commands available to you.
++regme                   -- Send a message to all OPs, asking them to register your nick.
++myip                    -- Shows you your IP address.
++myinfo                  -- Shows you information about yourself.
++me                      -- Replaces +me with your nick, and then sends a message to main chat.
++report <user> <reason>  -- Report a user to opchat for breaking the rules.

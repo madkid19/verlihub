@@ -1,0 +1,28 @@
+#!@BASH_PATH@
+
+prefix=@prefix@
+
+function printhelp
+{
+	echo "usage $0 [OPTIONS]"
+  echo " --cflags 	- print compiler flags"
+	echo " --libs			- print linker flags"
+  echo " --prefix   - print the installation prefix"
+  echo " --datadir  - print the datadir of verlihub"
+	echo " --version	- print verlihub's version"
+}
+
+case "x$1" in
+"x--cflags") echo -I$prefix/include -I$prefix/include/verlihub @MYSQL_CFLAGS@ @PCRE_CFLAGS@ @GEOIP_CFLAGS@
+;;
+
+"x--libs") echo @VERLIHUB_LIBS@ -L$prefix/lib -lverlihub
+;;
+"x--prefix") echo $prefix ;;
+"x--datadir") echo @datadir@ ;;
+"x--version") 
+	echo -n "verlihub version: @VERSION@"
+	cat $prefix/include/verlihub/curr_date_time.h |sed -e "s/^.*\\\"\\(.*\\)\\\"/ \\1/" 
+;;
+"x--help") printhelp ;;
+esac

@@ -1,0 +1,20 @@
+case "$1" in
+--libs)
+ldflags=-lGeoIP
+for libpath in / /usr /usr/local $HOME; do 
+ls $libpath/lib/libGeoIP.so* >/dev/null 2>&1  && ldflags="-L$libpath/lib $ldflags" && break
+ls $libpath/lib/libGeoIP.dylib* >/dev/null 2>&1  && ldflags="-L$libpath/lib $ldflags" && break
+done;
+echo $ldflags
+;;
+--cflags)
+for libpath in / /usr /usr/local $HOME; do 
+if [ -e $libpath/include/GeoIP.h ]; then
+	echo -I$libpath/include
+	break
+fi
+done;
+;;
+*)
+;;
+esac;
