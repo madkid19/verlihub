@@ -567,7 +567,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		mOwner->ReportUserToOpchat(conn, os.str(), mOwner->mC.dest_regme_chat);
 		//-- to user
 		os.str(mOwner->mEmpty);
-		os << "Thank you, your request has been sent.";
+		os << "Thank you, your request has been sent to operators.";
 		omsg = os.str();
 		mOwner->DCPublicHS(omsg,conn);
 		return 1;
@@ -588,9 +588,9 @@ int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 	}	
 	if (topic.length() > 255)
 	{
-		os <<"Topic must be max 255 characters long. Your topic was "
-			<< topic.length() 
-			<<" characters long.";
+		os << "Topic must be max 255 characters long. Your topic was "
+		   << topic.length() 
+		   <<" characters long.";
 		mOwner->DCPublicHS(os.str().data(),conn);
 		return 1;
 	}
