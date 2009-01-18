@@ -530,29 +530,20 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 				return 0;
 			}
 			
-			// @dReiska: addreg with pass
-			// netcelli: second param is NULL because there is no OP
-			if ( mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class) ) {
-				// @dReiska: lets strip space from beginning
-				text = text.substr(1);
-				
-				if(mOwner->mR->ChangePwd(regnick, text, 0)) {
-					// sent the report to the opchat
-					os << "A new user has been registered with class " << mOwner->mC.autoreg_class;
-					mOwner->ReportUserToOpchat(conn, os.str(), false);
-					os.str(mOwner->mEmpty);
-					// sent the message to the user
-					ReplaceVarInString(mOwner->mL.autoreg_success, "password", omsg, text);
-					ReplaceVarInString(omsg, "regnick", omsg, regnick);
-				} else {
-					omsg = mOwner->mL.autoreg_error;
-					mOwner->DCPublicHS(omsg,conn);
-					return false;	
-				}
+			// @dReiska: lets strip space from beginning
+			text = text.substr(1);
+			if ( mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text) ) {
+				// sent the report to the opchat
+				os << "A new user has been registered with class " << mOwner->mC.autoreg_class;
+				mOwner->ReportUserToOpchat(conn, os.str(), false);
+				os.str(mOwner->mEmpty);
+				// sent the message to the user
+				ReplaceVarInString(mOwner->mL.autoreg_success, "password", omsg, text);
+				ReplaceVarInString(omsg, "regnick", omsg, regnick);
 			} else {
 				omsg = mOwner->mL.autoreg_error;
 				mOwner->DCPublicHS(omsg,conn);
-				return false;	
+				return false;
 			}
 		}
 		

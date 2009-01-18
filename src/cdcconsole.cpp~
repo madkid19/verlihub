@@ -474,8 +474,8 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		}
 	if(mOwner->mC.autoreg_class > 3)
 	{
-	mOwner->DCPublicHS("Registration failed; please contact an operator for more help.",conn);
-	return 1;
+		mOwner->DCPublicHS("Registration failed; please contact an operator for more help.",conn);
+		return 1;
 	}
 	__int64 user_share, min_share;	
 	
@@ -531,7 +531,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			}
 			
 			// @dReiska: addreg with pass
-			// second param is NULL because there is no OP
+			// netcelli: second param is NULL because there is no OP
 			if ( mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class) ) {
 				// @dReiska: lets strip space from beginning
 				text = text.substr(1);
