@@ -531,7 +531,8 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			}
 			
 			// @dReiska: addreg with pass
-			if ( mOwner->mR->AddRegUser(regnick, conn, mOwner->mC.autoreg_class) ) {
+			// second param is NULL because there is no OP
+			if ( mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class) ) {
 				// @dReiska: lets strip space from beginning
 				text = text.substr(1);
 				
