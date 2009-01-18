@@ -628,7 +628,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		speed = msg->ChunkString(eCH_MI_SPEED);
 	}
 
-	if(!(conn->mpUser->mHideShare == false)) {
+	if(conn->mpUser->mHideShare == true) {
 		Create_MyINFO(
 			myinfo_basic,
 			msg->ChunkString(eCH_MI_NICK),
