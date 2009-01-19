@@ -22,6 +22,7 @@ cDBConf::cDBConf(const string &file):cConfigFile(file,false)
 	Add("lang_name",lang_name,string("lang_en"));
 	Add("allow_exec",allow_exec, false);
 	Add("allow_exec_mod",allow_exec_mod, true);
+	Add("db_charset",db_charset,string("utf8"));
 	Load();
 }
 
