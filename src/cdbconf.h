@@ -33,8 +33,10 @@ public:
 	string db_data;
 	string config_name;
 	string lang_name;
+	string db_charset;
 	bool allow_exec;
 	bool allow_exec_mod;
+	
 };
 
 };
