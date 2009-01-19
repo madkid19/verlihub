@@ -40,7 +40,9 @@
 	* Added GetUserCC API for Lua Plugin
 	* Fix: Verlihub replaces the IP in $ConnectToMe request if IP is wrong. This fix WAN to WAN and LAN to LAN connections and no drop because of wrong IP in client settings
 	* Fix: Impossible to kick,ban or drop pinger if it is registred with class -1 (thx to Rolex)
-
+	* Fix:  Add reg with a password instead of adding reg and then setting a password
+	* Fix: If user regs himself with autoreg command, reg_op was set to new user's nickname
+	
 2006-03-30 chaos/netcelli
 
 	* Added !guests !vips !admins !masters cmds:
