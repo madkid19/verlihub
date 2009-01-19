@@ -77,7 +77,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 		mDBConf.db_user,
 		mDBConf.db_pass,
 		mDBConf.db_data,
-		mDBConf.db_charset)), // connect to mysql
+		mDBConf.db_charset), // connect to mysql
 	mC(*this), // create the config object
 	mL(*this),
 	mSetupList(mMySQL),
