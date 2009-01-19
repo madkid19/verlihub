@@ -532,7 +532,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			
 			// @dReiska: lets strip space from beginning
 			text = text.substr(1);
-			if ( mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text) ) {
+			if ( mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text.c_str()) ) {
 				// sent the report to the opchat
 				os << "A new user has been registered with class " << mOwner->mC.autoreg_class;
 				mOwner->ReportUserToOpchat(conn, os.str(), false);
