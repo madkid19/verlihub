@@ -1,5 +1,7 @@
 /***************************************************************************
-*   Copyright (C) 2009 by Simoncelli Davide                               *
+*   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
+*                                                                         *
+*   Copyright (C) 2006-2009 by Verlihub Project                           *
 *   netcelli@verlihub-project.org                                         *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -31,18 +33,45 @@
 using namespace nStringUtils;
 namespace nDirectConnect {
 	namespace nTables {
-
+		
+		/**
+		
+		Class constructor
+		
+		*/
+	  
 		cRedirect::cRedirect()
 		{
 			mEnable = 1;
 			mFlag = 0;
 		}
 		
+		/**
+		
+		Class destructor
+		
+		*/
+		
 		cRedirect::~cRedirect(){}
-
+		
+		/**
+		
+		This function is called when cRedirect object is created. Here it is not useful so the body is empty
+		
+		*/
+		
 		void cRedirect::OnLoad()
 		{}
-
+		
+		/**
+		
+		Redefine << operator to describe a redirect and show its status
+		
+		@param[in,out] os The stream where to store the description.
+		@param[in,out] tr The cRedirect object that describes the redirect
+		@return The stream
+		*/
+		
 		ostream &operator << (ostream &os, cRedirect &tr)
 		{
 			string buff;
