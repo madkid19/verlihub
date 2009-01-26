@@ -33,7 +33,8 @@ void cMySQLColumn::AppendDesc(ostream &os) const
 {
 	string isNull, hasDefault;
 	mNull ? isNull = "" : isNull = " NOT NULL";
-	os << mName << " " << mType << " CHARACTER SET utf8 COLLATE utf8_unicode_ci " << isNull;
+	//Who added charset here? Query fails
+	os << mName << " " << mType /*<< " CHARACTER SET utf8 COLLATE utf8_unicode_ci "*/ << isNull;
 	if (mDefault.size())
 	{
 		os << " DEFAULT '";
