@@ -1,12 +1,25 @@
 /***************************************************************************
- *   Copyright (C) 2003 by Dan Muller                                      *
- *   dan at verliba dot cz                                                        *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- ***************************************************************************/
+*   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
+*                                                                         *
+*   Copyright (C) 2006-2009 by Verlihub Project                           *
+*   netcelli@verlihub-project.org                                         *
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+*   This program is distributed in the hope that it will be useful,       *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+*   GNU General Public License for more details.                          *
+*                                                                         *
+*   You should have received a copy of the GNU General Public License     *
+*   along with this program; if not, write to the                         *
+*   Free Software Foundation, Inc.,                                       *
+*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+***************************************************************************/
+
 #ifndef NDIRECTCONNECTCTRIGGER_H
 #define NDIRECTCONNECTCTRIGGER_H
 
@@ -24,9 +37,10 @@ namespace nTables {
 
 /**
 Trigger class
-user defined string that triggers given action
+User is able to define trigger string that show a message in mainchat or as private message
 
 @author Daniel Muller
+@author Simoncelli Davide
 */
 
 class cTrigger
@@ -35,11 +49,17 @@ public:
 	cTrigger();
 	virtual ~cTrigger();
 	int DoIt(istringstream & cmd_line, cConnDC *conn, cServerDC &server, bool timer=false);
-	// The trigger
+	/**
+	 The trigger
+	*/
 	string mCommand;
-	// The nick that sends the trigger message
+	/**
+	 The nick that sends the trigger message
+	*/
 	string mSendAs;
-	// Allowed flags and their meanings for a trigger
+	/**
+	 Allowed flags and their meanings for a trigger
+	*/
 	enum
 	{
 		eTF_EXECUTE = 1 << 0, // Execute the content of the trigger message in as a shell command
@@ -50,26 +70,46 @@ public:
 		eTF_VARS = 1 << 5, // Replace variables
 		eTF_SENDTOALL = 1 << 6 // Send trigger message to all when triggered
 	};
-	// Timeout for trigger if there is an actived timer for it
+	
+	/**
+	 Timeout for trigger if there is an actived timer for it
+	*/
 	long mSeconds;
 	long mLastTrigger;
-	// The trigger flags that describe when and how to trigger it
+	/**
+	 The trigger flags that describe when and how to trigger it
+	*/
 	int mFlags;
 	// The trigger message that can be a file name or a text
+	*/
 	string mDefinition;
-	// Trigger description
+	/**
+	 Trigger description
+	*/
 	string mDescription;
-	// Min class that can trigger
+	/**
+	 Min class that can trigger
+	*/
 	int mMinClass;
-	// Max class that can trigger
+	/**
+	 Max class that can trigger
+	*/
 	int mMaxClass;
-	// Max lines for definition (0 = unlimited)
+	/**
+	 Max lines for definition (0 = unlimited)
+	*/
 	int mMaxLines;
-	// Max length for definition (0 = unlimited)
+	/**
+	 Max length for definition (0 = unlimited)
+	*/
 	int mMaxSize;
-	// Min delay before triggering for users
+	/**
+	 Min delay before triggering for users
+	*/
 	int mDelayUser;
-	// min overall delay in seconds too
+	/**
+	 Min overall delay in seconds
+	*/
 	int mDelayTotal;
 
 	virtual void OnLoad();

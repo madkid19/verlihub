@@ -1,12 +1,25 @@
 /***************************************************************************
- *   Copyright (C) 2003 by Dan Muller                                      *
- *   dan at verliba dot cz                                                 *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- ***************************************************************************/
+*   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
+*                                                                         *
+*   Copyright (C) 2006-2009 by Verlihub Project                           *
+*   netcelli@verlihub-project.org                                         *
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+*   This program is distributed in the hope that it will be useful,       *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+*   GNU General Public License for more details.                          *
+*                                                                         *
+*   You should have received a copy of the GNU General Public License     *
+*   along with this program; if not, write to the                         *
+*   Free Software Foundation, Inc.,                                       *
+*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+***************************************************************************/
+
 #include "cserverdc.h"
 #include "ctrigger.h"
 #include "cconndc.h"
@@ -20,7 +33,13 @@
 using namespace nStringUtils;
 namespace nDirectConnect {
 namespace nTables {
-/// Constructor
+
+  /**
+  
+  Class constructor
+ 
+  */
+  
 cTrigger::cTrigger()
 {
 	mSeconds = mLastTrigger = mFlags = 0;
@@ -31,15 +50,24 @@ cTrigger::cTrigger()
 	mDelayUser=0;
 	mDelayTotal=0;
 }
-/// Destructor
-cTrigger::~cTrigger(){}
 
-/** \fn cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server)
-	\brief Send the trigger message. Message can be the content of a file or a string stored in the database (in this case def column)
-	\param conn The connection that triggers the trigger
-	\param server Reference to CServerDC
-	\param cmd_line The message of the trigger
-*/
+  /**
+
+  Class destructor
+
+  */
+
+cTrigger::~cTrigger(){}
+  /**
+
+  Send the trigger message. Message can be the content of a file or a string stored in the database (in this case def column)
+
+  @param[in,out] conn The connection that triggers the trigger
+  @param[in] server Reference to CServerDC
+  @param[in] cmd_line The message of the trigger
+  @return 0 if an error occurs or the user cannot see the trigger
+  */
+
 int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bool timer)
 {
 	bool timeTrigger = timer && conn == NULL;
@@ -245,8 +273,23 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	return 0;*/
 }
 
+  /**
+
+  This function is called when cTrigger object is created. Here it is not useful so the body is empty
+  
+  */
+
 void cTrigger::OnLoad()
 {}
+
+  /**
+
+  Redefine << operator to show and describe a trigger
+
+  @param[in,out] ostream The stream where to write
+  @param[in] tr Reference to cTrigger
+  @return The stream
+  */
 
 ostream &operator << (ostream &os, cTrigger &tr)
 {
