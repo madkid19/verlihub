@@ -25,11 +25,13 @@ namespace nTables {
 
 typedef tMySQLMemoryList<cTrigger, cServerDC> tTriggersBase;
 
-/**
-the vector of triggers, with load, reload, save functions..
+  /**
+  This class contains the list of all triggers and is able to add, edit and delete them
 
-@author Daniel Muller
-*/
+  @author Daniel Muller
+  @author Simoncelli Davide
+  
+  */
 class cTriggers : public tTriggersBase
 {
 public:
@@ -46,6 +48,15 @@ public:
 
 
 typedef tListConsole<cTrigger, cTriggers, cDCConsole> tTriggerConsoleBase;
+
+  /**
+
+  Trigger console to manage triggers
+
+  @author Daniel Muller
+  @author Simoncelli Davide
+
+  */
 
 class cTriggerConsole: public tTriggerConsoleBase
 {
