@@ -1,5 +1,7 @@
 /***************************************************************************
-*   Copyright (C) 2009 by Simoncelli Davide                               *
+*   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
+*                                                                         *
+*   Copyright (C) 2006-2009 by Verlihub Project                           *
 *   netcelli@verlihub-project.org                                         *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -60,6 +62,15 @@ namespace nDirectConnect {
 			defualt: return 0;
 		}
 	}
+	
+	/**
+	
+	Find a redirect address from a given type ID. If there is more than one address in the list...
+	
+	@param[in,out] os The stream where to store the description.
+	@param[in,out] tr The cRedirect object that describes the redirect
+	@return The stream
+	*/
 	
 	char *cRedirects::MatchByType(int Type)
 	{
