@@ -60,9 +60,6 @@ bool cMySQL::Connect(string &host, string &user, string &pass, string &data, str
 		Error(1, string("Connection to mysql server failed: "));
 		return false;
 	}
-	mysql_query(mDBHandle, "SET NAMES 'utf8'");
-	mysql_query(mDBHandle, "SET CHARACTER SET utf8");
-	//SET CHARACTER SET utf8
 	return true;
 }
 
