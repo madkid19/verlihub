@@ -199,7 +199,7 @@ public:
 	virtual int StartListening(int OverrideDefaultPort=0);
 	/** sends a public chat message to a given connection */
 	int DCPublic(const string &from, const string &msg,class cConnDC *conn);
-	int DCPublicToAll(const string &from, const string &txt);
+	int DCPublicToAll(const string &from, const string &txt, int min_class=1, int max_class=10);
 	/** send a hub security public message */
 	int DCPublicHS(const string &text, cConnDC *conn);
 	/** tells if a user with such nick can login into the hub */

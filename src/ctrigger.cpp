@@ -23,7 +23,7 @@ namespace nTables {
 /// Constructor
 cTrigger::cTrigger()
 {
-	mFlags = 0;
+	mSeconds = mLastTrigger = mFlags = 0;
 	mMinClass=0;
 	mMaxClass=10;
 	mMaxLines=0;
@@ -35,15 +35,123 @@ cTrigger::cTrigger()
 cTrigger::~cTrigger(){}
 
 /** \fn cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server)
-	\brief Send the defined file contents to the user connection
-	\param conn the connecten that trigger the trigger
-	\param server reference for the DC server
-	\param cmd_line what user has writter
+	\brief Send the trigger message. Message can be the content of a file or a string stored in the database (in this case def column)
+	\param conn The connection that triggers the trigger
+	\param server Reference to CServerDC
+	\param cmd_line The message of the trigger
 */
-int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server)
+int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bool timer)
 {
+	bool timeTrigger = timer && conn == NULL;
 	string buf, filename, sender;
 	string par1, end1, parall;
+	
+	// Check if it has been triggered by timeout. If not, check the connection and the user rights
+	if(!timeTrigger) {
+		if(!conn) return 0;
+		if(!conn->mpUser) return 0;
+	       
+		int uclass = conn->mpUser->mClass;
+		if ((uclass < this->mMinClass) &&(uclass > this->mMaxClass)) return 0;
+	}
+	
+	if(cmd_line.str().size() > mCommand.size()) {
+		parall.assign(cmd_line.str(),mCommand.size()+1,string::npos);
+	}
+	cmd_line >> par1;
+	end1 = cmd_line.str();
+	
+	// Replace sender
+	sender = server.mC.hub_security;
+	if (mSendAs.size()) sender = mSendAs;
+	
+	ReplaceVarInString(sender, "PAR1", sender, par1);
+	if(!timeTrigger) ReplaceVarInString(sender, "NICK", sender, conn->mpUser->mNick);
+	
+	
+	if (mFlags & eTF_DB || mFlags & eTF_EXECUTE) {
+	  buf = mDefinition;
+	} else {
+	  ReplaceVarInString(mDefinition,"CFG", filename, server.mConfigBaseDir);
+	  if(!timeTrigger) ReplaceVarInString(filename,"CC", filename, conn->mCC);
+	  if (!LoadFileInString(filename,buf)) return 0;
+	}
+	if (mFlags & eTF_VARS) {
+	  cTime theTime(server.mTime);
+	  time_t curr_time;
+	  struct tm lt;
+	  
+	  time(&curr_time);
+	  localtime_r(&curr_time, &lt);
+	  
+	  theTime -= server.mStartTime;	
+	  ReplaceVarInString(buf, "PARALL", buf, parall);
+	  ReplaceVarInString(buf, "PAR1", buf, par1);
+	  ReplaceVarInString(buf, "END1", buf, end1);
+	  if(!timeTrigger) {
+		ReplaceVarInString(buf, "CC", buf, conn->mCC);
+		ReplaceVarInString(buf, "IP", buf, conn->AddrIP());
+		ReplaceVarInString(buf, "HOST", buf, conn->AddrHost());
+		ReplaceVarInString(buf, "NICK", buf, conn->mpUser->mNick);
+		ReplaceVarInString(buf, "SHARE", buf, conn->mpUser->mShare);
+	  }
+	  
+	  ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.size());
+	  ReplaceVarInString(buf, "USERSPEAK", buf, (int)server.mUsersPeak);
+	  ReplaceVarInString(buf, "UPTIME", buf, theTime.AsPeriod().AsString());
+	  ReplaceVarInString(buf, "VERSION", buf, VERSION);
+	  ReplaceVarInString(buf, "HUBNAME", buf, server.mC.hub_name);
+	  ReplaceVarInString(buf, "HUBTOPIC", buf,server.mC.hub_topic);
+	  ReplaceVarInString(buf, "VERSION_DATE", buf, __CURR_DATE_TIME__);
+	  ReplaceVarInString(buf, "TOTAL_SHARE", buf,server.mTotalShare);
+	  ReplaceVarInString(buf, "ss",buf, lt.tm_sec);
+	  ReplaceVarInString(buf, "mm",buf, lt.tm_min);
+	  ReplaceVarInString(buf, "HH",buf, lt.tm_hour);
+	  ReplaceVarInString(buf, "DD",buf, lt.tm_mday);
+	  ReplaceVarInString(buf, "MM",buf, lt.tm_mon+1);
+	  ReplaceVarInString(buf, "YY",buf, 1900 + lt.tm_year);
+	  
+	}
+	
+	if (mFlags & eTF_EXECUTE && server.mDBConf.allow_exec) {
+	  string command(buf);
+	  filename = server.mConfigBaseDir;
+	  filename.append("/tmp/trigger.tmp");
+	  command.append(" > ");
+	  command.append(filename);
+	  cout << command << endl;
+	  system(command.c_str());
+	  buf = "";
+	  if (!LoadFileInString(filename,buf)) return 0;
+	}
+	
+	
+	if(timeTrigger) {
+	  server.DCPublicToAll(sender,buf);
+	  return 1;
+	}
+	
+	
+	// @CHANGED by dReiska +BEGINS+
+	if (mFlags & eTF_SENDTOALL) {
+	  if (!(mFlags & eTF_SENDPM)) {
+	    server.DCPublicToAll(sender,buf);
+	  } else {/*
+	    server.DCPrivateToAll(sender,buf);
+	    */
+	  }
+	} else {
+	  if (!(mFlags & eTF_SENDPM)) {
+	    server.DCPublic(sender, buf, conn);
+	  } else {
+	    server.DCPrivateHS(buf, conn, &sender);
+	  }
+	}
+	// @CHANGED by dReiska -ENDS-
+	return 1;
+	
+	/*
+	
 	if (conn && conn->mpUser)
 	{
 		int uclass = conn->mpUser->mClass;
@@ -117,10 +225,11 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server)
 			// @CHANGED by dReiska +BEGINS+
 			if (mFlags & eTF_SENDTOALL) {
 				if (!(mFlags & eTF_SENDPM)) {
-					server.DCPublicToAll(sender,buf);
+					   server.DCPublicToAll(sender,buf);
+					//server.DCPublicToAll(sender,buf);
 				} else {/*
 					server.DCPrivateToAll(sender,buf);
-					*/
+					*
 				}
 			} else {
 				if (!(mFlags & eTF_SENDPM)) {
@@ -133,7 +242,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server)
 			return 1;
 		}
 	}
-	return 0;
+	return 0;*/
 }
 
 void cTrigger::OnLoad()

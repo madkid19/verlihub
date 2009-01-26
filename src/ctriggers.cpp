@@ -10,6 +10,7 @@
 #include "ctriggers.h"
 #include "cconfigitembase.h"
 #include "cserverdc.h"
+#include <time.h>
 
 namespace nDirectConnect {
 namespace nTables {
@@ -30,8 +31,29 @@ void cTriggers::AddFields()
 	AddCol("min_class", "int(2)", "", true, mModel.mMinClass);
 	AddCol("max_class", "int(2)", "10", true, mModel.mMaxClass);
 	AddCol("flags", "int(2)", "0", true, mModel.mFlags);
+	AddCol("seconds", "int(15)", "0", true, mModel.mSeconds);
+	AddCol("last_trigger", "int(15)", "0", true, mModel.mLastTrigger);
 	mMySQLTable.mExtra = "PRIMARY KEY(command)";
 	SetBaseTo(&mModel);
+}
+
+void cTriggers::OnTimer(long now)
+{
+	 istringstream is;
+	 iterator it;
+	 cTrigger *trigger;
+	 for (it= begin(); it != end(); ++it)
+	 {
+		trigger = *it;
+		if(!trigger->mSeconds) continue;
+		long next = trigger->mLastTrigger + trigger->mSeconds;
+		cout << "[::] "<< trigger->mCommand << " Next: " << next << " Now: " << now << endl;
+		if (next < now) {
+		    trigger->mLastTrigger = now;
+		    //UpdateData(*trigger);
+		    trigger->DoIt(is, NULL, *mOwner, true);
+		}
+	 }
 }
 
 void cTriggers::TriggerAll(int FlagMask, cConnDC *conn)
@@ -136,6 +158,7 @@ const char * cTriggerConsole::GetParamsRegex(int cmd)
 			"( -n ?(\\S+))?|" // [ -n<sendas_nick>]
 			"( -c ?(-?\\d+))?|" //[ -c<min_class>]
 			"( -C ?(-?\\d+))?|" //[ -c<max_class>]
+			"( -t ?(\\S+))?|" //[ -t<timeout>]
 			")*\\s*$"; // the end of message
 		case eLC_DEL:
 			return "(\\S+)";
@@ -151,7 +174,8 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 		eADD_FLAGSp, eADD_FLAGS,
 		eADD_NICKp, eADD_NICK,
 		eADD_CLASSp, eADD_CLASS,
-		eADD_CLASSXp, eADD_CLASSX
+		eADD_CLASSXp, eADD_CLASSX,
+		eADD_TIMEOUTp, eADD_TIMEOUT
 		};
 	
 	cmd->GetParStr(eADD_CMD,data.mCommand);
@@ -161,6 +185,15 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 	cmd->GetParInt(eADD_FLAGS, data.mFlags);
 	cmd->GetParInt(eADD_CLASS, data.mMinClass);
 	cmd->GetParInt(eADD_CLASSX, data.mMaxClass);
+	string sTimeout;
+	cmd->GetParStr(eADD_TIMEOUT,sTimeout);
+	if(sTimeout == "0") data.mSeconds = 0;
+	else {
+		data.mSeconds = mOwner->mServer->Str2Period(sTimeout,*cmd->mOS);
+		if(!data.mSeconds)
+			 return false;
+	}
+
 	if (!mOwner->mServer->mDBConf.allow_exec_mod && (data.mFlags & cTrigger::eTF_EXECUTE)) {
 		*cmd->mOS << "Execute command flag is disabled from config";
 		return false;

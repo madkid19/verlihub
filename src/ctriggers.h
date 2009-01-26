@@ -38,6 +38,7 @@ public:
 	virtual void AddFields();
 	cTrigger * Find(const string &name); //@todo Trigger stuff
 	virtual bool CompareDataKey(const cTrigger &D1, const cTrigger &D2);
+	void OnTimer(long now);
 	// useful functions
 	void TriggerAll(int FlagMask, cConnDC *conn);
 	bool DoCommand(cConnDC *conn, const string &cmd, istringstream &cmd_line, cServerDC &server);

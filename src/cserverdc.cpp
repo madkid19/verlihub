@@ -319,12 +319,16 @@ int cServerDC::DCPublic(const string &from, const string &txt, cConnDC *conn)
 	}
 }
 
-int cServerDC::DCPublicToAll(const string &from, const string &txt)
+int cServerDC::DCPublicToAll(const string &from, const string &txt, int min_class, int max_class)
 {
 	static string msg;
 	msg.erase();
 	cDCProto::Create_Chat(msg, from, txt);
-	mUserList.SendToAll(msg, true, true);
+	//TODO: Use constant instead of num
+	if(min_class !=0 && max_class != 10)
+		mUserList.SendToAllWithClass(msg, min_class, max_class, true, true);
+	else
+		mUserList.SendToAll(msg, true, true);
 	return 1;
 }
 
@@ -1132,7 +1136,7 @@ int cServerDC::OnTimer(cTime &now)
 
 	mBanList->mTempNickBanlist.AutoResize();
 	mBanList->mTempIPBanlist.AutoResize();
-
+	mCo->mTriggers->OnTimer(now.Sec());
 	#ifndef WITHOUT_PLUGINS
 	if (!mCallBacks.mOnTimer.CallAll())
 		return false;
