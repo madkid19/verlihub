@@ -80,7 +80,8 @@ public:
 	 The trigger flags that describe when and how to trigger it
 	*/
 	int mFlags;
-	// The trigger message that can be a file name or a text
+	/**
+	 The trigger message that can be a file name or a text
 	*/
 	string mDefinition;
 	/**
