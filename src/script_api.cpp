@@ -1,5 +1,7 @@
 /***************************************************************************
-*   Copyright (C) 2009 by Simoncelli Davide                               *
+*   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
+*                                                                         *
+*   Copyright (C) 2006-2009 by Verlihub Project                           *
 *   netcelli@verlihub-project.org                                         *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
