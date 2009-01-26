@@ -216,7 +216,6 @@ if $cfg_create ; then
 	echo "db_data = $mysql_data" >> $cfg_dbconfig
 	echo "db_user = $mysql_user" >> $cfg_dbconfig
 	echo "db_pass = $mysql_pass" >> $cfg_dbconfig
-	echo "db_charset = utf8" >> $cfg_dbconfig
 
 	echo "Written: $cfg_dbconfig"
 
