@@ -299,14 +299,13 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 	cmd->GetParInt(eADD_FLAGS, data.mFlags);
 	cmd->GetParInt(eADD_CLASS, data.mMinClass);
 	cmd->GetParInt(eADD_CLASSX, data.mMaxClass);
-	string sTimeout;
+	string sTimeout("0");
 	cmd->GetParStr(eADD_TIMEOUT,sTimeout);
-	if(sTimeout == "0") data.mSeconds = 0;
-	else {
+	if(sTimeout == "0")
+		data.mSeconds = 0;
+	else
 		data.mSeconds = mOwner->mServer->Str2Period(sTimeout,*cmd->mOS);
-		if(!data.mSeconds)
-			 return false;
-	}
+	
 
 	if (!mOwner->mServer->mDBConf.allow_exec_mod && (data.mFlags & cTrigger::eTF_EXECUTE)) {
 		*cmd->mOS << "Execute command flag is disabled from config";
