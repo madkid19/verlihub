@@ -80,7 +80,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 		if(!conn->mpUser) return 0;
 	       
 		int uclass = conn->mpUser->mClass;
-		if ((uclass < this->mMinClass) &&(uclass > this->mMaxClass)) return 0;
+		if ((uclass < this->mMinClass)  || (uclass > this->mMaxClass)) return 0;
 	}
 	
 	if(cmd_line.str().size() > mCommand.size()) {
