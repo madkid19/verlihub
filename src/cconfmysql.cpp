@@ -115,8 +115,8 @@ bool cMySQLTable::CreateTable()
 
 	if(mExtra.size())
 		mQuery.OStream() << ", " << mExtra;
-
-	mQuery.OStream() << ")";
+	//TODO: Alter charset if db_charset changes
+	mQuery.OStream() << ") CHARACTER SET utf8 COLLATE utf8_unicode_ci";
 	mQuery.Query();
 	mQuery.Clear();
 	return true;
