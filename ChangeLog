@@ -42,6 +42,7 @@
 	* Fix: Impossible to kick,ban or drop pinger if it is registred with class -1 (thx to Rolex)
 	* Fix:  Add reg with a password instead of adding reg and then setting a password
 	* Fix: If user regs himself with autoreg command, reg_op was set to new user's nickname
+	* Add: now Verlihub uses utf8 (charset) and utf8_general (collation). It's also able to know if the database and tables are still using old encoing; in this case it will update them
 	
 2006-03-30 chaos/netcelli
 
