@@ -21,11 +21,12 @@ cMySQL::cMySQL() : cObj("cMySQL")
  */
 cMySQL::cMySQL(string&host,string&user,string&pass,string&data,string&charset) : cObj("cMySQL")
 {
-    Init();
-    if(!Connect(host,user,pass,data,charset))
-    {
-    	throw "Mysql connection error.";
-    }
+	 mDBName = data;
+	 Init();
+	 if(!Connect(host,user,pass,data,charset))
+	 {
+	         throw "Mysql connection error.";
+	 }
 }
 
 cMySQL::~cMySQL()
@@ -46,7 +47,8 @@ bool cMySQL::Connect(string &host, string &user, string &pass, string &data, str
 			<< user << "@" << host << "/" << data << " using " << charset << " encoding" << endl;
 	
 	mysql_options(mDBHandle,MYSQL_OPT_COMPRESS,0);
-	mysql_options(mDBHandle,MYSQL_SET_CHARSET_NAME,charset.c_str());
+	mysql_options(mDBHandle,MYSQL_SET_CHARSET_NAME,"utf8");
+	//mysql_options(mDBHandle,MYSQL_SET_CHARSET_NAME,charset.c_str());
 	
 	if(!mysql_real_connect(
 		mDBHandle,

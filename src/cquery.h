@@ -44,6 +44,7 @@ public:
 	void DataSeek(unsigned long long);
 	// is there an existing result?
 	bool GetResult();
+	cMySQL& getMySQL() { return mMySQL;}
 private:
 	cMySQL & mMySQL;
 	MYSQL_RES *mResult;

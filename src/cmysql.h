@@ -38,10 +38,16 @@ public:
 	~cMySQL();
 	void Init();
 	bool Connect(string &host, string &user, string &passwd, string &db, string &charset);
+	string GetDBName()
+	{
+		return mDBName;
+	}
 	public: void Error(int level, string text);
 
 private:
+	string mDBName;
 	MYSQL *mDBHandle;
+	
 };
 };
 #endif

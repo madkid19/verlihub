@@ -77,11 +77,13 @@ public:
 	~cMySQLTable();
 	vector<cMySQLColumn> mColumns;
 	const cMySQLColumn * GetColumn(const string &) const;
+	bool GetCollation();
 	bool GetDescription(const string &);
 	bool CreateTable();
 	bool AutoAlterTable(const cMySQLTable &original);
 	void AppendColumnDesc(const cMySQLColumn &col, ostream &os);
 	string mName;
+	string mCollation;
 	string mExtra;
 	cQuery mQuery;
 };
@@ -140,7 +142,7 @@ protected: // Protected attributes
 	tItemHash mPrimaryKey;
 	/**  */
 	int ok;
-	// number of collumns
+	// number of columns
 	unsigned mCols;
 	cMySQLTable mMySQLTable;
 

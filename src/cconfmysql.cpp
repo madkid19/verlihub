@@ -18,6 +18,9 @@
 #include "cconfmysql.h"
 #include <algorithm>
 #include <string.h>
+#define DEFAULT_COLLATION "utf8_unicode_ci"
+#define DEFAULT_CHARSET "utf8"
+
 using namespace std;
 
 namespace nConfig
@@ -62,13 +65,37 @@ cMySQLTable::cMySQLTable(cMySQL &mysql) : cObj("cMySQLTable"),  mQuery(mysql)
 cMySQLTable::~cMySQLTable()
 {}
 
+bool cMySQLTable::GetCollation()
+{
+            int i = 0, n;
+            MYSQL_ROW row;            
+            mQuery.OStream() << "SELECT TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_NAME='" << mName << "' AND TABLE_SCHEMA='" << mQuery.getMySQL().GetDBName() << "'";
+            if(mQuery.Query() <= 0) {
+	 mQuery.Clear();
+	 return false;
+            }
+            
+            n = mQuery.StoreResult();
+            
+            cMySQLColumn col;
+            for( ; i < n; i++)
+            {
+	 row = mQuery.Row();
+	 mCollation = row[0];
+            }
+            
+            mQuery.Clear();
+            return true;
+}
+
 bool cMySQLTable::GetDescription(const string &tableName)
 {
 	int i = 0, n;
 	MYSQL_ROW row;
 
 	mName = tableName;
-
+	
+	
 	mQuery.OStream() << "SHOW COLUMNS FROM " << tableName;
 	if(mQuery.Query() <= 0)
 	{
@@ -116,7 +143,7 @@ bool cMySQLTable::CreateTable()
 	if(mExtra.size())
 		mQuery.OStream() << ", " << mExtra;
 	//TODO: Alter charset if db_charset changes
-	mQuery.OStream() << ") CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+	mQuery.OStream() << ") CHARACTER SET " << DEFAULT_CHARSET << " COLLATE " << DEFAULT_COLLATION;
 	mQuery.Query();
 	mQuery.Clear();
 	return true;
@@ -148,6 +175,13 @@ bool cMySQLTable::AutoAlterTable(const cMySQLTable &original)
 			mQuery.Query();
 			mQuery.Clear();
 		}
+	}
+	GetCollation();
+	if(mCollation != DEFAULT_COLLATION) {
+		if(Log(1)) LogStream() << "Altering table " << mName << " setting collation to " << DEFAULT_COLLATION << endl;
+		mQuery.OStream() << "ALTER TABLE  " << mName << " CHARACTER SET " << DEFAULT_CHARSRT << " COLLATE " << DEFAULT_COLLATION;
+		mQuery.Query();
+		mQuery.Clear();
 	}
 	return result;
 }
