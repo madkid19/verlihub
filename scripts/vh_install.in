@@ -88,12 +88,12 @@ function CreateTables
 
 	TestTables "reglist" "SetupList" && return 0
 	echo Wait few seconds..
-	$bindir/verlihub 22 &>/dev/null &
-	vh_pid=$!
-	sleep 5
 	getMySQLSocket
 	export "MYSQL_UNIX_PORT=$SOCKET"
-	VERLIHUB_CFG=$cfg_dir kill -9 $vh_pid &>/dev/null
+	VERLIHUB_CFG=$cfg_dir $bindir/verlihub 22 &>/dev/null &
+	vh_pid=$!
+	sleep 5
+	kill -9 $vh_pid &>/dev/null
 	TestTables "reglist" "SetupList" || return 1
 	return 0
 }
