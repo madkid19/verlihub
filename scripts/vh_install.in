@@ -70,6 +70,19 @@ function TestTables # (table1 table2 ...)
 	return 0
 }
 
+function getMySQLSocket
+{
+  MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf"
+  for FILE in $MYSQL_CONF
+    do
+      if [ -r $FILE ]; then
+        SOCKET=$(cat $FILE | grep "^socket" | head -n 1 | cut -d"=" -f2| tr -d " ")
+        fi
+        done
+        
+        
+}
+
 function CreateTables
 {
 
@@ -78,7 +91,9 @@ function CreateTables
 	$bindir/verlihub 22 &>/dev/null &
 	vh_pid=$!
 	sleep 5
-	kill -9 $vh_pid &>/dev/null
+	getMySQLSocket
+	export "MYSQL_UNIX_PORT=$SOCKET"
+	VERLIHUB_CFG=$cfg_dir kill -9 $vh_pid &>/dev/null
 	TestTables "reglist" "SetupList" || return 1
 	return 0
 }

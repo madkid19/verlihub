@@ -179,7 +179,7 @@ bool cMySQLTable::AutoAlterTable(const cMySQLTable &original)
 	GetCollation();
 	if(mCollation != DEFAULT_COLLATION) {
 		if(Log(1)) LogStream() << "Altering table " << mName << " setting collation to " << DEFAULT_COLLATION << endl;
-		mQuery.OStream() << "ALTER TABLE  " << mName << " CHARACTER SET " << DEFAULT_CHARSRT << " COLLATE " << DEFAULT_COLLATION;
+		mQuery.OStream() << "ALTER TABLE  " << mName << " CHARACTER SET " << DEFAULT_CHARSET << " COLLATE " << DEFAULT_COLLATION;
 		mQuery.Query();
 		mQuery.Clear();
 	}
