@@ -43,7 +43,6 @@ cLuaInterpreter::~cLuaInterpreter()
 	char * args[] = { NULL };
 	if(mL) {
 		CallFunction("UnLoad", args);
-		cout << "Deleting mL " << mL  << "for " << mScriptName << endl;
 		lua_close(mL);
 	}
 	clean();
@@ -145,7 +144,7 @@ void cLuaInterpreter::ReportLuaError(char * error)
 	}
 	char * args[] = { error, NULL };
 	// Dropped because of crash
-	CallFunction("OnError", args);
+	//CallFunction("OnError", args);
 }
 
 void cLuaInterpreter::RegisterFunction(const char *fncname, int (*fncptr)(lua_State *))
@@ -157,7 +156,6 @@ void cLuaInterpreter::RegisterFunction(const char *fncname, int (*fncptr)(lua_St
 
 bool cLuaInterpreter::CallFunction(char * func, char * args[])
 {
-            cout << "[::] " << mScriptName << " Calling " << func << endl;
 	lua_settop(mL, 0);
 	int base = lua_gettop(mL);
 	lua_pushliteral(mL, "_TRACEBACK");

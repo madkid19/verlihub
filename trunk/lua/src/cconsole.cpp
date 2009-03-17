@@ -67,11 +67,6 @@ int cConsole::DoCommand(const string &str, cConnDC * conn)
 {
 	ostringstream os;
 	
-	/*if (conn->mpUser->mClass < cServerDC::sCurrentServer->mC.plugin_mod_class) {
-		os << "No rights for command " << str;
-		mLua->mServer->DCPublicHS(os.str().c_str(),conn);
-		return 1;
-	}*/
 	if(mCmdr.ParseAll(str, os, conn) >= 0)
 	{
 		mLua->mServer->DCPublicHS(os.str().c_str(),conn);
