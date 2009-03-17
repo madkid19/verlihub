@@ -1,0 +1,1 @@
+#define __CURR_DATE_TIME__ "Tue Sep 17 20:35:37 CEST 2008"

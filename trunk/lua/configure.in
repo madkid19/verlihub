@@ -1,0 +1,93 @@
+AC_INIT(configure.in)
+
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(lua, 1.7RC4)
+
+datadir=$datadir/verlihub
+
+AC_LANG_CPLUSPLUS
+AC_PROG_CXX
+AM_PROG_LIBTOOL
+
+AM_MAINTAINER_MODE
+AC_CHECK_HEADERS([stdlib.h string.h sys/socket.h sys/time.h unistd.h ostream string errno.h sys/poll.h])
+
+dnl Check for Lua
+
+echo "checking for lua headers..."
+AC_CHECK_HEADERS(lua.h lualib.h lauxlib.h,,[\
+    #check lua headers in debian's lua path
+    AC_CHECK_HEADERS(lua50/lua.h lua50/lualib.h lua50/lauxlib.h, LUA_CFLAGS="$LUA_CFLAGS -I/usr/include/lua50 ",[\
+    AC_CHECK_HEADERS(lua5.1/lua.h lua5.1/lualib.h lua5.1/lauxlib.h, LUA_CFLAGS="$LUA_CFLAGS -I/usr/include/lua5.1 ",[\
+    AC_MSG_ERROR([Please install the lua library headers (lua.h, lualib.h, lauxlib.h) before trying to install lua plugin frist.])])])])
+
+echo "checking for lua libraries..."
+AC_CHECK_LIB(lua, lua_call, [ \
+	AC_CHECK_LIB(lua, luaL_register, [ LIBLUA="$LDLUALIBS -llua -lm" AC_DEFINE(HAVE_LUA_5_1, 1, [Define to use Lua 5.1]) ], [\
+        AC_CHECK_LIB(lualib, luaopen_base, [ LIBLUA="$LDLUALIBS -llua -llualib -lm -ldl" ], [\
+	AC_MSG_ERROR([[There is some problem with your Lua library. The library seems to exists, but can't determine its version. Please resintall Lua .]])\
+        ]) ]) ], [\
+	
+	AC_CHECK_LIB(lua50, lua_call, [ \
+		AC_CHECK_LIB(lua50, luaL_register, [ LIBLUA="$LDLUALIBS -llua50 -lm" AC_DEFINE(HAVE_LUA_5_0, 1, [Define to use Lua 5.0]) ], [\
+    		AC_CHECK_LIB(lualib50, luaopen_base, [ LIBLUA="$LDLUALIBS -llua50 -llualib50 -lm -ldl" ], [\
+		AC_MSG_ERROR([[There is some problem with your Lua library. The library seems to exists, but can't determine its version. Please resintall Lua5.]])\
+    		]) ]) ], [\
+	
+		AC_CHECK_LIB(lua5.1, lua_call, [ \
+			AC_CHECK_LIB(lua5.1, luaL_register, [ LIBLUA="$LDLUALIBS -llua5.1 -lm" AC_DEFINE(HAVE_LUA_5_1, 1, [Define to use Lua 5.1]) ], [\
+    			AC_CHECK_LIB(lualib5.1, luaopen_base, [ LIBLUA="$LDLUALIBS -llua5.1 -llualib5.1 -lm -ldl" ], [\
+			AC_MSG_ERROR([[There is some problem with your Lua library. The library seems to exists, but can't determine its version. Please resintall Lua.]])\
+    			]) ]) ], [\
+			AC_MSG_ERROR([[Please install the Lua library before trying to compile lua plugin. You can download it from the Lua website http://www.lua.org]])\
+			])\
+		])\
+	])
+
+AC_ARG_WITH([luasocket],
+[AC_HELP_STRING(--with-luasocket, [Set default build with or without LuaSocket])], [\
+
+AC_CHECK_LIB(luasocket, luaopen_socket_core, LIBLUA="$LIBLUA -lluasocket",\
+AC_MSG_ERROR(Please download and install LuaSocket from http://www.tecgraf.puc-rio.br/~diego/professional/luasocket/.), $LIBLUA -lm)
+
+AC_CHECK_LIB(luamime, luaopen_mime_core, LIBLUA="$LIBLUA -lluamime",\
+AC_MSG_ERROR(Please download and install LuaSocket from http://www.tecgraf.puc-rio.br/~diego/professional/luasocket/.), $LIBLUA -lm)
+
+])
+
+#LIBLUA="-llua -llualib -ldl -lm"
+
+AC_SUBST(LIBLUA)
+AC_SUBST(LUA_CFLAGS)
+
+AC_PATH_LIB_LIBCONFIG
+AC_PATH_LIB(verlihub, [0 -nocheck], [], verlihub_config, [], [
+                        CXXFLAGS="$CXXFLAGS $VERLIHUB_CFLAGS"
+                        echo "adding $VERLIHUB_CFLAGS to CXXFLAGS"
+                    ], [
+                        echo "Install verlihub devel, or you need a path for the "
+                        echo "verlihub_config script, you may also wat to try some --with-verlihub=/prefix agruments"
+                        exit -1
+                    ])
+
+SAVEFLAGS="${LDLAGS}"
+LDFLAGS="${LDFLAGS} ${VERLIHUB_LIBS}"
+AC_CHECK_LIB(vhapi, GetNickList ,[AC_DEFINE(HAVE_GETNICKLIST, 1, [Define is GetNickList exists])] )
+
+LDFLAGS="${SAVEFLAGS}"
+
+AC_OUTPUT(Makefile src/Makefile share/Makefile)
+
+echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
+echo "Configure has completed successfully. Now you must run make."
+echo "If make fails with errors, please consult the forums and see"
+echo "if anyone else has had the same issue. The forums are located"
+echo "here http://www.verlihub-project.org/."
+echo "Extensive documentation is also available at the project website"
+echo "which can be found here http://www.verlihub-project.org/."
+echo "NOTE: This is the CVS version of Lua plugin for Verlihub. If you"
+echo "  wish to use a stable release candidate, then please download it"
+echo "from the project website mentioned above. Please feel free to join"
+echo "and register at the Verlihub suport hub which can be found here"
+echo "dchub://hub.verlihub-project.org:7777/."
+echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"

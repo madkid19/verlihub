@@ -1,0 +1,101 @@
+Lua plugin for Verlihub.
+Thanks to Verliba for help.
+
+First of all, let me ask you if you are LUA programmer and you are using this plugin to share your LUA scripts with us
+even if you think the code is ugly. Thank you.
+
+It is time to start write your own scripts, you can do it easily by modifing the existing sample code provided in the
+script directory, or writing your own script(s).
+
+In order to compile and run LUA plugin you may want to download the latest LUA source from http://www.lua.org
+Additional LUA related information can be found at http://lua-users.org
+There is some libraries that could extend LUA at: 
+LuaSocket: http://www.tecgraf.puc-rio.br/~diego/luasocket/
+LuaThreads: http://www.tecgraf.puc-rio.br/~diego/luathreads/
+After LUA installed you have to run ldconfig.
+You should get the latest Verlihub CVS too! (currently: 0.9.8a)
+
+Verlihub has several functions that will be called by Verlihub if a certain event happend for example when a user connects
+to the hub.
+If LUA plugin loaded then you should load at least 1 script to handle events invoked by Verlihub.
+Handling events means that you can process the datas sent by Verlihub when the event happend.
+To stay at my example OnUserLogin event function will called by Verlihub when someone logged in the HUB
+If this functions is not exists in your script then it doesn't matter anymore, because LUA plugin
+is going to check the function existence before attempting to call it.
+
+Here is a list about all possible events that you can handle with your own function(s):
+
+VH_OnNewConn			(parameter: ip address)
+VH_OnCloseConn			(parameter: ip address)
+VH_OnParsedMsgChat		(parameters: nick, chat message)
+VH_OnParsedMsgPM		(parameters: nick, pm chat message)
+VH_OnParsedMsgSearch		(parameters: nick, search string)
+VH_OnParsedMsgSR		(paramaters: nick, search string)
+VH_OnParsedMsgMyINFO	(parameters: nick, myinfo string)
+VH_OnParsedMsgValidateNick	(parameter: nick)
+VH_OnParsedMsgAny		(parameter: nick, dc message)
+VH_OnParsedMsgSupport		(parameters: nick, dc message)
+VH_OnParsedMsgMyPass		(parameters: nick, password)
+VH_OnUnknownMsg		(parameter: dc message)
+VH_OnOperatorCommand	(parameters: nick, command)
+VH_OnOperatorKicks		(parameters: op, user, message)
+VH_OnOperatorDrops		(parameters: op, user)
+VH_OnUserCommand		(parameters: nick, command)
+VH_OnValidateTag		(parameters: nick, tag)
+VH_OnUserLogin			(parameter: nick)
+VH_OnUserLogout			(parameter: nick)
+VH_OnTimer			(no parameter)
+VH_OnNewReg			(parameters: op, nick, class)
+VH_OnNewBan			(parameters: op, ip, nick, reason)
+VH_OnParsedMsgConnectToMe     	(parameters: nick, othernick, ip, port)
+VH_OnParsedMsgRevConnectToMe   	(parameters: nick, othernick)
+
+UnLoad () is called when the script is being unloaded, you can delete ressources you added.
+Of course you can interact with Verlihub easily. You just need to call these functions throught VH object like this:
+
+VH:SendDataToAll(string::data, number::min_class, number::max_class)
+VH:SendDataToUser(string::data, string::nick)
+VH:SendPMToAll(string::data, string::from, number::min_class, number::max_class)
+VH:CloseConnection(string::nick)
+VH:KickUser(string::op, string::nick, string::reason)
+VH:GetMyINFO(string::nick) ---> This one will answer the myinfo string
+VH:GetUserClass(string::nick) ---> To retreive the user's class by nick
+VH:GetUserHost(string::nick) ---> To retreive the user's host by nick
+VH:GetUserIP(string::nick) ---> To retreive the user's ip by nick
+VH:Ban(string::nick, number::howlong, number::bantype) ---> Not implemented yet!
+VH:ParseCommand(string::command) ---> Not implemented yet!
+VH:SetConfig(string::config_name, string::varible, string::value) ---> You can set Verlihub's config varibles
+VH:GetConfig(string::config_name, string::varible) ---> To read Verlihub's config variables' values
+VH:AddRobot(string::nick, number::class, string::description, string::speed, string::email, string::share) ---> Creates a new robot user in userlist
+VH:DelRobot(string::nick) ---> Deletes the robot by nick
+VH:SQLQuery(string::query) ---> Makes an SQL query with Verlihub's existing MySQL database connection and returns the number of available rows
+VH:SQLFetch(number::row) ---> For fetching a row by the given number. Rows starts from 0 to n-1 where n is the result of VH:SQLQuery() function what is returns the number of rows in the result of mysql call
+VH:SQLFree() ---> Every SQLQuery() explicitly calls this function, so you don't need to call it, only when you want to clean MYSQL_RESult structure.
+VH:GetUsersCount() ---> To get the number of total users online
+VH:GetTotalShareSize() ---> To get the number of current total share amount
+
+Every functions will have at least one return value.
+Check out the sample script (script.lua) to see how its going...
+You will found it in scripts/ directory.
+
+The plugin now accepts these commands:
+!lualist
+!luaload /path/to/script.lua
+!luaunload /path/to/script.lua
+
+About script unloading: if you have the same script loaded more than once, plugin will unload the first script
+matching by the name you specify. There is an important thing you should keep in mind, robots created by
+your script(s) stays in the userlist until you destroy them either by unloading the LUA plugin or deleting
+them by script with VH:DelRobot(...) command.
+
+Plugin was modified to check your script(s) return values. If there is one false value for a script, then
+it doesn't matter which value you return for that event. For example if you have to scripts and one of them has
+false return value for an event like OnParsedMsgChat, then the other script's return value doesn't matter. False
+value has higher precedence than true value.
+
+To make PtokaX scripts work with Verlihub, I have made an interface script (ptokax.lua)
+You should include this file to every PtokaX scripts you want to use.
+This can be done by place "require("ptokax")" to the begining of the script
+Don't forget to add LUA_PATH environment variable to point to the directory where the interface script (ptokax.lua) located.
+
+Good luck.
