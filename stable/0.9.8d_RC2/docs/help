@@ -1,0 +1,78 @@
+<table>
+<tr><td>command</td><td>alias</td><td>class</td><td>args</td><td>help</td></tr>
+<tr><td>!getip</td><td>!gi</td><td>3</td><td>&lt;nick&gt;</td><td>Print user's ip address</td></tr>
+<tr><td>!gethost</td><td>!gh</td><td>3</td><td>&lt;nick&gt;</td><td>Print user's hostname if available. This works only if dns_lookup = 1.</td></tr>
+<tr><td>!getinfo</td><td>!gi</td><td>3</td><td>&lt;nick&gt;</td><td>Print user's ip, hostname, adn other available information</td></tr>
+<tr><td>!kick</td><td>!ki</td><td>3</td><td>&lt;nick&gt; &lt;reason&gt;</td><td>Kick the user from command line, the _ban_ think doesn't work here</td></tr>
+<tr><td>!ops</td><td>!oc</td><td>3</td><td>&lt;message&gt;</td><td>send the messahe to all online operators to pm from hub_security, replies go to sender's pm from hub_security</td></tr>
+<tr><td>!regs</td><td>NULL</td><td>3</td><td>&lt;message&gt;</td><td>send the &lt;message&gt; to all registered users</td></tr>
+<tr><td>!help</td><td>!?</td><td>3</td><td>NULL</td><td>gives a help on all available commands</td></tr>
+<tr><td>!quit</td><td>NULL</td><td>10</td><td>NULL</td><td>Stop the hub</td></tr>
+<tr><td>!set</td><td>!=</td><td>5</td><td>&lt;variable&gt; &lt;value&gt;</td><td>Set the given variable to the new &lt;value&gt;, settings are not saved to config</td></tr>
+<tr><td>!getconfig</td><td>!gc</td><td>5</td><td>NULL</td><td>Prints all the variables, that can be configures in the config file and their current values</td></tr>
+<tr><td>!broadcast</td><td>!bc</td><td>4</td><td>&lt;message&gt;</td><td>send the message to all user's pms, replied are sent back to you into pm from hub_security</td></tr>
+<tr><td>!drop</td><td>!dr</td><td>4</td><td>&lt;nick&gt;</td><td>disconnect user from hub, kicktempban applies here</td></tr>
+</table>
+
+old commands:
+!quit
+!hublist
+!getconfig !gc
+!userlimit !ul
+!reload !re (new functions)
+!broadcast !bc
+!ccbroadcast !ccbc
+!drop !dr
+!class
+!protect (overridden by !regprotect)
+!kick !ki
+!drop !dr
+!getip !gi !gethost !gh !getinfo !gn
+!help !?
+!ops !oc (no more use since there is OpChat bot)
+!regs
+!hideme !hm (i dunno this exited)
+!hidekick
+!unhidekick
+
+
+New commands
+------------
+Group "ban"
+all combinations of this....
+(del|rm|un|info|list|ls)?ban(ip|nick|nickip|host1|host2|host3|prefix|share|email|...)
+types: "nick", "ip", "nickip", "", "range", "host1", "host2" , "host3", "hostr1", "share", "email" , "prefix"
+
+Group "gag"
+all combinations of this....
+(un)?(gag|nochat|nosearch|nopm|noctm|....)
+
+Group "trigger"
+(ft|trigger)(edit)
+only this one for now (ftedit or triggeredit)
+todo: "new","add","del","edit","def"
+
+Group "set"
+!set or !=
+
+Group "cmd"
+todo (should list description of these groups)
+
+Group "reg"
+!reg or just !r followed by one of :  "n" == "new" == "newuser", "del" == "delete", "pass" == "passwd", "enable", "disable", "class" == "setclass", "protect" == "protectclass", "hidekick", "hidekickclass", "set" == "=", "info" 
+
+Group "info"
+!hubinfo
+
+Group "proto"
+!proto followed by one of (all|active|hello|op ..., user) 
+and then by one of _hubname _any ....
+
+Group "who"
+!whoip !whorange or !wip !wrange
+"ip" , "range" == "subnet" 
+
+Group "kick"
+!kick  (the older one is used)
+!drop  (the older one is used)
+!flood

@@ -1,0 +1,192 @@
+<html>
+<body>
+<h3>Configuration</h3>
+After 8.0 there is only one configuration file and several text files.
+<br>
+All these files have to be placed in ./.verlihub directory, which itself must be 
+in the working directory of verlihub.
+<br>
+<b>config</b><br>
+there are keywords and their values in a form 
+key_word = value #this is a comment that may be there, note the spaces around 
+the = sign
+<br>
+Note: please don't be strict with exact definitions concerning minima or maxima
+if they are strict or not (difference between greater and greater or equal).
+<br>
+hub_name - string - Verlihub v.0.x.x beta - name of the hub<br>
+max_users - int - 3500 - limit of users to allow another user in the hub<br>
+max_extra_ops - int - 50 - addition to the limit to allow an operator<br>
+max_extra_admins - int - 1 - addition to limit + extra_ops to allow admin<br>
+min_share - unsigned long - 1024 - minmimum share in MegaBytes<br>
+min_share_reg - unsigned long - 0 - minimum share for vip registered users and higher<br>
+min_share_ops - unsigned long - 0 - min share for ops and higher<br>
+max_share - unsigned long - 1536000 - maximum share in MegaBytes<br>
+tban_kick - int - 300 - time seconds when user is not allowed in the hub after kick (not tempban, cannot be unbanned)<br>
+min_nick - int - 3 - minimum length of allowed nickname<br>
+max_nick - int - 32 - longest allowed nickname<br>
+nick_chars - onewordstring - abcd...zA..Z+-_=()[] - complete list of only allowed characters in nickname (no intervals)<br>
+<br>
+db_host - hostname - localhost - mysql database hostname<br>
+db_user - string - verlihub - mysql database username<br>
+db_pass - string - - fill it please, it's a passwrd for db_user@db_host for mysql<br>
+db_data - string - verlihub - database name to use for reglist and banlist etc..<br>
+<br>
+<b>motd</b><br>
+MOTD file, all it's contents is sent to every user after successful log-in to hub
+Note: use DOS file encoding (CRLF) because hub doesn't translate it, and windows 
+users would see all motd in one line..
+<br>
+<b>rules</b><br>
+Whenever user types +rules command in main chat, the contents of this file is 
+sent to him. Same note as about MOTD.
+<br>
+<b>help_usr, help_reg, help_vip, help_op, help_cheef, help_master, help_admin </b><br>
+All these files should contain help, reaction on +help or !help commands in main chat.<br>
+Every one should contain only a specific help for every class of users. When user types +help<br>
+his class help and all lower helps are sent to him.<br>
+<br>
+<b>faq</b><br>
+This is sent on +faq command, put in frequently asked questions.<br>
+<br>
+<b>other files</b><br>
+In future, I mean to add configuration, that would allow you define your own <br>
+commands and files to send to user on their writing.<br>
+<br>
+<hr>
+<b>Create MySQL database </b>
+Be sure that MySQL at least 3.23 is installed.<br>
+run mysql as a user that has rights, for example root<br>
+mysql -u root -p<br>
+CREATE DATABASE verlihub;<br>
+GRANT ALL PRIVILEGES ON verlihub.* TO verlihub@localhost IDENTIFIED BY 'the_password_you_choose';<br>
+<br>
+Then try to run verlihub (without ops or registered users), it will create the tables. <br>
+Quit verlihub.<br>
+<br>
+Now we create the Master user.<br>
+<br>
+Connect again to database<br>
+mysql -u verlihub -p -D verlihub<br>
+enter the password<br>
+<br>
+With this command:<br>
+INSERT INTO reglist (nick, class) VALUES ('Your_Admin_Nick',10);<br>
+<br>
+quit mysql (CTRL+D)<br>
+Run verlihub, connect to it with a client that has your_admin_nick and at first<br>
+setup your admin password. by command +passwd Your_admin_password<br>
+<br>
+the you can reconnect and you will have admin rights.<br>
+<br>
+<hr><br>
+<h3> Running VerliHub </h3><br>
+<br>
+you can run verlihub from any working directory you like ;o) suprisingly<br>
+but in that directory you need to have a configuration subdirectory ./.verlihub<br>
+make sure, that before running 'verlihub' or 'any/path/verlihub' there is <br>
+./.verlihub in current dir.<br>
+<br>
+Verlihub by default binds to ip 0.0.0.0 on port 4111 (not 411).<br>
+At the moment you can override the port, but not the ip (hope it works).<br>
+To change port, use the first argument e.g. 'verlihub 411'.<br>
+<br>
+Verlihub's output goes to console. You can redirect it to a file e.g.<br>
+'verlihub 411 &gt;log 2&gt;err &amp;'<br>
+<br>
+REGISTERING USERS AND OPS<br>
+-------------------------<br>
+<br>
+There are different classes of users. They differ with right on some commands<br>
+and some limitations.<br>
+<br>
+Classes:<br>
+0 - normal user - any user that connects to hub<br>
+1 - registered user - he must provide password on login, besides different ban method, he has no privileges<br>
+2 - vip reg user - he has some extra privileges, like lower share limit, and maybe some more...<br>
+3 - operator - even lower share limit, kick, ban, get ips, create/modify reg users of class 1, etc..<br>
+4 - cheef - regusers class 1,2; some more..<br>
+5 - admin - can create ops, !broadcast, change settings etc..<br>
+10 - master - can do everything except creating another master ;o) <br>
+<br>
+So if you have enough right to register a user to a given class, do it by command<br>
+!regnewuser nick [class] <br>
+if class is not given 1 is used.<br>
+This will add user to a reglist database. His rights (except login with banned ip talk about this later)<br>
+are not applied until he sets up his password with +passwd command in main chat. Then he must reconnect.<br>
+<br>
+To change class of registered user you will use !regclass nick new_class. This <br>
+takes effect after user's reconnect. You can't give higher class then you are allowed to ;).<br>
+<br>
+When user needs to change password you can user !regpasswd nick command.<br>
+User is then allowed and obliged to change his password with +passwd command.<br>
+<br>
+If user lost his password, you can do the same. But attention, if it's realy the user.<br>
+Some information about last good ip, and last bad ip are stored in database. The <br>
+!getinfo command will in future tell you this.<br>
+<br>
+!regdisable and !regenable are to temporarily enable or disable users account.<br>
+!regpurge to delete it from database with all it's info. <br>
+<br>
+HOW TO BAN<br>
+----------<br>
+1) The easiest way to ban someone is when you are kicking him.<br>
+You just add _BAN_ into the kick reason, and user is not only kicked, but <br>
+immediately permanently banned (ip and nick). You can use of course temporary ban<br>
+by adding _BAN_3d for example into the kick reason. the 3d is a time period of <br>
+ban validity. The ban is for ip and nick. and takes effect 3days.<br>
+<br>
+Note, that every kick has almost same effect like ban, deflaut tban_kick values <br>
+is 300 seconds.<br>
+<br>
+Time units in temporary bans:<br>
+s - second<br>
+m - minute - 60 seconds<br>
+h - hour - 60 minutes<br>
+d or D - day - 24 hours<br>
+w or W - week - 7 days<br>
+M - month - 4 weeks<br>
+Y - year - 12 moths (4*7*12 days 336)<br>
+<br>
+so you make it _BAN_numberunit<br>
+e.g. ...kicked ..because: incomplete files _BAN_4d <br>
+or ........ because: hob/slot ratio _BAN_2h <br>
+etc...<br>
+>br>
+After a kick like this you have to do nothing more to ban or unban user.<br>
+Note: you need to put a space after the unit, or end of reason. Hub writes "Banned." if it worked.<br>
+<br><br><br>
+2) The classical way !ban !tempban:<br>
+Normally you first kick the user, and read his ip, then you ban the ip with !ban command.<br>
+Well this works too, but does slightly different thing.<br>
+<br>
+When you type !ban 1.1.1.1 or !tempban 1.1.1.1 3d , hub searches among history of <br>
+your kicks, if there was user with the same ip address, when found, hub takes the <br>
+last one and uses the nick and reason for banning ip and nick.<br>
+<br>
+If nothing is found you are asked for more information, and nothing is done.<br>
+<br>
+If you want to ban ip without having kicked a user, you have to provide the reason.<br>
+Use command !ban 1.1.1.1 reason reason ...<br>
+In this special case, only the ip is banned, if you want to add a nickban, use <br>
+!nickban command.<br>
+<br>
+3) context menu...<br>
+not implemented yet  <br>
+<br>
+*************************************<br>
+Hiding operators:<br>
+-----------------<br>
+* there are ways, to hide operators..<br>
+* noone can be hidden for his superiors or same level ops<br>
+What can be hidden?<br>
+-------------------<br>
+1/ presence in oplist<br>
+2/ presence in NickList (not asured)<br>
+3/ kicking messages to chat (cheefs and higher)<br>
+<br>
+
+
+
+</body>
+</html>

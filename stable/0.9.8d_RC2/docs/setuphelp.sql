@@ -1,0 +1,222 @@
+-- MySQL dump 9.09
+--
+-- Host: localhost    Database: czpro_new
+---------------------------------------------------------
+-- Server version	4.0.15-standard-log
+
+--
+-- Table structure for table `setuphelp`
+--
+
+CREATE TABLE setuphelp (
+  var varchar(32) NOT NULL default '',
+  vtype enum('string','int','boolean','class','text') NOT NULL default 'string',
+  help text,
+  applies enum('not','new','now') NOT NULL default 'not',
+  PRIMARY KEY  (var)
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table `setuphelp`
+--
+
+INSERT INTO setuphelp VALUES ('min_class','class','Min class whitch will be allowed to enter VerliAdmin','now');
+INSERT INTO setuphelp VALUES ('language','string','Languages that should be used by VerliAdmin separated by | (first one is default). Each language must have two files language.php and img/languageflag.gif','now');
+INSERT INTO setuphelp VALUES ('login_time','int','Time in seconds after whitch cookie will be deleted because of inactivity.','now');
+INSERT INTO setuphelp VALUES ('date_format','string','Date format (PHP syntax)','now');
+INSERT INTO setuphelp VALUES ('time_format','string','Time format (PHP syntax)','now');
+INSERT INTO setuphelp VALUES ('timedate_format','string','Date & time format (PHP syntax)','now');
+INSERT INTO setuphelp VALUES ('log_login','boolean','Log logins and logouts in VerliAdmin','now');
+INSERT INTO setuphelp VALUES ('log_addreg','boolean','Log adding of new users','now');
+INSERT INTO setuphelp VALUES ('log_disablereg','boolean','Log disabling of regs','now');
+INSERT INTO setuphelp VALUES ('log_deletereg','boolean','Log deleting of regs','now');
+INSERT INTO setuphelp VALUES ('log_unkick','boolean','Log deleting of kicks','now');
+INSERT INTO setuphelp VALUES ('log_unban','boolean','Log unbans','now');
+INSERT INTO setuphelp VALUES ('log_settings','boolean','Log setting changes','now');
+INSERT INTO setuphelp VALUES ('log_dir','string','Path to login directory. VerliAdmin must have access to write in this directory and must must be reacheable. If not null path must be ended with /','now');
+INSERT INTO setuphelp VALUES ('log_format','string','There you can write everyting you want. Following variables are available: %date% (see setting date_format); %time% (see setting time_format); %nick% (nick of reg user); %class% (class of reg user); %ip% (IP of reg user); %host% (host name of reg user); %action% (what is he/she doing); %logfilenick% (log actios by op nick); %logfileaction% (log actions by type of action); %logfilenick% or %logfileaction% MUST be in log_format strin or it will not work. Note all these variabled are caseisensitive','now');
+INSERT INTO setuphelp VALUES ('reglist_order_by','string','Order in whitch regs will be sorted by default (SQL syntax)','now');
+INSERT INTO setuphelp VALUES ('reglist_results','int','Number of results per page in reglist','now');
+INSERT INTO setuphelp VALUES ('register_class','class','Whitch class can be registred by who (class)','now');
+INSERT INTO setuphelp VALUES ('disable_class','class','Whitch class can be diasbled (not romoved from table) by who (class)','now');
+INSERT INTO setuphelp VALUES ('delete_class','class','Whitch class can be deleted (permanently removed from table) by who (class)','now');
+INSERT INTO setuphelp VALUES ('reglist_nick','boolean','Show nick colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_class','boolean','Show class colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_class_protect','boolean','Show class_protect colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_class_hidekick','boolean','Show class_hidekick colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_hide_kick','boolean','Show hide_kick colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_reg_date','boolean','Show nick reg_date in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_reg_op','boolean','Show reg_op colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_pwd_change','boolean','Show pwd_chande colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_pwd_crypt','boolean','Show pwd_crypt colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_login_pwd','boolean','Show login_pwd colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_login_last','boolean','Show login_last colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_logout_last','boolean','Show logout_last colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_login_cnt','boolean','Show login_cnt colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_login_ip','boolean','Show login_ip colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_error_last','boolean','Show error_last colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_error_cnt','boolean','Show error_cnt colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_enabled','boolean','Show enabled colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_email','boolean','Show email colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_note_op','boolean','Show note_op colum in reglist','now');
+INSERT INTO setuphelp VALUES ('reglist_note_usr','boolean','Show note_usr colum in reglist','now');
+INSERT INTO setuphelp VALUES ('setuplist_class_edit','class','Select whitch minimum class can change verlihub and VeriAdmin settings','now');
+INSERT INTO setuphelp VALUES ('setuplist_class_view','class','Select whitch minimum class can view verlihub and VeriAdmin settings','now');
+INSERT INTO setuphelp VALUES ('setuplist_order_by','string','Order in whitch setuplist will be sorted by default (SQL syntax)','now');
+INSERT INTO setuphelp VALUES ('setuplist_results','int','Number of results per page in setuplist','now');
+INSERT INTO setuphelp VALUES ('banlist_order_by','string','Order in whitch banlist will be sorted by default (SQL syntax)','now');
+INSERT INTO setuphelp VALUES ('banlist_results','int','Number of results per page in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_unban_class','class','Whitch class is minimum to unban','now');
+INSERT INTO setuphelp VALUES ('banlist_ban_type','boolean','Show ban_type colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_ip','boolean','Show ip colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_nick','boolean','Show nick colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_host','boolean','Show host colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_share_size','boolean','Show share_size colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_email','boolean','Show email colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_range_fr','boolean','Show fange_fr colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_range_to','boolean','Show range_to colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_date_start','boolean','Show date_start colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_date_limit','boolean','Show date_limit colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_nick_op','boolean','Show nick_op colum in banlist','now');
+INSERT INTO setuphelp VALUES ('banlist_reason','boolean','Show reason colum in banlist','now');
+INSERT INTO setuphelp VALUES ('kicklist_order_by','string','Order in whitch kicklist will be sorted by default (SQL syntax)','now');
+INSERT INTO setuphelp VALUES ('kicklist_results','int','Number of results per page in kicklist','now');
+INSERT INTO setuphelp VALUES ('kicklist_unkick_class','class','Whitch minimum class will be allowed to delete (permanently remove from table)','now');
+INSERT INTO setuphelp VALUES ('kicklist_nick','boolean','Show nick colum in kicklist','now');
+INSERT INTO setuphelp VALUES ('kicklist_time','boolean','Show time colum in kicklist','now');
+INSERT INTO setuphelp VALUES ('kicklist_ip','boolean','Show ip colum in kicklist','now');
+INSERT INTO setuphelp VALUES ('kicklist_host','boolean','Show host colum in kicklist','now');
+INSERT INTO setuphelp VALUES ('kicklist_share_size','boolean','Show share_size colum in kicklist','now');
+INSERT INTO setuphelp VALUES ('kicklist_email','boolean','Show email colum in kicklist','now');
+INSERT INTO setuphelp VALUES ('kicklist_op','boolean','Show op colum in kicklist','now');
+INSERT INTO setuphelp VALUES ('kicklist_reason','boolean','Show reason colum in kicklist','now');
+INSERT INTO setuphelp VALUES ('kicklist_is_drop','boolean','Show is_drop colum in kicklist','now');
+INSERT INTO setuphelp VALUES ('unbanlist_order_by','string','Order in whitch unbanlist will be sorted by default (SQL syntax)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_results','int','Number of results per page in unabnlist','now');
+INSERT INTO setuphelp VALUES ('unbanlist_ip','boolean','Show ip colum in unbanlist (IP)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_nick','boolean','Show nick colum in unbanlist (Nick)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_host','boolean','Show host colum in unbanlist (Inetrnet provider if avaliable)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_share_size','boolean','Show share_size colum in unbanlist (Share size)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_email','boolean','Show email colum in unbanlist (Email of banned nick/IP if available)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_range_fr','boolean','Show range_fr colum in unbanlist (IP range from (only on IP range ban))','now');
+INSERT INTO setuphelp VALUES ('unbanlist_range_to','boolean','Show range_to colum in unbanlist (IP range to (only on IP range ban))','now');
+INSERT INTO setuphelp VALUES ('unbanlist_date_start','boolean','Show date_start colum in unbanlist (Date of ban)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_date_limit','boolean','Show date_limit colum in unbanlist (Date till ban will be active)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_date_unban','boolean','Show date_unban colum in unbanlist (Date of unban)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_ban_op','boolean','Show ban_op colum in unbanlist (nick of ban OP)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_unban_op','boolean','Show unban_op colum in unbanlist (nick of unban OP)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_ban_reason','boolean','Show ban_reason colum in unbanlist (ban reason)','now');
+INSERT INTO setuphelp VALUES ('unbanlist_unban_reason','boolean','Show unban_reason colum in unbanlist (unban reason)','now');
+INSERT INTO setuphelp VALUES ('extra_listen_ports','string','the space separated list of port numbers that hubs should listen at\r\nNote: any invalid port number will lead hub not to start','not');
+INSERT INTO setuphelp VALUES ('bc_reply','string','you can leave this blank.. If you send a broadcast message, this is set to your nick, and the pm sent to verlihub\'s bot are trensfered to nick contained here','now');
+INSERT INTO setuphelp VALUES ('cc_zone1','string','a list of country codes for zone 1\r\nstart , separate and end with :\r\ne.g. :AA:BB:CC:','not');
+INSERT INTO setuphelp VALUES ('cc_zone2','string','a list of country codes for zone 2 start , separate and end with : e.g. :AA:BB:CC:','not');
+INSERT INTO setuphelp VALUES ('cc_zone3','string','a list of country codes for zone 3 start , separate and end with : e.g. :AA:BB:CC:','not');
+INSERT INTO setuphelp VALUES ('max_message_size','int','maximum size of incoming single message','now');
+INSERT INTO setuphelp VALUES ('check_rctm','int','drop users who give different nick in revocnnectome','now');
+INSERT INTO setuphelp VALUES ('check_ctm','int','disconnect users who give different ip in commnect to me','now');
+INSERT INTO setuphelp VALUES ('log_level','int','intensity of logging events 5 logs all (input, output, etc), 0 logs nothing','now');
+INSERT INTO setuphelp VALUES ('hub_security','string','The name of hub security','not');
+INSERT INTO setuphelp VALUES ('step_delay','int','delay in [µs] on every step, gives the processor time not to be cooked','now');
+INSERT INTO setuphelp VALUES ('delayed_search','boolean','is search to be sent in server timer (1) or immediately(0), cpu effect is enourmous','now');
+INSERT INTO setuphelp VALUES ('nicklist_on_login','boolean','disable sending of nicklist before user sends myinfo (usually leave this on=1)','new');
+INSERT INTO setuphelp VALUES ('timer_serv_period','int','period [s] of timer executed only with the server, this executes the connection timers too','now');
+INSERT INTO setuphelp VALUES ('timer_conn_period','int','period of timer executed for every connection','now');
+INSERT INTO setuphelp VALUES ('listen_ip','string','ip address on which server listens','not');
+INSERT INTO setuphelp VALUES ('listen_port','int','port on which server listens','not');
+INSERT INTO setuphelp VALUES ('nick_prefix','string','prefix before nick, to allow user in','new');
+INSERT INTO setuphelp VALUES ('db_data','string','mysql database to use on the host','not');
+INSERT INTO setuphelp VALUES ('db_pass','string','mysql passwrd','not');
+INSERT INTO setuphelp VALUES ('db_user','string','mysql username','not');
+INSERT INTO setuphelp VALUES ('db_host','string','mysql database hostname','not');
+INSERT INTO setuphelp VALUES ('max_chat_lines','int','number of lines allowed per chat message','now');
+INSERT INTO setuphelp VALUES ('max_chat_msg','int','size of max allowed chat message for normal users in [B]','now');
+INSERT INTO setuphelp VALUES ('nick_chars','string','chars allowed for nick','new');
+INSERT INTO setuphelp VALUES ('min_nick','int','min length of nickname','new');
+INSERT INTO setuphelp VALUES ('max_nick','int','max length of nickname','new');
+INSERT INTO setuphelp VALUES ('tban_kick','int','time period of not allowing to login kicked users after kick [s]','now');
+INSERT INTO setuphelp VALUES ('max_share','int','maximum share [MB]','new');
+INSERT INTO setuphelp VALUES ('min_share_ops','int','min share for ops class>= 3 [MB]','new');
+INSERT INTO setuphelp VALUES ('min_share_reg','int','min share for class >=2 [MB]','new');
+INSERT INTO setuphelp VALUES ('min_share','int','Minimum share in megabytes','new');
+INSERT INTO setuphelp VALUES ('max_extra_admins','int','number of extra admins, on full hub','new');
+INSERT INTO setuphelp VALUES ('max_extra_ops','int','number of ops that can login after hub is full of normal users','new');
+INSERT INTO setuphelp VALUES ('max_users','int','maximum count of normal users','new');
+INSERT INTO setuphelp VALUES ('hub_name','string','The name of hub','new');
+INSERT INTO setuphelp VALUES ('dns_lookup','boolean','lookup hostnames in dns on new user connection, note that this may slow down hub enormously, due to request to a remote (DNS) machine','new');
+INSERT INTO setuphelp VALUES ('hub_desc','string','the description that is 1)sent to hublist 2) sent as $HubTopic','now');
+INSERT INTO setuphelp VALUES ('hub_host','string','the hostname that is sent to hublist when being registered (the one you want your users to connect to)','now');
+INSERT INTO setuphelp VALUES ('hub_owner','string','I\'m not realy sure what hublist uses this for','now');
+INSERT INTO setuphelp VALUES ('max_users0','int','user limit for the default CC zone; keep this high unles you want to use CC_wones, then this will limit the number of stangers','new');
+INSERT INTO setuphelp VALUES ('max_users1','int','user limit for the cc_zone1\r\nsee also variable cc_zone1','new');
+INSERT INTO setuphelp VALUES ('optimize_userlist','boolean','don\'t change this, it\'s experimental, and probably should be removed','new');
+INSERT INTO setuphelp VALUES ('show_tags','int','the way of displaying user\'s tags in userlist\r\n0 - show no tags to noone\r\n1 - show user\'s tags to ops only\r\n2 - show user\'s tags to all','new');
+INSERT INTO setuphelp VALUES ('tag_allow_none','boolean','Allow users that have no tag in description? yes=1/no=0\r\nyes does not mean disabling tag parsing and control','new');
+INSERT INTO setuphelp VALUES ('ul_portion','int','this is related to the optimize_userlist (read that one first)','new');
+INSERT INTO setuphelp VALUES ('chat_default_on','boolean','normal users can receive chat?\r\n','new');
+INSERT INTO setuphelp VALUES ('delayed_myinfo','boolean','CPU optimisation, on user\'s login hiss MyINFO is sent a little bit later, together with others...','new');
+INSERT INTO setuphelp VALUES ('hide_all_kicks','boolean','Are kick messages to be shown in the main chat ??','now');
+INSERT INTO setuphelp VALUES ('hublist_host','string','the space separated list of hublist registration centers where hub wants to be registered, Be carefull what you put here, first make sure that those addresses are active on port hublist_port (default 2501)','now');
+INSERT INTO setuphelp VALUES ('hublist_port','int','port number for hublist registrator','now');
+INSERT INTO setuphelp VALUES ('max_extra_regs','int','the extra to the userlimit for registered users (applies to any type of userlimit)','new');
+INSERT INTO setuphelp VALUES ('int_search','int','minimal interval in [s]econds for non-ops can search','now');
+INSERT INTO setuphelp VALUES ('ip_zone4_max','string','the upper limit for the ip zone (correspondin to max_users4)','new');
+INSERT INTO setuphelp VALUES ('ip_zone4_min','string','the lower limit for the ip zone (correspondin to max_users4)','new');
+INSERT INTO setuphelp VALUES ('max_share_reg','int','maximum share [MB] for registered users','new');
+INSERT INTO setuphelp VALUES ('max_users2','int','user limit for the cc_zone2','new');
+INSERT INTO setuphelp VALUES ('max_users3','int','user limit for the cc_zone3','new');
+INSERT INTO setuphelp VALUES ('max_users4','int','user limit for the ip range zone4','new');
+INSERT INTO setuphelp VALUES ('min_frequency','string','the Real number corresponding to minimum \"cycle\" frequency; This affects directly the \"hub is busy\" messages, that are sent when the mean time between two cycles is too long.\r\n\r\nto disable the <<antilag>> feature, set this to 0; use 0.1 to allow some kind of lags, with over 0.5 you\'ll probably never see a lag due to CPU incapacity','now');
+INSERT INTO setuphelp VALUES ('msg_banned','text','a text sent to every banned user attempting to login','new');
+INSERT INTO setuphelp VALUES ('msg_hub_full','text','a text sent to users that cannot login due to any type of user limit (country codes, reg-only hubs etc...)','new');
+INSERT INTO setuphelp VALUES ('min_search_chars','int','minimal length of search string, this is to prevent useless searches like \".\" etc.. You can also disable searching in the hub (of course OPs are not concerned)','now');
+INSERT INTO setuphelp VALUES ('msg_chat_onoff','text','This message is sent to all users htat are off the chat see: chat_default_on','new');
+INSERT INTO setuphelp VALUES ('msg_nick_prefix','text','This message is sent to users that don\'t meet nick-prefix criteria','new');
+INSERT INTO setuphelp VALUES ('nick_prefix_cc','boolean','Require non-registered users to have their country code prefix in form of [CC] ([US] for example) in front of their nicks','new');
+INSERT INTO setuphelp VALUES ('opchat_name','string','The nam eof the opchat bot (leave empty to disable opchat)','not');
+INSERT INTO setuphelp VALUES ('redir_host0','string','the address of a hub to which redirected users are sent\r\nthe choice between redir_host0 ... 9 is random, leave blank to disable redirect to this host, you can even put your own hostname','now');
+INSERT INTO setuphelp VALUES ('redir_host1','string','the address of a hub to which redirected users are sent','now');
+INSERT INTO setuphelp VALUES ('redir_host2','string','the address of a hub to which redirected users are sent','now');
+INSERT INTO setuphelp VALUES ('send_user_ip','boolean','turns on/off the $UserIP extention','new');
+INSERT INTO setuphelp VALUES ('tag_max_hs_ratio','string','tha maximal ratio between Hubs and Slots (as in the tag) leave this a high number in order to disable the H/S checking feature','new');
+INSERT INTO setuphelp VALUES ('tag_max_hubs','int','the upper limit of the hub users are conected on (as in tags)','new');
+INSERT INTO setuphelp VALUES ('tag_max_slots_28kbps','int','maximum number of openned slots for users with connection 28kbps','new');
+INSERT INTO setuphelp VALUES ('tag_min_limit_28kbps','string','minimum value of (\"overall\") upload limiter for users with connection 28kbps\r\nnedative value disables checking','new');
+INSERT INTO setuphelp VALUES ('tag_min_ls_ratio_28kbps','string','minimum value of per slot upload limiter for users with connection 28kbps ; negative value disables checking','new');
+INSERT INTO setuphelp VALUES ('tag_min_ls_ratio_default','string','the _default applies for unlisted conection types','new');
+INSERT INTO setuphelp VALUES ('tag_min_slots_28kbps','int','minimum of opened slots per connection type','new');
+INSERT INTO setuphelp VALUES ('use_reglist_cache','boolean','Preloads reglist into the memory, this redices number of MySQL queries,  ans thus improves performance. Newly (by external means) added regs have to wait until the cahce is reloaded','not');
+INSERT INTO setuphelp VALUES ('use_penlist_cache','boolean','preload a penalty (and temp user rights) list into ram, improves preformance, reduce mysql queries','not');
+INSERT INTO setuphelp VALUES ('hublist_send_minshare','boolean','send the MINSHARE info to hublist in description','now');
+INSERT INTO setuphelp VALUES ('redir_host3','','','');
+INSERT INTO setuphelp VALUES ('replace_from','','','');
+INSERT INTO setuphelp VALUES ('replace_to','','','');
+INSERT INTO setuphelp VALUES ('redir_host4','','','');
+INSERT INTO setuphelp VALUES ('redir_host5','','','');
+INSERT INTO setuphelp VALUES ('redir_host6','','','');
+INSERT INTO setuphelp VALUES ('max_repeat_char','','','');
+INSERT INTO setuphelp VALUES ('max_upcase_percent','','','');
+INSERT INTO setuphelp VALUES ('allways_ask_password','boolean','(security) if set, allows you to specify a temporary password for a user, which does not give him access to the right, but let\'s him enter (and change password) only knowing the password ','new');
+INSERT INTO setuphelp VALUES ('desc_insert_mode','boolean','(cosmetic) inserts A,P or 5 (the mode) in the shortcut of descritpoin','new');
+INSERT INTO setuphelp VALUES ('int_login','int','this is the length of a minimum interval for a nick to be allowed to login','new');
+INSERT INTO setuphelp VALUES ('max_upload_kbps','string','(experimental) upload limiter','now');
+INSERT INTO setuphelp VALUES ('min_share_use_hub','int','search and download is disabled when users don\'t meet this minimum','new');
+INSERT INTO setuphelp VALUES ('msg_change_pwd','text','a message sent when password is required to be changed','now');
+INSERT INTO setuphelp VALUES ('msg_welcome_admin','string','message to be sent to main chat when admin log in (%[nick] is replaced)','new');
+INSERT INTO setuphelp VALUES ('msg_replace_ban','string','if not empty, defines string to put instead of the _ban_ statement in kick messages','now');
+INSERT INTO setuphelp VALUES ('msg_downgrade','text','message asking user to downgrade when he dosn to meat the tag_min_version_xxx criteria','now');
+INSERT INTO setuphelp VALUES ('msg_upgrade','text','message asking user to upgrade when he dosn to meat the tag_min_version_xxx ','now');
+INSERT INTO setuphelp VALUES ('redir_host_max','int','gives the max index of redir_host to be used for random choise','now');
+INSERT INTO setuphelp VALUES ('reg_class_difference','int','the min difference between classes when registering a user (e.g class 4 can do 4-reg_class_difference users)','now');
+INSERT INTO setuphelp VALUES ('save_lang','boolean','tell is language strings are to be dumped into db on startup to allow you translations or modification (later they are loaded from the db)','not');
+INSERT INTO setuphelp VALUES ('send_user_info','boolean','on user login the info about him is sent or not','new');
+INSERT INTO setuphelp VALUES ('tag_min_class_ignore','class','min user class that is not checked for tags and stuff','new');
+INSERT INTO setuphelp VALUES ('timer_hublist_period','int','number of seconds between two hublist registrations','now');
+INSERT INTO setuphelp VALUES ('timer_reloadcfg_period','int','num of seconds between attempts ro reload config from database (0 disables reloading)','now');
+INSERT INTO setuphelp VALUES ('tag_sum_hubs','int','if the hub part of tag is like H:X/Y/Z\r\nthis means the number of the left counts to be summed (2 means hubs=X+Y)','new');
+INSERT INTO setuphelp VALUES ('int_flood_pm_period','int','the checking period in seconds, tor the PM antiflood protection','new');
+INSERT INTO setuphelp VALUES ('int_flood_pm_limit','int','maximal number of PMs allowed user to send in a int_flood_pm_period','new');
+INSERT INTO setuphelp VALUES ('classdif_download','int','class difference for download' ,'now');
+INSERT INTO setuphelp VALUES ('classdif_pm'      ,'int','class difference for private msg','now');
+INSERT INTO setuphelp VALUES ('classdif_reg'    ,'int','class difference for registering users','now');
+INSERT INTO setuphelp VALUES ('classdif_kick'   ,'int','class difference for kicking', 'now');
