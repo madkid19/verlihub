@@ -219,7 +219,6 @@ protected:
 			DATA_TYPE Data, * pOrig;
 			tListConsole<DATA_TYPE, LIST_TYPE, OWNER_TYPE> *Console;
 			Console =  this->GetConsole();
-			
 			if ( Console && Console->ReadDataFromCmd(this, eLC_MOD, Data))
 			{
 				if (this->GetTheList() && (pOrig = this->GetTheList()->FindData(Data)))
