@@ -38,12 +38,14 @@ namespace nDirectConnect {
 		AddCol("address", "varchar(125)", "", false, mModel.mAddress);
 		AddCol("flag", "tinyint(2)", "", false, mModel.mFlag);
 		AddCol("enable", "tinyint(1)", "1", true, mModel.mEnable);
+		mMySQLTable.mExtra = "PRIMARY KEY(address)";
 		SetBaseTo(&mModel);
 	}
 	
 	int cRedirects::MapTo(int Type)
 	{
 		switch(Type) {
+			case eCR_INVALID_USER:
 			case eCR_KICKED:
 				return eKick;	
 			break;
@@ -53,13 +55,14 @@ namespace nDirectConnect {
 			case eCR_SHARE_LIMIT:
 				return eShareLimit;
 			break;
+			case eCR_TAG_INVALID:
 			case eCR_TAG_NONE:
 				return eTag;
 			break;
 			case eCR_PASSWORD:	
 				return eWrongPasswd;
 			break;
-			defualt: return 0;
+			default: return 0;
 		}
 	}
 	
@@ -78,12 +81,12 @@ namespace nDirectConnect {
 		cRedirect *redirect;
 		char *redirects[10];
 		char *DefaultRedirect[10];
-		int i = 0, j = 0;
+		int i = 0, j = 0, iType = MapTo(Type);
 		for (it= begin(); it != end(); ++it)
 		{
 			if(i >= 10) break;
 			redirect = *it;
-			if (redirect->mFlag & MapTo(Type) && redirect->mEnable) {
+			if (redirect->mEnable && (redirect->mFlag & iType)) {
 				redirects[i] = (char *) redirect->mAddress.c_str();
 				i++;
 			}

@@ -335,8 +335,7 @@ void cConnDC::OnFlushDone()
 /** function called before closing nicely */
 int cConnDC::OnCloseNice()
 {
-	if(mxServer && Server()->mC.redir_host_max >= 0)
-	{
+	if(mxServer) {
 		string omsg="$ForceMove ";
 		omsg += Server()->mCo->mRedirects->MatchByType(this->mCloseReason);
 		Send(omsg,true);
