@@ -254,7 +254,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		if( (conn_type->mTagMinLimit) > limit )
 		{
 			ReplaceVarInString(mL.tag_min_limit, "conn_type", MsgToUser, conn_type->mIdentifier);
-			ReplaceVarInString(MsgToUser, "tag_min_limit", MsgToUser, conn_type->mTagMinLimit);
+			ReplaceVarInString(MsgToUser, "tag_max_hs_ratio", MsgToUser, conn_type->mTagMinLimit);
 			os << MsgToUser;
 			code = eTC_MIN_LIMIT;
 			return false;

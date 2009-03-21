@@ -294,11 +294,11 @@ void cDCLang::AddVars()
 	
 	Add("wrong_dc_tag",wrong_dc_tag, string("Error: Your DC++ tag is reporting less then 0 hubs or slots!"));
 	Add("tag_max_hubs",tag_max_hubs, string("Too many open hubs, max is %[tag_max_hubs]"));
-	Add("tag_max_slots",tag_max_slots, string("Too many open slots for your connection type, max is %[tag_max_slots][%[conn_type]]"));
-	Add("tag_min_slots",tag_min_slots, string("Too little open slots for your connection type, min is %[tag_min_slots][%[conn_type]]"));
+	Add("tag_max_slots",tag_max_slots, string("Too many open slots for your connection type (%[conn_type]), max is %[tag_max_slots]"));
+	Add("tag_min_slots",tag_min_slots, string("Too little open slots for your connection type (%[conn_type]), min is %[tag_min_slots]"));
 	Add("tag_max_hs_ratio",tag_max_hs_ratio, string("Too little slots for the number of hubs (hubs/slots ratio), max ratio is %[tag_max_hs_ratio]: %[hubs] hubs require %[min_slots]"));
-	Add("tag_min_limit",tag_min_limit, string("Too low upload limit for your connection type, max ratio is %[tag_max_hs_ratio][%[conn_type]]"));
-	Add("tag_min_ls_ratio",tag_min_ls_ratio, string("Too upload limit, min upload limit is %[tag_min_ls_ratio][%[conn_type]] per every slot"));
+	Add("tag_min_limit",tag_min_limit, string("Too low upload limit for your connection type (%[conn_type]), max ratio is %[tag_max_hs_ratio]"));
+	Add("tag_min_ls_ratio",tag_min_ls_ratio, string("Too upload limit for your connection type (%[conn_type]), min upload limit is %[tag_min_ls_ratio] per every slot"));
 	Add("tag_no_sock",tag_no_sock,string("Sock5 is not allowed here."));
 	
 	
