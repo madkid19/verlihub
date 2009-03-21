@@ -49,8 +49,8 @@ bool cMySQL::Connect(string &host, string &user, string &pass, string &data, str
 	
 	mysql_options(mDBHandle,MYSQL_OPT_COMPRESS,0);
 	//mysql_options(mDBHandle,MYSQL_SET_CHARSET_NAME,"utf8");
-	#if MYSQL_VERSION_ID  >= 500000
-	mysql_options(&mysql, MYSQL_OPT_RECONNECT, "true");
+	#if MYSQL_VERSION_ID  >= 50000
+	mysql_options(mDBHandle, MYSQL_OPT_RECONNECT, "true");
 	#endif
 
 	//mysql_options(mDBHandle,MYSQL_SET_CHARSET_NAME,charset.c_str());
