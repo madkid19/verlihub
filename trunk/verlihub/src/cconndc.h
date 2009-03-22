@@ -186,7 +186,7 @@ public: // Public attributes
 	{
 		if (!mRegInfo) return 0;
 		if(!mRegInfo->mEnabled) return 0;
-		if (mRegInfo->mClass < 0) return 1;
+		//if (mRegInfo->mClass < 0) return 1; /* wtf ?*/
 		return mRegInfo->mClass;
 	}
 	/** this is called every period of time */

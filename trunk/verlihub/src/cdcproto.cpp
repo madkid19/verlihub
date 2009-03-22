@@ -566,11 +566,18 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		}
 		
 	}
-	bool banned = false;
 	
+	// update totalshare
+	mS->mTotalShare -= conn->mpUser->mShare;
+	conn->mpUser->mShare = shareB;
+	mS->mTotalShare += conn->mpUser->mShare;
+	conn->mpUser->mEmail = msg->ChunkString(eCH_MI_MAIL);
+
 	// User sent MyINFO for the frist time
 	if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) { 
 		cBan Ban(mS);
+		bool banned = false;
+	      cout << "Checking banshare" << endl;
 		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, cBan::eBF_SHARE | cBan::eBF_EMAIL);
 		if( banned && conn->GetTheoricalClass() <= eUC_REGUSER ) {
 			stringstream msg;
@@ -582,11 +589,6 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 			return -1;
 		}
 	}
-	// update totalshare
-	mS->mTotalShare -= conn->mpUser->mShare;
-	conn->mpUser->mShare = shareB;
-	mS->mTotalShare += conn->mpUser->mShare;
-	conn->mpUser->mEmail = msg->ChunkString(eCH_MI_MAIL);
 
 
  	#ifndef WITHOUT_PLUGINS
