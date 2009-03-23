@@ -125,6 +125,7 @@ enum
    eCR_PASSWORD, //< wrong password
    eCR_LOGIN_ERR, //< error in login sequence
    eCR_SYNTAX, // < syntax error in some message
+   eCR_INVALID_KEY,
 };
 };
 
@@ -239,6 +240,7 @@ public:
 	__int64 GetTotalShareSize();
 	/** fill in the list of nicks with given ip */
 	int WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, const string&separator, bool exact=true);
+	int WhoCC(string CC, string &dest, const string&separator);
 	/** buffer to send to all */
 	string mSendAllBuf;
 	void ReportUserToOpchat(cConnDC *, const string &Msg, bool ToMain = false);

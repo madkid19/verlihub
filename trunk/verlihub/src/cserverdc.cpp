@@ -76,8 +76,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 		mDBConf.db_host,
 		mDBConf.db_user,
 		mDBConf.db_pass,
-		mDBConf.db_data,
-		mDBConf.db_charset), // connect to mysql
+		mDBConf.db_data), // connect to mysql
 	mC(*this), // create the config object
 	mL(*this),
 	mSetupList(mMySQL),
@@ -994,14 +993,11 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 
 	cBan Ban(this);
 	bool banned = false;
-	
 	if(conn->GetTheoricalClass() < eUC_MASTER) { // Master class is immune
 		if( conn->GetTheoricalClass() >= eUC_REGUSER ) {
 			banned = mBanList->TestBan(Ban, conn, nick, cBan::eBF_NICK);
 			if (banned && !((1 << Ban.mType) & (cBan::eBF_NICK |cBan::eBF_NICKIP))) banned = false;
 		} else {
-			//banned = mBanList->IsIPTempBanned(conn->GetSockAddress());
-			//if(!banned)
 			// Here we can't check share ban because user hasn't sent $MyInfo string yet
 			banned = mBanList->TestBan(Ban, conn, nick, cBan::eBF_NICKIP | cBan::eBF_RANGE | cBan::eBF_HOST2 | cBan::eBF_HOST1 | cBan::eBF_HOST3 | cBan::eBF_HOSTR1 | cBan::eBF_PREFIX);
 		}
@@ -1285,6 +1281,22 @@ __int64 cServerDC::GetTotalShareSize()
 	cUserCollection::iterator i;
 	for(i=mUserList.begin(); i!= mUserList.end(); ++i) total += ((cUser *)(*i))->mShare;
 	return total;
+}
+
+int cServerDC::WhoCC(string CC, string &dest, const string&separator)
+{
+	cUserCollection::iterator i;
+	int cnt=0;
+	cConnDC *conn;
+	for(i=mUserList.begin(); i != mUserList.end(); ++i) {
+		conn = ((cUser*)(*i))->mxConn;
+		if(conn && conn->mCC == CC) {
+			dest += (*i)->mNick;
+			dest += separator;
+			cnt++;
+		}
+	}
+	return cnt;
 }
 
 /** fill in the list of nicks with given ip */

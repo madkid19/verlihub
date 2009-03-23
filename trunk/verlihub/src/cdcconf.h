@@ -99,6 +99,7 @@ public:
 	bool delayed_login;
 	int delayed_search;
 	int delayed_myinfo; // implies also delayed quit.
+	bool drop_invalid_key;
 	bool delayed_chat;
 	int delayed_ping;
 	double min_frequency;

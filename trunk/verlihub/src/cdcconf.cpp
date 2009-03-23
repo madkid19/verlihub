@@ -197,6 +197,7 @@ void cDCConf::AddVars()
 	Add("use_penlist_cache",use_penlist_cache, true);
 	Add("delayed_login" ,delayed_login,  1);
 	Add("delayed_myinfo",delayed_myinfo, 1);
+	Add("drop_invalid_key",drop_invalid_key, 0);
 	Add("delayed_ping",delayed_ping,60);
 
 	static const char *to_names [] = { "key", "nick", "login", "myinfo", "flush", "setpass"};

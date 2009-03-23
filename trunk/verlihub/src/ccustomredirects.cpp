@@ -62,6 +62,9 @@ namespace nDirectConnect {
 			case eCR_PASSWORD:	
 				return eWrongPasswd;
 			break;
+			case eCR_INVALID_KEY:
+				return eInvalidKey;
+			break;
 			default: return 0;
 		}
 	}

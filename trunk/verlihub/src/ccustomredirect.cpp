@@ -82,6 +82,7 @@ namespace nDirectConnect {
 			if(flag & eShareLimit) buff += "share limit,";
 			if(flag & eTag) buff += "invalid tag,";
 			if(flag & eWrongPasswd) buff += "wrong password,";
+			if(flag & eInvalidKey) buff += "invalid key,";
 			if(buff.empty()) buff = "default";
 			else buff.erase(buff.end() -1);
 			os << buff << " (";
