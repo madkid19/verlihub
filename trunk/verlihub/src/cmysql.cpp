@@ -20,11 +20,11 @@ cMySQL::cMySQL() : cObj("cMySQL")
 /*!
     \fn nMySQL::cMySQL::cMySQL(string&host,string&user,string&pass,string&data)
  */
-cMySQL::cMySQL(string&host,string&user,string&pass,string&data,string&charset) : cObj("cMySQL")
+cMySQL::cMySQL(string&host,string&user,string&pass,string&data) : cObj("cMySQL")
 {
 	 mDBName = data;
 	 Init();
-	 if(!Connect(host,user,pass,data,charset))
+	 if(!Connect(host,user,pass,data))
 	 {
 	         throw "Mysql connection error.";
 	 }
@@ -42,10 +42,10 @@ void cMySQL::Init()
 	if(!mDBHandle) Error(0, string("Can't init mysql structure :(.: "));	
 }
 
-bool cMySQL::Connect(string &host, string &user, string &pass, string &data, string &charset)
+bool cMySQL::Connect(string &host, string &user, string &pass, string &data)
 {
 	if(Log(1)) LogStream() << "Connecting to mysql server: "
-			<< user << "@" << host << "/" << data << " using " << charset << " encoding" << endl;
+			<< user << "@" << host << "/" << data << " using UTF8 encoding" << endl;
 	
 	mysql_options(mDBHandle,MYSQL_OPT_COMPRESS,0);
 	//mysql_options(mDBHandle,MYSQL_SET_CHARSET_NAME,"utf8");
