@@ -283,10 +283,15 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 /** Treat the DC message in a appropriate way */
 int cDCProto::DC_Key(cMessageDC * msg, cConnDC * conn)
 {
-	//@todo TODO 2DO verify the key, close connection on bad key
 	if(msg->SplitChunks()) return -1;
 	string lock("EXTENDEDPROTOCOL_" PACKAGE), key;
-	//Lock2Key(lock, key);
+	Lock2Key(lock, key);
+	if(mS->mC.drop_invalid_key && key != msg->GetStr()) {
+		string omsg = "Your client provided an invalid key";
+		if(conn->Log(1)) conn->LogStream() << "Invalid key" << endl;
+		mS->ConnCloseMsg(conn,omsg,1000, eCR_INVALID_KEY);
+		return -1;
+	}
 	conn->SetLSFlag(eLS_KEYOK);
 	conn->ClearTimeOut(eTO_KEY);
 	conn->SetTimeOut(eTO_VALNICK, mS->mC.timeout_length[eTO_VALNICK], mS->mTime);
@@ -306,6 +311,7 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 	{
 		omsg = "Bad login sequence; you must provide a valid nick first.";
 		if(conn->Log(1))conn->LogStream() << "Mypass before validatenick" << endl;
+//TODO: fix this (invert the next 2 lines)
 		return -1;
 		mS->ConnCloseMsg(conn,omsg,1000, eCR_LOGIN_ERR);
 	}
@@ -577,7 +583,6 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) { 
 		cBan Ban(mS);
 		bool banned = false;
-	      cout << "Checking banshare" << endl;
 		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, cBan::eBF_SHARE | cBan::eBF_EMAIL);
 		if( banned && conn->GetTheoricalClass() <= eUC_REGUSER ) {
 			stringstream msg;
