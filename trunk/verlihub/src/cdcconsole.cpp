@@ -52,7 +52,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|noctm|nosearch|kvip|maykick|noshare|mayreg|mayopchat) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
 	mCmdTrigger(int(eCM_TRIGGER),".(ft|trigger)(\\S+) ", "(\\S+) (.*)", &mFunTrigger),
 	mCmdSetVar(int(eCM_SET),".(set|=) ", "(\\[(\\S+)\\] )?(\\S+) (.*)", &mFunSetVar),
-	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
+	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info|search) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
 	mCmdRaw(int(eCM_RAW),".proto(\\S+)_(\\S+) ","(.*)", &mFunRaw),
 	mCmdCmd(int(eCM_CMD),".cmd(\\S+)","(.*)", &mFunCmd),
 	mCmdWho(int(eCM_WHO),".w(ho)?(\\S+) ","(.*)", &mFunWho),
@@ -923,6 +923,10 @@ int cDCConsole::CmdReload(istringstream &cmd_line, cConnDC *conn)
 
 bool cDCConsole::cfReport::operator()()
 {
+	if(mS->mC.disable_report_cmd) {
+		*mOS << "Report command is currently disabled.";
+		return false;
+	}
 	ostringstream os;
 	string omsg, nick, reason;
 	cUser *user;
@@ -1269,9 +1273,9 @@ bool cDCConsole::cfBan::operator()()
 
 bool cDCConsole::cfInfo::operator()()
 {
-	enum {eINFO_SERVER };
+	enum {eINFO_HUB, eINFO_SERVER };
 	static const char * infonames [] = { "hub","server" };
-	static const int infoids [] = { eINFO_SERVER, eINFO_SERVER };
+	static const int infoids [] = { eINFO_HUB, eINFO_SERVER };
 
 	string tmp;
 	mIdRex->Extract(1,mIdStr,tmp);
@@ -1284,8 +1288,9 @@ bool cDCConsole::cfInfo::operator()()
 
 	switch(InfoType)
 	{
-		case eINFO_SERVER: mInfoServer.Output(*mOS, MyClass); break;
-		default : (*mOS) << "This command has not implemented yet.\r\nAvailable command is: !hubinfo (alias of !serverinfo)" << endl;
+		case eINFO_SERVER: mInfoServer.SystemInfo(*mOS); break;
+		case eINFO_HUB: mInfoServer.Output(*mOS, MyClass); break;
+		default : (*mOS) << "This command has not implemented yet.\r\nAvailable command is: !hubinfo or  !serverinfo)" << endl;
 			return false;
 	}
 
@@ -1493,9 +1498,9 @@ bool cDCConsole::cfCmd::operator()()
 
 bool cDCConsole::cfWho::operator()()
 {
-	enum { eAC_IP, eAC_RANGE };
-	static const char * actionnames [] = { "ip" , "range", "subnet" };
-	static const int actionids [] = { eAC_IP, eAC_RANGE, eAC_RANGE };
+	enum { eAC_IP, eAC_RANGE, eAC_CC};
+	static const char * actionnames [] = { "ip" , "range", "subnet", "cc" };
+	static const int actionids [] = { eAC_IP, eAC_RANGE, eAC_RANGE, eAC_CC};
 
    //@todo use cUser::Can 
 	if (this->mConn->mpUser->mClass < eUC_OPERATOR) return false;
@@ -1506,7 +1511,7 @@ bool cDCConsole::cfWho::operator()()
 	if (Action < 0) return false;
 
 	string separator("\r\n\t");
-	string userlist;
+	string userlist, actionName;
 
 	mParRex->Extract(0, mParStr,tmp);
 	unsigned long ip_min, ip_max;
@@ -1518,17 +1523,23 @@ bool cDCConsole::cfWho::operator()()
 			ip_min = cBanList::Ip2Num(tmp);
 			ip_max = ip_min;
 			cnt = mS->WhoIP(ip_min, ip_max, userlist, separator, true);
-			break;
+			actionName = "IP";
+		break;
 		case eAC_RANGE:
 			if(! cDCConsole::GetIPRange(tmp, ip_min, ip_max) ) return false;
 			cnt = mS->WhoIP(ip_min, ip_max, userlist, separator, false);
-			break;
+			actionName = "range";
+		break;
+		case eAC_CC:
+			cnt = mS->WhoCC(tmp, userlist, separator);
+			actionName = "country code";
+		break;
 		default: return false;
 	}
 
-
+	
 	if(!cnt) (*mOS) << "No user with " << tmp;
-	else (*mOS) << "Users with " << actionnames[Action] << " " << tmp << ":\r\n\t" << userlist << "Total: " << cnt;
+	else (*mOS) << "Users with " << actionName << " " << tmp << ":\r\n\t" << userlist << "Total: " << cnt;
 	return true;
 }
 
@@ -1658,20 +1669,31 @@ bool cDCConsole::cfPlug::operator()()
 
 bool cDCConsole::cfRegUsr::operator()()
 {
-	enum { eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO };
+	enum { eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO, eAC_SEARCH };
 	static const char * actionnames [] = { "n","new","newuser", "del","delete", "pass","passwd", "enable",
 		"disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set","=",
-		"info"  };
+		"info", "search" };
 	static const int actionids [] = { eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE,
 		eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET,
-		eAC_INFO };
-
+		eAC_INFO, eAC_SEARCH };
+	
+	
 	if (this->mConn->mpUser->mClass < eUC_OPERATOR) return false;
 
 	string tmp;
 	mIdRex->Extract(2,mIdStr,tmp);
 	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
 	if (Action < 0) return false;
+
+	/*if(Action == eAC_SEARCH) {
+		(*mOS) << "Found nicks:\n";
+		string nick;
+		this->GetParStr(1,nick);
+		int offset, page;
+		this->GetParInt(2, page);
+		this->GetParInt(3, offset);
+		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick);
+	}*/
 
 //	"!r(eg)?(\S+) ", "(\\S+)( (((\\S+) )?(.*)))?"
 	string nick, par, field;
@@ -1838,7 +1860,6 @@ bool cDCConsole::cfRegUsr::operator()()
 		break;
 	case eAC_CLASS: // class
 		#ifndef WITHOUT_PLUGINS
-		cout << "Here we go " << endl;
 		if(!mS->mCallBacks.mOnUpdateClass.CallAll(nick,ui.mClass, ParClass)) {
 			(*mOS) << "Action has been discarded by plugin";
 			return false;	

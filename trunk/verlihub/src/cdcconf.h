@@ -160,9 +160,10 @@ public:
 	int int_chat_ms;
 	int int_nicklist;
 	int int_myinfo;
-	int disable_me_cmd;
+	int disable_me_cmd; // TODO: Convert to bool
 	int disable_regme_cmd;
 	int disable_usr_cmds; 
+	int disable_report_cmd;
 	int plugin_mod_class;
 	int topic_mod_class;
 	int mainchat_class;
