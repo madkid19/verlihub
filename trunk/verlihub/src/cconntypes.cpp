@@ -121,7 +121,7 @@ const char * cConnTypeConsole::GetParamsRegex(int cmd)
 		case eLC_ADD:
 		case eLC_MOD:
 			return "^(\\S+)("
-			"( -d ?(\")?((?(3)[^\"]+?|\\s+))(?(3)\"))?|" //[ -d<description>|"<<description>>]"
+			"( -d ?(\")?((?(4)[^\"]+?|\\S+))(?(4)\"))?|" //[ -d<description>|"<<description>>]"
 			"( -S ?(-?\\d+))?|" //[ -S<max_slots>]
 			"( -s ?(-?\\d+))?|" //[ -s<min_slots>]
 			"( -l ?(-?[0-9.]+))?|" //[ -l<min_limit>]
