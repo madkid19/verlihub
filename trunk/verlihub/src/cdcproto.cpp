@@ -286,12 +286,13 @@ int cDCProto::DC_Key(cMessageDC * msg, cConnDC * conn)
 	if(msg->SplitChunks()) return -1;
 	string key, lock("EXTENDEDPROTOCOL_" PACKAGE);
 	Lock2Key(lock, key);
-
-	if(mS->mC.drop_invalid_key && key != msg->ChunkString(1)) {
-		string omsg = "Your client provided an invalid key";
+	if(key != msg->ChunkString(1)) {
 		if(conn->Log(1)) conn->LogStream() << "Invalid key" << endl;
-		mS->ConnCloseMsg(conn,omsg,1000, eCR_INVALID_KEY);
-		return -1;
+		if(mS->mC.drop_invalid_key) {
+			string omsg = "Your client provided an invalid key";
+			mS->ConnCloseMsg(conn,omsg,1000, eCR_INVALID_KEY);
+			return -1;
+		}
 	}
 	conn->SetLSFlag(eLS_KEYOK);
 	conn->ClearTimeOut(eTO_KEY);

@@ -297,7 +297,7 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 	cmd->GetParStr(eADD_DESC,data.mDescription);
 	cmd->GetParStr(eADD_NICK,data.mSendAs);
 	cmd->GetParInt(eADD_FLAGS, data.mFlags);
-	if(!(data.mFlags & cTrigger::eTF_DB)) {
+	/*if(!(data.mFlags & cTrigger::eTF_DB)) {
 		string configFolder(mOwner->mServer->mConfigBaseDir), temp(data.mDefinition), triggerFolder;
 		// Expand config folder
 		string home = getenv("HOME");
@@ -326,7 +326,7 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 			      pos = triggerFolder.find("../", pos);
 		}
 		cout << "Config folder is " << configFolder << " and trigger folder is " << triggerFolder << endl;
-	}
+	}*/
 	cmd->GetParInt(eADD_CLASS, data.mMinClass);
 	cmd->GetParInt(eADD_CLASSX, data.mMaxClass);
 	string sTimeout("0");
