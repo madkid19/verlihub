@@ -54,15 +54,6 @@ int cQuery::StoreResult()
 	else return 0;
 }
 
-/*void cQuery::EscapeQuery()
-{
-    string qstr(mOS.str());
-    char * out;
-    mysql_real_escape_string(mMySQL.mDBHandle, qstr.c_str(), out);
-    mOs << string(out);
-    return res;
-}*/
-
 MYSQL_ROW cQuery::Row()
 {
 	if(!mResult) return NULL;
