@@ -297,6 +297,36 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 	cmd->GetParStr(eADD_DESC,data.mDescription);
 	cmd->GetParStr(eADD_NICK,data.mSendAs);
 	cmd->GetParInt(eADD_FLAGS, data.mFlags);
+	if(!(data.mFlags & cTrigger::eTF_DB)) {
+		string configFolder(mOwner->mServer->mConfigBaseDir), temp(data.mDefinition), triggerFolder;
+		// Expand config folder
+		string home = getenv("HOME");
+		size_t pos = configFolder.find("~");
+		if(pos != string::npos) {
+			configFolder.replace(pos,1,home);
+		}
+  
+		pos = temp.rfind("/");
+                // Get path
+                if(pos != string::npos && pos != (temp.size()-1))
+                        triggerFolder.append(temp, 0, pos+1);
+                 //if(triggerFolder.find("/",triggerFolder.size()-1) == string::npos)
+                   //     triggerFolder.append("/");
+
+		ReplaceVarInString(triggerFolder, "CFG", triggerFolder, configFolder);
+		// Expand given command
+		pos = triggerFolder.find("~");
+		if(pos != string::npos) {
+			triggerFolder.replace(pos,1,home);
+		}
+		// Remove ..
+		pos = triggerFolder.find("../");
+		while (pos != string::npos) {
+			      triggerFolder.replace(pos, 3, "");
+			      pos = triggerFolder.find("../", pos);
+		}
+		cout << "Config folder is " << configFolder << " and trigger folder is " << triggerFolder << endl;
+	}
 	cmd->GetParInt(eADD_CLASS, data.mMinClass);
 	cmd->GetParInt(eADD_CLASSX, data.mMaxClass);
 	string sTimeout("0");
@@ -306,7 +336,7 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 	else
 		data.mSeconds = mOwner->mServer->Str2Period(sTimeout,*cmd->mOS);
 	
-
+	
 	if (!mOwner->mServer->mDBConf.allow_exec_mod && (data.mFlags & cTrigger::eTF_EXECUTE)) {
 		*cmd->mOS << "Execute command flag is disabled from config";
 		return false;

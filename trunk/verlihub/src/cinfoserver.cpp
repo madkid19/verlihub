@@ -10,6 +10,13 @@
 #include "cinfoserver.h"
 #include "cserverdc.h"
 #include "curr_date_time.h"
+#if ! defined _WIN32
+#include <sys/utsname.h>
+#include <sys/sysinfo.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#endif
+
 
 namespace nDirectConnect {
 namespace nInfo {
@@ -42,6 +49,41 @@ string cInfoServer::converByte(__int64 byte, bool UnitType)
 	if(UnitType)  os << byteSecUnit[unit];
 	else os << byteUnit[unit];
 	return os.str();
+}
+
+void cInfoServer::SystemInfo(ostream &os)
+{
+	#if ! defined _WIN32
+	struct sysinfo serverInfo;
+	if(sysinfo(&serverInfo)) {
+		os << "Cannot retrive system information";
+		return;
+	}
+	cTime uptime(serverInfo.uptime);
+	utsname osname;
+	if(uname(&osname) == 0) { 
+		os << "\r\n[::] OS: " << osname.sysname << " " << osname.release << " (" << osname.machine << ") ";
+	}
+	os << "\r\n[::] System uptime: "  << uptime.AsPeriod() << "\r\n";
+	os << "[::] Load avarages: "  << serverInfo.loads[0] << " " << serverInfo.loads[1] << " " << serverInfo.loads[2] << "\r\n";
+	os << "[::] Used RAM: "  << converByte((long long int) serverInfo.totalram,false) << "\r\n";
+	os << "[::] Free RAM: "  << converByte((long long int) serverInfo.freeram,false) << "\r\n";
+	os << "[::] Shared RAM: "  << converByte((long long int) serverInfo.sharedram,false) << "\r\n";
+	os << "[::] Memory in buffers: "  << converByte((long long int) serverInfo.bufferram,false) << "\r\n";
+	os << "[::] Total swap: "  << converByte((long long int) serverInfo.totalswap,false) << "\r\n";
+	os << "[::] Free swap: "  << converByte((long long int) serverInfo.freeswap,false) << "\r\n";
+	os << "[::] Number of processes: "  << serverInfo.procs << "\r\n";
+
+
+
+        struct rusage resourceUsage; 
+
+        getrusage(RUSAGE_SELF, &resourceUsage);
+
+
+	#else 
+	os << "No info available\r\n";
+	#endif
 }
 
 void cInfoServer::SetServer(cServerDC *Server)

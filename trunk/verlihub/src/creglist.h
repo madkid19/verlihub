@@ -52,6 +52,7 @@ public:
 		if not foud return 0
 		else return 1 and fill in the reuserinfo parameter */
 	bool FindRegInfo(cRegUserInfo &, const string &nick);
+	bool ShowUsers(cConnDC *op, ostream &os, int page, int offset, string nick);
 	/** add registered user */
 	bool AddRegUser(const string &nick, cConnDC *op, int cl, const char *password = NULL);
 	/** No descriptions */

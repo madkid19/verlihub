@@ -43,6 +43,7 @@ public:
 	cInfoServer();
 	~cInfoServer();
 	string converByte(__int64 byte, bool UnitType);
+	void SystemInfo(ostream &os);
 	void SetServer(cServerDC *Server);
 	void Output(ostream &os, int Class);
 	virtual int Save(){return 0;}

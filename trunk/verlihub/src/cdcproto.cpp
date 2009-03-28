@@ -284,9 +284,10 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 int cDCProto::DC_Key(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
-	string lock("EXTENDEDPROTOCOL_" PACKAGE), key;
+	string key, lock("EXTENDEDPROTOCOL_" PACKAGE);
 	Lock2Key(lock, key);
-	if(mS->mC.drop_invalid_key && key != msg->GetStr()) {
+
+	if(mS->mC.drop_invalid_key && key != msg->ChunkString(1)) {
 		string omsg = "Your client provided an invalid key";
 		if(conn->Log(1)) conn->LogStream() << "Invalid key" << endl;
 		mS->ConnCloseMsg(conn,omsg,1000, eCR_INVALID_KEY);
@@ -1850,19 +1851,23 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const char *buf, int len, 
 {
 	dest ="";
 	unsigned char c;
+	unsigned int olen = 0;
 	ostringstream os;
 	while(len-- > 0)
 	{
 		c = *(buf++);
+		olen = 0;
 		switch(c)
 		{
 			case 0: case 5: case 36: case 96: case 124: case 126:
 				os.str("");
 				if (! WithDCN) os << "&#" << unsigned(c) << ";";
 				else {
-					//os.width(3);
+					if(c < 10) olen = 7;
+					else if(c > 10 && c < 100) olen = 6; 
+					os.width(olen);
 					os.fill('0');
-					os << "/%DCN" /*<< right*/ << unsigned(c); //@todo the right justify
+					os << left << "/%DCN" << unsigned(c);
 					os.width(0);
 					os << "%/";
 				}

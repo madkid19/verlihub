@@ -81,6 +81,34 @@ bool cRegList::FindRegInfo(cRegUserInfo &ui, const string &nick)
 	return LoadPK();
 }
 
+bool cRegList::ShowUsers(cConnDC *op, ostream &os, int page, int offset, string nick)
+{
+	 if(op && op->mpUser) {
+		db_iterator it;
+		if(offset >= 30)
+			 offset = 30;
+		if(page < 0)
+			 page = 0;
+		int start = page*offset;
+		mQuery.OStream() << "SELECT nick,class FROM " << mMySQLTable.mName << " WHERE `class` <= " << op->mpUser->mClass;
+		if(nick != "*") mQuery.OStream() << " AND nick LIKE '%" << nick << "%'";
+		mQuery.OStream() << " ORDER BY `class` DESC LIMIT " << start << "," << offset;
+		if(mQuery.Query() <= 0) return false;
+		int n = mQuery.StoreResult();
+		
+		cMySQLColumn col;
+		MYSQL_ROW row;
+		for(int i = 0; i < n; i++) {
+			 row = mQuery.Row();
+			 os << row[0] << " (Class " << row[1] << ")\n" ;
+		}
+		os << "(result from " << start << " to " << start+offset << ")\n";
+		mQuery.Clear();
+		return true;
+	 }
+	 return false;
+}
+
 /** add registered user */
 bool cRegList::AddRegUser(const string &nick, cConnDC *op, int cl, const char *password)
 {
