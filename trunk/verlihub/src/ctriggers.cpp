@@ -297,7 +297,16 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 	cmd->GetParStr(eADD_DESC,data.mDescription);
 	cmd->GetParStr(eADD_NICK,data.mSendAs);
 	cmd->GetParInt(eADD_FLAGS, data.mFlags);
-	/*if(!(data.mFlags & cTrigger::eTF_DB)) {
+	if(!(data.mFlags & cTrigger::eTF_DB)) {
+		size_t pos = data.mDefinition.rfind("dbconfig");
+		if(pos != string::npos) {
+			*cmd->mOS << "It's not allowed to define dbconfig file as trigger\n";
+			cConnDC *conn = (cConnDC *) cmd->mConn;
+			string Msg = "User " + conn->mpUser->mNick + " tried to define dbconfig as trigger";
+			mOwner->mServer->ReportUserToOpchat(conn, Msg);
+			return false;
+		}
+	}/*
 		string configFolder(mOwner->mServer->mConfigBaseDir), temp(data.mDefinition), triggerFolder;
 		// Expand config folder
 		string home = getenv("HOME");

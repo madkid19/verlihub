@@ -439,7 +439,7 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text,conn)) 
 		return 0;
 	
-	os << "** " <<  conn->mpUser->mNick<< text << "";
+	os << "** " <<  conn->mpUser->mNick<< text;
 	string msg = os.str();
 	mOwner->mUserList.SendToAll(msg, true);
 	os.str(mOwner->mEmpty);
@@ -1685,7 +1685,7 @@ bool cDCConsole::cfRegUsr::operator()()
 	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
 	if (Action < 0) return false;
 
-	/*if(Action == eAC_SEARCH) {
+	if(Action == eAC_SEARCH) {
 		(*mOS) << "Found nicks:\n";
 		string nick;
 		this->GetParStr(1,nick);
@@ -1693,7 +1693,7 @@ bool cDCConsole::cfRegUsr::operator()()
 		this->GetParInt(2, page);
 		this->GetParInt(3, offset);
 		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick);
-	}*/
+	}
 
 //	"!r(eg)?(\S+) ", "(\\S+)( (((\\S+) )?(.*)))?"
 	string nick, par, field;

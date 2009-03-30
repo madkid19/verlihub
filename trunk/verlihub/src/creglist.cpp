@@ -85,14 +85,21 @@ bool cRegList::ShowUsers(cConnDC *op, ostream &os, int page, int offset, string 
 {
 	 if(op && op->mpUser) {
 		db_iterator it;
+cout << "Offset is  " << offset << " and page is " << page << endl;
 		if(offset >= 30)
 			 offset = 30;
 		if(page < 0)
 			 page = 0;
 		int start = page*offset;
-		mQuery.OStream() << "SELECT nick,class FROM " << mMySQLTable.mName << " WHERE `class` <= " << op->mpUser->mClass;
-		if(nick != "*") mQuery.OStream() << " AND nick LIKE '%" << nick << "%'";
-		mQuery.OStream() << " ORDER BY `class` DESC LIMIT " << start << "," << offset;
+		ostringstream oss;
+		oss << "SELECT nick,class FROM " << mMySQLTable.mName << " WHERE `class` <= " << op->mpUser->mClass;
+		if(nick != "*") {
+			oss << " AND nick LIKE '%";
+			cConfMySQL::WriteStringConstant(oss, nick);
+			oss << "%'";
+		}
+		oss << " ORDER BY `class` DESC LIMIT " << start << "," << offset;
+		mQuery.OStream() << oss.str();
 		if(mQuery.Query() <= 0) return false;
 		int n = mQuery.StoreResult();
 		

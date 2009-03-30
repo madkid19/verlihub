@@ -983,26 +983,25 @@ int _GetTempRights(lua_State *L)
 		}
 		nick = (char *) lua_tostring(L, 2);
 		if(GetTempRights((char *) nick.c_str(), rights)) {
-			lua_settop(L,0);
-			lua_pushboolean(L, 1);
+
+		
 			lua_newtable(L);
-			
-			int i = lua_gettop(L);
+			int k = lua_gettop(L);
 			lua_pushliteral(L, "mc");
 			lua_pushnumber(L, rights[2]);
-			lua_rawset(L, i);
-		
+			lua_rawset(L, k);
+			
 			lua_pushliteral(L, "pm");
 			lua_pushnumber(L, rights[1]);
-			lua_rawset(L, i);
-			
+			lua_rawset(L, k);
+
 			lua_pushliteral(L, "ctm");
 			lua_pushnumber(L, rights[0]);
-			lua_rawset(L, i);
-			return 2;
+			lua_rawset(L, k);
+			return 1;
 		} else {
 			luaerror(L, "User not found");
-			return 2;	
+			return 2;
 		}
 		
 	} else {

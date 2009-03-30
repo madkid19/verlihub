@@ -1,4 +1,4 @@
-# Copyright 1999-2004 Gentoo Foundation
+# Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -75,7 +75,7 @@ src_install() {
 pkg_postinst() {
     echo
     ewarn "Do NOT report bugs to Gentoo's bugzilla"
-    einfo "Please report all bugs to http://forums.verlihubproject.org"
+    einfo "Please report all bugs to http://forums.verlihub-project.org"
     einfo "Verlihub-project team"
 
     if [[ -f "/etc/verlihub/dbconfig" ]]
