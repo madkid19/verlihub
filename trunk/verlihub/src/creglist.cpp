@@ -36,7 +36,11 @@ cRegList::cRegList(cMySQL &mysql, cServerDC *server): cConfMySQL(mysql)
 	//cTime now;
 	SetClassName("nDC::cRegList");
 	mMySQLTable.mName="reglist";
-	AddCol("nick", "varchar(30)", "", false, mModel.mNick);
+	ostringstream nickDomain;
+	nickDomain << "varchar(";
+	nickDomain << mS->mC.max_nick;
+	nickDomain << ")";
+	AddCol("nick", nickDomain.str().c_str(), "", false, mModel.mNick);
 	AddPrimaryKey("nick");
 	AddCol("class", "int(2)", "1", true, mModel.mClass);
 	AddCol("class_protect", "int(2)", "0", true, mModel.mClassProtect);
