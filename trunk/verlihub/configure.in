@@ -144,7 +144,6 @@ AC_CONFIG_FILES([Makefile
 		 scripts/Makefile
 		 share/Makefile
 		 plugins/Makefile
-		 plugins/diakritika/Makefile
 		 plugins/plugman/Makefile
 		 verlihub.spec
 		 verlihub_config

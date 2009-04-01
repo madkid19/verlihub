@@ -306,36 +306,18 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 			mOwner->mServer->ReportUserToOpchat(conn, Msg);
 			return false;
 		}
-	}/*
-		string configFolder(mOwner->mServer->mConfigBaseDir), temp(data.mDefinition), triggerFolder;
-		// Expand config folder
-		string home = getenv("HOME");
-		size_t pos = configFolder.find("~");
-		if(pos != string::npos) {
-			configFolder.replace(pos,1,home);
+		FilterPath(data.mDefinition);
+		string vPath(mOwner->mServer->mConfigBaseDir), triggerPath, triggerName;
+		ExpandPath(vPath);
+		GetPath(data.mDefinition, triggerPath, triggerName);
+		ReplaceVarInString(triggerPath, "CFG", triggerPath, vPath);
+		ExpandPath(triggerPath);
+		if((triggerPath.substr(0,vPath.length()) != vPath)) {
+			*cmd->mOS << "The trigger " << data.mDefinition << " you tried to add, must be in VerliHub Config Folder(use %[CFG] variable; for ex %[CFG]/" << triggerName << ")\n";
+			return false;
 		}
-  
-		pos = temp.rfind("/");
-                // Get path
-                if(pos != string::npos && pos != (temp.size()-1))
-                        triggerFolder.append(temp, 0, pos+1);
-                 //if(triggerFolder.find("/",triggerFolder.size()-1) == string::npos)
-                   //     triggerFolder.append("/");
 
-		ReplaceVarInString(triggerFolder, "CFG", triggerFolder, configFolder);
-		// Expand given command
-		pos = triggerFolder.find("~");
-		if(pos != string::npos) {
-			triggerFolder.replace(pos,1,home);
-		}
-		// Remove ..
-		pos = triggerFolder.find("../");
-		while (pos != string::npos) {
-			      triggerFolder.replace(pos, 3, "");
-			      pos = triggerFolder.find("../", pos);
-		}
-		cout << "Config folder is " << configFolder << " and trigger folder is " << triggerFolder << endl;
-	}*/
+	}
 	cmd->GetParInt(eADD_CLASS, data.mMinClass);
 	cmd->GetParInt(eADD_CLASSX, data.mMaxClass);
 	string sTimeout("0");

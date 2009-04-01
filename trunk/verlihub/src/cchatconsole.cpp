@@ -109,7 +109,7 @@ bool cChatConsole::cfOut::operator()()
 	}
 	if (user->mClass > mConn->mpUser->mClass)
 	{
-		*mOS << "You are not higher then " << nick;
+		*mOS << "You are not higher than " << nick;
 		return false;
 	}
 

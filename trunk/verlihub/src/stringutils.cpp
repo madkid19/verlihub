@@ -62,6 +62,51 @@ bool LoadFileInString(const string &FileName, string &dest)
 	return true;
 }
 
+void ExpandPath(string &Path)
+{
+	if(Path.substr(0,2) == "./") {
+		string tmp = Path;
+#if ! defined _WIN32
+		Path = get_current_dir_name();
+#else
+		//dest = GetCurrentDirectory(); FIXME
+#endif
+		Path += "/" + tmp.substr(2,tmp.length());
+	}
+	size_t pos;
+#if ! defined _WIN32
+	pos = Path.find("~");
+	if(pos != Path.npos) {
+		Path.replace(pos, 2, getenv("HOME"));
+	}
+#endif
+	pos = Path.find("../");
+	while (pos != Path.npos) {
+		Path.replace(pos, 3, "");
+		pos = Path.find("../", pos);
+	}
+	int len = Path.length();
+	if(Path.substr(len-1,len) != "/")
+		Path.append("/");
+}
+void GetPath(const string FileName, string &Path, string &File)
+{
+	Path = FileName;
+	size_t i = FileName.rfind("/");
+	if(i != string::npos)
+		Path = FileName.substr(0, i+1);
+	File = FileName.substr(i+1);
+}
+
+void FilterPath(string &Path)
+{
+	size_t pos = Path.find("../");
+	while (pos != Path.npos) {
+		Path.replace(pos, 3, "");
+		pos = Path.find("../", pos);
+	}
+}
+
 /*!
     \fn ReplaceVarInString(const string&,const string &varname,string &dest, const string& by)
  */

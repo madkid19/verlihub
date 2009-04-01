@@ -178,8 +178,8 @@ subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = share/Makefile plugins/diakritika/Makefile \
-	verlihub.spec verlihub_config share/sql/default_pi_plug.sql
+CONFIG_CLEAN_FILES = share/Makefile verlihub.spec verlihub_config \
+	share/sql/default_pi_plug.sql
 SCRIPTS = $(bin_SCRIPTS)
 
 DIST_SOURCES =
@@ -232,8 +232,6 @@ $(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(top_srcdir)/configure.in $(ACLOC
 distclean-hdr:
 	-rm -f config.h stamp-h1
 share/Makefile: $(top_builddir)/config.status $(top_srcdir)/share/Makefile.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-plugins/diakritika/Makefile: $(top_builddir)/config.status $(top_srcdir)/plugins/diakritika/Makefile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 verlihub.spec: $(top_builddir)/config.status verlihub.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -412,7 +410,7 @@ distcleancheck_listfiles = find . -type f -print
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkinstalldirs) $(distdir)/. $(distdir)/plugins/diakritika $(distdir)/scripts $(distdir)/share $(distdir)/share/sql
+	$(mkinstalldirs) $(distdir)/. $(distdir)/scripts $(distdir)/share $(distdir)/share/sql
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
