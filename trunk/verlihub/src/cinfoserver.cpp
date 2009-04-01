@@ -65,7 +65,7 @@ void cInfoServer::SystemInfo(ostream &os)
 		os << "\r\n[::] OS: " << osname.sysname << " " << osname.release << " (" << osname.machine << ") ";
 	}
 	os << "\r\n[::] System uptime: "  << uptime.AsPeriod() << "\r\n";
-	os << "[::] Load averages: "  << serverInfo.loads[0]/65536.0 << " " << serverInfo.loads[1]/65536.0 << " " << serverInfo.loads[2]/65536.0 << "\r\n";
+	os << "[::] Load averages: " <<  std::fixed << std::setprecision(2) << serverInfo.loads[0]/65536.0 << " " << serverInfo.loads[1]/65536.0 << " " << serverInfo.loads[2]/65536.0 << "\r\n";
 	os << "[::] Used RAM: "  << converByte((long long int) serverInfo.totalram,false) << "\r\n";
 	os << "[::] Free RAM: "  << converByte((long long int) serverInfo.freeram,false) << "\r\n";
 	os << "[::] Shared RAM: "  << converByte((long long int) serverInfo.sharedram,false) << "\r\n";
