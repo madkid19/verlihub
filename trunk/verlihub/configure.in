@@ -13,7 +13,6 @@ AM_INIT_AUTOMAKE($PACKAGE_NAME, $VERSION)
 AC_LANG_CPLUSPLUS
 AC_PROG_CXX
 AM_PROG_LIBTOOL
-
 AC_ARG_ENABLE(profiling,[   --enable-profiling compiles the program to be tested for it's speed], [
 			 CXXFLAGS="$CXXFLAGS -pg -g3 -O0 --no-inline"])
 
