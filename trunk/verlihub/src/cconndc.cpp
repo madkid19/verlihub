@@ -336,9 +336,11 @@ void cConnDC::OnFlushDone()
 int cConnDC::OnCloseNice()
 {
 	if(mxServer) {
-		string omsg="$ForceMove ";
-		omsg += Server()->mCo->mRedirects->MatchByType(this->mCloseReason);
-		Send(omsg,true);
+		string address = Server()->mCo->mRedirects->MatchByType(this->mCloseReason);
+		if(!address.empty()) {
+			string omsg = "$ForceMove " + address;
+			Send(omsg,true);
+		}
 	}
 	return 0;
 }
