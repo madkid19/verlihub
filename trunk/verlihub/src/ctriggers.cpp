@@ -282,6 +282,7 @@ const char * cTriggerConsole::GetParamsRegex(int cmd)
 
 bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 {
+cout << "Reading data " << CmdID << " for trigger " << data.mCommand<< endl;
 	enum {eADD_ALL, eADD_CMD, eADD_CHOICE,
 		eADD_DEFp, eADD_QUOTE, eADD_DEF, 
 		eADD_DESCp, eADD_QUOTE2, eADD_DESC, 
@@ -297,7 +298,7 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 	cmd->GetParStr(eADD_DESC,data.mDescription);
 	cmd->GetParStr(eADD_NICK,data.mSendAs);
 	cmd->GetParInt(eADD_FLAGS, data.mFlags);
-	if(!(data.mFlags & cTrigger::eTF_DB)) {
+	if((CmdID == eLC_MOD || CmdID == eLC_ADD) && !(data.mFlags & cTrigger::eTF_DB)) {
 		size_t pos = data.mDefinition.rfind("dbconfig");
 		if(pos != string::npos) {
 			*cmd->mOS << "It's not allowed to define dbconfig file as trigger\n";
