@@ -19,6 +19,7 @@
 #include "creglist.h"
 #include "cuser.h"
 #include "creguserinfo.h"
+#include "stringutils.h"
 #include <sstream>
 #include <cctype>
 #include <algorithm>
@@ -126,6 +127,8 @@ bool cRegList::AddRegUser(const string &nick, cConnDC *op, int cl, const char *p
 	cRegUserInfo ui;
 
 	if(FindRegInfo(ui, nick)) return false;
+	if(nStringUtils::toLower(nick) == nStringUtils::toLower(mS->mC.opchat_name) || nStringUtils::toLower(nick) == nStringUtils::toLower(mS->mC.hub_security)) return false;
+
 	ui.mNick = nick;//@todo nick2dbkey
 	if ((cl>=1 && cl<=5) || cl==10 || cl==-1) ui.mClass = cl;
 	else ui.mClass = 1;

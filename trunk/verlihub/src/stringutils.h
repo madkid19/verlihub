@@ -12,6 +12,8 @@ namespace nStringUtils
 {
 
 int StrCompare(const string &str1, int Start, int Count, const string &str2);
+string toLower(const std::string str);
+string toUpper(const std::string str);
 void ShrinkStringToFit(string &str);
 void StrCutLeft(string &, size_t);
 void StrCutLeft(const string &str1, string &str2, size_t cut);

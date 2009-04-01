@@ -8,6 +8,8 @@
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <algorithm>
+#include <ctype.h>
 
 namespace nStringUtils
 {
@@ -19,6 +21,20 @@ int StrCompare(const string &str1, int start, int count, const string &str2)
 	#else
 	return str2.compare(str1, start, count);
 	#endif
+}
+
+string toLower(const string str)
+{
+	string dest = str;
+	transform(str.begin(), str.end(), dest.begin(), ::tolower);
+	return dest;
+}
+
+string toUpper(const string str)
+{
+	string dest = str;
+	transform(str.begin(), str.end(), dest.begin(), ::toupper);
+	return dest;
 }
 
 void ShrinkStringToFit(string &str)
@@ -80,6 +96,7 @@ void ExpandPath(string &Path)
 		Path.replace(pos, 2, getenv("HOME"));
 	}
 #endif
+// FIXME: Windows uses \
 	pos = Path.find("../");
 	while (pos != Path.npos) {
 		Path.replace(pos, 3, "");

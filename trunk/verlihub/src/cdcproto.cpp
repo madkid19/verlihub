@@ -313,9 +313,8 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 	{
 		omsg = "Bad login sequence; you must provide a valid nick first.";
 		if(conn->Log(1))conn->LogStream() << "Mypass before validatenick" << endl;
-//TODO: fix this (invert the next 2 lines)
-		return -1;
 		mS->ConnCloseMsg(conn,omsg,1000, eCR_LOGIN_ERR);
+		return -1;
 	}
 	if(conn->mpUser->CheckPwd(pwd)) // check the password
 	{

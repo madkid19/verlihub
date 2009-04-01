@@ -44,8 +44,8 @@ bool nCmdr::cCmdr::ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar)
 {
 	if( Cmd->TestParams() )
 	{
-		if(Cmd->Execute(os, extrapar)) os << "OK";
-		else os << "ERROR";
+		if(Cmd->Execute(os, extrapar)) os << "\nOK";
+		else os << "\nERROR";
 		return true;
 	}
 	else
