@@ -1366,7 +1366,7 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 /** Extended support features */
 int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 {
-	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO BotINFO");
+	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO");
 	istringstream is(msg->mStr);
 
 	string feature;
