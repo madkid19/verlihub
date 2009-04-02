@@ -132,15 +132,17 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	  ReplaceVarInString(buf, "HUBTOPIC", buf,server.mC.hub_topic);
 	  ReplaceVarInString(buf, "VERSION_DATE", buf, __CURR_DATE_TIME__);
 	  ReplaceVarInString(buf, "TOTAL_SHARE", buf,server.mTotalShare);
-	  char secf[3];
-	  sprintf(secf,"%02d",lt.tm_sec);
-	  ReplaceVarInString(buf, "ss",buf, secf);
-	  char minf[3];
-	  sprintf(minf,"%02d",lt.tm_min);
-	  ReplaceVarInString(buf, "mm",buf, minf);
-	  ReplaceVarInString(buf, "HH",buf, lt.tm_hour);
-	  ReplaceVarInString(buf, "DD",buf, lt.tm_mday);
-	  ReplaceVarInString(buf, "MM",buf, lt.tm_mon+1);
+	  char tmf[3];
+	  sprintf(tmf,"%02d",lt.tm_sec);
+	  ReplaceVarInString(buf, "ss",buf, tmf);
+	  sprintf(tmf,"%02d",lt.tm_min);
+	  ReplaceVarInString(buf, "mm",buf, tmf);
+	  sprintf(tmf,"%02d",lt.tm_hour);
+	  ReplaceVarInString(buf, "HH",buf, tmf);
+	  sprintf(tmf,"%02d",lt.tm_mday);
+	  ReplaceVarInString(buf, "DD",buf, tmf);
+	  sprintf(tmf,"%02d",lt.tm_mon+1);
+	  ReplaceVarInString(buf, "MM",buf, tmf);
 	  ReplaceVarInString(buf, "YY",buf, 1900 + lt.tm_year);
 	  
 	}
