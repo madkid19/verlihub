@@ -338,7 +338,7 @@ bool cDCConsole::cfGetConfig::operator()()
 	{
 		for(it = mS->mC.mvItems.begin();it != mS->mC.mvItems.end();it++)
 			os << "\r[::]  " << setw(width) << setiosflags(ios::left) << mS->mC.mhItems.GetByHash(*it)->mName << setiosflags(ios::right) <<"    =   " << *(mS->mC.mhItems.GetByHash(*it)) << "\r\n";
-		} else {
+	} else {
 		mS->mSetupList.OutputFile(file.c_str(), os);
 	}
 	mS->DCPrivateHS(os.str(),mConn);
@@ -954,9 +954,9 @@ bool cDCConsole::cfRaw::operator()()
 	static const char * actionnames [] = { "all","user","hello","active" };
 	static const int actionids [] = { eRW_ALL, eRW_USR, eRW_HELLO, eRW_ACTIVE };
 
-	enum { eRC_HUBNAME, eRC_HELLO, eRC_QUIT, eRC_ANY , eRC_REDIR, eRC_PM, eRC_CHAT };
-	static const char * cmdnames [] = { "hubname","hello","quit", "any", "redir", "pm", "chat" };
-	static const int cmdids [] = { eRC_HUBNAME, eRC_HELLO, eRC_QUIT, eRC_ANY , eRC_REDIR , eRC_PM, eRC_CHAT};
+	enum { eRC_HUBNAME, eRC_HELLO, eRC_QUIT, eRC_REDIR, eRC_PM, eRC_CHAT };
+	static const char * cmdnames [] = { "hubname","hello","quit", "redir", "pm", "chat" };
+	static const int cmdids [] = { eRC_HUBNAME, eRC_HELLO, eRC_QUIT, eRC_REDIR , eRC_PM, eRC_CHAT};
 
 	int Action = -1;
 	int CmdID = -1;
@@ -994,9 +994,6 @@ bool cDCConsole::cfRaw::operator()()
 			WithNick = true;
 		break;
 		case eRC_CHAT: theCommand = "<" + mConn->mpUser->mNick +"> "; break;
-		case eRC_ANY:
-			cDCProto::UnEscapeChars(param, param);
-			break;
 		default : return false; break;
 	}
 
