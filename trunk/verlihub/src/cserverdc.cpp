@@ -1121,7 +1121,6 @@ int cServerDC::OnTimer(cTime &now)
 		if (mC.use_reglist_cache) mR->UpdateCache();
 		if (Log(2)) LogStream() << "Socket counter : " << cAsyncConn::sSocketCounter << endl;
 	}
-
 	mUserList.AutoResize();
 	mHelloUsers.AutoResize();
 	mActiveUsers.AutoResize();
@@ -1261,7 +1260,9 @@ int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 int cServerDC::RegisterInHublist(string host, int port, cConnDC *conn)
 {
 	string NickForReply;
+	DCPublicHS("Registering the hub in hublists. This may take a while, please wait...", conn);
 	if(conn && conn->mpUser) NickForReply = conn->mpUser->mNick;
+	
 	cThreadWork *work = new tThreadWork3T<cServerDC, string, int, string>( host, port, NickForReply, this, &cServerDC::DoRegisterInHublist);
 	if ( mHublistReg.AddWork(work) )
 	{
