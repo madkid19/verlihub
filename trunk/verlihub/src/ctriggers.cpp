@@ -270,6 +270,34 @@ const char * cTriggerConsole::GetParamsRegex(int cmd)
 	};
 }
 
+
+bool cTriggerConsole::CheckData(cfBase *cmd, cTrigger &data)
+{
+	if(data.mDefinition.empty()) {
+		*cmd->mOS << "Definition is empty or not specified. Please define it with -d option";
+		return false;
+	}
+	size_t pos = data.mDefinition.rfind("dbconfig");
+	if(pos != string::npos) {
+		*cmd->mOS << "It's not allowed to define dbconfig file as trigger\n";
+		cConnDC *conn = (cConnDC *) cmd->mConn;
+		string Msg = "User " + conn->mpUser->mNick + " tried to define dbconfig as trigger";
+		mOwner->mServer->ReportUserToOpchat(conn, Msg);
+		return false;
+	}
+	FilterPath(data.mDefinition);
+	string vPath(mOwner->mServer->mConfigBaseDir), triggerPath, triggerName;
+	ExpandPath(vPath);
+	GetPath(data.mDefinition, triggerPath, triggerName);
+	ReplaceVarInString(triggerPath, "CFG", triggerPath, vPath);
+	ExpandPath(triggerPath);
+	if((triggerPath.substr(0,vPath.length()) != vPath)) {
+		*cmd->mOS << "The definition " << data.mDefinition << " of the trigger " << data.mCommand << " must be in VerliHub Config Folder (use %[CFG] variable; for ex %[CFG]/" << triggerName << ")";
+		return false;
+	}
+	return true;
+}
+
   /**
 
   Read, extract data from a trigger command and save the trigger
@@ -279,10 +307,9 @@ const char * cTriggerConsole::GetParamsRegex(int cmd)
   @param[in,out] data The trigger to add or modify
 
   */
-
 bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 {
-cout << "Reading data " << CmdID << " for trigger " << data.mCommand<< endl;
+	cTrigger tmp = data;
 	enum {eADD_ALL, eADD_CMD, eADD_CHOICE,
 		eADD_DEFp, eADD_QUOTE, eADD_DEF, 
 		eADD_DESCp, eADD_QUOTE2, eADD_DESC, 
@@ -292,47 +319,29 @@ cout << "Reading data " << CmdID << " for trigger " << data.mCommand<< endl;
 		eADD_CLASSXp, eADD_CLASSX,
 		eADD_TIMEOUTp, eADD_TIMEOUT
 		};
-	
-	cmd->GetParStr(eADD_CMD,data.mCommand);
-	cmd->GetParUnEscapeStr(eADD_DEF,data.mDefinition);
-	cmd->GetParStr(eADD_DESC,data.mDescription);
-	cmd->GetParStr(eADD_NICK,data.mSendAs);
-	cmd->GetParInt(eADD_FLAGS, data.mFlags);
-	if((CmdID == eLC_MOD || CmdID == eLC_ADD) && !(data.mFlags & cTrigger::eTF_DB)) {
-		size_t pos = data.mDefinition.rfind("dbconfig");
-		if(pos != string::npos) {
-			*cmd->mOS << "It's not allowed to define dbconfig file as trigger\n";
-			cConnDC *conn = (cConnDC *) cmd->mConn;
-			string Msg = "User " + conn->mpUser->mNick + " tried to define dbconfig as trigger";
-			mOwner->mServer->ReportUserToOpchat(conn, Msg);
-			return false;
-		}
-		FilterPath(data.mDefinition);
-		string vPath(mOwner->mServer->mConfigBaseDir), triggerPath, triggerName;
-		ExpandPath(vPath);
-		GetPath(data.mDefinition, triggerPath, triggerName);
-		ReplaceVarInString(triggerPath, "CFG", triggerPath, vPath);
-		ExpandPath(triggerPath);
-		if((triggerPath.substr(0,vPath.length()) != vPath)) {
-			*cmd->mOS << "The trigger " << data.mDefinition << " you tried to add, must be in VerliHub Config Folder(use %[CFG] variable; for ex %[CFG]/" << triggerName << ")\n";
-			return false;
-		}
-
-	}
-	cmd->GetParInt(eADD_CLASS, data.mMinClass);
-	cmd->GetParInt(eADD_CLASSX, data.mMaxClass);
+	cmd->GetParStr(eADD_CMD,tmp.mCommand);
+	cmd->GetParUnEscapeStr(eADD_DEF,tmp.mDefinition);
+	cmd->GetParStr(eADD_DESC,tmp.mDescription);
+	cmd->GetParStr(eADD_NICK,tmp.mSendAs);
+	cmd->GetParInt(eADD_FLAGS, tmp.mFlags);
+	cmd->GetParInt(eADD_CLASS, tmp.mMinClass);
+	cmd->GetParInt(eADD_CLASSX, tmp.mMaxClass);
 	string sTimeout("0");
 	cmd->GetParStr(eADD_TIMEOUT,sTimeout);
-	if(sTimeout == "0")
-		data.mSeconds = 0;
-	else
-		data.mSeconds = mOwner->mServer->Str2Period(sTimeout,*cmd->mOS);
+	tmp.mSeconds = mOwner->mServer->Str2Period(sTimeout,*cmd->mOS);
 	
 	
-	if (!mOwner->mServer->mDBConf.allow_exec_mod && (data.mFlags & cTrigger::eTF_EXECUTE)) {
+	if (!mOwner->mServer->mDBConf.allow_exec_mod && (tmp.mFlags & cTrigger::eTF_EXECUTE)) {
 		*cmd->mOS << "Execute command flag is disabled from config";
 		return false;
 	}
+	bool checkDefinition = !(tmp.mFlags & cTrigger::eTF_DB);
+	if(CmdID == eLC_ADD && checkDefinition && !CheckData(cmd,tmp)) {
+		return false;
+	} else if(CmdID == eLC_MOD && !data.mCommand.empty() && checkDefinition && !CheckData(cmd,tmp)) {
+		return false;
+	}
+	data = tmp;
 	return true;
 }
 

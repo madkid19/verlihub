@@ -153,7 +153,6 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	  filename.append("/tmp/trigger.tmp");
 	  command.append(" > ");
 	  command.append(filename);
-	  cout << command << endl;
 	  system(command.c_str());
 	  buf = "";
 	  if (!LoadFileInString(filename,buf)) return 0;

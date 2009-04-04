@@ -34,7 +34,7 @@ nCmdr::cCommand *nCmdr::cCmdr::FindCommand(const string &CmdLine)
 	for(it = mCmdList.begin(); it != mCmdList.end(); ++it)
 	{
 		cCommand *Cmd = *it;
-		if( Cmd && Cmd->TestID(CmdLine))
+		if( Cmd && Cmd->TestID(CmdLine)) 
 			return Cmd;
 	}
 	return NULL;
@@ -44,8 +44,8 @@ bool nCmdr::cCmdr::ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar)
 {
 	if( Cmd->TestParams() )
 	{
-		if(Cmd->Execute(os, extrapar)) os << "\nOK";
-		else os << "\nERROR";
+		if(Cmd->Execute(os, extrapar)) os << "OK";
+		else os << "ERROR";
 		return true;
 	}
 	else

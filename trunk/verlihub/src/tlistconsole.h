@@ -223,7 +223,7 @@ protected:
 			{
 				if (this->GetTheList() && (pOrig = this->GetTheList()->FindData(Data)))
 				{
-					if( Console->ReadDataFromCmd(this, eLC_MOD, *pOrig)) 
+					if(Console->ReadDataFromCmd(this, eLC_MOD, *pOrig)) 
 					{
 						this->GetTheList()->UpdateData(*pOrig);
 						(*this->mOS) << "Successfully modified: " << *pOrig << "\r\n";

@@ -86,6 +86,8 @@ public:
 	virtual void GetHelpForCommand(int cmd, ostream &os);
 	virtual void GetHelp(ostream &os);
 
+	bool CheckData(cfBase *cmd, cTrigger &tmp);
+
 };
 
 
