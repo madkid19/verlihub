@@ -57,6 +57,7 @@ void nDirectConnect::nTables::cSetupList::LoadFileTo(cConfigBaseBase *Config, co
 
 void nDirectConnect::nTables::cSetupList::OutputFile(const char*file, ostream &os)
 {
+	const int width = 5;
 	db_iterator it;
 	SelectFields(mQuery.OStream());
 	mQuery.OStream() << " WHERE file='" << file << "'";
@@ -65,7 +66,7 @@ void nDirectConnect::nTables::cSetupList::OutputFile(const char*file, ostream &o
 	for(it = db_begin(); it != db_end(); ++it)
 	{
 		cDCProto::EscapeChars(mModel.mVarValue, val);
-		os << setw(20) << mModel.mVarName <<  " = " << val << "\r\n";
+		os << "\r[::]  " << setw(width) << setiosflags(ios::left) << mModel.mVarName << setiosflags(ios::right) <<"    =   " << val << "\r\n";
 	}
 	mQuery.Clear();
 }
