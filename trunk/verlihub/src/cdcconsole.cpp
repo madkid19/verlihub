@@ -1,19 +1,24 @@
 /***************************************************************************
-                          cdcconsole.cpp  -  description
-                             -------------------
-    begin                : Wed Jul 2 2003
-    copyright            : (C) 2003 by Daniel Muller
-    email                : dan at verliba dot cz
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
+*                                                                         *
+*   Copyright (C) 2006-2009 by Verlihub Project                           *
+*   devs at verlihub-project dot org                                      *
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+*   This program is distributed in the hope that it will be useful,       *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+*   GNU General Public License for more details.                          *
+*                                                                         *
+*   You should have received a copy of the GNU General Public License     *
+*   along with this program; if not, write to the                         *
+*   Free Software Foundation, Inc.,                                       *
+*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+***************************************************************************/
 
 #include "cserverdc.h"
 #include "cdcconsole.h"
@@ -52,11 +57,11 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|noctm|nosearch|kvip|maykick|noshare|mayreg|mayopchat) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
 	mCmdTrigger(int(eCM_TRIGGER),".(ft|trigger)(\\S+) ", "(\\S+) (.*)", &mFunTrigger),
 	mCmdSetVar(int(eCM_SET),".(set|=) ", "(\\[(\\S+)\\] )?(\\S+) (.*)", &mFunSetVar),
-	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info|search) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
+	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
 	mCmdRaw(int(eCM_RAW),".proto(\\S+)_(\\S+) ","(.*)", &mFunRaw),
 	mCmdCmd(int(eCM_CMD),".cmd(\\S+)","(.*)", &mFunCmd),
 	mCmdWho(int(eCM_WHO),".w(ho)?(\\S+) ","(.*)", &mFunWho),
-	mCmdKick(int(eCM_KICK),".(kick|drop|flood) ","(\\S+)( (.*)$)?", &mFunKick, eUR_KICK ),
+	mCmdKick(int(eCM_KICK),".(kick|drop) ","(\\S+)( (.*)$)?", &mFunKick, eUR_KICK ),
 	mCmdInfo(int(eCM_INFO),".(\\S+)info ?", "(\\S+)?", &mFunInfo),
 	mCmdPlug(int(eCM_PLUG),".plug(in|out|list|reg|reload) ","(\\S+)( (.*)$)?", &mFunPlug),
 	mCmdReport(int(eCM_REPORT),"\\+report ","(\\S+)( (.*)$)?", &mFunReport),
@@ -1542,9 +1547,9 @@ bool cDCConsole::cfWho::operator()()
 
 bool cDCConsole::cfKick::operator()()
 {
-	enum { eAC_KICK, eAC_DROP, eAC_FLOOD };
-	static const char * actionnames [] = { "kick", "drop", "flood" };
-	static const int actionids [] = { eAC_KICK, eAC_DROP, eAC_FLOOD };
+	enum { eAC_KICK, eAC_DROP };
+	static const char * actionnames [] = { "kick", "drop" };
+	static const int actionids [] = { eAC_KICK, eAC_DROP };
 
 	if (this->mConn->mpUser->mClass < eUC_VIPUSER) return false;
 	string tmp;
@@ -1575,28 +1580,6 @@ bool cDCConsole::cfKick::operator()()
 				(Action == eAC_KICK)?
 				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN):
 				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason));
-		break;
-		case eAC_FLOOD:
-			text += "\r\n";
-			other = mS->mUserList.GetUserByNick(nick);
-			if (
-				other && other->mxConn &&
-				(other->mClass < mConn->mpUser->mClass) &&
-				(other->mProtectFrom < mConn->mpUser->mClass))
-			{
-				for (i = 0; i < 10000; i++)
-				{
-					os.str(string(""));
-					os << 1000+rand()%9000 << "Flood" << i;
-					CoolNick = os.str();
-					os.str(string(""));
-					os << "$Hello " << CoolNick << "|";
-					mS->mP.Create_PM(ostr, CoolNick, nick, CoolNick, text);
-					os << ostr << "|";
-					ostr = os.str();
-					other->mxConn->Send(ostr, false);
-				}
-			}
 		break;
 		default: (*mOS) << "Not implemented" << endl;
 		return false;
@@ -1666,13 +1649,12 @@ bool cDCConsole::cfPlug::operator()()
 
 bool cDCConsole::cfRegUsr::operator()()
 {
-	enum { eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO, eAC_SEARCH };
+	enum { eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO };
 	static const char * actionnames [] = { "n","new","newuser", "del","delete", "pass","passwd", "enable",
-		"disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set","=",
-		"info", "search" };
+		"disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set","=", "info" };
 	static const int actionids [] = { eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE,
 		eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET,
-		eAC_INFO, eAC_SEARCH };
+		eAC_INFO };
 	
 	
 	if (this->mConn->mpUser->mClass < eUC_OPERATOR) return false;
@@ -1682,7 +1664,7 @@ bool cDCConsole::cfRegUsr::operator()()
 	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
 	if (Action < 0) return false;
 
-	if(Action == eAC_SEARCH) {
+	/*if(Action == eAC_SEARCH) {
 		(*mOS) << "Found nicks:\n";
 		string nick;
 		this->GetParStr(1,nick);
@@ -1690,7 +1672,7 @@ bool cDCConsole::cfRegUsr::operator()()
 		this->GetParInt(2, page);
 		this->GetParInt(3, offset);
 		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick);
-	}
+	}*/
 
 //	"!r(eg)?(\S+) ", "(\\S+)( (((\\S+) )?(.*)))?"
 	string nick, par, field;
