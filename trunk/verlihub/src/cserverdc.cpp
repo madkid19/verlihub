@@ -585,7 +585,7 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	runtime -= mStartTime;
 
 	omsg="$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
-	os << "This Hub Is Running Version " << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << " of " HUB_VERSION_NAME <<  "[RunTime:"<< runtime.AsPeriod()<<"]." << "[Current User Count:"<< mUserCountTot <<"].|";
+	os << "This hub is running version " << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << " of " HUB_VERSION_NAME <<  " (RunTime: "<< runtime.AsPeriod()<<" / Current user count: "<< mUserCountTot <<")|";
 	cDCProto::Create_Chat(omsg,mC.hub_security,os.str());
 	conn->Send(omsg, false);
 

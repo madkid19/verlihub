@@ -68,7 +68,6 @@ void cDCConf::AddVars()
 	Add("hub_desc",hub_desc,string("No Description"));
 	Add("hub_category",hub_category,string(""));
 	Add("hub_owner",hub_owner,string(""));
-	Add("hub_version",hub_version,VERSION);
 	Add("hub_version_special",hub_version_special,string(""));	
 	Add("hub_security", hub_security, string("VerliHub"));
 	Add("hub_security_desc", hub_security_desc, string("Hub-Security for broadcasting messages"));
@@ -360,7 +359,6 @@ void cDCLang::AddVars()
 int cDCConf::Load()
 {
 	mS.mSetupList.LoadFileTo(this,mS.mDBConf.config_name.c_str());
-	hub_version = VERSION;
 	return 0;
 }
 
@@ -376,7 +374,6 @@ int cDCLang::Load()
  */
 int cDCConf::Save()
 {
-	hub_version = VERSION;
 	mS.mSetupList.SaveFileTo(this,mS.mDBConf.config_name.c_str());
 	return 0;
 }

@@ -102,9 +102,6 @@ namespace nDirectConnect {
 			return DefaultRedirect[j];
 		}
 		Random(i);
-		//int rand = (int) (1.0 * i * rand/(RAND_MAX+1.0));
-		//if (rand >= i) rand = i;
-		//return redirects[rand];
 		return redirects[i];
 	}
 	
