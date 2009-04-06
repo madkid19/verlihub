@@ -2515,6 +2515,15 @@ INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
 
 
 
+{ $as_echo "$as_me:$LINENO: result: ***
+*** Checking compiler...
+***
+" >&5
+$as_echo "***
+*** Checking compiler...
+***
+" >&6; }
+
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4876,7 +4885,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4879 "configure"' > conftest.$ac_ext
+  echo '#line 4888 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7536,11 +7545,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7539: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7548: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7543: \$? = $ac_status" >&5
+   echo "$as_me:7552: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7826,11 +7835,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7829: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7838: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7833: \$? = $ac_status" >&5
+   echo "$as_me:7842: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7930,11 +7939,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7933: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7942: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7937: \$? = $ac_status" >&5
+   echo "$as_me:7946: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10343,7 +10352,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 10346 "configure"
+#line 10355 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10443,7 +10452,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 10446 "configure"
+#line 10455 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12852,11 +12861,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12855: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12864: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:12859: \$? = $ac_status" >&5
+   echo "$as_me:12868: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -12956,11 +12965,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12959: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12968: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:12963: \$? = $ac_status" >&5
+   echo "$as_me:12972: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14552,11 +14561,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14555: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14564: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14559: \$? = $ac_status" >&5
+   echo "$as_me:14568: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14656,11 +14665,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14659: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14668: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14663: \$? = $ac_status" >&5
+   echo "$as_me:14672: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16884,11 +16893,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16887: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16896: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16891: \$? = $ac_status" >&5
+   echo "$as_me:16900: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17174,11 +17183,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17177: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17186: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17181: \$? = $ac_status" >&5
+   echo "$as_me:17190: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17278,11 +17287,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17281: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17290: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:17285: \$? = $ac_status" >&5
+   echo "$as_me:17294: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -19986,6 +19995,15 @@ fi
 
 export PATH=".:$am_aux_dir:$PATH"
 
+{ $as_echo "$as_me:$LINENO: result: ***
+*** Checking 3rd party libraries (mysql, prec, geoip, zlib, etc.)...
+***
+" >&5
+$as_echo "***
+*** Checking 3rd party libraries (mysql, prec, geoip, zlib, etc.)...
+***
+" >&6; }
+
 { $as_echo "$as_me:$LINENO: checking for mysql-devel" >&5
 $as_echo_n "checking for mysql-devel... " >&6; }
 if noapos_mysql --cflags &> /dev/null; then
@@ -19994,8 +20012,8 @@ $as_echo "yes" >&6; }
 else
 	{ $as_echo "$as_me:$LINENO: result: no" >&5
 $as_echo "no" >&6; }
-	{ { $as_echo "$as_me:$LINENO: error: \"install mysql-devel or somewhere it's called mysql-dev\"" >&5
-$as_echo "$as_me: error: \"install mysql-devel or somewhere it's called mysql-dev\"" >&2;}
+	{ { $as_echo "$as_me:$LINENO: error: \"Please install mysql-devel package\"" >&5
+$as_echo "$as_me: error: \"Please install mysql-devel package\"" >&2;}
    { (exit 1); exit 1; }; }
 fi;
 
@@ -20007,11 +20025,18 @@ $as_echo "yes" >&6; }
 else
  	{ $as_echo "$as_me:$LINENO: result: no" >&5
 $as_echo "no" >&6; }
-	echo "You need to have pcre devel package or libpcre installed"
-	echo "libpcre0-devel or libpcre1-devel or something like that"
-	echo "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/"
-	{ { $as_echo "$as_me:$LINENO: error: \"install pcre-devel\"" >&5
-$as_echo "$as_me: error: \"install pcre-devel\"" >&2;}
+	{ { $as_echo "$as_me:$LINENO: error:
+	You need to install pcre devel package. Install it
+	by using package manager tools provided by your
+	distribution or download source code from:
+	ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
+	" >&5
+$as_echo "$as_me: error:
+	You need to install pcre devel package. Install it
+	by using package manager tools provided by your
+	distribution or download source code from:
+	ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
+	" >&2;}
    { (exit 1); exit 1; }; }
 fi;
 
@@ -20517,7 +20542,7 @@ else
   MYSQL_LIBS="$ac_save_MYSQL_LIBS"
   MYSQL_VERSION="$ac_save_MYSQL_VERSION"
 
-		    echo "Instal mysql devel"
+		    echo "Please install mysql devel package"
 		    exit -1
 
 fi
@@ -21011,7 +21036,7 @@ PCRE_LIBS="$ac_cv_path_lib_pcre_libs"
 PCRE_VERSION="$ac_cv_path_lib_pcre_version"
 # Run code which depends upon the test result.
 if test x$ac_cv_path_lib_pcre_present = xyes ; then
-  hey b
+
 			CXXFLAGS="$CXXFLAGS $PCRE_CFLAGS"
 			echo "adding $PCRE_CFLAGS to CXXFLAGS"
 			echo "adding $PCRE_LIBS to LDFLAGS"
@@ -21527,7 +21552,8 @@ else
   GEOIP_LIBS="$ac_save_GEOIP_LIBS"
   GEOIP_VERSION="$ac_save_GEOIP_VERSION"
 
-		      echo "Try to get GeoIP here: http://www.maxmind.com/download/geoip/api/c/"
+		      echo "Please download and install GeoIP package from:"
+			   "http://www.maxmind.com/download/geoip/api/c/"
 		      exit -1
 
 fi
@@ -21990,7 +22016,7 @@ _ACEOF
 
 fi
 
-#AC_CHECK_LIB([z], [z],[AC_SUBST(ZLIB_LIBS,"-lzlib")],AC_ERROR("Please install zlib library"))
+#AC_CHECK_LIB([z], [z],[AC_SUBST(ZLIB_LIBS,"-lzlib")], AC_ERROR("Please install zlib library"))
 
 { $as_echo "$as_me:$LINENO: checking for MD5 in -lssl" >&5
 $as_echo_n "checking for MD5 in -lssl... " >&6; }
@@ -22136,7 +22162,7 @@ if test "x$ac_cv_lib_dl_dlopen" = x""yes; then
 
 	      echo "dlopen is in libdl"
 else
-  echo "dlopen is NOt defined in ldl"
+  echo "dlopen is not defined in ldl"
 fi
 
 { $as_echo "$as_me:$LINENO: checking for dlopen in -lc" >&5
@@ -22722,7 +22748,14 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 
-# Checks for header files.
+{ $as_echo "$as_me:$LINENO: result: ***
+*** Checking header files...
+***
+" >&5
+$as_echo "***
+*** Checking header files...
+***
+" >&6; }
 
 
 
@@ -25965,7 +25998,6 @@ $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
 
-echo $LIBS
 echo
 echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
 echo "Configure has completed successfully. Now you must run make."
