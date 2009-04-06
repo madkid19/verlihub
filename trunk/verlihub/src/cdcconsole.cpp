@@ -1533,6 +1533,12 @@ bool cDCConsole::cfWho::operator()()
 			actionName = "range";
 		break;
 		case eAC_CC:
+			if(tmp.size() != 2) {
+				(*mOS) << "Country Code must be 2 characters long (for ex. US)";
+				return false;
+			}
+			
+			tmp = toUpper(tmp);
 			cnt = mS->WhoCC(tmp, userlist, separator);
 			actionName = "country code";
 		break;
