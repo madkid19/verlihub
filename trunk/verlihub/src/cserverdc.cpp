@@ -436,7 +436,7 @@ bool cServerDC::RemoveNick(cUser *User)
 	//cout << "Leave: " << User->mNick << " count = " << this->mUserList.size() << " then ";
 	if(mUserList.ContainsHash(Hash)) {
 		#ifndef WITHOUT_PLUGINS
-		mCallBacks.mOnUserLogout.CallAll(User);
+		if(User->mxConn->GetLSFlag(eLS_LOGIN_DONE)) mOnUserLogout.CallAll(User);
 		#endif
                 // make sure that the user we want to remove is the correct one!
                 cUser *other = mUserList.GetUserByNick(User->mNick);
@@ -1348,9 +1348,9 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 	if (conn)
 	{
 		if(!mUseDNS && mC.report_dns_lookup) conn->DNSLookup();
-		os <<"IP=' " << conn->AddrIP() <<" ' Host=' " << conn->AddrHost() <<" ' ";
+		os << "IP=' " << conn->AddrIP() <<" ' Host=' " << conn->AddrHost() <<" ' ";
 		if (conn->mpUser)
-		os << "User=' " << conn->mpUser->mNick << " ' ";
+			os << "User=' " << conn->mpUser->mNick << " ' ";
 		if (!ToMain && this->mOpChat)
 		{
 			this->mOpChat->SendPMToAll(os.str(), NULL);
