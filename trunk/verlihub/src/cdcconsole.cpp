@@ -237,7 +237,6 @@ int cDCConsole:: CmdGetip(istringstream &cmd_line, cConnDC *conn)
 	ostringstream os;
 	string s;
 	cUser * user;
-
 	while(cmd_line.good())
 	{
 		cmd_line >> s;
@@ -393,7 +392,7 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
                 mOwner->DCPublicHS(ostr.str(), conn);
 		return 1;
 	}
-
+	cc_zone = toUpper(cc_zone);
 	mOwner->mP.Create_PMForBroadcast(start,end,mOwner->mC.hub_security, conn->mpUser->mNick ,str);
 	mOwner->SendToAllWithNickCC(start,end, cl_min, cl_max, cc_zone);
 	if ( mOwner->LastBCNick != "disable")
