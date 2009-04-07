@@ -550,11 +550,12 @@ int cServerDC::SendToAllWithNick(const string &start,const string &end, int cm,i
 	return counter;
 }
 
-void cServerDC::SendToAllWithNickCC(const string &start,const string &end, int cm,int cM, const string &cc_zone)
+int cServerDC::SendToAllWithNickCC(const string &start,const string &end, int cm,int cM, const string &cc_zone)
 {
 	static string str;
 	cConnDC *conn;
 	tCLIt i;
+	int counter = 0;
 	for(i=mConnList.begin(); i!= mConnList.end(); i++)
 	{
 		conn=(cConnDC *)(*i);
@@ -570,8 +571,10 @@ void cServerDC::SendToAllWithNickCC(const string &start,const string &end, int c
 		{
 			str=start + conn->mpUser->mNick + end + "|";
 			conn->Send(str, false);
+			counter++;
 		}
 	}
+	return counter;
 }
 
 /** return negative if conn should be removed */

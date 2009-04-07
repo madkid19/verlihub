@@ -394,9 +394,14 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 	}
 	cc_zone = toUpper(cc_zone);
 	mOwner->mP.Create_PMForBroadcast(start,end,mOwner->mC.hub_security, conn->mpUser->mNick ,str);
-	mOwner->SendToAllWithNickCC(start,end, cl_min, cl_max, cc_zone);
+	
+	cTime TimeBefore, TimeAfter;
 	if ( mOwner->LastBCNick != "disable")
 		mOwner->LastBCNick = conn->mpUser->mNick;
+	int count = mOwner->SendToAllWithNickCC(start,end, cl_min, cl_max, cc_zone);
+	TimeAfter.Get();
+	ostr << "Message delivered to " << count << " users in zone " << cc_zone << " in : " << (TimeAfter-TimeBefore).AsPeriod();
+	mOwner->DCPublicHS(ostr.str(), conn);
 	return 1;
 }
 

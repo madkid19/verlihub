@@ -226,7 +226,7 @@ public:
 	void SendToAll(string &str, int cm,int cM);
 	/** sends to every user data composed by start+nick+end */
 	int SendToAllWithNick(const string &start,const string &end, int cm,int cM);
-	void SendToAllWithNickCC(const string &start,const string &end, int cm,int cM, const string &cc_zone);
+	int SendToAllWithNickCC(const string &start,const string &end, int cm,int cM, const string &cc_zone);
 	/** The message filter, decides what to do with the message */
 	tMsgAct Filter( tDCMsg msg, cConnDC * conn );
 	int SaveFile(const string &file, const string &text);
