@@ -211,7 +211,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	}
 	
 	// Check the max_users limit
-	if( (conn->GetTheoricalClass() < eUC_ADMIN) &&
+	if( (conn->GetTheoricalClass() < eUC_OPERATOR) &&
 		((mS->mUserCountTot >= limit) ||  boolLimit)
 	) {
 		os << mS->mC.msg_hub_full << "\r\nOnline users =" << mS->mUserCountTot;
