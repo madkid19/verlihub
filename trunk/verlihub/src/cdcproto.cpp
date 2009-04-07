@@ -1379,6 +1379,7 @@ int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 		else if(feature == "NoHello") conn->mFeatures |= eSF_NOHELLO;
 		else if(feature == "NoGetINFO") conn->mFeatures |= eSF_NOGETINFO;
 		else if(feature == "QuickList") conn->mFeatures |= eSF_QUICKLIST;
+		else if(feature == "BotINFO") conn->mFeatures |= eSF_BOTINFO;
 		else if(feature == "ZPipe0") conn->mFeatures |= eSF_ZLIB;
 	}
 	conn->Send(omsg);
@@ -1579,6 +1580,10 @@ int cDCProto::DCO_GetBanList(cMessageDC * msg, cConnDC * conn)
 int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
+	if(!(conn->mFeatures & eSF_BOTINFO)) {
+		if(conn->Log(2)) conn->LogStream() << "User " << conn->mpUser->mNick << " sent $BotINFO but BotINFO extension is not set in $Support" << endl;
+		return 0;
+	}
 	if(conn->Log(2)) conn->LogStream() << "Bot visit: " << msg->ChunkString(eCH_1_PARAM) << endl;
 	ostringstream os;
 	if(mS->mC.botinfo_report) mS->ReportUserToOpchat(conn,"The following BOT has just entered the hub :"+msg->ChunkString(eCH_1_PARAM));

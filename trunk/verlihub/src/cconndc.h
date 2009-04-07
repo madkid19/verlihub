@@ -76,7 +76,8 @@ typedef enum
 	eSF_NOGETINFO = 1 << 2, //< NoGetINFO
 	eSF_PASSIVE   = 1 << 3, //< passive users, they don't get passive search
 	eSF_QUICKLIST = 1 << 4, //< a quicklist extention
- 	eSF_ZLIB = 1 << 5 //< ZPipe extention
+	eSF_BOTINFO   = 1 << 5, // BOTInfo extention
+ 	eSF_ZLIB      = 1 << 6 //< ZPipe extention
 }tSupportFeature;
 
 /**  \brief DC user's connection type
