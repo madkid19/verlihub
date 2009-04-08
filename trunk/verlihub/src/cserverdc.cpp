@@ -436,7 +436,7 @@ bool cServerDC::RemoveNick(cUser *User)
 	//cout << "Leave: " << User->mNick << " count = " << this->mUserList.size() << " then ";
 	if(mUserList.ContainsHash(Hash)) {
 		#ifndef WITHOUT_PLUGINS
-		if(User->mxConn->GetLSFlag(eLS_LOGIN_DONE)) mCallBacks.mOnUserLogout.CallAll(User);
+		if(User->mxConn && User->mxConn->GetLSFlag(eLS_LOGIN_DONE)) mCallBacks.mOnUserLogout.CallAll(User);
 		#endif
                 // make sure that the user we want to remove is the correct one!
                 cUser *other = mUserList.GetUserByNick(User->mNick);
