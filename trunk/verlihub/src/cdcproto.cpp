@@ -336,7 +336,7 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 		omsg = "$BadPass";
 		conn->Send(omsg);
 		// User is regged so report it
-		if(conn->mRegInfo) {
+		if(conn->mRegInfo && conn->mRegInfo->getClass() > 0) {
 			if(mS->mC.wrongpassword_report) mS->ReportUserToOpchat(conn,"Wrong password");
 			omsg = "You provided an incorrect password and have been temporarily banned.";
 			mS->mBanList->AddNickTempBan(conn->mpUser->mNick, mS->mTime.Sec() + mS->mC.pwd_tmpban, omsg);
