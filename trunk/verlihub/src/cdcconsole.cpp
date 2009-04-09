@@ -1048,8 +1048,6 @@ bool cDCConsole::cfBan::operator()()
 	enum { BAN_BAN, BAN_UNBAN, BAN_INFO, BAN_LIST };
 	static const char *prefixnames[]={"add", "new", "rm", "del", "un", "info", "check", "list", "ls" };
 	static const int prefixids[]= { BAN_BAN, BAN_BAN, BAN_UNBAN, BAN_UNBAN, BAN_UNBAN, BAN_INFO, BAN_INFO, BAN_LIST, BAN_LIST};
-
-	if (this->mConn->mpUser->mClass < eUC_OPERATOR) return false;
 	
 	cBan Ban(mS);
 	int BanType = cBan::eBF_NICKIP;
