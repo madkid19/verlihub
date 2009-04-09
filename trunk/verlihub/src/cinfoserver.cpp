@@ -116,7 +116,12 @@ void cInfoServer::Output(ostream &os, int Class)
 	theTime = mServer->mTime;
 	theTime -= mServer->mStartTime;
 	os << "[::] Uptime count: " << theTime.AsPeriod() << "\r\n";
-	os << "[::] Server frequency: " << mServer->mFrequency.GetMean(mServer->mTime) << "\r\n";
+	os << "[::] Server frequency: " << mServer->mFrequency.GetMean(mServer->mTime)  << "( ";
+	if (mServer->mSysLoad >= eSL_CRITICAL) os << "Recovery mode";
+	if (mServer->mSysLoad >= eSL_SQEEZY) os << "Near capacity mode";
+	if (mServer->mSysLoad >= eSL_HURRY) os << "Progressive mode";
+	if (mServer->mSysLoad >= eSL_COOL) os << "Normal mode";
+	os << ")\r\n";
 	for(it = begin(); it != end(); ++it)
 		os << (*it)->mName << " : " << *(*it) << "\r\n";
 	os << "[::] Current online users: " << mServer->mUserCountTot << "\r\n";;
