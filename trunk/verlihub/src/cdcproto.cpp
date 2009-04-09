@@ -626,7 +626,6 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		default: break;
 		}
 	}
-
 	if(mS->mC.show_desc_len >= 0) {
 		desc.assign(desc,0,mS->mC.show_desc_len);
 	}

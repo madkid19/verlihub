@@ -137,7 +137,7 @@ STRIP = strip
 VERLIHUB_CFLAGS = -I/usr/local/include -I/usr/local/include/verlihub -I/usr/include/mysql -DPIC -DHAVE_ERRNO_AS_DEFINE=1 -I/usr/include
 VERLIHUB_CONFIG = /usr/local/bin/verlihub_config
 VERLIHUB_LIBS = -L/usr/lib64 -lpcre -Wl,-O1 -rdynamic -L/usr/lib64/mysql -lmysqlclient -lz -lcrypt -lnsl -lm -L/usr/lib64 -lssl -lcrypto -lc -lcrypt -L/usr/lib -lGeoIP -pthread -L/usr/local/lib -lverlihub
-VERLIHUB_VERSION = verlihub version: 0.9.8e Saturday March 28 2009
+VERLIHUB_VERSION = verlihub version: 0.9.8e Saturday April 4 2009
 VERSION = 1.7RC4
 ac_ct_CC = gcc
 ac_ct_CXX = g++

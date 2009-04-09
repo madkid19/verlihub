@@ -377,7 +377,7 @@ const char *cTriggerConsole::CmdSuffix(){ return "trigger";}
 
   */
 
-const char *cTriggerConsole::CmdPrefix(){ return "!";}
+  const char *cTriggerConsole::CmdPrefix(){ return "!"; }
 
   /**
 
