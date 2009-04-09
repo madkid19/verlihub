@@ -1590,7 +1590,7 @@ int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 	if(!(conn->mFeatures & eSF_BOTINFO)) {
 		if(conn->Log(2)) conn->LogStream() << "User " << conn->mpUser->mNick << " sent $BotINFO but BotINFO extension is not set in $Supports" << endl;
 		string msg = "You cannot send $BotINFO because BotINFO extension is not set in $Supports";
-		conn->Send(msg);
+		mS->DCPublicHS(msg, conn);
 		return 0;
 	}
 	if(conn->Log(2)) conn->LogStream() << "Bot visit: " << msg->ChunkString(eCH_1_PARAM) << endl;
