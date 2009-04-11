@@ -340,15 +340,14 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 	}
 	else // wrong password
 	{
-		omsg = "$BadPass";
-		conn->Send(omsg);
-		// User is regged so report it
+	      // User is regged so report it
 		if(conn->mRegInfo && conn->mRegInfo->getClass() > 0) {
-			if(mS->mC.wrongpassword_report) mS->ReportUserToOpchat(conn,"Wrong password");
+			omsg = "$BadPass";
+			conn->Send(omsg);
+		 	if(mS->mC.wrongpassword_report) mS->ReportUserToOpchat(conn,"Wrong password");
 			omsg = "You provided an incorrect password and have been temporarily banned.";
 			mS->mBanList->AddNickTempBan(conn->mpUser->mNick, mS->mTime.Sec() + mS->mC.pwd_tmpban, omsg);
 		
-
 			mS->mR->LoginError(conn, conn->mpUser->mNick);
 			if(conn->Log(2)) conn->LogStream() << "Wrong password, banned for " << mS->mC.pwd_tmpban <<" seconds" << endl;
 			mS->ConnCloseMsg(conn, omsg, 2000, eCR_PASSWORD);
@@ -611,7 +610,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 
 	// if tag isn't valid, tell it the user
 	// check hubs / slots etc...
-	string myinfo_full, myinfo_basic,desc, email, speed;
+	string myinfo_full, myinfo_basic,desc, email, speed, share;
 
 
 	//$MyINFO $ALL <nick> <interest>$ $<speed>$<e-mail>$<sharesize>$
@@ -641,27 +640,20 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	} else {
 		speed = msg->ChunkString(eCH_MI_SPEED);
 	}
-
+	
 	if(conn->mpUser->mHideShare == true) {
-		Create_MyINFO(
-			myinfo_basic,
-			msg->ChunkString(eCH_MI_NICK),
-			desc,
-			speed,
-			email,
-			"0"
-			);
+		share = "0";
 	} else {
-
+		share = msg->ChunkString(eCH_MI_SIZE);
+	}
 	Create_MyINFO(
 		myinfo_basic,
 		msg->ChunkString(eCH_MI_NICK),
-	 	desc,
+		desc,
 		speed,
 		email,
-		msg->ChunkString(eCH_MI_SIZE)
+		share
 		);
-	}
 	// OPS have hidden myinfo
 	if (( conn->mpUser->mClass >= eUC_OPERATOR) && (mS->mC.show_tags < 3))
 		myinfo_full = myinfo_basic;

@@ -58,7 +58,7 @@ void cTriggers::AddFields()
 {
 	AddCol("command", "varchar(15)", "", false, mModel.mCommand);
 	AddPrimaryKey("command");
-	AddCol("send_as", "varchar(15)", "hub-security", true, mModel.mSendAs);
+	AddCol("send_as", "varchar(25)", "hub-security", true, mModel.mSendAs);
 	AddCol("def", "text", "", true, mModel.mDefinition);
 	AddCol("descr", "text", "", true, mModel.mDescription);
 	AddCol("min_class", "int(2)", "", true, mModel.mMinClass);
