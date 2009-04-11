@@ -240,6 +240,7 @@ int cDCConsole:: CmdGetip(istringstream &cmd_line, cConnDC *conn)
 	while(cmd_line.good())
 	{
 		cmd_line >> s;
+		if(cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
 		if(user && user-> mxConn )
 			os << mOwner->mL.user << ": " << s << mOwner->mL.ip << ": " << user->mxConn->AddrIP() << endl;
@@ -272,6 +273,7 @@ int cDCConsole::CmdGethost(istringstream &cmd_line , cConnDC *conn)
 	while(cmd_line.good())
 	{
 		cmd_line >> s;
+		if(cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
 		if(user && user->mxConn)
 		{
@@ -294,6 +296,7 @@ int cDCConsole::CmdGetinfo(istringstream &cmd_line , cConnDC *conn )
 	while(cmd_line.good())
 	{
 		cmd_line >> s;
+		if(cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
 		if(user && user->mxConn)
 		{
@@ -476,20 +479,17 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg, regnick, prefix;
-	if (mOwner->mC.disable_regme_cmd)
-		{
+	if (mOwner->mC.disable_regme_cmd) {
 		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
 		return 1;
-		}
-	if(mOwner->mC.autoreg_class > 3)
-	{
+	}
+	if(mOwner->mC.autoreg_class > 3) {
 		mOwner->DCPublicHS("Registration failed; please contact an operator for more help.",conn);
 		return 1;
 	}
 	__int64 user_share, min_share;	
 	
 	if(mOwner->mC.autoreg_class >= 0) {
-		
 		if(!conn->mpUser) {
 			// this should never occur
 			return 0;
@@ -834,6 +834,7 @@ int cDCConsole::CmdHideKick(istringstream &cmd_line, cConnDC *conn)
 	while(cmd_line.good())
 	{
 		cmd_line >> s;
+		if(cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
 		if(user && user-> mxConn && user->mClass < conn->mpUser->mClass)
 		{
@@ -861,6 +862,7 @@ int cDCConsole::CmdUnHideKick(istringstream &cmd_line, cConnDC *conn)
 	while(cmd_line.good())
 	{
 		cmd_line >> s;
+		if(cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
 		if(user && user-> mxConn && user->mClass < conn->mpUser->mClass)
 		{
