@@ -145,19 +145,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	  ReplaceVarInString(buf, "MM",buf, tmf);
 	  ReplaceVarInString(buf, "YY",buf, 1900 + lt.tm_year);
 	  
-	}
-	
-	if (mFlags & eTF_EXECUTE && server.mDBConf.allow_exec) {
-	  string command(buf);
-	  filename = server.mConfigBaseDir;
-	  filename.append("/tmp/trigger.tmp");
-	  command.append(" > ");
-	  command.append(filename);
-	  system(command.c_str());
-	  buf = "";
-	  if (!LoadFileInString(filename,buf)) return 0;
-	}
-	
+	}	
 	
 	if(timeTrigger) {
 	  server.DCPublicToAll(sender,buf);

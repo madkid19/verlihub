@@ -65,7 +65,6 @@ void cTriggers::AddFields()
 	AddCol("max_class", "int(2)", "10", true, mModel.mMaxClass);
 	AddCol("flags", "int(2)", "0", true, mModel.mFlags);
 	AddCol("seconds", "int(15)", "0", true, mModel.mSeconds);
-	//AddCol("last_trigger", "int(15)", "0", true, mModel.mLastTrigger);
 	mMySQLTable.mExtra = "PRIMARY KEY(command)";
 	SetBaseTo(&mModel);
 }
@@ -330,11 +329,6 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 	cmd->GetParStr(eADD_TIMEOUT,sTimeout);
 	tmp.mSeconds = mOwner->mServer->Str2Period(sTimeout,*cmd->mOS);
 	
-	
-	if (!mOwner->mServer->mDBConf.allow_exec_mod && (tmp.mFlags & cTrigger::eTF_EXECUTE)) {
-		*cmd->mOS << "Execute command flag is disabled from config";
-		return false;
-	}
 	bool checkDefinition = !(tmp.mFlags & cTrigger::eTF_DB);
 	if(CmdID == eLC_ADD && checkDefinition && !CheckData(cmd,tmp)) {
 		return false;
