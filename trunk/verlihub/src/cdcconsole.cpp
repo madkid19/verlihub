@@ -923,8 +923,9 @@ int cDCConsole::CmdReload(istringstream &cmd_line, cConnDC *conn)
 {
 	ostringstream os;
 
-	os << "Reloading triggers ,configuration and reglist cache." << endl;
+	os << "Reloading triggers, custom redirects, configuration and reglist cache..." << endl;
 	mTriggers->ReloadAll();
+	mRedirects->ReloadAll();
 	mOwner->mC.Load();
 	mOwner->DCPublicHS(os.str().c_str(),conn);
 	if (mOwner->mC.use_reglist_cache) mOwner->mR->UpdateCache();
