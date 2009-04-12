@@ -610,7 +610,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 
 	// if tag isn't valid, tell it the user
 	// check hubs / slots etc...
-	string myinfo_full, myinfo_basic,desc, email, speed, share;
+	string myinfo_full, myinfo_basic,desc, email, speed, sShare;
 
 
 	//$MyINFO $ALL <nick> <interest>$ $<speed>$<e-mail>$<sharesize>$
@@ -642,9 +642,9 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	}
 	
 	if(conn->mpUser->mHideShare == true) {
-		share = "0";
+		sShare = "0";
 	} else {
-		share = msg->ChunkString(eCH_MI_SIZE);
+		sShare = msg->ChunkString(eCH_MI_SIZE);
 	}
 	Create_MyINFO(
 		myinfo_basic,
@@ -652,7 +652,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		desc,
 		speed,
 		email,
-		share
+		sShare
 		);
 	// OPS have hidden myinfo
 	if (( conn->mpUser->mClass >= eUC_OPERATOR) && (mS->mC.show_tags < 3))
