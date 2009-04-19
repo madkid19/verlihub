@@ -23,7 +23,7 @@
 #include "cinfoserver.h"
 #include "cserverdc.h"
 #include "curr_date_time.h"
-#if ! defined _WIN32
+#if ! defined _WIN32 || ! defined HAVE_FREEBSD
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
 #include <sys/time.h>
@@ -66,7 +66,7 @@ string cInfoServer::converByte(__int64 byte, bool UnitType)
 
 void cInfoServer::SystemInfo(ostream &os)
 {
-	#if ! defined _WIN32
+	#if ! defined _WIN32 || ! defined HAVE_FREEBSD
 	struct sysinfo serverInfo;
 	if(sysinfo(&serverInfo)) {
 		os << "Cannot retrive system information";
