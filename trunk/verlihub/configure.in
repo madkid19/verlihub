@@ -23,6 +23,34 @@ AC_ARG_ENABLE(profiling,[   --enable-profiling compiles the program to be tested
 
 
 export PATH=".:$am_aux_dir:$PATH"
+dnl Get the OS type
+AC_CANONICAL_HOST
+case $host in
+ *-*-linux*)
+   SYSTEM=LINUX
+   AC_DEFINE(HAVE_LINUX, 1,  Linux environment)
+   ;;
+ *-*-cygwin*)
+   SYSTEM=CYGWIN
+   AC_DEFINE(HAVE_CYGWIN, 1,  Cygwin environment)
+   ;;
+ *-*-solaris*)
+   SYSTEM=SOLARIS
+   AC_DEFINE(HAVE_SOLARIS, 1,  Solaris environment)
+   ;;
+ *-*-freebsd*)
+   SYSTEM=FREEBSD
+   AC_DEFINE(HAVE_FREEBSD, 1,  Freebsd environment)
+   ;;
+ *-*-hp*)
+   SYSTEM=HP
+   AC_DEFINE(HAVE_HP, 1,  Hp environment)
+   ;;
+ *)
+   SYSTEM=UNKNOWN
+   ;;
+esac
+echo "Your OS is $host"
 
 AC_MSG_RESULT([***
 *** Checking 3rd party libraries (mysql, prec, geoip, zlib, etc.)...
@@ -66,7 +94,7 @@ AC_PATH_LIB(pcre, [3.0.0 -nocheck], [], noapos_pcre, [], [
 			echo "adding $PCRE_CFLAGS to CXXFLAGS"
 			echo "adding $PCRE_LIBS to LDFLAGS"
 		    ], [
-			echo "Instal pcre devel"
+			echo "Install pcre devel"
 			exit -1
 		    ])
 
