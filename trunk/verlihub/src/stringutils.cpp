@@ -3,6 +3,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <sys/param.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -82,10 +83,12 @@ void ExpandPath(string &Path)
 {
 	if(Path.substr(0,2) == "./") {
 		string tmp = Path;
-#if ! defined _WIN32
+#if defined HAVE_LINUX
 		Path = get_current_dir_name();
+#elif define HAVE_FREEBSD
+		Path = getcwd(NULL, MAXPATHLEN);
 #else
-		//dest = GetCurrentDirectory(); FIXME
+		Path = GetCurrentDirectory(); //FIXME
 #endif
 		Path += "/" + tmp.substr(2,tmp.length());
 	}
