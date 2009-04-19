@@ -55,7 +55,7 @@ CRYPT_LIBS = -lcrypt
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -I/usr/src/include/ -I/usr/include/mysql -DPIC -DHAVE_ERRNO_AS_DEFINE=1  -I/usr/include
+CXXFLAGS = -g -O2 -I/usr/src/include/ -I/usr/include/mysql -DHAVE_ERRNO_AS_DEFINE=1  -I/usr/include
 CYGPATH_W = echo
 DEBUG_FALSE = 
 DEBUG_TRUE = #
@@ -88,10 +88,10 @@ MAINT = #
 MAINTAINER_MODE_FALSE = 
 MAINTAINER_MODE_TRUE = #
 MAKEINFO = ${SHELL} /home/netcelli/Verliproject/trunk_bk/trunk/verlihub/missing --run makeinfo
-MYSQL_CFLAGS = -I/usr/include/mysql -DPIC -DHAVE_ERRNO_AS_DEFINE=1
+MYSQL_CFLAGS = -I/usr/include/mysql -DHAVE_ERRNO_AS_DEFINE=1
 MYSQL_CONFIG = ./noapos_mysql
 MYSQL_LIBS = -Wl,-O1 -rdynamic -L/usr/lib64/mysql -lmysqlclient -lz -lcrypt -lnsl -lm -L/usr/lib64 -lssl -lcrypto
-MYSQL_VERSION = 5.0.70
+MYSQL_VERSION = 5.0.76
 OBJEXT = o
 PACKAGE = verlihub
 PACKAGE_BUGREPORT = 
