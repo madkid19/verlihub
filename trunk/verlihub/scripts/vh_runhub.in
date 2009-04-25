@@ -8,7 +8,7 @@ function die
 
 function getMySQLSocket
 {
-  MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf /var/db/mysql/my.cnf"
+  MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf /var/db/mysql/my.cnf ~/.my.cnf"
   for FILE in $MYSQL_CONF
     do
       if [ -r $FILE ]; then
