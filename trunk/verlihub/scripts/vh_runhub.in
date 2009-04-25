@@ -8,15 +8,13 @@ function die
 
 function getMySQLSocket
 {
-  MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf"
+  MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf /var/db/mysql/my.cnf"
   for FILE in $MYSQL_CONF
     do
       if [ -r $FILE ]; then
         SOCKET=$(cat $FILE | grep "^socket" | head -n 1 | cut -d"=" -f2| tr -d " ")
         fi
-        done
-        
-        
+        done     
 }
 
 function showHelp
