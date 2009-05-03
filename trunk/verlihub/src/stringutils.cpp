@@ -85,7 +85,7 @@ void ExpandPath(string &Path)
 		string tmp = Path;
 #if defined HAVE_LINUX
 		Path = get_current_dir_name();
-#elif define HAVE_FREEBSD
+#elif defined HAVE_FREEBSD
 		Path = getcwd(NULL, MAXPATHLEN);
 #else
 		Path = GetCurrentDirectory(); //FIXME
