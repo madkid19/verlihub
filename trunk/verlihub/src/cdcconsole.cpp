@@ -1717,14 +1717,14 @@ bool cDCConsole::cfRegUsr::operator()()
 	bool RegFound = mS->mR->FindRegInfo(ui, nick);
 	bool authorized = false;
 
+	if (mS->mC.classdif_reg > 10) {
+		(*mOS) << "Invalid classdif_reg value. Must be between 1 and 5. Please correct this first!";
+		return false;
+	}
 	// check rights
-
 	if (RegFound)
 	{
-		if (mS->mC.classdif_reg > 10)
-		{	(*mOS) << "Invalid classdif_reg value. Must be between 1 and 5. Please correct this first!";
-			return false;
-		}
+		
 		if ((MyClass < eUC_MASTER) && !(
 			(MyClass >= (ui.mClass+mS->mC.classdif_reg) &&
 			MyClass >= (ui.mClassProtect)) ||
