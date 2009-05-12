@@ -36,6 +36,7 @@ namespace nDirectConnect {
 	void cRedirects::AddFields()
 	{
 		AddCol("address", "varchar(125)", "", false, mModel.mAddress);
+		AddPrimaryKey("address");
 		AddCol("flag", "tinyint(2)", "", false, mModel.mFlag);
 		AddCol("enable", "tinyint(1)", "1", true, mModel.mEnable);
 		mMySQLTable.mExtra = "PRIMARY KEY(address)";
@@ -182,7 +183,7 @@ namespace nDirectConnect {
 
 	bool cRedirectConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cRedirect &data)
 	{
-		enum { //!addredirect address -t 1 -a 1
+		enum {
 			eADD_ALL, 
    			eADD_ADDRESS, eADD_CHOICE,
    			eADD_FLAGp, eADD_FLAG,
