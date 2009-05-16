@@ -45,7 +45,6 @@ fi;
 if [ "$password" != "" ]; then
 	fields="$fields,login_pwd,pwd_change,pwd_crypt"
 	values="$values,encrypt('$password'),0,1"
-	echo $values
 fi;
 
 query="INSERT INTO reglist ($fields) VALUES ($values)";

@@ -2372,7 +2372,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=lua
- VERSION=1.7RC4
+ VERSION=1.8
 
 
 cat >>confdefs.h <<_ACEOF
@@ -23511,6 +23511,8 @@ $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
 
+echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
+echo "				Lua Plugin			   "
 echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
 echo "Configure has completed successfully. Now you must run make."
 echo "If make fails with errors, please consult the forums and see"

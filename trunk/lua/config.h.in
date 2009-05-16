@@ -36,7 +36,7 @@
 /* Define to 1 if you have the <lualib.h> header file. */
 #undef HAVE_LUALIB_H
 
-/* Define to use Lua 5.1 */
+/* Define to use Lua 5.0 */
 #undef HAVE_LUA_5_0
 
 /* Define to use Lua 5.1 */

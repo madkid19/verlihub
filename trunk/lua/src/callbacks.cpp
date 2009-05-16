@@ -41,6 +41,7 @@ extern "C"
 #include <verlihub/script_api.h>
 #include <iostream>
 #include <string>
+#define lua_tablepush(L, key, value) lua_pushstring(L, key); lua_pushnumber(L, value); lua_settable(L, -3);
 
 using namespace std;
 using namespace nDirectConnect;
@@ -902,114 +903,14 @@ int _ReportUser(lua_State *L)
 */
 int _SetTempRights(lua_State *L)
 {
-	string nick, temp;
-	int rights[3];
-	
-	if(lua_gettop(L) == 3) {
-		if(!lua_isstring(L, 2)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		nick = (char *) lua_tostring(L, 2);
-		if(!lua_istable(L, 3)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		char * keys[] = { "ctm", "pm", "mc", NULL };
-		int i = 0;
-		while (keys[i] != NULL) {
-			cout << "Key is " << keys[i] << endl;
-			lua_pushstring(L, (char*) keys[i]);
-			cout << "Pushed key" << endl;
-			lua_gettable(L, -2);
-			cout << "Getting value out of the stack" << endl;
-			cout << " and value from key ctm is " << lua_tonumber(L, -1) << endl;
-			if(keys[i] == "mc") {
-			//	rights[2] = (int) lua_tonumber(L, -1);
-			} else if(keys[i] == "pm") {
-			//	rights[1] = (int) lua_tonumber(L, -1);
-			}
-			else if(keys[i] == "ctm") {
-			//	rights[0] = (int) lua_tonumber(L, -1);
-			} else {
-				luaL_error(L, "Error calling VH:SetTempRights; provided an invalid table");
-				lua_pushboolean(L, 0);
-				lua_pushnil(L);
-			}
-			i++;
-		}
-		/*
-		for(int i = 0; i < 3; i++) {
-			cout << "Value is " << (int) lua_tonumber(L, -1) << endl;
-			if(!lua_isnumber(L, -1)) {
-				luaL_error(L, "Error calling VH:SetTempRights; value must be an integer");
-				lua_pushboolean(L, 0);
-				lua_pushnil(L);
-			}
-			temp = (char *) lua_tostring(L, -2);
-			cout << "Key found is " << temp << " and it's value is " << (int) lua_tonumber(L, -1) << endl;;
-			if(temp == "mc") {
-				rights[2] = (int) lua_tonumber(L, -1);
-			} else if(temp == "pm") {
-				rights[1] = (int) lua_tonumber(L, -1);
-			}
-			else if(temp == "ctm") {
-				rights[0] = (int) lua_tonumber(L, -1);
-			} else {
-				luaL_error(L, "Error calling VH:SetTempRights; provided an invalid table");
-				lua_pushboolean(L, 0);
-				lua_pushnil(L);
-			}
-			lua_pop(L, 1);
-		}
-		lua_pop(L, 1);		*/
-	} else {
-		luaL_error(L, "Error calling VH:SetTempRights; expected 3 argument but got %d", lua_gettop(L) -1);
-		lua_pushboolean(L, 0);
-		lua_pushnil(L);
-		return 2;
-	}
-	
+	luaL_error(L, "VH:SetTempRights not implemented yet");
+	return 2;
 }
 
 int _GetTempRights(lua_State *L)
 {
-	string nick;
-	int rights[3];
-	if(lua_gettop(L) == 2) {
-		if(!lua_isstring(L, 2)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		nick = (char *) lua_tostring(L, 2);
-		if(GetTempRights((char *) nick.c_str(), rights)) {
-
-		
-			lua_newtable(L);
-			int k = lua_gettop(L);
-			lua_pushliteral(L, "mc");
-			lua_pushnumber(L, rights[2]);
-			lua_rawset(L, k);
-			
-			lua_pushliteral(L, "pm");
-			lua_pushnumber(L, rights[1]);
-			lua_rawset(L, k);
-
-			lua_pushliteral(L, "ctm");
-			lua_pushnumber(L, rights[0]);
-			lua_rawset(L, k);
-			return 1;
-		} else {
-			luaerror(L, "User not found");
-			return 2;
-		}
-		
-	} else {
-		luaL_error(L, "Error calling VH:GetTempRights; expected 1 argument but got %d", lua_gettop(L) -1);
-		lua_pushboolean(L, 0);
-		lua_pushnil(L);
-		return 2;
-	}	
+	luaL_error(L, "VH:GetTempRights not implemented yet");
+	return 2
 }
 
 cLuaInterpreter *FindLua(lua_State *L)
