@@ -128,9 +128,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 
 	SetClassName("cServerDC");
 
-	struct hostent *he = gethostbyname(mC.hublist_host.c_str());
-	if(he != NULL) externalIP = (char *) inet_ntoa(*(reinterpret_cast<in_addr*>(he->h_addr_list[0])));
-	else externalIP = "";
+	//struct hostent *he = gethostbyname(mC.hublist_host.c_str());
 	
 	mR->CreateTable();
 	if(mC.use_reglist_cache) mR->ReloadCache();

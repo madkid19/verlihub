@@ -267,8 +267,6 @@ public: // Public attributes
 
 	cMeanFrequency<unsigned long, 10> mUploadZone[USER_ZONES+1];
 	
-	string externalIP;
-
 	/********** typedefs */
 
 	/** temporary time functions */

@@ -32,7 +32,7 @@ INSERT IGNORE INTO file_trigger (command,send_as,def,descr,min_class,flags) VALU
 	To diable this message, type the command !modtrigger +vh_donation -c11 in mainchat.
 	','Donation Reminder', 10, 62),
 	('+updates','Updates','
-	Many things have been fixed since RC1 and this is considered to be our most functional
+	Many things have been fixed since 0.9.8d-RC2 and this is considered to be our most functional
 	and stable release to date. While the functionality of the software is richer then ever,
 	its resource usage is at an all time low. It is now an extremely scaleable server.
 	All known exploits have now been permanently closed to help protect both you AND other
@@ -41,7 +41,7 @@ INSERT IGNORE INTO file_trigger (command,send_as,def,descr,min_class,flags) VALU
 	Get Rid of this message by typing the command !modtrigger +updates -c11 in mainchat.
 	','Updates',5,62),
 	('+news','News','
-	This will be the final release candidate of the Verlihub-0.9.8d tree. Work has now begun
+	This will be the final release candidate of the Verlihub 0.9.8 tree. Work has now begun
 	on the next major version of verlihub with planned support for new protocol extensions as
 	well as some significant new features.
 	Thanks to everyone who contributes their free time and effort for all aspects of the verlihub project.

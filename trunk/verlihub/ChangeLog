@@ -1,58 +1,108 @@
-2008-09-27 0.9.8e
-	* Patched for GCC >=4.3.
-	* Fixed socket for WIN32
-	* Fix: bc_reply was automatically set to robot nick that just sent a bc
-	* Removed email ban
-	* Fixed share ban
-	* Fixed IP-Range and CC zones
-	* Fixed password_min_len that was always set to 6
-	* Fix: tag_min and max version variables never worked with DGUI client
-	* Fix: converted tag_min_version_* from int to double
-	* Fixed !regdisable that never worked; it's also impossible to disable master accounts
-	* Fixed syntax error for reg commands
-	* Fix: plug replacer path was wrong
-	* Fixed wrong value replace for %[YY] variable
-	* Fixed wrong usercount value showed with !hubinfo command
-	* Fixed a crash if verlihub tries to load  plugin with no path set
-	* Fixed !addplug command that crashes the hub if no options are provided
-	* Fixed of addding and removing of master users with AddRegUser and DelRegUser API
-	* Make -p option mandatory or hub may crash because it tries to load a non-existing plugin
-	* Updated !*plug help if the command is wrong
-	* Fixed wrong regex for !add/modplug command
-	* Fixed share and bw conversion for !hubinfo command (thx to Intruder)
-	* Fixed syntax error for !hubinfo output (thx to Intruder)
-	* Custom redirect (!add/mod/delredirect)
-	* Added !hcmd (this will help owner for ex. with triggers and custom redirects)
-	* Fixed random redirect because pseudo-random number generator was never re-initialized with a valid seed
-	* Added custom redirect[/b](!add/mod/delredirect)
-	* Added OnHubName event handler function
-	* Fix: Master class is now immune from kick and ban
-	* Added GetTempRights
-	* Added DelRegUser API
-	* Added AddRegUser API
-	* Fixed hide share (now it blocks the user to download filelist)
-	* Renamed few API functions because it makes confusion
-	* Added GetVerliPath API
-	* Added GetTotalShareSize API
-	* Added Ban API that was never implemented
-	* Fixed GetConfig API that returned a wrong value if config variable is empty (thx to Rolex and Frog)
-	* Fixed SendDataToAll API that ignored min class and max class variables (thx to Rolex)
-	* Added GetUserCC API for Lua Plugin
-	* Fix: Verlihub replaces the IP in $ConnectToMe request if IP is wrong. This fix WAN to WAN and LAN to LAN connections and no drop because of wrong IP in client settings
-	* Fix: Impossible to kick,ban or drop pinger if it is registred with class -1 (thx to Rolex)
-	* Fix:  Add reg with a password instead of adding reg and then setting a password
-	* Fix: If user regs himself with autoreg command, reg_op was set to new user's nickname
-	* Add: now Verlihub uses utf8 (charset) and utf8_general (collation). It's also able to know if the database and tables are still using old encoing; in this case it will update them
+2009-05-16 chaos/netcelli (0.9.8e)
+
+	 * Fixed possible reg exploit if an user is admin
+	 * Added OS detection in configure script
+	 * Removed trigger execution (it doesn't work very well and it's not secure)
+	 * Send $BassPass only if user is really regged
+	 * Change max length of send_as column to 25
+	 * !getip, !getinfo, !gethost, !hidekick and !unhidekick return same info 2 times if the argument is followed by a space
+	 * Added frequency meaning (thx to Seth)
+	 * Check if $Key is already sent
+	 * Don't report wrong password if user is not regged
+	 * Call OnUserLogout when user is really logged in
+	 * Detect BotINFO extension and check if that extension is set when an user sends $BotINFO
+	 * Force !ccbc argument to be upper case and sent a message back to user when message is sent
+	 * Fixed CC zone limit bug (thx to T@R@24): OP cannot enter if CC zone limit was set
+	 *  Removed hub_version variable because not used anymore
+	 * Fixed configure script error
+	 * Removed !flood command: it's not useful and block the hub
+	 * Fixed output for !gc [file] command (where file is the value of file column in SetupList table; default is config)
+	 * Added message for !hublist command
+	 * Removed !proto*_any cmd
+	 * Fixed opchat and hubsecurity registration: it was possible to reg both of them
+	 * Fix: connection was not closed if user sends password before nick
+	 * Do not send $ForceMove if there is no redirect
+	 * Nick column length was always set to 30. Now it uses the value of max_nick variable
+	 * Fixed triggers exploit :
+	 * It's impossible to trigger files outside VerliHub config folder
+	 * dbconfig file can't be triggered
+	 * Added GetPath, FilterPath and ExpandPath method
+	 * Regenerated configure and Makefile scripts again because I forget to remove diakritika plug from configure.ini
+	 * Fixed mispelling in cchatconsole.cpp
+	 * Moved diaktritika plugin outside Verlihub core
+	 * Fixed leading zero in %[ss],%[mm], %[DD], %[MM] and %[HH] variables for triggers
+	 * Fix: !(add|mod)conntype doesn't work if -d option is set
+	 * Added !whocc command
+	 * Added custom redirect on invalid key
+	 * Added drop_invalid_key variable; now VerliHub checks invalid keys
+	 * Fixed NMDC encoding function
+	 * Added disable_report_cmds variable (default value 0) to disable reports
+	 * Added !serverinfo cmd
+	 * Added !regsearch cmd
+	 * Added HubINFO in $Support
+	 * Fixed tag_max_hs_ratio that was never replaced
+	 * Fixed mail ban
+	 * Added mysql autoreconnection option
+	 * Fixed wrong MYSQL SOCKET (now set with MYSQL_UNIX_PORT)
+	 * Fix: reg_op was never set if the user regs with autoreg
+	 * Added UTF8 support
+	 * Fixed and extented vh_runhub script; vh_restart is deprecated
+	 * Added new config variables: int_search_reg_pass, min_share_use_hub_reg, min_share_use_hub_vip (thk to Raider)
+	 * Added OnDelReg event handler function
+	 * Added OnNewReg event handler function
+	 * Added OnUnBan event handler function
+	 * Added OnNewBan event handler function
+	 * Added OnHubName event handler function
+	 * Patched for GCC >=4.3.
+	 * Fixed socket for WIN32
+	 * Fix: bc_reply was automatically set to robot nick that just sent a bc
+	 * Removed email ban
+	 * Fixed share ban
+	 * Fixed IP-Range and CC zones
+	 * Fixed password_min_len that was always set to 6
+	 * Fix: tag_min and max version variables never worked with DGUI client
+	 * Fix: converted tag_min_version_* from int to double
+	 * Fixed !regdisable that never worked; it's also impossible to disable master accounts
+	 * Fixed syntax error for reg commands
+	 * Fix: plug replacer path was wrong
+	 * Fixed wrong value replace for %[YY] variable
+	 * Fixed wrong usercount value showed with !hubinfo command
+	 * Fixed a crash if verlihub tries to load  plugin with no path set
+	 * Fixed !addplug command that crashes the hub if no options are provided
+	 * Fixed of addding and removing of master users with AddRegUser and DelRegUser API
+	 * Make -p option mandatory or hub may crash because it tries to load a non-existing plugin
+	 * Updated !*plug help if the command is wrong
+	 * Fixed wrong regex for !add/modplug command
+	 * Fixed share and bw conversion for !hubinfo command (thx to Intruder)
+	 * Fixed syntax error for !hubinfo output (thx to Intruder)
+	 * Custom redirect (!add/mod/delredirect)
+	 * Added !hcmd (this will help owner for ex. with triggers and custom redirects)
+	 * Fixed random redirect because pseudo-random number generator was never re-initialized with a valid seed
+	 * Added custom redirect(!add/mod/delredirect)
+	 * Fix: Master class is now immune from kick and ban
+	 * Added GetTempRights
+	 * Added DelRegUser API
+	 * Added AddRegUser API
+	 * Fixed hide share (now it blocks the user to download filelist)
+	 * Renamed few API functions because it makes confusion
+	 * Added GetVerliPath API
+	 * Added GetTotalShareSize API
+	 * Added Ban API that was never implemented
+	 * Fixed GetConfig API that returned a wrong value if config variable is empty (thx to Rolex and Frog)
+	 * Fixed SendDataToAll API that ignored min class and max class variables (thx to Rolex)
+	 * Added GetUserCC API for Lua Plugin
+	 * Fix: Verlihub replaces the IP in $ConnectToMe request if IP is wrong. This fix WAN to WAN and LAN to LAN connections and no drop because of wrong IP in client settings
+	 * Fix: Impossible to kick,ban or drop pinger if it is registred with class -1 (thx to Rolex)
 	
 2006-03-30 chaos/netcelli
 
-	* Added !guests !vips !admins !masters cmds:
-	* Change Bad nick msgs:
+	 * Added !guests !vips !admins !masters cmds:
+	 * Change Bad nick msgs:
 
 2006-03-29 chaos/netcelli
 
-	* Added report to opchat if an user regs himself with autoreg function:
-	* Change Bad nick msgs:
+	 * Added report to opchat if an user regs himself with autoreg function:
+	 * Change Bad nick msgs:
 
 2006-03-05 chaos/netcelli
 
