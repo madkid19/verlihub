@@ -191,7 +191,7 @@ bool cLuaInterpreter::CallFunction(char * func, char * args[])
 			cout << "LUA error: " << msg << endl;
 			ReportLuaError( (char *) msg);
 			lua_pop(mL, 1);
-			//lua_remove(mL, base); // remove _TRACEBACK
+			lua_remove(mL, base); // remove _TRACEBACK
 			return true;
 		}
 		

@@ -1,19 +1,24 @@
 /***************************************************************************
-                          cmessagedc.cpp  -  description
-                             -------------------
-    begin                : Fri May 9 2003
-    copyright            : (C) 2003 by Daniel Muller
-    email                : dan at verliba dot cz
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
+*                                                                         *
+*   Copyright (C) 2006-2009 by Verlihub Project                           *
+*   devs at verlihub-project dot org                                      *
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+*   This program is distributed in the hope that it will be useful,       *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+*   GNU General Public License for more details.                          *
+*                                                                         *
+*   You should have received a copy of the GNU General Public License     *
+*   along with this program; if not, write to the                         *
+*   Free Software Foundation, Inc.,                                       *
+*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+***************************************************************************/
 
 #include "cmessagedc.h"
 #include "cprotocommand.h"
@@ -62,6 +67,7 @@ cProtoCommand /*cMessageDC::*/sDC_Commands[]=
 	cProtoCommand(string("$SetTopic ")),
 	cProtoCommand(string("$GetTopic ")),
 	cProtoCommand(string("$BotINFO ")),
+	//cProtoCommand(string("$MyNick "))
 };
 
 using namespace ::nDirectConnect::nProtocol::nEnums;
@@ -211,6 +217,9 @@ bool cMessageDC::SplitChunks()
 			if(!SplitOnTwo( mKWSize,'$', eCH_NB_NICK, eCH_NB_TIME)) mError =1;
 			if(!SplitOnTwo( '$', eCH_NB_TIME, eCH_NB_TIME,  eCH_NB_REASON)) mError =1;
 			break;
+		case eDCB_MYNICK:
+			//if(!SplitOnTwo( mKWSize,' ', , eCH_MI_NICK)) mError =1;
+		break;
 		default:
 			break;
 	}
