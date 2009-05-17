@@ -1,0 +1,185 @@
+# Project: verlihub
+# Makefile created by Dev-C++ 4.9.8.7
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = src/cantiflood.o src/casyncconn.o src/casyncsocketserver.o src/cban.o src/cbanlist.o src/cconfigbase.o src/cconfigfile.o src/cconfigitembase.o src/cconfmysql.o src/cconndc.o src/cdcconf.o src/cdcconsole.o src/cdcproto.o src/cdctag.o src/cfreqlimiter.o src/cinterpolexp.o src/ckick.o src/cmeanfrequency.o src/cmessagedc.o src/cmysql.o src/cobj.o src/coperator.o src/cparser.o src/cpcre.o src/cprotocommand.o src/cquery.o src/creglist.o src/creguserinfo.o src/cserverdc.o src/ctempfunctionbase.o src/ctime.o src/ctimeout.o src/ctrigger.o src/ctriggers.o src/cuser.o src/cusercollection.o src/verlihub.o src/ckicklist.o src/cpluginmanager.o src/cpluginbase.o src/csetuplist.o src/cvhplugin.o src/cvhpluginmgr.o src/ccommand.o src/cconnchoose.o src/cconnselect.o src/cdbconf.o src/ccallbacklist.o src/cpenaltylist.o src/cpluginloader.o src/ccmdr.o src/cinfoserver.o src/cconnpoll.o $(RES)
+LINKOBJ  = src/cantiflood.o src/casyncconn.o src/casyncsocketserver.o src/cban.o src/cbanlist.o src/cconfigbase.o src/cconfigfile.o src/cconfigitembase.o src/cconfmysql.o src/cconndc.o src/cdcconf.o src/cdcconsole.o src/cdcproto.o src/cdctag.o src/cfreqlimiter.o src/cinterpolexp.o src/ckick.o src/cmeanfrequency.o src/cmessagedc.o src/cmysql.o src/cobj.o src/coperator.o src/cparser.o src/cpcre.o src/cprotocommand.o src/cquery.o src/creglist.o src/creguserinfo.o src/cserverdc.o src/ctempfunctionbase.o src/ctime.o src/ctimeout.o src/ctrigger.o src/ctriggers.o src/cuser.o src/cusercollection.o src/verlihub.o src/ckicklist.o src/cpluginmanager.o src/cpluginbase.o src/csetuplist.o src/cvhplugin.o src/cvhpluginmgr.o src/ccommand.o src/cconnchoose.o src/cconnselect.o src/cdbconf.o src/ccallbacklist.o src/cpenaltylist.o src/cpluginloader.o src/ccmdr.o src/cinfoserver.o src/cconnpoll.o $(RES)
+LIBS =  -L"d:/Dev-Cpp/lib" -L"D:/Program Files/Libs/pcre/dll" -L"D:/Program Files/Libs/zlib" -L"D:/Program Files/Libs/GeoIP-1.3.1/libGeoIP" -L"D:/mysql/lib/opt" -L"D:/Program Files/Libs/unixem/lib" -L"D:/Dev-Cpp/lib" -lmysqlclient  -lWs2_32  -lpcre  -lmysql  -lmsvcrt40 C:/WINNT/system32/msvcrtd.dll c:/winnt/system32/ntdll.dll -lunixem -g3 
+INCS =  -I"d:/Dev-Cpp/include"  -I"d:/Program Files/Libs/unixem/include"  -I"D:/mysql/include"  -I"D:/Program Files/Libs/pcre/dll"  -I"D:/Program Files/Libs/GeoIP-1.3.1/libGeoIP" 
+CXXINCS =  -I"d:/Dev-Cpp/include/c++"  -I"d:/Dev-Cpp/include/c++/mingw32"  -I"d:/Dev-Cpp/include/c++/backward"  -I"d:/Dev-Cpp/include"  -I"d:/Program Files/Libs/unixem/include"  -I"D:/mysql/include"  -I"D:/Program Files/Libs/pcre/dll"  -I"D:/Program Files/Libs/GeoIP-1.3.1/libGeoIP" 
+BIN  = verlihub.exe
+CXXFLAGS = $(CXXINCS)-D__GNUWIN32__  -W  -DWIN32 -D_WIN32  -DNDEBUG  -D_CONSOLE  -D_MBCS -DWITHOUT_GEOIP -DQUICK_ACCEPT -DEXPLICIT_TEMPLATES   -g3
+CFLAGS = $(INCS)-D__GNUWIN32__  -W  -DWIN32  -DNDEBUG  -D_CONSOLE  -D_MBCS   -g3
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before verlihub.exe all-after
+
+
+clean: clean-custom
+	rm -f $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "verlihub.exe" $(LIBS)
+
+src/cantiflood.o: src/cantiflood.cpp
+	$(CPP) -c src/cantiflood.cpp -o src/cantiflood.o $(CXXFLAGS)
+
+src/casyncconn.o: src/casyncconn.cpp
+	$(CPP) -c src/casyncconn.cpp -o src/casyncconn.o $(CXXFLAGS)
+
+src/casyncsocketserver.o: src/casyncsocketserver.cpp
+	$(CPP) -c src/casyncsocketserver.cpp -o src/casyncsocketserver.o $(CXXFLAGS)
+
+src/cban.o: src/cban.cpp
+	$(CPP) -c src/cban.cpp -o src/cban.o $(CXXFLAGS)
+
+src/cbanlist.o: src/cbanlist.cpp
+	$(CPP) -c src/cbanlist.cpp -o src/cbanlist.o $(CXXFLAGS)
+
+src/cconfigbase.o: src/cconfigbase.cpp
+	$(CPP) -c src/cconfigbase.cpp -o src/cconfigbase.o $(CXXFLAGS)
+
+src/cconfigfile.o: src/cconfigfile.cpp
+	$(CPP) -c src/cconfigfile.cpp -o src/cconfigfile.o $(CXXFLAGS)
+
+src/cconfigitembase.o: src/cconfigitembase.cpp
+	$(CPP) -c src/cconfigitembase.cpp -o src/cconfigitembase.o $(CXXFLAGS)
+
+src/cconfmysql.o: src/cconfmysql.cpp
+	$(CPP) -c src/cconfmysql.cpp -o src/cconfmysql.o $(CXXFLAGS)
+
+src/cconndc.o: src/cconndc.cpp
+	$(CPP) -c src/cconndc.cpp -o src/cconndc.o $(CXXFLAGS)
+
+src/cdcconf.o: src/cdcconf.cpp
+	$(CPP) -c src/cdcconf.cpp -o src/cdcconf.o $(CXXFLAGS)
+
+src/cdcconsole.o: src/cdcconsole.cpp
+	$(CPP) -c src/cdcconsole.cpp -o src/cdcconsole.o $(CXXFLAGS)
+
+src/cdcproto.o: src/cdcproto.cpp
+	$(CPP) -c src/cdcproto.cpp -o src/cdcproto.o $(CXXFLAGS)
+
+src/cdctag.o: src/cdctag.cpp
+	$(CPP) -c src/cdctag.cpp -o src/cdctag.o $(CXXFLAGS)
+
+src/cfreqlimiter.o: src/cfreqlimiter.cpp
+	$(CPP) -c src/cfreqlimiter.cpp -o src/cfreqlimiter.o $(CXXFLAGS)
+
+src/cinterpolexp.o: src/cinterpolexp.cpp
+	$(CPP) -c src/cinterpolexp.cpp -o src/cinterpolexp.o $(CXXFLAGS)
+
+src/ckick.o: src/ckick.cpp
+	$(CPP) -c src/ckick.cpp -o src/ckick.o $(CXXFLAGS)
+
+src/cmeanfrequency.o: src/cmeanfrequency.cpp
+	$(CPP) -c src/cmeanfrequency.cpp -o src/cmeanfrequency.o $(CXXFLAGS)
+
+src/cmessagedc.o: src/cmessagedc.cpp
+	$(CPP) -c src/cmessagedc.cpp -o src/cmessagedc.o $(CXXFLAGS)
+
+src/cmysql.o: src/cmysql.cpp
+	$(CPP) -c src/cmysql.cpp -o src/cmysql.o $(CXXFLAGS)
+
+src/cobj.o: src/cobj.cpp
+	$(CPP) -c src/cobj.cpp -o src/cobj.o $(CXXFLAGS)
+
+src/coperator.o: src/coperator.cpp
+	$(CPP) -c src/coperator.cpp -o src/coperator.o $(CXXFLAGS)
+
+src/cparser.o: src/cparser.cpp
+	$(CPP) -c src/cparser.cpp -o src/cparser.o $(CXXFLAGS)
+
+src/cpcre.o: src/cpcre.cpp
+	$(CPP) -c src/cpcre.cpp -o src/cpcre.o $(CXXFLAGS)
+
+src/cprotocommand.o: src/cprotocommand.cpp
+	$(CPP) -c src/cprotocommand.cpp -o src/cprotocommand.o $(CXXFLAGS)
+
+src/cquery.o: src/cquery.cpp
+	$(CPP) -c src/cquery.cpp -o src/cquery.o $(CXXFLAGS)
+
+src/creglist.o: src/creglist.cpp
+	$(CPP) -c src/creglist.cpp -o src/creglist.o $(CXXFLAGS)
+
+src/creguserinfo.o: src/creguserinfo.cpp
+	$(CPP) -c src/creguserinfo.cpp -o src/creguserinfo.o $(CXXFLAGS)
+
+src/cserverdc.o: src/cserverdc.cpp
+	$(CPP) -c src/cserverdc.cpp -o src/cserverdc.o $(CXXFLAGS)
+
+src/ctempfunctionbase.o: src/ctempfunctionbase.cpp
+	$(CPP) -c src/ctempfunctionbase.cpp -o src/ctempfunctionbase.o $(CXXFLAGS)
+
+src/ctime.o: src/ctime.cpp
+	$(CPP) -c src/ctime.cpp -o src/ctime.o $(CXXFLAGS)
+
+src/ctimeout.o: src/ctimeout.cpp
+	$(CPP) -c src/ctimeout.cpp -o src/ctimeout.o $(CXXFLAGS)
+
+src/ctrigger.o: src/ctrigger.cpp
+	$(CPP) -c src/ctrigger.cpp -o src/ctrigger.o $(CXXFLAGS)
+
+src/ctriggers.o: src/ctriggers.cpp
+	$(CPP) -c src/ctriggers.cpp -o src/ctriggers.o $(CXXFLAGS)
+
+src/cuser.o: src/cuser.cpp
+	$(CPP) -c src/cuser.cpp -o src/cuser.o $(CXXFLAGS)
+
+src/cusercollection.o: src/cusercollection.cpp
+	$(CPP) -c src/cusercollection.cpp -o src/cusercollection.o $(CXXFLAGS)
+
+src/verlihub.o: src/verlihub.cpp
+	$(CPP) -c src/verlihub.cpp -o src/verlihub.o $(CXXFLAGS)
+
+src/ckicklist.o: src/ckicklist.cpp
+	$(CPP) -c src/ckicklist.cpp -o src/ckicklist.o $(CXXFLAGS)
+
+src/cpluginmanager.o: src/cpluginmanager.cpp
+	$(CPP) -c src/cpluginmanager.cpp -o src/cpluginmanager.o $(CXXFLAGS)
+
+src/cpluginbase.o: src/cpluginbase.cpp
+	$(CPP) -c src/cpluginbase.cpp -o src/cpluginbase.o $(CXXFLAGS)
+
+src/csetuplist.o: src/csetuplist.cpp
+	$(CPP) -c src/csetuplist.cpp -o src/csetuplist.o $(CXXFLAGS)
+
+src/cvhplugin.o: src/cvhplugin.cpp
+	$(CPP) -c src/cvhplugin.cpp -o src/cvhplugin.o $(CXXFLAGS)
+
+src/cvhpluginmgr.o: src/cvhpluginmgr.cpp
+	$(CPP) -c src/cvhpluginmgr.cpp -o src/cvhpluginmgr.o $(CXXFLAGS)
+
+src/ccommand.o: src/ccommand.cpp
+	$(CPP) -c src/ccommand.cpp -o src/ccommand.o $(CXXFLAGS)
+
+src/cconnchoose.o: src/cconnchoose.cpp
+	$(CPP) -c src/cconnchoose.cpp -o src/cconnchoose.o $(CXXFLAGS)
+
+src/cconnselect.o: src/cconnselect.cpp
+	$(CPP) -c src/cconnselect.cpp -o src/cconnselect.o $(CXXFLAGS)
+
+src/cdbconf.o: src/cdbconf.cpp
+	$(CPP) -c src/cdbconf.cpp -o src/cdbconf.o $(CXXFLAGS)
+
+src/ccallbacklist.o: src/ccallbacklist.cpp
+	$(CPP) -c src/ccallbacklist.cpp -o src/ccallbacklist.o $(CXXFLAGS)
+
+src/cpenaltylist.o: src/cpenaltylist.cpp
+	$(CPP) -c src/cpenaltylist.cpp -o src/cpenaltylist.o $(CXXFLAGS)
+
+src/cpluginloader.o: src/cpluginloader.cpp
+	$(CPP) -c src/cpluginloader.cpp -o src/cpluginloader.o $(CXXFLAGS)
+
+src/ccmdr.o: src/ccmdr.cpp
+	$(CPP) -c src/ccmdr.cpp -o src/ccmdr.o $(CXXFLAGS)
+
+src/cinfoserver.o: src/cinfoserver.cpp
+	$(CPP) -c src/cinfoserver.cpp -o src/cinfoserver.o $(CXXFLAGS)
+
+src/cconnpoll.o: src/cconnpoll.cpp
+	$(CPP) -c src/cconnpoll.cpp -o src/cconnpoll.o $(CXXFLAGS)

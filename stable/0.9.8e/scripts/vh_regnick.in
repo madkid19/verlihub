@@ -1,0 +1,58 @@
+#!@BASH_PATH@
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+
+if ! [ "$1" ]; then
+	echo Usage $0 -f -n nick -p pass -c class
+	exit 1
+fi;
+
+doit=0
+
+while [ "$1" != "" ]; do
+	case "$1" in
+		-p)	shift
+			password=$1
+			echo password is $password ;; 
+		-n)	shift
+			nick=$1
+			echo nick is $nick ;; 
+		-c)	shift
+			class=$1
+			echo class is $class ;;
+		-f)	echo will invoke the command
+			doit=1 ;;
+		*)	echo unknown parameter $1 ;;
+	esac;
+	shift;
+done;
+
+if [ "$nick" == "" ]; then
+	echo Specify nickname with -n nick
+	exit 1
+fi;
+
+fields="reg_date,reg_op,nick"
+values="unix_timestamp(now()),'admin_$USER','$nick'"
+
+if [ "$class" != "" ]; then
+	fields="$fields,class"
+	values="$values,$class"
+fi;
+
+if [ "$password" != "" ]; then
+	fields="$fields,login_pwd,pwd_change,pwd_crypt"
+	values="$values,encrypt('$password'),0,1"
+fi;
+
+query="INSERT INTO reglist ($fields) VALUES ($values)";
+
+if [ $doit == 1 ]; then
+	$bindir/vh_getdb --query "$query"
+else
+	echo Use following command
+	$bindir/vh_getdb --printquery "$query"
+fi
+

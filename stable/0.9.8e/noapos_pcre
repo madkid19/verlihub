@@ -1,0 +1,4 @@
+result=`pcre-config $1` 
+if [ $? -ne 0 ]; then exit 1; fi
+echo "$result"| sed -e "s/'//g"
+exit 0

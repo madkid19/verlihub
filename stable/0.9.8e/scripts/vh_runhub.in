@@ -1,0 +1,180 @@
+#!@BASH_PATH@
+
+function die
+{
+  echo ERROR: $1
+  exit 1
+}
+
+function getMySQLSocket
+{
+  MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf /var/db/mysql/my.cnf ~/.my.cnf"
+  for FILE in $MYSQL_CONF
+    do
+      if [ -r $FILE ]; then
+        SOCKET=$(cat $FILE | grep "^socket" | head -n 1 | cut -d"=" -f2| tr -d " ")
+        fi
+        done     
+}
+
+function showHelp
+{
+  echo "Usage: $0 [OPTIONS]... "
+  echo "Run different hubs with just one command"
+  echo "Example: $0 --run 1"
+  echo
+  echo -e ' -l, --list\t\t\t\t Show the hubs added'
+  echo -e ' -a, --add=NAME,VCF\t\t\t Add new hub with VCF as VerliHub config folder'
+  echo -e ' -r, --remove=NUMBER\t\t\t Remove the hub n° NUMBER in the list'
+  echo -e ' -r, --remove=NAME\t\t\t Remove the hub NAME in the list'
+  echo -e ' --run=NUMBER\t\t\t\t Run the hub number NUMBER in the list'
+  echo -e ' --run=NAME\t\t\t\t Run the hub NAME in the list'
+  echo -e ' -s, --stop\t\t\t\t Stop hub'
+  echo -e ' -s, --stop=NUMBER\t\t\t Stop the hub number NUMBER in the list'
+  echo -e ' -s, --stop=NAME\t\t\t Stop the hub NAME in the list'
+  echo -e ' -f, --restart\t\t\t\t Restart the hub'
+  echo -e ' -f, --restart=NUMBER\t\t\t Restart the hub number NUMBER in the list'
+  echo -e ' -f, --restart=NAME\t\t\t Restart the hub NAME in the list'
+  echo -e ' -config=VCF\t\t\t\t Run the hub using VCF as VerliHub config folder'
+  echo -e ' -h, --help\t\t\t\t Show this help'
+  echo
+  echo " When you start $0 without options, it will look for VerliHub config folder"
+  echo " in your $HOME directory"
+  
+  exit
+}
+
+listen=
+restart=false
+stop=false
+daemon=false
+
+while [ "$1" != "${1##-}" ]; do
+  case $1 in
+  --add) add="$2-$3"; shift 3; ;;
+  --config) confdir=$2 ; shift 2; ;;
+  --config=?*) confdir=${1#--config=}; shift; ;;
+  --daemon)	daemon=true; shift ;;
+  --restart) restart=true; shift ;;
+  --stop) stop=true; shift ;;
+  -f) restart=true; shift ;;
+  -s) stop=true; shift ;;
+  *) showHelp;
+  ;;
+  esac
+  done
+  
+  if [ "$add" ]; then
+    NAME=$(echo $add | cut -d"-" -f1)
+    CONFIG=$(echo $add | cut -d"-" -f2)
+    if [ ! -d "$CONFIG" ]; then
+      die "The folder $CONFIG doesn't exist. Please make sure to provide the folder with full path"
+      fi;
+    echo "Adding $NAME with the following VerliHub config folder: $CONFIG"
+    echo "$NAME $CONFIG" >> /home/netcelli/.verliconfig
+    exit
+    fi
+    
+    needfiles="dbconfig motd help_usr faq rules"
+    
+    prefix=/usr/local
+    exec_prefix=${prefix}
+    bindir=${exec_prefix}/bin
+    LD_RUNPATH=$LD_RUNPATH:${exec_prefix}/lib
+    
+    if [ -z $confdir ]; then
+      confdir=`$bindir/vh_getcfg` || die "fix your problem with vh_getcfg, maybe just run vh_install first"
+      fi
+      exepath=$bindir/ # default location for the hub config directory
+      pidfile=$confdir/pid
+      logfile=$confdir/log
+      errfile=$confdir/err
+      psname=vh_restart
+      launcher=$bindir/$psname
+      killsig=
+      
+      function IsRunning
+      {
+        running=false
+        #RESULT=$(ps -p $pidfile | wc -l)
+        #if [ $RESULT -gt 1 ]; then
+        #  running=true
+        #fi
+        if [ -e $pidfile ]; then
+          #echo "Pid found in $pidfile"
+          oldpid=`cat $pidfile`
+          ps -p $oldpid |grep $psname> /dev/null && running=true
+          fi;
+      }
+      
+      # check config dir
+      if [ ! -d $confdir ]; then
+        echo "FATAL ERROR: Cannot find $confdir"
+        echo "Please specify a valid VerliHub config folder in order to start the hub"
+        echo "Try to use $0 --config=/path/to/verliconfig"
+        exit 1
+        fi;
+      
+      # check the pid file
+      IsRunning
+      
+      $running && ! $restart && ! $stop && \
+      die "Hub is already running with pid $oldpid use $0 --restart"
+      
+      # Stop the hub
+      if $running; then
+        echo "Killing old process ($oldpid)"
+        kill $killsig $oldpid
+        rm -f $pidfile
+        fi;
+      
+      # If no restart option is given stop it
+      $stop && exit 0
+      
+      # chechk files
+      if ! $daemon; then 
+        for f in $needfiles ; do
+          file=$confdir/$f
+          if [ ! -e $file ]; then
+            echo "WARNING: missing file $file maybe you'll need it"
+            fi;
+          done;
+        fi
+        
+        # count master users
+        admin_count=`$bindir/vh_getdb --query "select count(*) from reglist where class >= 10" | egrep "[0-9]"` || die "Cannot connect to MySQL or find a Master User"
+        if [ "$admin_count" == "0" ]; then
+          echo "In order to add a new Master user type:"
+          echo "Run command: vh_regnick -f -c 10 -n \"<yournick>\" -p \"<yourpass>\""
+          exit 1
+          fi;
+        
+        # backup logs
+        [ -e $errfile ] && mv -f $errfile $errfile.old
+        [ -e $logfile ] && mv -f $logfile $logfile.old
+        
+        # run it
+        getMySQLSocket
+        if [ ! -z $SOCKET ]; then
+          echo "MySQL socket: $SOCKET"
+          export "MYSQL_UNIX_PORT=$SOCKET"
+          fi
+          echo "VerliHub config folder: $confdir"
+          export "VERLIHUB_CFG=$confdir"
+          $launcher $exepath"verlihub" >$logfile 2>$errfile &
+          pid=$!
+          disown $pid
+          echo "Runnig with pid $pid"
+          echo $pid > $pidfile
+          echo "Waiting 2 second..."
+          IsRunning
+          if [ $running == "false" ]; then
+            echo "ERROR: Hub is not running, check $logfile and $errfile for more information"
+            rm -f $pidfile
+            exit 1
+            else
+	 echo "Done"
+	 exit 0
+	 fi
+	 
+fi

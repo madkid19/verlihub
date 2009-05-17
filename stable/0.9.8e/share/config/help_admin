@@ -1,0 +1,31 @@
+
+As an ADMIN(level 5), you have all of the commands listed hereafter available to you. Also, you may manipulate the configuration of the hub from the command line. Please proceed with caution. If you don't know what a configuration variable does, don't touch it.
+
+Command  Arguments	              Help
+
+!gc                                   Prints a list of all configuration variables that can be inserted into the database.
+
+!set     <variable> <new_value>       Allows manipulation (through the hub) of all configuration variables. As an example, '!set tban_kick 86400' would set the variable tban_kick to 86400 seconds.  
+
+!ftedit  <trigger> <contents> 	      Replaces trigger's content with contents. For example !ftedit +help newhelp would change the +help to output newhelp.
+
+!ul      <limit> <time_in_minutes>    Temporarily change the user limit to <limit>. If <time_in_minutes> is not specified, 60 minutes is assumed.
+
+!hublist                              Sends your hub information to the public hublist. If you do this more often than every 15 minutes, you may be banned by the hublist server.
+
+!reload                               Reloads verlihub's configuration. NOTE: Some configuration changes require the hub to be restarted!
+
+!protoall_hubname                     This sends a new hubname to all currently connected users.
+
+!protoall_pm    <msg>                 This sends a pm from your nick to everyone in the hub.
+
+!protoall_chat  <msg>                 Sends <msg> to main chat from your nick.
+
+!protoall_redir <hub_address>         This forces a hub redirection for all users to <hub_address>.
+
+!protoall_any   <msg>                 Sends <msg> to main chat, without showing that it was you who sent it.
+
+!protoactive_*                        This sends any of the protoall_* commands above to active users only. As an example, !protoactive_any <msg> would send a message to main chat that only active users could see.
+
+!protohello_*                         This sends any of the protoall_* above to users whose clients don't support the NoHello feature only. As an example, !protohello_any <msg> would send a message to main chat that only clients that require $Hello could see.
+

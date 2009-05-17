@@ -1,0 +1,44 @@
+#!/bin/bash
+
+prefix=/usr/local
+
+confdir=/etc/verlihub
+[ -d $prefix/etc/verlihub ] && confdir=$prefix/etc/verlihub
+[ -d ~/.verlihub ] && confdir=~/.verlihub
+[ -d ./.verlihub ] && confdir=./.verlihub
+[ "x$VERLIHUB_CFG" != "x" ] && confdir=$VERLIHUB_CFG
+
+function printhelp
+{
+	echo "usage $0 [OPTIONS]"
+  echo " --cd     	   - change dir into the config folder"
+	echo " --cat <file>	 - cat given file"
+}
+
+function do_cd
+{
+	pushd .
+	cd $confdir
+}
+
+function do_echo
+{
+	echo $confdir
+}
+
+if [ ! -d $confdir ]; then
+	result=1
+else
+	result=0
+fi;
+
+
+case "x$1" in
+	"x--help") printhelp ;;
+	"x--cd") do_cd ;;
+	"x--cat") cat $confdir/$2 ;;
+	"x") do_echo ;;
+esac
+
+
+exit $result

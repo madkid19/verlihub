@@ -1,0 +1,4 @@
+result=`mysql_config $1`
+if [ $? -ne 0 ]; then exit 1; fi
+echo "$result"| sed -e "s/'//g;s/-lnss_files//g;s/-lnss_dns//g"
+exit 0
