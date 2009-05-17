@@ -910,7 +910,7 @@ int _SetTempRights(lua_State *L)
 int _GetTempRights(lua_State *L)
 {
 	luaL_error(L, "VH:GetTempRights not implemented yet");
-	return 2
+	return 2;
 }
 
 cLuaInterpreter *FindLua(lua_State *L)
