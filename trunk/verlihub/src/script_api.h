@@ -2,7 +2,7 @@
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
 *   Copyright (C) 2006-2009 by Verlihub Project                           *
-*   netcelli@verlihub-project.org                                         *
+*   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
 *   it under the terms of the GNU General Public License as published by  *
@@ -23,6 +23,7 @@
 #ifndef _WIN32
 #define __int64 long long
 #endif
+#include <map>
 
 bool SendDataToUser(char *data, char *nick);
 bool SendToClass(char *data, int min_class,  int max_class);
@@ -40,7 +41,7 @@ bool KickUser(char *OPNick, char *nick, char *reason);
 bool SetConfig(char *config_name, char *var, char *val);
 int GetConfig(char *config_name, char *var, char *val, int size);
 char * GetVHCfgDir();
-bool GetTempRights(char *, int *);
+bool GetTempRights(char *nick,  map<string,int> &rights);
 bool AddRegUser(char *nick, int uClass, char * passwd, char* op);
 bool DelRegUser(char *nick);
 extern "C" { 

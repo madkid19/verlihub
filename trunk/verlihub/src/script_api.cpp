@@ -2,7 +2,7 @@
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
 *   Copyright (C) 2006-2009 by Verlihub Project                           *
-*   netcelli@verlihub-project.org                                         *
+*   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
 *   it under the terms of the GNU General Public License as published by  *
@@ -345,13 +345,52 @@ char * GetVHCfgDir()
 	return (char *) server->mConfigBaseDir.c_str();
 }
 
-bool GetTempRights(char *nick, int *rights)
+bool GetTempRights(char *nick,  map<string,int> &rights)
 {
 	cUser *user = GetUser(nick);
 	if(user == NULL) return false;
-	rights[0] = user->HaveRightTo(nDirectConnect::nEnums::eUR_CTM); // ctm
-	rights[1] = user->HaveRightTo(nDirectConnect::nEnums::eUR_PM); // pm
-	rights[2] = user->HaveRightTo(nDirectConnect::nEnums::eUR_CHAT); // mc
+	cTime time = cTime().Sec();
+
+	static const int ids[] = { nDirectConnect::nEnums::eUR_CHAT, nDirectConnect::nEnums::eUR_PM, nDirectConnect::nEnums::eUR_SEARCH, nDirectConnect::nEnums::eUR_CTM, nDirectConnect::nEnums::eUR_KICK, nDirectConnect::nEnums::eUR_REG, nDirectConnect::nEnums::eUR_OPCHAT, nDirectConnect::nEnums::eUR_DROP, nDirectConnect::nEnums::eUR_TBAN, nDirectConnect::nEnums::eUR_PBAN, nDirectConnect::nEnums::eUR_NOSHARE };
+	for(int i = 0; i< sizeof ids; i++) {
+		string key;
+		switch(ids[i]) {
+			case nDirectConnect::nEnums::eUR_CHAT:
+				key = "mainchat";
+			break;
+			case nDirectConnect::nEnums::eUR_PM:
+				key = "pm";
+			break;
+			case nDirectConnect::nEnums::eUR_SEARCH:
+				key = "search";
+			break;
+			case nDirectConnect::nEnums::eUR_CTM:
+				key = "ctm";
+			break;
+			case nDirectConnect::nEnums::eUR_KICK:
+				key = "kick";
+			break;
+			case nDirectConnect::nEnums::eUR_REG:
+				key = "reg";
+			break;
+			case nDirectConnect::nEnums::eUR_OPCHAT:
+				key = "opchat";
+			break;
+			case nDirectConnect::nEnums::eUR_DROP:
+				key = "drop";
+			break;
+			case nDirectConnect::nEnums::eUR_TBAN:
+				key = "tempban";
+			break;
+			case nDirectConnect::nEnums::eUR_PBAN:
+				key = "perban";
+			break;
+			case nDirectConnect::nEnums::eUR_NOSHARE:
+				key = "noshare";
+			break;
+		}
+		if(!key.empty()) rights[key] = (user->Can(ids[i],time) ? 1 : 0);
+	}
 	return true;
 }
 
