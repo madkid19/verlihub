@@ -70,7 +70,6 @@ typedef enum
 	eDCO_SETTOPIC,
 	eDCO_GETTOPIC,
 	eDCB_BOTINFO,
-	eDCB_MYNICK,
 	eDC_UNKNOWN
 } tDCMsg;
 

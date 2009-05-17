@@ -66,8 +66,7 @@ cProtoCommand /*cMessageDC::*/sDC_Commands[]=
 	cProtoCommand(string("$Banned ")),
 	cProtoCommand(string("$SetTopic ")),
 	cProtoCommand(string("$GetTopic ")),
-	cProtoCommand(string("$BotINFO ")),
-	//cProtoCommand(string("$MyNick "))
+	cProtoCommand(string("$BotINFO "))
 };
 
 using namespace ::nDirectConnect::nProtocol::nEnums;
@@ -217,9 +216,6 @@ bool cMessageDC::SplitChunks()
 			if(!SplitOnTwo( mKWSize,'$', eCH_NB_NICK, eCH_NB_TIME)) mError =1;
 			if(!SplitOnTwo( '$', eCH_NB_TIME, eCH_NB_TIME,  eCH_NB_REASON)) mError =1;
 			break;
-		case eDCB_MYNICK:
-			//if(!SplitOnTwo( mKWSize,' ', , eCH_MI_NICK)) mError =1;
-		break;
 		default:
 			break;
 	}
