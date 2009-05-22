@@ -90,7 +90,7 @@ function CreateTables
 	echo Wait few seconds..
 	getMySQLSocket
 	export "MYSQL_UNIX_PORT=$SOCKET"
-	VERLIHUB_CFG=$cfg_dir $bindir/verlihub 22 &>/dev/null &
+	VERLIHUB_CFG=$cfg_dir $bindir/verlihub 22 &>$cfg_dir/install_log &
 	vh_pid=$!
 	sleep 5
 	kill -9 $vh_pid &>/dev/null
@@ -256,7 +256,7 @@ fi
 
 export VERLIHUB_CFG=$cfg_dir
 
-CreateTables || die "ERROR: verlihub's $MYSQL tables do not exist, cannot continue installation";
+CreateTables || die "ERROR: verlihub's $MYSQL tables do not exist, cannot continue installation. Please check $cfg_dir/install_log file for more info";
 	
 
 Sep
@@ -268,7 +268,7 @@ setup_info_ok=false
 
 until $setup_info_ok; do
 	Sep
-	echo "Try to not put many special characters, you'll be able to put some laer"
+	echo "Try to not put many special characters, you'll be able to put some later"
 	echo
 	hostname=`hostname`
 	vh_master=`GetVar "" "[SU]$USER" "Give me your DC hub master nickname.."`
