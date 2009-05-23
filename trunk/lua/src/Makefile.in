@@ -114,13 +114,13 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
-LIBLUA = @LIBLUA@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-LUA_CFLAGS = @LUA_CFLAGS@
+LUA_INCLUDES = @LUA_INCLUDES@
+LUA_LIBS = @LUA_LIBS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
@@ -194,13 +194,13 @@ target_alias = @target_alias@
 
 # set the include path found by configure
 INCLUDES = $(all_includes)
-AM_CXXFLAGS = @CXXFLAGS@ @LUA_CFLAGS@
+AM_CXXFLAGS = @CXXFLAGS@ @LUA_INCLUDES@
 
 # the library search path.
 lib_LTLIBRARIES = liblua_pi.la
 noinst_HEADERS = cluainterpreter.h callbacks.h cconsole.h cpilua.h
 liblua_pi_la_SOURCES = cpilua.cpp cluainterpreter.cpp callbacks.cpp cconsole.cpp
-liblua_pi_la_LDFLAGS = -module @LIBLUA@ ${VERLIHUB_LIBS} -lvhapi 
+liblua_pi_la_LDFLAGS = -module @LUA_LIBS@ ${VERLIHUB_LIBS} -lvhapi 
 liblua_pi_la_LIBADD = 
 all: all-am
 

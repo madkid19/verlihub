@@ -95,7 +95,7 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -I/usr/local/include -I/usr/local/include/verlihub -I/usr/include/mysql -DPIC -DHAVE_ERRNO_AS_DEFINE=1 -I/usr/include
+CXXFLAGS = -g -O2 -I/usr/local/include -I/usr/local/include/verlihub -I/usr/include/mysql -DHAVE_ERRNO_AS_DEFINE=1 -I/usr/include
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -139,10 +139,10 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERLIHUB_CFLAGS = -I/usr/local/include -I/usr/local/include/verlihub -I/usr/include/mysql -DPIC -DHAVE_ERRNO_AS_DEFINE=1 -I/usr/include
+VERLIHUB_CFLAGS = -I/usr/local/include -I/usr/local/include/verlihub -I/usr/include/mysql -DHAVE_ERRNO_AS_DEFINE=1 -I/usr/include
 VERLIHUB_CONFIG = /usr/local/bin/verlihub_config
 VERLIHUB_LIBS = -L/usr/lib64 -lpcre -Wl,-O1 -rdynamic -L/usr/lib64/mysql -lmysqlclient -lz -lcrypt -lnsl -lm -L/usr/lib64 -lssl -lcrypto -lc -lcrypt -L/usr/lib -lGeoIP -pthread -L/usr/local/lib -lverlihub
-VERLIHUB_VERSION = verlihub version: 0.9.8e Thursday April 9 2009
+VERLIHUB_VERSION = verlihub version: 0.9.8e Saturday May 16 2009
 VERSION = 1.8
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -194,7 +194,7 @@ target_alias =
 
 # set the include path found by configure
 INCLUDES = $(all_includes)
-AM_CXXFLAGS = -g -O2 -I/usr/local/include -I/usr/local/include/verlihub -I/usr/include/mysql -DPIC -DHAVE_ERRNO_AS_DEFINE=1 -I/usr/include 
+AM_CXXFLAGS = -g -O2 -I/usr/local/include -I/usr/local/include/verlihub -I/usr/include/mysql -DHAVE_ERRNO_AS_DEFINE=1 -I/usr/include 
 
 # the library search path.
 lib_LTLIBRARIES = liblua_pi.la

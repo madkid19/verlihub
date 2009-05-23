@@ -795,8 +795,8 @@ VERLIHUB_VERSION
 VERLIHUB_LIBS
 VERLIHUB_CFLAGS
 VERLIHUB_CONFIG
-LUA_CFLAGS
-LIBLUA
+LUA_INCLUDES
+LUA_LIBS
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -2372,7 +2372,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=lua
- VERSION=1.8
+ VERSION=1.7RC1
 
 
 cat >>confdefs.h <<_ACEOF
@@ -20465,7 +20465,7 @@ as_val=`eval 'as_val=${'$as_ac_Header'}
   cat >>confdefs.h <<_ACEOF
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
- LUA_CFLAGS="$LUA_CFLAGS -I/usr/include/lua50 "
+ LUA_INCLUDES="$LUA_CFLAGS -I/usr/include/lua50 "
 else
   \
 
@@ -20611,11 +20611,11 @@ as_val=`eval 'as_val=${'$as_ac_Header'}
   cat >>confdefs.h <<_ACEOF
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
- LUA_CFLAGS="$LUA_CFLAGS -I/usr/include/lua5.1 "
+ LUA_INCLUDES="$LUA_CFLAGS -I/usr/include/lua5.1 "
 else
   \
-    { { $as_echo "$as_me:$LINENO: error: Please install the lua library headers (lua.h, lualib.h, lauxlib.h) before trying to install lua plugin frist." >&5
-$as_echo "$as_me: error: Please install the lua library headers (lua.h, lualib.h, lauxlib.h) before trying to install lua plugin frist." >&2;}
+    { { $as_echo "$as_me:$LINENO: error: Please install the lua library headers (lua.h, lualib.h, lauxlib.h)" >&5
+$as_echo "$as_me: error: Please install the lua library headers (lua.h, lualib.h, lauxlib.h)" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
@@ -20628,6 +20628,8 @@ done
 fi
 
 done
+
+
 
 
 echo "checking for lua libraries..."
@@ -20698,6 +20700,8 @@ fi
 $as_echo "$ac_cv_lib_lua_lua_call" >&6; }
 if test "x$ac_cv_lib_lua_lua_call" = x""yes; then
    \
+	# luaopen_base requires to be linked against lua library or test will fail
+	LIBS="$LIBS -llua"
 	{ $as_echo "$as_me:$LINENO: checking for luaL_register in -llua" >&5
 $as_echo_n "checking for luaL_register in -llua... " >&6; }
 if test "${ac_cv_lib_lua_luaL_register+set}" = set; then
@@ -20764,7 +20768,7 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_lua_luaL_register" >&5
 $as_echo "$ac_cv_lib_lua_luaL_register" >&6; }
 if test "x$ac_cv_lib_lua_luaL_register" = x""yes; then
-   LIBLUA="$LDLUALIBS -llua -lm"
+   LUA_LIBS="$LUA_LIBS -lm"
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_LUA_5_1 1
 _ACEOF
@@ -20837,7 +20841,7 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_lualib_luaopen_base" >&5
 $as_echo "$ac_cv_lib_lualib_luaopen_base" >&6; }
 if test "x$ac_cv_lib_lualib_luaopen_base" = x""yes; then
-   LIBLUA="$LDLUALIBS -llua -llualib -lm -ldl"
+   LUA_LIBS="$LUA_LIBS -llualib -lm -ldl"
 else
   \
 	{ { $as_echo "$as_me:$LINENO: error: There is some problem with your Lua library. The library seems to exists, but can't determine its version. Please resintall Lua ." >&5
@@ -20984,7 +20988,7 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_lua50_luaL_register" >&5
 $as_echo "$ac_cv_lib_lua50_luaL_register" >&6; }
 if test "x$ac_cv_lib_lua50_luaL_register" = x""yes; then
-   LIBLUA="$LDLUALIBS -llua50 -lm"
+   LUA_LIBS="LUA_LIBS -llua50 -lm"
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_LUA_5_0 1
 _ACEOF
@@ -21057,7 +21061,7 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_lualib50_luaopen_base" >&5
 $as_echo "$ac_cv_lib_lualib50_luaopen_base" >&6; }
 if test "x$ac_cv_lib_lualib50_luaopen_base" = x""yes; then
-   LIBLUA="$LDLUALIBS -llua50 -llualib50 -lm -ldl"
+   LUA_LIBS="$LUA_LIBS -llua50 -llualib50 -lm -ldl"
 else
   \
 		{ { $as_echo "$as_me:$LINENO: error: There is some problem with your Lua library. The library seems to exists, but can't determine its version. Please resintall Lua5." >&5
@@ -21204,7 +21208,7 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_lua5_1_luaL_register" >&5
 $as_echo "$ac_cv_lib_lua5_1_luaL_register" >&6; }
 if test "x$ac_cv_lib_lua5_1_luaL_register" = x""yes; then
-   LIBLUA="$LDLUALIBS -llua5.1 -lm"
+   LUA_LIBS="$LUA_LIBS -llua5.1 -lm"
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_LUA_5_1 1
 _ACEOF
@@ -21277,7 +21281,7 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_lualib5_1_luaopen_base" >&5
 $as_echo "$ac_cv_lib_lualib5_1_luaopen_base" >&6; }
 if test "x$ac_cv_lib_lualib5_1_luaopen_base" = x""yes; then
-   LIBLUA="$LDLUALIBS -llua5.1 -llualib5.1 -lm -ldl"
+   LUA_LIBS="$LUA_LIBS -llua5.1 -llualib5.1 -lm -ldl"
 else
   \
 			{ { $as_echo "$as_me:$LINENO: error: There is some problem with your Lua library. The library seems to exists, but can't determine its version. Please resintall Lua." >&5
@@ -21304,6 +21308,11 @@ fi
 
 
 
+
+
+
+
+
 # Check whether --with-luasocket was given.
 if test "${with_luasocket+set}" = set; then
   withval=$with_luasocket; \
@@ -21314,7 +21323,7 @@ if test "${ac_cv_lib_luasocket_luaopen_socket_core+set}" = set; then
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lluasocket $LIBLUA -lm $LIBS"
+LIBS="-lluasocket $LUA_LIBS -lm $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -21374,7 +21383,7 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_luasocket_luaopen_socket_core" >&5
 $as_echo "$ac_cv_lib_luasocket_luaopen_socket_core" >&6; }
 if test "x$ac_cv_lib_luasocket_luaopen_socket_core" = x""yes; then
-  LIBLUA="$LIBLUA -lluasocket"
+  LUA_LIBS="$LUA_LIBS -lluasocket"
 else
   \
 { { $as_echo "$as_me:$LINENO: error: Please download and install LuaSocket from http://www.tecgraf.puc-rio.br/~diego/professional/luasocket/." >&5
@@ -21389,7 +21398,7 @@ if test "${ac_cv_lib_luamime_luaopen_mime_core+set}" = set; then
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lluamime $LIBLUA -lm $LIBS"
+LIBS="-lluamime $LUA_LIBS -lm $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -21449,7 +21458,7 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_luamime_luaopen_mime_core" >&5
 $as_echo "$ac_cv_lib_luamime_luaopen_mime_core" >&6; }
 if test "x$ac_cv_lib_luamime_luaopen_mime_core" = x""yes; then
-  LIBLUA="$LIBLUA -lluamime"
+  LUA_LIBS="$LUA_LIBS -lluamime"
 else
   \
 { { $as_echo "$as_me:$LINENO: error: Please download and install LuaSocket from http://www.tecgraf.puc-rio.br/~diego/professional/luasocket/." >&5
@@ -21461,8 +21470,6 @@ fi
 
 fi
 
-
-#LIBLUA="-llua -llualib -ldl -lm"
 
 
 
