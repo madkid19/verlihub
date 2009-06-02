@@ -69,7 +69,6 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	cMessageDC *msg = (cMessageDC *)Msg;
 	cConnDC *conn = (cConnDC *)Conn;
 	//@todo tMsgAct action = this->mS->Filter(tDCMsg(msg->mType),conn);
-
 	if(strlen(Msg->mStr.data()) < Msg->mStr.size())
 	{
 		//mS->ReportUserToOpchat(conn,"Sending null chars, probably attempt of an attack.");
@@ -1030,8 +1029,8 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	string ctm = msg->mStr;
 
 	cUser *other = mS->mUserList.GetUserByNick ( nick );
-	// check nick
-	if(!other) return -1;
+	// check nick and connection
+	if(!other && other->mxConn) return -1;
 	// Check if the user can download and also if the other user hides the share
 	if((conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) || other->mHideShare) return -4;
 
@@ -1468,8 +1467,10 @@ int cDCProto::NickList(cConnDC *conn)
 	try
 	{
 		bool complete_infolist = false;
+		// 2 = show to all
 		if( mS->mC.show_tags >= 2) complete_infolist= true;
 		if (conn->mpUser && (conn->mpUser->mClass >= eUC_OPERATOR)) complete_infolist= true;
+		// 0 = hide to all
 		if( mS->mC.show_tags == 0) complete_infolist= false;
 
 		if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE)
