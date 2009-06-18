@@ -1030,7 +1030,7 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 
 	cUser *other = mS->mUserList.GetUserByNick ( nick );
 	// check nick and connection
-	if(!other && other->mxConn) return -1;
+	if(!other || !other->mxConn) return -1;
 	// Check if the user can download and also if the other user hides the share
 	if((conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) || other->mHideShare) return -4;
 
