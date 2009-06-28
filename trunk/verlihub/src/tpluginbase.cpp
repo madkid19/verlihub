@@ -46,6 +46,14 @@ tPluginBase::~tPluginBase()
  */
 bool nPlugin::tPluginBase::Open()
 {
+	#ifdef HAVE_FREEBSD
+	/*
+	* Reset dlerror() since it can contain error from previous
+	* call to dlopen()/dlsym().
+	*/
+	dlerror();
+	#endif
+
 	mHandle = dlopen(mFileName.c_str(), RTLD_NOW);
 	if(!mHandle)
 	{

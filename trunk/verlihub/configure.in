@@ -2,7 +2,7 @@ AC_INIT(acinclude.m4)
 
 datadir=$datadir/verlihub
 
-VERSION="0.9.8e"
+VERSION="0.9.8e-r1"
 RELEASE=1
 PACKAGE_NAME=verlihub
 
@@ -79,6 +79,7 @@ else
 fi;
 
 AC_PATH_LIB_LIBCONFIG
+AC_MSG_CHECKING(for MySQL)
 AC_PATH_LIB(mysql, , [],noapos_mysql, [], [
 		    CXXFLAGS="$CXXFLAGS -I/usr/src/include/ $MYSQL_CFLAGS"
 		    echo "adding $MYSQL_CFLAGS to CXXFLAGS"
@@ -89,6 +90,7 @@ AC_PATH_LIB(mysql, , [],noapos_mysql, [], [
 		    ])
 
 AC_PATH_LIB_LIBCONFIG
+AC_MSG_CHECKING(for pcre)
 AC_PATH_LIB(pcre, [3.0.0 -nocheck], [], noapos_pcre, [], [
 			CXXFLAGS="$CXXFLAGS $PCRE_CFLAGS"
 			echo "adding $PCRE_CFLAGS to CXXFLAGS"
@@ -99,6 +101,7 @@ AC_PATH_LIB(pcre, [3.0.0 -nocheck], [], noapos_pcre, [], [
 		    ])
 
 AC_PATH_LIB_LIBCONFIG
+AC_MSG_CHECKING(for GeoIP)
 AC_PATH_LIB(geoip, [0.0.0 -nocheck],[] , config_geoip ,[] , [
 		    CXXFLAGS="$CXXFLAGS $GEOIP_CFLAGS"
 		    echo "adding $GEOIP_CFLAGS to CXXFLAGS"
@@ -113,11 +116,14 @@ AC_CHECK_LIB([pcre],[pcre_get_stringnumber],[
 	      AC_DEFINE([HAVE_PCRE_GET_STRINGNUMBER],[1],"you have function pcre_get_stringnumber in your pcre library" )
 	      ])
 AC_SEARCH_LIBS([crypt],[crypt, crypto])
+AC_MSG_CHECKING(for libcrypt)
 AC_CHECK_LIB([crypt], [crypt],[AC_SUBST(CRYPT_LIBS,"-lcrypt")])
 AC_CHECK_LIB([crypto], [crypt],[AC_SUBST(CRYPT_LIBS,"-lcrypto")])
 AC_CHECK_LIB([crypt], [crypt])
 AC_CHECK_LIB([crypto], [crypt])
+AC_MSG_CHECKING(for ZLib library)
 #AC_CHECK_LIB([z], [z],[AC_SUBST(ZLIB_LIBS,"-lzlib")], AC_ERROR("Please install zlib library"))
+AC_MSG_CHECKING(for SSL library)
 AC_CHECK_LIB([ssl], [MD5])
 AC_CHECK_LIB([dl], [dlopen],[AC_SUBST(DLOPEN_LIBS,"-ldl")
 	      echo "dlopen is in libdl"],

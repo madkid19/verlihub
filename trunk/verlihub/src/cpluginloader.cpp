@@ -53,6 +53,14 @@ cPluginLoader::~cPluginLoader()
  */
 bool nPlugin::cPluginLoader::Open()
 {
+	#ifdef HAVE_FREEBSD
+	/*
+	* Reset dlerror() since it can contain error from previous
+	* call to dlopen()/dlsym().
+	*/
+	dlerror();
+	#endif
+
 	mHandle = dlopen(mFileName.c_str(), RTLD_NOW);
 	if(!mHandle || IsError()) // NOTE hte OR (||) operator evaluates only the first statement if that one is true
 	{
@@ -99,6 +107,13 @@ int nPlugin::cPluginLoader::StrLog(ostream & ostr, int level)
  */
 bool nPlugin::cPluginLoader::LoadSym()
 {
+	#ifdef HAVE_FREEBSD
+	/*
+	* Reset dlerror() since it can contain error from previous
+	* call to dlopen()/dlsym().
+	*/
+	dlerror();
+	#endif
 	if(!mcbGetPluginFunc) mcbGetPluginFunc = tcbGetPluginFunc(LoadSym("get_plugin"));
 	if(!mcbDelPluginFunc) mcbDelPluginFunc = tcbDelPluginFunc(LoadSym("del_plugin"));
 	if(!mcbGetPluginFunc|| !mcbGetPluginFunc) return false;

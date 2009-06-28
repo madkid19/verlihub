@@ -2073,7 +2073,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 datadir=$datadir/verlihub
 
-VERSION="0.9.8e"
+VERSION="0.9.8e-r1"
 RELEASE=1
 PACKAGE_NAME=verlihub
 
@@ -20125,6 +20125,8 @@ fi;
 
 
 
+{ $as_echo "$as_me:$LINENO: checking for MySQL" >&5
+$as_echo_n "checking for MySQL... " >&6; }
 # check for presence of libmysql
 
 ac_path_lib_mysql_header="mysql/mysql.h"
@@ -20638,6 +20640,8 @@ fi
 
 
 
+{ $as_echo "$as_me:$LINENO: checking for pcre" >&5
+$as_echo_n "checking for pcre... " >&6; }
 # check for presence of libpcre
 
 ac_path_lib_pcre_header="pcre/pcre.h"
@@ -21143,6 +21147,8 @@ fi
 
 
 
+{ $as_echo "$as_me:$LINENO: checking for GeoIP" >&5
+$as_echo_n "checking for GeoIP... " >&6; }
 # check for presence of libgeoip
 
 ac_path_lib_geoip_header=" "
@@ -21809,6 +21815,8 @@ if test "$ac_res" != no; then
 
 fi
 
+{ $as_echo "$as_me:$LINENO: checking for libcrypt" >&5
+$as_echo_n "checking for libcrypt... " >&6; }
 { $as_echo "$as_me:$LINENO: checking for crypt in -lcrypt" >&5
 $as_echo_n "checking for crypt in -lcrypt... " >&6; }
 if test "${ac_cv_lib_crypt_crypt+set}" = set; then
@@ -22099,7 +22107,11 @@ _ACEOF
 
 fi
 
+{ $as_echo "$as_me:$LINENO: checking for ZLib library" >&5
+$as_echo_n "checking for ZLib library... " >&6; }
 #AC_CHECK_LIB([z], [z],[AC_SUBST(ZLIB_LIBS,"-lzlib")], AC_ERROR("Please install zlib library"))
+{ $as_echo "$as_me:$LINENO: checking for SSL library" >&5
+$as_echo_n "checking for SSL library... " >&6; }
 
 { $as_echo "$as_me:$LINENO: checking for MD5 in -lssl" >&5
 $as_echo_n "checking for MD5 in -lssl... " >&6; }
