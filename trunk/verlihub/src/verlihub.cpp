@@ -32,6 +32,13 @@
 #include <dirent.h>
 #include "script_api.h"
 
+#ifdef _WIN32
+#include <windows.h> 
+#include <tchar.h>
+
+#define BUFSIZE MAX_PATH
+#endif
+
 using namespace std;
 using nDirectConnect::cServerDC;
 
@@ -83,6 +90,14 @@ int main(int argc, char *argv[])
 {
 	int result = 0;
 		string ConfigBase;
+		#ifdef _WIN32
+		TCHAR Buffer[BUFSIZE];
+		if(!GetCurrentDirectory(BUFSIZE, Buffer)) {
+				cout << "Cannot get current directory because: " << GetLastError() << endl;
+				return 1;
+		}
+		ConfigBase = Buffer;
+		#else
 		const char *DirName = NULL;
 		char *HomeDir = getenv("HOME");
 		string tmp;
@@ -102,20 +117,21 @@ int main(int argc, char *argv[])
 		{
 			ConfigBase = "/etc/verlihub";
 		}
+		#endif
 		cout << "Config dir " << ConfigBase << endl;
 		cServerDC server(ConfigBase, argv[0]);
 		int port=0;
-#if ! defined _WIN32
+
 		if(argc > 1)
 		{
 			stringstream arg(argv[1]);
 			arg >> port;
 		}
-
+		#ifndef _WIN32
 		signal(SIGPIPE,mySigPipeHandler);
 		signal(SIGIO  ,mySigIOHandler  );
 		signal(SIGQUIT,mySigQuitHandler);
-#endif
+		#endif
 
 		server.StartListening(port);
 		result = server.run(); // run the main loop until it stops itself
