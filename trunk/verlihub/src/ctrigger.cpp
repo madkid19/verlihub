@@ -27,6 +27,7 @@
 #include "curr_date_time.h"
 #include "stringutils.h"
 #include <stdlib.h>
+#include <time.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -106,12 +107,16 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	  if (!LoadFileInString(filename,buf)) return 0;
 	}
 	if (mFlags & eTF_VARS) {
-	  cTime theTime(server.mTime);
-	  time_t curr_time;
-	  struct tm lt;
-	  
-	  time(&curr_time);
-	  localtime_r(&curr_time, &lt);
+	cTime theTime(server.mTime);
+	time_t curr_time;
+	time(&curr_time);
+	#ifdef _WIN32
+		//TODO: do we really need reentrant version?
+		struct tm *lt = localtime(&curr_time);
+	#else
+		struct tm *lt = new tm();
+		localtime_r(&curr_time, lt);
+	#endif
 	  
 	  theTime -= server.mStartTime;	
 	  ReplaceVarInString(buf, "PARALL", buf, parall);
@@ -134,18 +139,20 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	  ReplaceVarInString(buf, "VERSION_DATE", buf, __CURR_DATE_TIME__);
 	  ReplaceVarInString(buf, "TOTAL_SHARE", buf,server.mTotalShare);
 	  char tmf[3];
-	  sprintf(tmf,"%02d",lt.tm_sec);
+	  sprintf(tmf,"%02d",lt->tm_sec);
 	  ReplaceVarInString(buf, "ss",buf, tmf);
-	  sprintf(tmf,"%02d",lt.tm_min);
+	  sprintf(tmf,"%02d",lt->tm_min);
 	  ReplaceVarInString(buf, "mm",buf, tmf);
-	  sprintf(tmf,"%02d",lt.tm_hour);
+	  sprintf(tmf,"%02d",lt->tm_hour);
 	  ReplaceVarInString(buf, "HH",buf, tmf);
-	  sprintf(tmf,"%02d",lt.tm_mday);
+	  sprintf(tmf,"%02d",lt->tm_mday);
 	  ReplaceVarInString(buf, "DD",buf, tmf);
-	  sprintf(tmf,"%02d",lt.tm_mon+1);
+	  sprintf(tmf,"%02d",lt->tm_mon+1);
 	  ReplaceVarInString(buf, "MM",buf, tmf);
-	  ReplaceVarInString(buf, "YY",buf, 1900 + lt.tm_year);
-	  
+	  ReplaceVarInString(buf, "YY",buf, 1900 + lt->tm_year);
+	  #ifndef _WIN32
+	  delete lt;
+	  #endif
 	}	
 	
 	if(timeTrigger) {
