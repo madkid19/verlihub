@@ -25,6 +25,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #include <sys/param.h>
 #include <iostream>
 #include <fstream>
@@ -103,14 +106,25 @@ bool LoadFileInString(const string &FileName, string &dest)
 
 void ExpandPath(string &Path)
 {
-	if(Path.substr(0,2) == "./") {
+
+if(Path.substr(0,2) == "./") {
 		string tmp = Path;
-#if defined HAVE_LINUX
-		Path = get_current_dir_name();
+#ifdef _WIN32
+		char * cPath = new char[35];
+		int size = GetCurrentDirectory(35, cPath);
+		if(!size)
+			return;
+		else if(size > 35) {
+			delete cPath;
+			cPath = new char[size];
+			GetCurrentDirectory(35, cPath);
+		}
+		Path = string(cPath);
+		delete cPath;
 #elif defined HAVE_FREEBSD
 		Path = getcwd(NULL, MAXPATHLEN);
 #else
-		Path = GetCurrentDirectory(); //FIXME
+		Path = get_current_dir_name();
 #endif
 		Path += "/" + tmp.substr(2,tmp.length());
 	}
@@ -121,7 +135,7 @@ void ExpandPath(string &Path)
 		Path.replace(pos, 2, getenv("HOME"));
 	}
 #endif
-// FIXME: Windows uses \
+	// FIXME: It doesn't work on Windows 
 	pos = Path.find("../");
 	while (pos != Path.npos) {
 		Path.replace(pos, 3, "");
