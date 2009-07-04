@@ -25,7 +25,9 @@
 
 #include <string>
 #include "cobj.h"
-
+#ifdef _WIN32
+#include <windows.h>
+#endif
 using std::string;
 
 namespace nPlugin {
@@ -47,7 +49,11 @@ public:
 protected:
 	string mFileName;
 	string mName;
+	#ifdef _WIN32
+	HINSTANCE mHandle;
+	#else
 	void *mHandle;
+	#endif
 
 };
 

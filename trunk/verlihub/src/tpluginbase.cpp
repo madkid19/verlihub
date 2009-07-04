@@ -46,6 +46,11 @@ tPluginBase::~tPluginBase()
  */
 bool nPlugin::tPluginBase::Open()
 {
+	#ifdef _WIN32
+	mHandle = LoadLibrary(mFileName.c_str()); 
+	if(mHandle == NULL)
+	#else
+      
 	#ifdef HAVE_FREEBSD
 	/*
 	* Reset dlerror() since it can contain error from previous
@@ -56,9 +61,9 @@ bool nPlugin::tPluginBase::Open()
 
 	mHandle = dlopen(mFileName.c_str(), RTLD_NOW);
 	if(!mHandle)
+	#endif
 	{
-		if(ErrLog(1)) LogStream() << "Can't open file '" << mFileName
-			<< "' because:" << Error() << endl;
+		if(ErrLog(1)) LogStream() << "Can't open plugin '" << mFileName << "' because:" << Error() << endl;
 		return false;
 	}
 	return true;
@@ -70,7 +75,12 @@ bool nPlugin::tPluginBase::Open()
  */
 bool nPlugin::tPluginBase::Close()
 {
-	if(dlclose(mHandle)){
+	#ifdef _WIN32
+	if(!FreeLibrary(mHandle))
+	#else
+	if(dlclose(mHandle))
+	#endif
+	{
 		if(ErrLog(1)) LogStream() << "Can't close :" << Error() << endl;
 	}
 	return true;
@@ -82,7 +92,23 @@ bool nPlugin::tPluginBase::Close()
  */
 string nPlugin::tPluginBase::Error()
 {
-	const char *error = dlerror();
+	const char *error;
+	#ifdef _WIN32
+		LPVOID buff;
+		FormatMessage( 
+			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_HMODULE,
+			mHandle,
+			GetLastError(),
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+			(LPTSTR) &buff,
+			0,
+			NULL 
+		);
+		error= (const char *) buff;
+		LocalFree(buff);
+	#else
+	error = dlerror();
+	#endif
 	return string(error?error:"ok");
 }
 
