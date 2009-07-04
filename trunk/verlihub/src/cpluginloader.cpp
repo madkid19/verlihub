@@ -53,6 +53,11 @@ cPluginLoader::~cPluginLoader()
  */
 bool nPlugin::cPluginLoader::Open()
 {
+	#ifdef _WIN32
+	mHandle = LoadLibrary(mFileName.c_str()); 
+	if(mHandle == NULL) {
+	#else
+
 	#ifdef HAVE_FREEBSD
 	/*
 	* Reset dlerror() since it can contain error from previous
@@ -62,11 +67,11 @@ bool nPlugin::cPluginLoader::Open()
 	#endif
 
 	mHandle = dlopen(mFileName.c_str(), RTLD_NOW);
-	if(!mHandle || IsError()) // NOTE hte OR (||) operator evaluates only the first statement if that one is true
+	if(!mHandle || IsError()) // Note that || operator evaluates only the first statement if that one is true
 	{
-		if (!mHandle) IsError();// ... that's why here the second is called again
-		if(ErrLog(1)) LogStream() << "Can't open file '" << mFileName
-			<< "' because:" << Error() << " handle(" << mHandle << ")" << endl;
+		if (!mHandle) IsError(); // Call it again
+	#endif
+		if(ErrLog(1)) LogStream() << "Cannot open plugin '" << mFileName << "': " << Error() << endl;
 		return false;
 	}
 	return true;
@@ -80,10 +85,14 @@ bool nPlugin::cPluginLoader::Close()
 {
 	mcbDelPluginFunc(mPlugin);
 	mPlugin = NULL;
+	#ifdef _WIN32
+	if(!FreeLibrary(mHandle))
+	#else
 	dlclose(mHandle);
 	if(IsError())
+	#endif
 	{
-		if(ErrLog(1)) LogStream() << "Can't close :" << Error() << endl;
+		if(ErrLog(1)) LogStream() << "Cannot close plugin:" << Error() << endl;
 		return false;
 	}
 	mHandle = NULL;
@@ -127,11 +136,19 @@ bool nPlugin::cPluginLoader::LoadSym()
  */
 void * nPlugin::cPluginLoader::LoadSym(const char *name)
 {
+	#ifdef _WIN32
+	void *func = (void *) GetProcAddress(mHandle, name);
+	if(func == NULL) {
+		if(ErrLog(1)) LogStream() << "Can't load " << name <<" exported interface :" << GetLastError() << endl;
+		return NULL;
+	}
+	#else
 	void *func = dlsym( mHandle, name);
 	if(IsError())
 	{
 		if(ErrLog(1)) LogStream() << "Can't load " << name <<" exported interface :" << Error() << endl;
 		return NULL;
 	}
+	#endif
 	return func;
 }
