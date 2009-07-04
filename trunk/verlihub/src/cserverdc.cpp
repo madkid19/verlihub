@@ -40,7 +40,9 @@
 #include <cctype>
 #include <algorithm>
 #include "curr_date_time.h"
+#ifndef _WIN32  //TODO: Implement worker thread on Windows
 #include "cthreadwork.h"
+#endif
 #include "stringutils.h"
 #include "cconntypes.h"
 #include "cdcconsole.h"
@@ -61,7 +63,9 @@
 
 using namespace std;
 using namespace nUtils;
+#ifndef _WIN32 //TODO: Implement worker thread on Windows
 using namespace nThreads;
+#endif
 using namespace nStringUtils;
 namespace nDirectConnect
 {
@@ -1268,7 +1272,7 @@ int cServerDC::RegisterInHublist(string host, int port, cConnDC *conn)
 	string NickForReply;
 	DCPublicHS("Registering the hub in hublists. This may take a while, please wait...", conn);
 	if(conn && conn->mpUser) NickForReply = conn->mpUser->mNick;
-	
+	#ifndef _WIN32
 	cThreadWork *work = new tThreadWork3T<cServerDC, string, int, string>( host, port, NickForReply, this, &cServerDC::DoRegisterInHublist);
 	if ( mHublistReg.AddWork(work) )
 	{
@@ -1279,6 +1283,9 @@ int cServerDC::RegisterInHublist(string host, int port, cConnDC *conn)
 		delete work;
 		return 0;
 	}
+	#else
+	return 0;
+	#endif
 }
 
 /** No descriptions */

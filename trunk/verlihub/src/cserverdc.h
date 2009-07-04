@@ -42,7 +42,9 @@
 #include "cusercollection.h"
 #include "cvhpluginmgr.h"
 #include "cmeanfrequency.h"
+#ifndef _WIN32 //TODO: Implement worker thread on Windows
 #include "cworkerthread.h"
+#endif
 
 using namespace std;
 using nMySQL::cMySQL;
@@ -50,7 +52,9 @@ using nMySQL::cMySQL;
 using nUtils::cGeoIP;
 #endif
 using namespace ::nPlugin;
+#ifndef _WIN32 //TODO: Implement worker thread on Windows
 using namespace nThreads;
+#endif
 
 #define USER_ZONES 6
 
@@ -263,7 +267,9 @@ public: // Public attributes
 	ofstream mNetOutLog;
 
 	/** hublist registration thread */
+	#ifndef _WIN32 //TODO: Implement worker thread on Windows
 	cWorkerThread mHublistReg;
+	#endif
 
 	cMeanFrequency<unsigned long, 10> mUploadZone[USER_ZONES+1];
 	
