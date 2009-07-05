@@ -172,7 +172,12 @@ bool cPlugConsole::cfOn::operator()()
 	if ( GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data))
 	{
 		cPlug *Plug = GetTheList()->FindData(Data);
-		if (Plug) return Plug->Plugin();
+		if (Plug) {
+			bool res = Plug->Plugin();
+			// Show an error if it fails
+			if(!res) *mOS << Plug->mLastError;
+			return res;
+		}
 		*mOS << "Plugin '" << Data.mNick << "' not found. ";
 	}
 	return false;
