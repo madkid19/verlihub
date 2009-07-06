@@ -1456,7 +1456,7 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					user->mxConn->LogStream() << "Kicked by " << OP->mNick << ", ban " << mC.tban_kick << "s"<< endl;
 				if(OP->Log(3)) OP->LogStream() << "Kicking " << Nick << endl;
 
-				bool Disconnect;
+				bool Disconnect = true;
 				mKickList->AddKick(user->mxConn, OP->mNick, NULL, OldKick);
 				if (OldKick.mReason.size())
 				{

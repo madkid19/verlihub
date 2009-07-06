@@ -2,7 +2,7 @@ AC_INIT(acinclude.m4)
 
 datadir=$datadir/verlihub
 
-VERSION="0.9.8e-r1"
+VERSION="0.9.9a Beta"
 RELEASE=1
 PACKAGE_NAME=verlihub
 

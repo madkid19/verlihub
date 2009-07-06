@@ -128,6 +128,7 @@ public:
 	string extra_listen_ports;
 	string hub_version_special;
 	string hub_name;
+	string hub_version;
 	string hub_topic;	
 	string hub_desc;
 	string hub_host;

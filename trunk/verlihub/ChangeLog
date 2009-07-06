@@ -1,4 +1,9 @@
-2009-05-16 chaos/netcelli (0.9.8e)
+2009-05-05 netcelli (0.9.8e)
+	 * Fixed a possible crash
+	 * Re-added hub_version variable
+	 * Fixed a crash on FreeBSD with pluginterface
+
+2009-05-16 netcelli (0.9.8e)
 
 	 * Fixed possible reg exploit if an user is admin
 	 * Added OS detection in configure script

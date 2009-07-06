@@ -2073,7 +2073,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 datadir=$datadir/verlihub
 
-VERSION="0.9.8e-r1"
+VERSION="0.9.9a Beta"
 RELEASE=1
 PACKAGE_NAME=verlihub
 

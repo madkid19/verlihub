@@ -116,7 +116,7 @@ void cInfoServer::Output(ostream &os, int Class)
 	theTime = mServer->mTime;
 	theTime -= mServer->mStartTime;
 	os << "[::] Uptime count: " << theTime.AsPeriod() << "\r\n";
-	os << "[::] Server frequency: " << mServer->mFrequency.GetMean(mServer->mTime)  << "( ";
+	os << "[::] Server frequency: " << mServer->mFrequency.GetMean(mServer->mTime)  << " (";
 	if (mServer->mSysLoad >= eSL_CRITICAL) os << "Recovery mode";
 	if (mServer->mSysLoad >= eSL_SQEEZY) os << "Near capacity mode";
 	if (mServer->mSysLoad >= eSL_HURRY) os << "Progressive mode";
