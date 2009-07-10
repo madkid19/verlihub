@@ -383,10 +383,10 @@ int cAsyncConn::SendAll(const char *buf, size_t &len)
 				{ 
 					if ((n = send(mSockDesc, buf + total, (int)bytesleft, 0)) != SOCKET_ERROR)
 						break;
-					if (WSAGetLastError() == WSAEWOULDLOCK)
+					if (WSAGetLastError() == WSAEWOULDBLOCK)
 					{
-						if(log(3)) LogStream() << "cAsynConn Warning.. Resource unavailable...Retrying.. " << ++RetryCount <<endl;
-							:Sleep(50);
+					  if(ErrLog(3)) LogStream() << "cAsynConn Warning.. Resource unavailable...Retrying.. " << ++RetryCount <<endl;
+							::Sleep(50);
 					}
 				}
 				while (WSAGetLastError() == WSAEWOULDBLOCK);
