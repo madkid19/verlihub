@@ -759,6 +759,7 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 	ostringstream os;
 
 	if(!conn->mpUser) return -1;
+	if(!conn->mpUser->mInList) return -2;
 	if(!conn->mpUser->Can(eUR_PM, mS->mTime.Sec(), 0)) return -4;
 
 	// verify sender's nick
@@ -1078,6 +1079,7 @@ int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn )
 {
 	if(msg->SplitChunks()) return -1;
 	if(!conn->mpUser) return -1;
+	if(!conn->mpUser->mInList) return -2;
 	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0)) return -4;
 	ostringstream ostr;
 
@@ -1125,7 +1127,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		conn->CloseNow();
 		return -1;
 	}
-
+	if(!conn->mpUser->mInList) return -2;
 	if(!conn->mpUser->Can(eUR_SEARCH, mS->mTime.Sec(), 0))
 	{
 		unsigned long use_hub_share;
