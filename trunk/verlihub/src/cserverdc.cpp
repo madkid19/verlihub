@@ -47,9 +47,11 @@
 #include "cconntypes.h"
 #include "cdcconsole.h"
 #include "ctriggers.h"
+#ifndef _WIN32
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#endif
 
 
 #define HUB_VERSION_CLASS "(" __CURR_DATE_TIME__ ")"
