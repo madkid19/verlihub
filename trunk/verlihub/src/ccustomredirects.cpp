@@ -94,7 +94,7 @@ namespace nDirectConnect {
 				redirects[i] = (char *) redirect->mAddress.c_str();
 				i++;
 			}
-			if(!redirect->mFlag && j < 10) { DefaultRedirect[j] = (char *) redirect->mAddress.c_str(); j++;}
+			if(redirect->mEnable && !redirect->mFlag && j < 10) { DefaultRedirect[j] = (char *) redirect->mAddress.c_str(); j++;}
 		}
 		if(!i) {
 			// use default redirect	
