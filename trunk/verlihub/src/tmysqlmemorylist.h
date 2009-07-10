@@ -210,7 +210,11 @@ public:
 	{
 		mQuery.Clear();
 		string buf, filename;
+		#ifdef _WIN32
+		filename =  ".\\sql\\default_" + mMySQLTable.mName + ".sql";
+		#else
 		filename =  DATADIR  "/sql/default_" + mMySQLTable.mName + ".sql";
+		#endif
 		bool _Result = false;
 		if(LoadFileInString(filename, buf))
 		{
