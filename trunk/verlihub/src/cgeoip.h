@@ -23,8 +23,8 @@
 #ifndef NUTILSCGEOIP_H
 #define NUTILSCGEOIP_H
 
-#include <GeoIP.h>
 #include <string>
+#include <GeoIP.h>
 using std::string;
 
 namespace nUtils {
