@@ -359,6 +359,7 @@ private:
 			mOnParsedMsgConnectToMe(mgr, "VH_OnParsedMsgConnectToMe", &cVHPlugin::OnParsedMsgConnectToMe),
 			mOnParsedMsgRevConnectToMe(mgr, "VH_OnParsedMsgRevConnectToMe", &cVHPlugin::OnParsedMsgRevConnectToMe),
 			mOnOperatorCommand(mgr, "VH_OnOperatorCommand", &cVHPlugin::OnOperatorCommand),
+			mOnParsedMsgSR(mgr, "VH_OnParsedMsgSR", &cVHPlugin::OnParsedMsgSR),
 			mOnOperatorKicks( mgr, "VH_OnOperatorKicks", &cVHPlugin::OnOperatorKicks),
 			mOnOperatorDrops( mgr, "VH_OnOperatorDrops", &cVHPlugin::OnOperatorDrops),
 			mOnUserCommand(mgr, "VH_OnUserCommand", &cVHPlugin::OnUserCommand),
@@ -389,6 +390,7 @@ private:
 		cVHCBL_Message		mOnParsedMsgConnectToMe;
 		cVHCBL_Message		mOnParsedMsgRevConnectToMe;
 		cVHCBL_ConnText		mOnOperatorCommand;
+		cVHCBL_ConnText		mOnParsedMsgSR;
 		cVHCBL_UsrUsrStr	mOnOperatorKicks;
 		cVHCBL_UsrUsr		mOnOperatorDrops;
 		cVHCBL_ConnText		mOnUserCommand;

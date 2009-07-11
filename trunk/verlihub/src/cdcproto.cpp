@@ -368,11 +368,7 @@ int cDCProto::DC_Version(cMessageDC * msg, cConnDC * conn)
 	conn->SetLSFlag( eLS_VERSION );
 	string &version=msg->ChunkString(eCH_1_PARAM);
 	if(conn->Log(3)) conn->LogStream() << "Version:" << version << endl;
-	if(0)           // 2DO TODO check the version, store it
-	{
-		// wrong version message
-		// disconnect
-	}
+	//TODO Check protocol version
 	conn->mVersion=version;
 	return 1;
 }
@@ -708,9 +704,8 @@ int cDCProto::DC_GetINFO(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
 
-	// check if he's in -> this is done by filter
 	if(!conn->mpUser || !conn->mpUser->mInList)
-		return -1; // for sure
+		return -1;
 
 	string buf;
 	string str=msg->ChunkString(eCH_GI_OTHER);
@@ -880,6 +875,10 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	if(!conn->mpUser->mInList) return -3;
 	if(!conn->mpUser->Can(eUR_CHAT, mS->mTime.Sec(), 0)) return -4;
 
+	if(conn->mpUser->mClass < mS->mC.mainchat_class) {
+		mS->DCPublicHS("Mainchat is currently disabled for non registered users.",conn);
+		return 0;
+	}
 	cUser::tFloodHashType Hash = 0;
 	Hash = tHashArray<void*>::HashString(msg->mStr);
 	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_CHAT]))
@@ -921,11 +920,6 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 
 
 	if(ParseForCommands(text, conn)) return 0;
-	if(conn->mpUser->mClass < mS->mC.mainchat_class)
-	{
-		mS->DCPublicHS("Mainchat is currently disabled for non registered users.",conn);
-		return 0;
-	}
 	////////// here is the part that finally distributes messages
 	// check message length only for less than vip regs
 	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text, conn)) 
@@ -965,6 +959,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 int cDCProto::DC_Kick(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
+	if(!conn->mpUser || !conn->mpUser->mInList) return -2; // FIXME is it ok?
 	string &nick = msg->ChunkString(eCH_1_PARAM);
 
 	// check rights
@@ -1177,12 +1172,6 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		mS->DCPublicHS(os.str(),conn);
 		return -2;
 	}
-
-	if (!conn->mpUser->mInList)
-	{
-		return -3;
-	}
-
 	cUser::tFloodHashType Hash = 0;
 	Hash = tHashArray<void*>::HashString(msg->mStr);
 	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_SEARCH]))
@@ -1264,11 +1253,11 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks())
 		return -1;
-
+	if(!conn->mpUser || !conn->mpUser->mInList) return -2;
 	ostringstream os;
 
 	// check the nick
-	if(CHECK_NICK_SR && !conn->mpUser || conn->mpUser->mNick != msg->ChunkString(eCH_SR_FROM))
+	if(conn->mpUser->mNick != msg->ChunkString(eCH_SR_FROM))
 	{
 		if(conn->Log(1)) conn->LogStream() << "Claims to be someone else in search response. Dropping connection." << endl;
 		if(conn->mpUser)
@@ -1282,10 +1271,14 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	cUser *other = mS->mUserList.GetUserByNick ( str );
 	// check other nick
 	if(!other) return -1;
-	if(!conn->mpUser || !conn->mpUser->mInList) return -2;
 
 	// cut off the end
 	string ostr(msg->mStr,0 ,msg->mChunks[eCH_SR_TO].first - 1);
+
+	#ifndef WITHOUT_PLUGINS
+	if (!mS->mCallBacks.mOnParsedMsgSR.CallAll(conn, (string *)&ostr))
+		return -2;
+	#endif
 
 	// send it
 	if((other->mxConn) && (!mS->mC.max_passive_sr || (other->mxConn->mSRCounter++ < mS->mC.max_passive_sr))) 
@@ -1615,6 +1608,7 @@ int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 int cDCProto::DCO_WhoIP(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
+	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR) return -1;
 	string nicklist("$UsersWithIp ");
 	string sep("$$");
 	nicklist += msg->ChunkString(eCH_1_PARAM);
@@ -1647,7 +1641,7 @@ int cDCProto::DCO_GetTopic(cMessageDC *, cConnDC * conn)
 int cDCProto::DCO_SetTopic(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
-	if(!conn->mpUser->mInList) return -2;
+	if(!conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR) return -2;
 	// check rights
 	if(conn->mpUser->mClass < mS->mC.topic_mod_class)
 	{

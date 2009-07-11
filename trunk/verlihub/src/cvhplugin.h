@@ -252,6 +252,15 @@ public:
 	 */
 	virtual bool OnOperatorCommand  ( cConnDC* , std::string *){ return true; }
 	
+	//! Event handler function that is called when a search result is received
+	/*!
+	 * 	Use RegisterCallBack("OnParsedMsgSR") to register it. This event can be discardable.
+	\return Return false to ignore the search result, otherwise return true.
+	\param conn The pointer to the connection that sent the message
+	\param msg The search result 
+	 */
+	virtual bool OnParsedMsgSR  ( cConnDC* , std::string *){ return true; }
+
 	//! Event handler function that is called when an user command is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnUserCommand") to register it. This event can be discardable.

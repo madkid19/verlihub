@@ -211,11 +211,10 @@ int cDCConsole::UsrCommand(const string & str, cConnDC * conn)
 			if( cmd == "+passwd" ) return CmdRegMyPasswd( cmd_line, conn);
 			if( cmd == "+help"     ) return CmdHelp(cmd_line , conn);
 			if( cmd == "+myinfo" ) return CmdMyInfo( cmd_line, conn);
+			//if( cmd == "+info" ) return CmdInfo( cmd_line, conn);
 			if( cmd == "+myip" ) return CmdMyIp( cmd_line, conn);
 			if( cmd == "+me" ) return CmdMe( cmd_line, conn);
 			if( cmd == "+regme" ) return CmdRegMe( cmd_line, conn);
-			if( cmd == "+chat" ) return CmdChat( cmd_line, conn, true);
-			if( cmd == "+nochat" ) return CmdChat( cmd_line, conn, false);
 			if(mUserCmdr.ParseAll(str, os, conn) >= 0)
 			{
 				mOwner->DCPublicHS(os.str().c_str(),conn);
@@ -419,6 +418,19 @@ int cDCConsole::CmdMyInfo(istringstream & cmd_line, cConnDC * conn)
 	return 1;
 }
 
+/*int cDCConsole::CmdInfo(istringstream & cmd_line, cConnDC * conn)
+{
+	ostringstream os;
+	string omsg;
+	cTime theTime((long int) mServer->mC.int_search);
+	os << "\r\n[::] Hub address: " << mServer->mC.hub_host;
+	os << "\r\n[::] Hub owner: " << mServer->mC.hub_owner;
+	os << "\r\n[::] You can search every: " << theTime.AsPeriod();
+	omsg = os.str();
+	mOwner->DCPublicHS(omsg,conn);
+	return 1;
+}*/
+
 int cDCConsole::CmdMyIp(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
@@ -455,23 +467,6 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 	string msg = os.str();
 	mOwner->mUserList.SendToAll(msg, true);
 	os.str(mOwner->mEmpty);
-	return 1;
-}
-
-int cDCConsole::CmdChat (istringstream & cmd_line, cConnDC * conn, bool switchon)
-{
-	if(!conn->mpUser) {
-		// this should never occur
-		return 0;
-	}
-	if (switchon && !mOwner->mChatUsers.ContainsNick(conn->mpUser->mNick))
-	{
-		mOwner->mChatUsers.Add(conn->mpUser);
-	}
-	else if (!switchon && mOwner->mChatUsers.ContainsNick(conn->mpUser->mNick))
-	{
-		mOwner->mChatUsers.Remove(conn->mpUser);
-	}
 	return 1;
 }
 

@@ -86,13 +86,13 @@ public:
 	int CmdHelp(istringstream & cmd_line, cConnDC * conn);
 	int CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn,int cl_min, int cl_max);
 	int CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn);
+	//int CmdInfo(istringstream & cmd_line, cConnDC * conn);
 	int CmdMyInfo(istringstream & cmd_line, cConnDC * conn);
 	int CmdMyIp(istringstream & cmd_line, cConnDC * conn);
 	int CmdMe(istringstream & cmd_line, cConnDC * conn);
 	int CmdReport(istringstream & cmd_line, cConnDC * conn);
 	int CmdRegMe(istringstream & cmd_line, cConnDC * conn);
 	int CmdKick (istringstream & cmd_line, cConnDC * conn);
-	int CmdChat (istringstream & cmd_line, cConnDC * conn, bool swith);
 	/** banlist */
 	int CmdBanList(istringstream & cmd_line, cConnDC * conn, int bantype, bool filter=false);
 	/** make a secret user/op */
