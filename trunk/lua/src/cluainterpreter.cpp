@@ -109,7 +109,7 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("GetBots",       &_GetBots);
 	RegisterFunction("GetTempRights",       &_GetTempRights);
 	RegisterFunction("SetTempRights",       &_SetTempRights);
-	
+	RegisterFunction("GetVHCfgDir",       &_GetVHCfgDir);
 	
 	
 	lua_setglobal(mL, "VH");
