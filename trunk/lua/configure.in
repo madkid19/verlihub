@@ -1,7 +1,7 @@
 AC_INIT(configure.in)
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(lua, 1.8)
+AM_INIT_AUTOMAKE(lua, 1.8.1)
 
 datadir=$datadir/verlihub
 
@@ -86,7 +86,7 @@ LDFLAGS="${SAVEFLAGS}"
 AC_OUTPUT(Makefile src/Makefile share/Makefile)
 
 echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
-echo "				Lua Plugin			   "
+echo "		Lua Plugin			   "
 echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
 echo "Configure has completed successfully. Now you must run make."
 echo "If make fails with errors, please consult the forums and see"

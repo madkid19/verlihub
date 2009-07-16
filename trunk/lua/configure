@@ -2372,7 +2372,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=lua
- VERSION=1.8
+ VERSION=1.8.1
 
 
 cat >>confdefs.h <<_ACEOF
@@ -23519,7 +23519,7 @@ fi
 
 
 echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
-echo "				Lua Plugin			   "
+echo "		Lua Plugin			   "
 echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
 echo "Configure has completed successfully. Now you must run make."
 echo "If make fails with errors, please consult the forums and see"
