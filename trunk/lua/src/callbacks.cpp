@@ -981,7 +981,7 @@ int _AddRegUser(lua_State *L)
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
-		password = (char *) lua_tostring(L, 2);
+		password = (char *) lua_tostring(L, 3);
 		if(!lua_isnumber(L, 4)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
