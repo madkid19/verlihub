@@ -1,7 +1,7 @@
 AC_INIT(configure.in)
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(lua, 1.8.1)
+AM_INIT_AUTOMAKE(lua, 1.8.2)
 
 datadir=$datadir/verlihub
 
@@ -94,9 +94,4 @@ echo "if anyone else has had the same issue. The forums are located"
 echo "here http://forums.verlihub-project.org/."
 echo "Extensive documentation is also available at the project website"
 echo "which can be found here http://www.verlihub-project.org/."
-echo "NOTE: This is the GIT version of Lua plugin for Verlihub. If you"
-echo "wish to use a stable release candidate, then please download it"
-echo "from the project website mentioned above. Please feel free to join"
-echo "and register at the Verlihub suport hub which can be found here"
-echo "dchub://hub.verlihub-project.org:7777/."
 echo "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
