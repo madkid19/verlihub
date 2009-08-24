@@ -23,6 +23,9 @@
 #include "ccallbacklist.h"
 #include "cpluginbase.h"
 #include "cpluginmanager.h"
+#ifdef WIN32
+#pragma warning( disable : 4355)
+#endif
 
 namespace nPlugin {
 
