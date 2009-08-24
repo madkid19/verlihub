@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef NPLUGINTLISTPLUGIN_H
 #define NPLUGINTLISTPLUGIN_H
-
 #include "cvhplugin.h"
 #include "tmysqlmemorylist.h"
 #include "tmysqlmemoryhash.h"

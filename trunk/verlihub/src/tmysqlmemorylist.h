@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef TMYSQLMEMORYLIST_H
 #define TMYSQLMEMORYLIST_H
-
 #include <vector>
 #include "cconfmysql.h"
 #ifdef HAVE_CONFIG_H
