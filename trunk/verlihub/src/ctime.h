@@ -19,14 +19,11 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef NUTILS_CTIME_H
 #define NUTILS_CTIME_H
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 #if defined _WIN32 || HAVE_OSTREAM
 #include <ostream>
 #else
@@ -34,15 +31,11 @@ namespace std{
 #include <ostream.h>
 };
 #endif
-
 #include <time.h>
-
 #if defined _WIN32
 #include <Winsock2.h>
 #endif
-
 #include <string>
-
 #include <sys/time.h>
 
 using std::string;

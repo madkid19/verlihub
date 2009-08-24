@@ -19,7 +19,6 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #include "cprotocol.h"
 #include "stringutils.h"
 
@@ -112,6 +111,7 @@ string &cMessageParser::ChunkString(unsigned int n)
 					mChStrings[n].assign(mStr, chu.first, chu.second);
 			} else {
 				if(ErrLog(1)) LogStream() << "Error in parsing message : " << mStr << endl;
+				//return NULL;?
 			}
 			//ShrinkStringToFit(mChStrings[n]);
 		}

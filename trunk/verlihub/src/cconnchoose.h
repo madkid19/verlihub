@@ -27,11 +27,9 @@
 #ifndef __extension__
 #  define __extension__
 #endif
-
 #ifndef TEMP_FAILURE_RETRY
 #define TEMP_FAILURE_RETRY(expression) expression
 #endif
-
 #ifndef TEMP_FAILURE_RETRY
 #	if !defined _WIN32
 #		define TEMP_FAILURE_RETRY(expression) \
@@ -41,7 +39,6 @@
 #		define TEMP_FAILURE_RETRY(expression) while ((long int) (expression) == -1L && errno == EINTR){}
 #	endif // _WIN32
 #endif
-
 #ifdef _WIN32
 #	define USE_SELECT 1
 #else
@@ -51,10 +48,8 @@
 #		define USE_SELECT 1
 #	endif
 #endif
-
 #include "ctime.h"
 #include "cconnbase.h"
-
 #ifndef _WIN32
 #ifndef USE_OLD_CONNLIST
 #include <vector>

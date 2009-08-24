@@ -21,7 +21,6 @@
 ***************************************************************************/
 #ifndef NCMDRCCOMMAND_H
 #define NCMDRCCOMMAND_H
-
 #include "cpcre.h"
 
 using namespace nUtils;

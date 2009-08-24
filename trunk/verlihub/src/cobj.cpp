@@ -19,18 +19,14 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #include "cobj.h"
 #include "ctime.h"
 #include <iostream>
-
 using namespace std;
 using nUtils::cTime;
-
 int cObj::msLogLevel = 4;
 int cObj::msCounterObj = 0;
 const string cObj::mEmpty;
-
 #ifndef left
 #define left ""
 #endif

@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef COPERATOR_H
 #define COPERATOR_H
-
 #include "cuser.h"
 
 namespace nDirectConnect

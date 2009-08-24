@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef NDIRECTCONNECT_NTABLESCPENALTYLIST_H
 #define NDIRECTCONNECT_NTABLESCPENALTYLIST_H
-
 #include <string>
 #include "cconfmysql.h"
 #include "ctime.h"

@@ -19,7 +19,7 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
+using namespace std;
 // removed _XOPEN8SOURCE, it does not seem to be necessary and it does nto work on some freebsd machines
 #ifdef HAVE_CONFIG_H
 #include <config.h>

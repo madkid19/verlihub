@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef COBJ_H
 #define COBJ_H
-
 #include <iostream>
 #include <sstream>
 #ifndef _WIN32

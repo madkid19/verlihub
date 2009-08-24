@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef CMYSQL_H
 #define CMYSQL_H
-
 #if ! defined _WIN32
 //#include <mysql/mysql.h>
 #else

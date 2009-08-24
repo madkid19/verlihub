@@ -19,14 +19,11 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef NCMDRCCMDR_H
 #define NCMDRCCMDR_H
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 #include "cobj.h"
 #include "ccommand.h"
 #include <vector>

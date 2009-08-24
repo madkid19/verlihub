@@ -22,7 +22,6 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 #include "casyncsocketserver.h"
 #if defined _WIN32
 #  include <Winsock2.h>
@@ -53,6 +52,7 @@ namespace std{
 #  include <sys/socket.h>        /* for AF_INET */
 #  include <netdb.h>             /* for gethostbyaddr */
 #endif
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>

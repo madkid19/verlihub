@@ -24,8 +24,6 @@
 
 #ifndef CASYNCSOCKETSERVER_H
 #define CASYNCSOCKETSERVER_H
-
-
 #if USE_SELECT
 #include "cconnselect.h"
 #else

@@ -19,8 +19,6 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
-
 #ifndef CASYNCCONN_H
 #define CASYNCCONN_H
 
@@ -29,16 +27,12 @@
 #define MAX_SEND_SIZE 0x1FFFFE         // max size of output buffer
 #define MAX_SEND_FILL_SIZE 0x15FFFE    // on this level, incoming data is blocked
 #define MAX_SEND_UNBLOCK_SIZE 0x07FFFFE // under this level it's unblocked again
-
-
 #include "cobj.h"
 #include "ctime.h"
 #include "cconnbase.h"
-
 #ifndef WIN32
 #include <netinet/in.h>
 #endif
-
 #include <string>
 #include <list>
 
