@@ -20,10 +20,6 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 
-#ifdef WIN32
-#pragma warning( disable : 4244 4273)
-#endif
-
 #include "casyncsocketserver.h"
 
 #if defined _WIN32
