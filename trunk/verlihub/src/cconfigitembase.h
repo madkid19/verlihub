@@ -21,7 +21,6 @@
 ***************************************************************************/
 #ifndef CCONFIGITEMBASE_H
 #define CCONFIGITEMBASE_H
-
 #include <string>
 #include <iostream>
 
