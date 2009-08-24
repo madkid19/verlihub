@@ -62,7 +62,7 @@ namespace nEnums
 {
 /** Type of socket connection
   */
-typedef enum tConnType
+enum tConnType
 {
 	eCT_LISTEN,    //< listening tcp connection
 	eCT_CLIENT,    //< client connection connected to me (server)
