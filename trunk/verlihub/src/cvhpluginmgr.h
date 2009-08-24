@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef NDIRECTCONNECT_NPLUGINCVHPLUGINMGR_H
 #define NDIRECTCONNECT_NPLUGINCVHPLUGINMGR_H
-
 #include "cpluginmanager.h"
 #include "ccallbacklist.h"
 #include "cvhplugin.h"

@@ -19,17 +19,13 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
+#include <algorithm>
+using namespace std;
 #include "cuser.h"
 #include "cusercollection.h"
 #include "cvhpluginmgr.h"
-#include <algorithm>
-
 using namespace ::nUtils;
-using namespace std;
-
 namespace nDirectConnect {
-
 void cUserCollection::ufSend::operator() (cUserBase *User)
 {
 	if(User && User->CanSend())

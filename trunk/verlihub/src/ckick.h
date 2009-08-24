@@ -19,12 +19,9 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef CKICK_H
 #define CKICK_H
-
 #include <string>
-
 using namespace std;
 #if (!defined _WIN32) && (!defined __int64)
 #define __int64 long long
