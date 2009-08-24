@@ -19,18 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
-
-#ifdef WIN32
-#pragma warning( disable : 4267)
-#endif
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif
-
-#ifdef WIN32
-#pragma warning( disable : 4244 4273 4996)
 #endif
 
 #include "casyncsocketserver.h"
