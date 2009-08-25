@@ -99,7 +99,7 @@ void cInfoServer::Output(ostream &os, int Class)
 	for(it = begin(); it != end(); ++it)
 		os << (*it)->mName << " : " << *(*it) << endl;
 	os << "[::] Current online users: " << mServer->mUserCountTot << endl;
-	os << "[::] Current share total: " << converByte(mServer->mTotalShare, false) << endl;
+	os << "[::] Current share total: " << convertByte(mServer->mTotalShare, false) << endl;
 	os << "[::] User list count: " << mServer->mUserList.size() << endl;
 	os << "[::] Hello user count: " << mServer->mHelloUsers.size() << endl;
 	os << "[::] In Progress users: " << mServer->mInProgresUsers.size() << endl;
