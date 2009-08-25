@@ -13,15 +13,15 @@ function printhelp
 }
 
 case "x$1" in
-"x--cflags") echo -I$prefix/include -I$prefix/include/verlihub -I/usr/include/mysql -DHAVE_ERRNO_AS_DEFINE=1  -I/usr/include
+"x--cflags") echo -I$prefix/include -I$prefix/include/verlihub -I/usr/include/mysql  -DBIG_JOINS=1 -fPIC -fno-strict-aliasing  -I/usr/include
 ;;
 
-"x--libs") echo -L/usr/lib64 -lpcre -rdynamic -L/usr/lib64/mysql -lmysqlclient -lz -lcrypt -lnsl -lm -L/usr/lib64 -lssl -lcrypto -lc -lcrypt -L/usr/lib -lGeoIP  -pthread  -L$prefix/lib -lverlihub
+"x--libs") echo -L/usr/lib -lpcre -Wl,-Bsymbolic-functions -rdynamic -L/usr/lib/mysql -lmysqlclient -ldl -lcrypt -L/usr/lib -lGeoIP  -pthread  -L$prefix/lib -lverlihub
 ;;
 "x--prefix") echo $prefix ;;
 "x--datadir") echo ${prefix}/share/verlihub ;;
 "x--version") 
-	echo -n "verlihub version: 0.9.8e"
+	echo -n "verlihub version: 0.9.9a"
 	cat $prefix/include/verlihub/curr_date_time.h |sed -e "s/^.*\\\"\\(.*\\)\\\"/ \\1/" 
 ;;
 "x--help") printhelp ;;
