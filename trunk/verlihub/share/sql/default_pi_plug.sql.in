@@ -9,4 +9,3 @@ INSERT IGNORE INTO pi_plug (nick,autoload,path,detail) VALUES
 	("chat"   ,0,"@prefix@/lib/libchatroom_pi.so","Multiple chatrooms to separate chat topics"),
 	("replace",0,"@prefix@/lib/libreplace_pi.so","Replace some words by other"),
 	("stats"  ,0,"@prefix@/lib/libstats_pi.so","Statistics plugin, trace diverse value sin the database"),
-	("hublink",0,"@prefix@/lib/libhublink_pi.so","Link multiple hubs together")
