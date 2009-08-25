@@ -35,9 +35,9 @@ cPlugs *cPlugConsole::GetTheList()
 
 void cPlugConsole::ListHead(ostream *os)
 {
-	(*os) << "PlugMan version(" << mOwner->Version() << ")\r\n"
-		"Verlihub executable: " << mOwner->mServer->mExecPath << "\r\n"
-		"Verlihub make-time: " << cTime(mOwner->mList->mVHTime,0).AsDate() << "\r\n"
+	(*os) << "\r\n[::] Plugman version " << mOwner->Version() << "\r\n"
+		"[::] Verlihub executable: " << mOwner->mServer->mExecPath << "\r\n"
+		"[::] Verlihub make-time: " << cTime(mOwner->mList->mVHTime,0).AsDate() << "\r\n"
 		"\r\n";
 }
 
