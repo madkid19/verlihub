@@ -577,10 +577,9 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 		if (mSysLoad == eSL_NORMAL) mStatus = "Normal Mode";
 	}
 	omsg="$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
-	os << "This hub is running version " << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << " of " HUB_VERSION_NAME <<  " (RunTime: "<< runtime.AsPeriod()<<" / Current user count: "<< mUserCountTot <<")|";
-	cDCProto::Create_Chat(omsg,mC.hub_security,os.str());
+	os << HUB_VERSION_NAME "-"<< HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << "|" << "<" << mC.hub_security << ">" << " RunTime: " << runtime.AsPeriod()<<"|" << "<" << mC.hub_security << ">" << " User Count: " << mUserCountTot <<"|" << "<" << mC.hub_security << ">" << " System Status: " << mStatus << "|";
+	cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
 	conn->Send(omsg, false);
-
 	os.str(mEmpty);
 
 	if (mSysLoad >= eSL_RECOVERY)
