@@ -21,7 +21,6 @@
 #define CPIPLUG_H
 
 #include <tlistplugin.h>
-//#include "cplugs.h"
 #include "cconsole.h"
 
 class cPlug;

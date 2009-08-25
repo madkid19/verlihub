@@ -17,7 +17,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 #include "cpiplug.h"
 #include "cplugs.h"
 #include "cserverdc.h"
@@ -49,7 +48,6 @@ bool cpiPlug::RegisterAll()
 bool cpiPlug::OnNewConn(cConnDC * conn)
 {
 	mServer->DCPublicHS("This hub is enhanced by " + mName + " for Verlihub.", conn);
-	//@todo list loaded plugins
 	return true;
 }
 

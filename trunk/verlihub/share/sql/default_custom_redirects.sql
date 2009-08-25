@@ -1,1 +1,1 @@
-INSERT IGNORE INTO conn_types (address, enable, flag) VALUES ('banarray.verlihub-project.org:8002','1','0')
+INSERT IGNORE INTO conn_types (address, enable, flag) VALUES ('hub.verlihub-project.org:7777','1','0')
