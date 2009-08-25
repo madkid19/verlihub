@@ -141,7 +141,7 @@ bool cPlugConsole::ReadDataFromCmd(cfBase *cmd, int id, cPlug &data)
 	cmd->GetParStr(eADD_NICK, data.mNick);
 	if ((data.mNick.size() > 10) && (id == eLC_ADD))
 	{
-		*cmd->mOS << "Plugin name must be max 10 chars long; please provide another one";
+		*cmd->mOS << "Plugin name must be max 10 characters long; please provide another one";
 		return false;
 	}
 	cmd->GetParUnEscapeStr(eADD_PATH, data.mPath);

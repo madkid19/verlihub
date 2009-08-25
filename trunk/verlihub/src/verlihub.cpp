@@ -19,11 +19,16 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
+#include "stdafx.h"
+#ifdef WIN32
+#include <windows.h> 
+#include <tchar.h>
+#define BUFSIZE MAX_PATH
+#include <local.h>
+#endif
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 #include "cserverdc.h"
 #include <iostream>
 #include <stdlib.h>
@@ -31,13 +36,6 @@
 #include <signal.h>
 #include <dirent.h>
 #include "script_api.h"
-
-#ifdef _WIN32
-#include <windows.h> 
-#include <tchar.h>
-
-#define BUFSIZE MAX_PATH
-#endif
 
 using namespace std;
 using nDirectConnect::cServerDC;
