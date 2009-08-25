@@ -19,19 +19,14 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #include "ctime.h"
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 #if HAVE_STRING_H
 #include <string.h>
 #endif
-
 #include <sstream>
-
 #if defined _WIN32
 #include <windows.h>
 

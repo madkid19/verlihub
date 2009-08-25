@@ -32,7 +32,6 @@ VH_OnUnban(unbanwhat, op, reason) DONE
  
 #ifndef NDIRECTCONNECT_NPLUGINCVHPLUGIN_H
 #define NDIRECTCONNECT_NPLUGINCVHPLUGIN_H
-
 #include "cpluginbase.h"
 #include "cusercollection.h"
 

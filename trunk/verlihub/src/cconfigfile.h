@@ -21,7 +21,6 @@
 ***************************************************************************/
 #ifndef CCONFIGFILE_H
 #define CCONFIGFILE_H
-
 #include "cconfigbase.h"
 #include <string>
 

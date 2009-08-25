@@ -21,7 +21,6 @@
 ***************************************************************************/
 #ifndef CCONFMYSQL_H
 #define CCONFMYSQL_H
-
 #include "cconfigbase.h"
 #include <iostream>
 #include <iomanip>
