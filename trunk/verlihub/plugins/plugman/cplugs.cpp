@@ -205,14 +205,13 @@ void cPlug::SaveMe()
 
 ostream& operator << (ostream &os, const cPlug &plug)
 {
-	os << plug.mNick;
-	if (plug.IsScript()) os << " ("<< plug.mDest << ")";
-	os << " (Status: " << (plug.IsLoaded()?"ON":"OFF") << "  Load mode: " << (plug.mLoadOnStartup?"AUTO":"MANUAL") << ")\r\n" <<
-	"Loaded: " << cTime(plug.mLoadTime,0).AsDate() << "\r\n"
-	"Compiled time: " << cTime(plug.mMakeTime,0).AsDate() << "\r\n"
-	"Path: " << plug.mPath << "\r\n"
-	"Desc: " << plug.mDesc << "\r\n"
-	"Last Error: " << plug.mLastError << "\r\n";
+	os << "[::] Name: " << plug.mNick <<endl;
+	if (plug.IsScript()) os << " " << plug.mDest <<endl;
+	os << "[::] Status: " << (plug.IsLoaded()?"On":"Off") <<endl;
+	os << "[::] Mode: " << (plug.mLoadOnStartup?"Auto":"Manual") <<endl;
+	os << "[::] Path: " << plug.mPath <<endl;
+	os << "[::] Description: " << plug.mDesc <<endl;
+	os << "[::] Last Error: " << plug.mLastError <<endl;
 	return os;
 }
 
