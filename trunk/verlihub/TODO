@@ -1,3 +1,16 @@
+* fix min_share_use_hub share calculation
+* add custom locks for + commands and disable mainchat control over them
+* Redsign socket handling and introduce smart filtering
+* Fix proxy support
+* Introduce ipv6 support
+* Fix infoserver share conversion
+* Add idle timeout locks
+* Move all freetext to dbase
+* Add share detector plugin
+* Add support for MD5 hashing/seeding
+* Add support for sporadic nmdc protocol extensions
+* Insert secure protocol account (keys)
+* Fix triggers timers and modifications
 !!Extension
 * Port to Mac OS X
 ** socklen_t (is not defined htere)
@@ -7,7 +20,6 @@
 * Port to Win32
 * Support the new DC protocol
 * Remember searches - Bloom Filter
-* multi thread
 
 !!Features
 + multicommand
