@@ -1,1 +1,1 @@
-#define __CURR_DATE_TIME__ "Friday Jul 10 2009"
+#define __CURR_DATE_TIME__ "Tuesday Aug 25 2009"
