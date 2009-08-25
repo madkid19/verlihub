@@ -28,7 +28,6 @@
 #include "cbanlist.h"
 #include "cserverdc.h"
 #include "ccustomredirects.h"
-#include <zlib.h>
 
 using namespace ::nDirectConnect::nTables;
 namespace nDirectConnect
@@ -52,7 +51,6 @@ cConnDC::cConnDC(int sd, cAsyncSocketServer *server)
 	mGeoZone = 0; // default - all other then specified countries
 	mRegInfo = NULL;
 	mSRCounter = 0;
-//	isCompressed = false;
 }
 
 cConnDC::~cConnDC()
@@ -81,54 +79,7 @@ bool cConnDC::SetUser(cUser *usr)
 	if(Log(3)) LogStream() << "User " << usr->mNick << " connected ... " << endl;	
 	return true;
 }
-/*
-int cConnDC::Compress(string in,string &out)
-{
-	if(!isCompressed) out = "$ZOn ";
-	isCompressed = true;
-	char *avail_out;
-	int level = Z_BEST_COMPRESSION;
-	int inputLength = in.size();
-	avail_out = (char *) malloc(inputLength + 64);
-	z_stream stream;
-	//cout << "Memset stream" << endl;
-	memset(&stream, 0 , sizeof(stream));
-	
-	/* allocate deflate state *
-	//cout << "allocate deflate state" << endl;
-	stream.zalloc = Z_NULL;
-	stream.zfree = Z_NULL;
-	stream.data_type = Z_TEXT;
-	//cout << "Calling  deflateInit" << endl;
-	int ret = deflateInit(&stream, level);
-	if (ret != Z_OK) {
-	//	cout << "Init failed" << endl;
-		return 0; // Compression failed
-	}
-	stream.avail_in = inputLength;
-	stream.next_in = (Bytef*) in.c_str();
-	
-	stream.next_out = (Bytef*) avail_out;
-	stream.avail_out = inputLength + 64;
-	if (deflate (&stream, Z_FINISH) != Z_STREAM_END) {
-		deflateEnd (&stream); // Clean stream
-		cout << "Compression failed" << endl;
-		return 0;
-	}
-	//cout << "Ouput is " << avail_out << endl;
-	int outputLength = stream.total_out;
 
-	if(inputLength >= outputLength) {
-		cout << "Ouput is bigger then input" << endl;
-		return 0;
-	}
-	cout << "Ouput is " << stream.total_out << " bytes and input was " << inputLength << " byte" << endl;
-	out.append(avail_out);
-	out.append("|");
-	deflateEnd(&stream);
-	return 1;
-}
-*/
 /** Send raw data whenever it's next possible,
 		n is the size of data, if not specified, or zero, the null terminated string is mesured */
 int cConnDC::Send(string & data, bool IsComplete, bool Flush)
@@ -148,21 +99,12 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 			<< 1 << " " << data.substr(0,10) << endl;
 
 	if(IsComplete) data.append("|");
-	// Compress data here
-	/*string out, toSend = data;
-	if(toSend.size() > 1 && this->GetLSFlag(eLS_LOGIN_DONE) == eLS_LOGIN_DONE && (this->mFeatures & eSF_ZLIB) == eSF_ZLIB  && Compress(toSend, out)) {
-		cout << "Compress data with zlib" << endl;		
-		if(Log(5)) LogStream() << "Sending compressed data" << endl;
-		toSend = out;
-		//Flush = true;
-	} else isCompressed = false;
-	int ret = Write(toSend, Flush);*/
 	int ret = Write(data, Flush);
 	mTimeLastAttempt.Get();
 	if (mxServer) {
 		// cout << "Send " << data.size() << "bytes" << endl;
 		// Server()->mUploadZone[mGeoZone].Dump();
-		Server()->mUploadZone[mGeoZone].Insert(Server()->mTime,data.size());
+		Server()->mUploadZone[mGeoZone].Insert(Server()->mTime, (int) data.size());
 		// Server()->mUploadZone[mGeoZone].Dump();
 	}
 	if(IsComplete) data.erase(data.size()-1,1);
@@ -323,17 +265,6 @@ void cConnDC::OnFlushDone()
 			Server()->DoUserLogin(this);
 		}
 	}
-	// if user is at least 10 minutes in user list, set timeout on next flush on 5 minutes
-	// this works only if something happens on the hub,
-	// so there is in timer, to send every minute en empty message
-////	if(
-////		mpUser &&
-////		mpUser->mInList &&
-////		mpUser->mT.login < ( time(NULL) - 600 )
-////		)
-////		SetTimeOut(eTO_FLUSH,300);
-//	if(IsSetTimeOut(eTO_FLUSH))
-//		ClearTimeOut(eTO_FLUSH);
 }
 
 /** function called before closing nicely */
@@ -395,7 +326,7 @@ cAsyncConn *cDCConnFactory::CreateConn(tSocket sd)
 #if HAVE_LIBGEOIP
 	if (
 		mServer->sGeoIP.GetCC(conn->AddrIP(),conn->mCC) &&
-		mServer->mC.cc_zone[0].size() // remove this! wot about if i set cc_zone[1] and not cc_zone[0] :P
+		mServer->mC.cc_zone[0].size()
 	){
 		for (int i = 0; i < 3; i ++)
 		{
