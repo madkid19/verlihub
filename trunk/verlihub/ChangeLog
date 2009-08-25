@@ -1,4 +1,7 @@
 2009-08-17 chaos (0.9.9a)
+	 * Removed OK confirmation on command success. Now if no error then success. Also reglist.
+	 * Updated plugman info outputs
+	 * Removed hublink plugin (no longer supported)
 	 * Added host_header variable to allow removing of login headers for verlihub and plugins
 	 * Reverted customredirects to version er2 for troubleshooting (no effect)
 	 * Removed simplify (replaced by share convert api) MUST fix use hub variables to use this API correctly (currently broken)
