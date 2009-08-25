@@ -19,13 +19,11 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef NDIRECTCONNECTINFOSERVER_H
 #define NDIRECTCONNECTINFOSERVER_H
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 #include "cconfigbase.h"
 #if defined _WIN32 || HAVE_OSTREAM
 #include <ostream>
@@ -55,7 +53,6 @@ class cInfoServer : public cConfigBase
 public:
 	cInfoServer();
 	~cInfoServer();
-	string converByte(__int64 byte, bool UnitType);
 	void SystemInfo(ostream &os);
 	void SetServer(cServerDC *Server);
 	void Output(ostream &os, int Class);

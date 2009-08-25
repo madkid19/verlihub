@@ -19,8 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #include "cinfoserver.h"
+#include "stringutils.h"
 #include "cserverdc.h"
 #include "curr_date_time.h"
 #if ! defined _WIN32 && ! defined HAVE_FREEBSD
@@ -29,39 +29,13 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #endif
-
-
+using namespace nStringUtils;
 namespace nDirectConnect {
 namespace nInfo {
 
 cInfoServer::cInfoServer()
 {
 	mServer = NULL;
-}
-
-string cInfoServer::converByte(__int64 byte, bool UnitType)
-{
-	static const char *byteUnit[] = {"B", "KB", "MB", "GB", "TB", "PB", "", "", ""};
-	static const char *byteSecUnit[] = {"B/s", "KB/s", "MB/s", "GB/s", "TB/s", "PB/s", "", "", ""};
-	//string result;
-	int unit;
-	
-	double long lByte = byte;
-	
-	if(lByte < 1024) {
-		unit = 0;
-	} else {
-		for(unit = 0; lByte > 1024; unit++) {
-			lByte /= 1024;	
-		}
-	}
-	
-	ostringstream os (ostringstream::out);
-	os.precision(2);
-	os << fixed << lByte << " ";
-	if(UnitType)  os << byteSecUnit[unit];
-	else os << byteUnit[unit];
-	return os.str();
 }
 
 void cInfoServer::SystemInfo(ostream &os)
@@ -77,15 +51,15 @@ void cInfoServer::SystemInfo(ostream &os)
 	if(uname(&osname) == 0) { 
 		os << "\r\n[::] OS: " << osname.sysname << " " << osname.release << " (" << osname.machine << ") ";
 	}
-	os << "\r\n[::] System uptime: "  << uptime.AsPeriod() << "\r\n";
-	os << "[::] Load averages: " <<  std::fixed << std::setprecision(2) << serverInfo.loads[0]/65536.0 << " " << serverInfo.loads[1]/65536.0 << " " << serverInfo.loads[2]/65536.0 << "\r\n";
-	os << "[::] Used RAM: "  << converByte((long long int) serverInfo.totalram,false) << "\r\n";
-	os << "[::] Free RAM: "  << converByte((long long int) serverInfo.freeram,false) << "\r\n";
-	os << "[::] Shared RAM: "  << converByte((long long int) serverInfo.sharedram,false) << "\r\n";
-	os << "[::] Memory in buffers: "  << converByte((long long int) serverInfo.bufferram,false) << "\r\n";
-	os << "[::] Total swap: "  << converByte((long long int) serverInfo.totalswap,false) << "\r\n";
-	os << "[::] Free swap: "  << converByte((long long int) serverInfo.freeswap,false) << "\r\n";
-	os << "[::] Number of processes: "  << serverInfo.procs << "\r\n";
+	os << "\r\n[::] System uptime: "  << uptime.AsPeriod() << endl;
+	os << "[::] Load averages: " <<  std::fixed << std::setprecision(2) << serverInfo.loads[0]/65536.0 << " " << serverInfo.loads[1]/65536.0 << " " << serverInfo.loads[2]/65536.0 << endl;
+	os << "[::] Used RAM: "  << convertByte((long long int) serverInfo.totalram,false) << endl;
+	os << "[::] Free RAM: "  << convertByte((long long int) serverInfo.freeram,false) << endl;
+	os << "[::] Shared RAM: "  << convertByte((long long int) serverInfo.sharedram,false) << endl;
+	os << "[::] Memory in buffers: "  << convertByte((long long int) serverInfo.bufferram,false) << endl;
+	os << "[::] Total swap: "  << convertByte((long long int) serverInfo.totalswap,false) << endl;
+	os << "[::] Free swap: "  << convertByte((long long int) serverInfo.freeswap,false) << endl;
+	os << "[::] Number of processes: "  << serverInfo.procs << endl;
 
 
 
@@ -95,7 +69,7 @@ void cInfoServer::SystemInfo(ostream &os)
 
 
 	#else 
-	os << "No info available\r\n";
+	os << "No info available" << endl;
 	#endif
 }
 
@@ -112,43 +86,43 @@ void cInfoServer::Output(ostream &os, int Class)
 {
 	iterator it;
 	cTime theTime;
-	os << "\r\n""[::] Version date: "  __CURR_DATE_TIME__ "\r\n";
+	os << "\r\n""[::] Version date: "  __CURR_DATE_TIME__ << endl;
 	theTime = mServer->mTime;
 	theTime -= mServer->mStartTime;
-	os << "[::] Uptime count: " << theTime.AsPeriod() << "\r\n";
+	os << "[::] Uptime: " << theTime.AsPeriod() << endl;
 	os << "[::] Server frequency: " << mServer->mFrequency.GetMean(mServer->mTime)  << " (";
-	if (mServer->mSysLoad >= eSL_CRITICAL) os << "Recovery mode";
-	if (mServer->mSysLoad >= eSL_SQEEZY) os << "Near capacity mode";
-	if (mServer->mSysLoad >= eSL_HURRY) os << "Progressive mode";
-	if (mServer->mSysLoad >= eSL_COOL) os << "Normal mode";
-	os << ")\r\n";
+	if (mServer->mSysLoad >= eSL_RECOVERY) os << "Recovery mode";
+	if (mServer->mSysLoad >= eSL_CAPACITY) os << "Near capacity";
+	if (mServer->mSysLoad >= eSL_PROGRESSIVE) os << "Progressive mode";
+	if (mServer->mSysLoad >= eSL_NORMAL) os << "Normal mode";
+	os << ")" << endl;
 	for(it = begin(); it != end(); ++it)
-		os << (*it)->mName << " : " << *(*it) << "\r\n";
-	os << "[::] Current online users: " << mServer->mUserCountTot << "\r\n";;
-	os << "[::] Current share total: " << converByte(mServer->mTotalShare, false) << "\r\n";
-	os << "[::] User list count: " << mServer->mUserList.size() << "\r\n";
-	os << "[::] Hello user count: " << mServer->mHelloUsers.size() << "\r\n";
-	os << "[::] In Progress users: " << mServer->mInProgresUsers.size() << "\r\n";
-	os << "[::] Active user count: " << mServer->mActiveUsers.size() << "\r\n";
-	os << "[::] Op user count: " << mServer->mOpchatList.size() << "\r\n";
-	os << "[::] Bot user count: " << mServer->mRobotList.size() << "\r\n";
+		os << (*it)->mName << " : " << *(*it) << endl;
+	os << "[::] Current online users: " << mServer->mUserCountTot << endl;
+	os << "[::] Current share total: " << converByte(mServer->mTotalShare, false) << endl;
+	os << "[::] User list count: " << mServer->mUserList.size() << endl;
+	os << "[::] Hello user count: " << mServer->mHelloUsers.size() << endl;
+	os << "[::] In Progress users: " << mServer->mInProgresUsers.size() << endl;
+	os << "[::] Active user count: " << mServer->mActiveUsers.size() << endl;
+	os << "[::] Op user count: " << mServer->mOpchatList.size() << endl;
+	os << "[::] Bot user count: " << mServer->mRobotList.size() << endl;
 	double total = 0, curr;
 	int i = 0;
 	for( i =0; i <= USER_ZONES; i++)
 	{
 		curr = mServer->mUploadZone[i].GetMean(mServer->mTime);
-		os << "[::] Upload zone " << i << ": " << converByte(curr,true) << "\r\n";
+		os << "[::] Upload zone " << i << ": " << convertByte(curr,true) << endl;
 		total += curr;
 	}
-	os << "[::] Current upload total for all zones: " << converByte(total,true) << "\r\n";
+	os << "[::] Current upload total for all zones: " << convertByte(total,true) << endl;
  	for( i =0; i < 4; i++) {
 		os << "[::] Zone (" << i << ") ";
 		if(i > 0) os << mServer->mC.cc_zone[i-1];
 		else os << "all";
-		os << " users: " << mServer->mUserCount[i] << " / " <<mServer->mC.max_users[i] << "\r\n";
+		os << " users: " << mServer->mUserCount[i] << " / " <<mServer->mC.max_users[i] << endl;
 	}
 	for (i=4; i <= USER_ZONES; i++)
-		os << "[::] Zone (" << i << ") IP-Range : " << mServer->mUserCount[i] << " / " <<mServer->mC.max_users[i] << "\r\n";
+		os << "[::] Zone (" << i << ") IP-Range : " << mServer->mUserCount[i] << " / " <<mServer->mC.max_users[i] << endl;
 }
 
 cInfoServer::~cInfoServer(){}
