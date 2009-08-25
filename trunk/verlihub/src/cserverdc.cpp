@@ -19,11 +19,9 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
 #include "cserverdc.h"
 #include "cinterpolexp.h"
 #include "cconndc.h"
@@ -40,34 +38,18 @@
 #include <cctype>
 #include <algorithm>
 #include "curr_date_time.h"
-#ifndef _WIN32  //TODO: Implement worker thread on Windows
 #include "cthreadwork.h"
-#endif
 #include "stringutils.h"
 #include "cconntypes.h"
 #include "cdcconsole.h"
 #include "ctriggers.h"
-#ifndef _WIN32
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#endif
-
-
 #define HUB_VERSION_CLASS "(" __CURR_DATE_TIME__ ")"
 #define HUB_VERSION_STRING VERSION
 #define LOCK_VERSION PACKAGE
-#if !defined _WIN32
 #define HUB_VERSION_NAME "VerliHub"
-#else
-#define HUB_VERSION_NAME "WinVerliHub"
-#endif
 
-using namespace std;
 using namespace nUtils;
-#ifndef _WIN32 //TODO: Implement worker thread on Windows
 using namespace nThreads;
-#endif
 using namespace nStringUtils;
 namespace nDirectConnect
 {
@@ -100,7 +82,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	mKickList(NULL),
 	mOpChat(NULL),
 	mExecPath(ExecPath),
-	mSysLoad(eSL_COOL),
+	mSysLoad(eSL_NORMAL),
 	mUserList(true,true, true, &mCallBacks.mNickListNicks, &mCallBacks.mNickListInfos),
 	mOpList(true, false, false, &mCallBacks.mOpListNicks, NULL),
 	mOpchatList(true),
@@ -303,11 +285,11 @@ tMsgAct cServerDC::Filter( tDCMsg msg, cConnDC *conn )
 
 	switch( mSysLoad )
 	{
-		case eSL_SYSTEM_DOWN: return eMA_TBAN; break; // ignore and pray
-		case eSL_CRITICAL: return eMA_HANGUP1; break;
-		case eSL_SQEEZY: break;
-		case eSL_HURRY: break;
-		case eSL_COOL: break;
+		case eSL_SYSTEM_DOWN: return eMA_TBAN; break; // locked up
+		case eSL_RECOVERY: return eMA_HANGUP1; break; // attempting recovery
+		case eSL_CAPACITY: break; // limits reached
+		case eSL_PROGRESSIVE: break; // approaching limits
+		case eSL_NORMAL: break; // normal mode
 		default: break;
 	}
 	return result; 
@@ -471,8 +453,6 @@ bool cServerDC::RemoveNick(cUser *User)
 	if (User->mInList)
 	{
 		User->mInList=false;
-
-		//cout << this->mUserList.size() << endl;
 		static string omsg;
 		omsg = "";
 		cDCProto::Create_Quit(omsg, User->mNick);
@@ -590,7 +570,12 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	string omsg;
 	cTime runtime;
 	runtime -= mStartTime;
-
+	if ( mFrequency.mNumFill > 0 ) {
+		if (mSysLoad == eSL_RECOVERY) mStatus = "Recovery Mode";
+		if (mSysLoad == eSL_CAPACITY) mStatus = "Near Capacity";
+		if (mSysLoad == eSL_PROGRESSIVE) mStatus = "Progressive Mode";
+		if (mSysLoad == eSL_NORMAL) mStatus = "Normal Mode";
+	}
 	omsg="$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
 	os << "This hub is running version " << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << " of " HUB_VERSION_NAME <<  " (RunTime: "<< runtime.AsPeriod()<<" / Current user count: "<< mUserCountTot <<")|";
 	cDCProto::Create_Chat(omsg,mC.hub_security,os.str());
@@ -598,9 +583,9 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 
 	os.str(mEmpty);
 
-	if (mSysLoad >= eSL_CRITICAL)
+	if (mSysLoad >= eSL_RECOVERY)
 	{
-		os << "Sorry hub is too busy.. Please try again in a few minutes.";
+		os << "The hub is currently unable to service your request. Please try again in a few minutes.";
 		DCPublicHS(os.str(), conn);
 		conn->CloseNice(500, eCR_HUB_LOAD);
 		return -1;
@@ -1060,7 +1045,6 @@ tVAL_NICK cServerDC::ValidateNick(const string &nick, bool registered)
 	
 	if (!registered)
 	{
-		//if(nick.size() > strlen(nick.c_str())) return eVN_SHORT;
 		if(nick.size() > mC.max_nick ) return eVN_LONG;
 		if(nick.size() < mC.min_nick ) return eVN_SHORT;
 		if(nick.npos != nick.find_first_of(ProhibitedChars)) return eVN_CHARS;
@@ -1084,14 +1068,14 @@ int cServerDC::OnTimer(cTime &now)
 	mChatUsers.FlushCache();
 	mInProgresUsers.FlushCache();
 	
-	mSysLoad = eSL_COOL;
+	mSysLoad = eSL_NORMAL;
 	if ( mFrequency.mNumFill > 0 ) 
 	{
 		double freq = mFrequency.GetMean(mTime);
-		if(freq < 1.2 * mC.min_frequency) mSysLoad = eSL_HURRY;
-		if(freq < 1.0 * mC.min_frequency) mSysLoad = eSL_SQEEZY;
-		if(freq < 0.8 * mC.min_frequency) mSysLoad = eSL_CRITICAL;
-		if(freq < 0.5 * mC.min_frequency) mSysLoad = eSL_SYSTEM_DOWN;
+		if(freq < 12.0 * mC.frequency_lock) mSysLoad = eSL_PROGRESSIVE;
+		if(freq < 8.0 * mC.frequency_lock) mSysLoad = eSL_CAPACITY;
+		if(freq < 4.0 * mC.frequency_lock) mSysLoad = eSL_RECOVERY;
+		if(freq < 2.0 * mC.frequency_lock) mSysLoad = eSL_SYSTEM_DOWN;
 	}	
 
 	if ( mC.max_upload_kbps > 0.00001) 
@@ -1102,7 +1086,7 @@ int cServerDC::OnTimer(cTime &now)
 			total_upload += this->mUploadZone[zone].GetMean(this->mTime);
 		if ((total_upload / 1024.0) > mC.max_upload_kbps)
 		{
-			mSysLoad = eSL_SQEEZY;
+			mSysLoad = eSL_PROGRESSIVE;
 		}
 	}
 
@@ -1274,7 +1258,6 @@ int cServerDC::RegisterInHublist(string host, int port, cConnDC *conn)
 	string NickForReply;
 	DCPublicHS("Registering the hub in hublists. This may take a while, please wait...", conn);
 	if(conn && conn->mpUser) NickForReply = conn->mpUser->mNick;
-	#ifndef _WIN32
 	cThreadWork *work = new tThreadWork3T<cServerDC, string, int, string>( host, port, NickForReply, this, &cServerDC::DoRegisterInHublist);
 	if ( mHublistReg.AddWork(work) )
 	{
@@ -1285,9 +1268,6 @@ int cServerDC::RegisterInHublist(string host, int port, cConnDC *conn)
 		delete work;
 		return 0;
 	}
-	#else
-	return 0;
-	#endif
 }
 
 /** No descriptions */

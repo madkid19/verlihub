@@ -19,7 +19,6 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef CSERVERDC_H
 #define CSERVERDC_H
 #include "casyncsocketserver.h"
@@ -42,9 +41,7 @@
 #include "cusercollection.h"
 #include "cvhpluginmgr.h"
 #include "cmeanfrequency.h"
-#ifndef _WIN32 //TODO: Implement worker thread on Windows
 #include "cworkerthread.h"
-#endif
 
 using namespace std;
 using nMySQL::cMySQL;
@@ -52,9 +49,7 @@ using nMySQL::cMySQL;
 using nUtils::cGeoIP;
 #endif
 using namespace ::nPlugin;
-#ifndef _WIN32 //TODO: Implement worker thread on Windows
 using namespace nThreads;
-#endif
 
 #define USER_ZONES 6
 
@@ -103,11 +98,11 @@ typedef enum
 
 typedef enum
 {
-	eSL_COOL,	// no problem
-	eSL_HURRY,	// starting getting full
-	eSL_SQEEZY,	// we are full, but still a little bit alive
-	eSL_CRITICAL, // almost dead
-	eSL_SYSTEM_DOWN // this actually never happens ;o)
+	eSL_NORMAL,		// normal mode
+	eSL_PROGRESSIVE,	// nearing capacity
+	eSL_CAPACITY,		// resource limits reached
+	eSL_RECOVERY,		// refusing new actions while we try to recover
+	eSL_SYSTEM_DOWN		// this actually never happens ;o) errrm yes it does its called a lockup!
 } tSysLoad;
 
 enum
@@ -336,6 +331,7 @@ public: // Protected attributes
 	int mUserCount[USER_ZONES+1];
 	int mUserCountTot;
 	__int64 mTotalShare;
+	string mStatus;
 	/** when hub started */
 	cTime mStartTime;
 	cTimeOut mSlowTimer;
