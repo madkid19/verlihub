@@ -8,4 +8,4 @@ INSERT IGNORE INTO pi_plug (nick,autoload,path,detail) VALUES
 	("forbid" ,0,"@prefix@/lib/libforbid_pi.so","Filter chat from forbidden words"),
 	("chat"   ,0,"@prefix@/lib/libchatroom_pi.so","Multiple chatrooms to separate chat topics"),
 	("replace",0,"@prefix@/lib/libreplace_pi.so","Replace some words by other"),
-	("stats"  ,0,"@prefix@/lib/libstats_pi.so","Statistics plugin, trace diverse value sin the database"),
+	("stats"  ,0,"@prefix@/lib/libstats_pi.so","Statistics plugin, trace diverse value sin the database")
