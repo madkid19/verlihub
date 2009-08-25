@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef CDCCONSOLE_H
 #define CDCCONSOLE_H
-
 #include <string>
 #include "ctriggers.h"
 #include "ccustomredirects.h"
@@ -33,8 +31,6 @@
 #include "cinfoserver.h"
 #include "tlistconsole.h"
 #include "cconntypes.h"
-//#include "ctriggers.h"
-//#include "ccustomredirects.h"
 
 using namespace std;
 using namespace nCmdr;
@@ -56,7 +52,7 @@ class cServerDC;
 /**
   * \brief Command interpreter for operators and normal users
   * @author Daniel Muller
-  * Contains oll function that are execued for !commands or +commands (except the triggers)
+  * Contains all functions that are executed for !commands or +commands (except the triggers)
   */
 
 class cDCConsole : public cDCConsoleBase
@@ -74,27 +70,23 @@ public:
 	int CmdGethost(istringstream & , cConnDC * );
 	/** get user's host and ip */
 	int CmdGetinfo(istringstream &cmd_line , cConnDC *conn );
-	/** unban ip or host */
-	//int CmdUnban(sitringstream & cmd_line, cConnDC * conn, int unbantype = cBan::eBF_NICKIP);
-	/** ban ip or host */
-	//int CmdBan(istringstream & cmd_line, cConnDC * conn, bool, int bantype=cBan::eBF_NICKIP);
 	/** quit program */
 	int CmdQuit(istringstream &, cConnDC * conn,int code);
-	/** show alll variables along with their values */
+	/** show all variables along with their values */
 	int CmdGetconfig(istringstream & cmd_line, cConnDC * conn);
 	/** send help message corresponding to connection */
 	int CmdHelp(istringstream & cmd_line, cConnDC * conn);
 	int CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn,int cl_min, int cl_max);
 	int CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn);
-	//int CmdInfo(istringstream & cmd_line, cConnDC * conn);
+	int CmdUInfo(istringstream & cmd_line, cConnDC * conn);
+	int CmdRInfo(istringstream & cmd_line, cConnDC * conn);
 	int CmdMyInfo(istringstream & cmd_line, cConnDC * conn);
 	int CmdMyIp(istringstream & cmd_line, cConnDC * conn);
 	int CmdMe(istringstream & cmd_line, cConnDC * conn);
 	int CmdReport(istringstream & cmd_line, cConnDC * conn);
 	int CmdRegMe(istringstream & cmd_line, cConnDC * conn);
 	int CmdKick (istringstream & cmd_line, cConnDC * conn);
-	/** banlist */
-	int CmdBanList(istringstream & cmd_line, cConnDC * conn, int bantype, bool filter=false);
+	int CmdChat (istringstream & cmd_line, cConnDC * conn, bool swith);
 	/** make a secret user/op */
 	int CmdHideMe(istringstream & cmd_line, cConnDC * conn);
 	/** progressively change user limit */

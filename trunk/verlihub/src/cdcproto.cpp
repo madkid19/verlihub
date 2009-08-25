@@ -808,7 +808,7 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 	// find other user
 	cUser *other = mS->mUserList.GetUserByNick ( str );
 	if(!other) return -2;
-
+	//NOTE: It seems to be there a crash on Windows when using Lua plugin and a Lua script calls DelRobot
 	if(conn->mpUser->mClass + mS->mC.classdif_pm < other->mClass)
 	{
 		mS->DCPrivateHS("You cannot talk to this user.", conn);

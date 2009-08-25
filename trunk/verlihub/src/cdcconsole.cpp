@@ -19,7 +19,6 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #include "cserverdc.h"
 #include "cdcconsole.h"
 #include "cuser.h"
@@ -211,10 +210,13 @@ int cDCConsole::UsrCommand(const string & str, cConnDC * conn)
 			if( cmd == "+passwd" ) return CmdRegMyPasswd( cmd_line, conn);
 			if( cmd == "+help"     ) return CmdHelp(cmd_line , conn);
 			if( cmd == "+myinfo" ) return CmdMyInfo( cmd_line, conn);
-			//if( cmd == "+info" ) return CmdInfo( cmd_line, conn);
 			if( cmd == "+myip" ) return CmdMyIp( cmd_line, conn);
 			if( cmd == "+me" ) return CmdMe( cmd_line, conn);
 			if( cmd == "+regme" ) return CmdRegMe( cmd_line, conn);
+			if( cmd == "+chat" ) return CmdChat( cmd_line, conn, true);
+			if( cmd == "+nochat" ) return CmdChat( cmd_line, conn, false);
+			if( cmd == "+info" ) return CmdUInfo( cmd_line, conn);
+			if( cmd == "+release" ) return CmdRInfo( cmd_line, conn);
 			if(mUserCmdr.ParseAll(str, os, conn) >= 0)
 			{
 				mOwner->DCPublicHS(os.str().c_str(),conn);
@@ -343,7 +345,7 @@ bool cDCConsole::cfGetConfig::operator()()
 	if(!file.size()) 
 	{
 		for(it = mS->mC.mvItems.begin();it != mS->mC.mvItems.end();it++)
-			os << "\r[::]  " << setw(width) << setiosflags(ios::left) << mS->mC.mhItems.GetByHash(*it)->mName << setiosflags(ios::right) <<"    =   " << *(mS->mC.mhItems.GetByHash(*it)) << "\r\n";
+			os << "\r\n[::]  " << setw(width) << setiosflags(ios::left) << mS->mC.mhItems.GetByHash(*it)->mName << setiosflags(ios::right) <<"    =   " << *(mS->mC.mhItems.GetByHash(*it)) << "\r\n";
 	} else {
 		mS->mSetupList.OutputFile(file.c_str(), os);
 	}
@@ -418,19 +420,6 @@ int cDCConsole::CmdMyInfo(istringstream & cmd_line, cConnDC * conn)
 	return 1;
 }
 
-/*int cDCConsole::CmdInfo(istringstream & cmd_line, cConnDC * conn)
-{
-	ostringstream os;
-	string omsg;
-	cTime theTime((long int) mServer->mC.int_search);
-	os << "\r\n[::] Hub address: " << mServer->mC.hub_host;
-	os << "\r\n[::] Hub owner: " << mServer->mC.hub_owner;
-	os << "\r\n[::] You can search every: " << theTime.AsPeriod();
-	omsg = os.str();
-	mOwner->DCPublicHS(omsg,conn);
-	return 1;
-}*/
-
 int cDCConsole::CmdMyIp(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
@@ -470,6 +459,97 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 	return 1;
 }
 
+
+int cDCConsole::CmdChat (istringstream & cmd_line, cConnDC * conn, bool switchon)
+{
+	if(!conn->mpUser) {
+		return 0;
+	}
+	if (switchon && !mOwner->mChatUsers.ContainsNick(conn->mpUser->mNick)) {
+		mOwner->mChatUsers.Add(conn->mpUser);
+	} else if (!switchon && mOwner->mChatUsers.ContainsNick(conn->mpUser->mNick)) {
+		mOwner->mChatUsers.Remove(conn->mpUser);
+	}
+	return 1;
+}
+
+int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
+{
+	if (mOwner->mC.disable_usr_cmds) {
+		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
+		return 1;
+	}
+	if(!conn->mpUser) {
+		return 0;
+	}
+	ostringstream os;
+	string omsg;
+	//This is here as manual values for true release info available to all
+	os << "\r\n[::] Release: Verlihub-0.9.9a (Friday August 21 2009)" << endl;
+	os << "[::] Authors: Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
+	os << "[::] Authors: chaosuk (chaos@dchublist.com)" << endl;
+	os << "[::] Contributors: Stefano, Intruder, Rolex, Frog" << endl;
+	os << "[::] Credits: We would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << endl;
+	os << "[::] Website: http://www.verlihub-project.org" << endl;
+	os << "[::] Forums: http://forums.verlihub-project.org" << endl;
+	os << "[::] Website/Forums design: Stefan Simoncelli (netcelli@verlihub-project.org)" << endl;
+	omsg = os.str();
+	mOwner->DCPublicHS(omsg,conn);
+	return 1;
+}
+
+int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
+{
+	string uType, cType;
+	int sInt;
+
+	if (mOwner->mC.disable_usr_cmds) {
+		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
+		return 1;
+	}
+	if(!conn->mpUser) {
+		return 0;
+	}
+	if (conn->GetTheoricalClass() == eUC_NORMUSER) {
+		uType = "Unregistered"; sInt = mOwner->mC.int_search;
+	}
+	if (conn->GetTheoricalClass() == eUC_REGUSER) {
+		uType = "Registered"; sInt = mOwner->mC.int_search_reg;
+	}
+	if (conn->GetTheoricalClass() == eUC_VIPUSER) {
+		uType = "VIP"; sInt = mOwner->mC.int_search_vip;
+	} 
+	if (conn->GetTheoricalClass() == eUC_OPERATOR) {
+		uType = "Operator"; sInt = mOwner->mC.int_search_op;
+	}
+	if (conn->GetTheoricalClass() == eUC_ADMIN) {
+		uType = "Admin"; sInt = mOwner->mC.int_search_op;
+	} 
+	if (conn->GetTheoricalClass() == eUC_MASTER) {
+		uType = "God"; sInt = mOwner->mC.int_search_op;
+	}
+	if (!conn->mpUser->IsPassive == true) {
+		cType = "Active";
+	} else {
+		cType = "Passive";  sInt = mOwner->mC.int_search_pas;
+	}
+	ostringstream os;
+	string omsg;
+	os << "\r\n[::] Hub Owner: "<< mOwner->mC.hub_owner <<endl;
+	os << "[::] Address: "<< mOwner->mC.hub_host <<endl;
+	os << "[::] Total users: "<< mServer->mUserCountTot <<endl;
+	os << "[::] Total bots: "<< mServer->mRobotList.size() <<endl;
+	os << "[::] Total share: "<< convertByte(mServer->mTotalShare, false) << endl;
+	os << "[::] Hub health: " << mServer->mStatus <<endl;
+	os << "[::] Your status: "<< uType <<endl;
+	os << "[::] Your can search every: "<< sInt <<" seconds" << endl;
+	os << "[::] Your connection type is: "<< cType <<endl;
+	os << "[::] You are sharing: " << convertByte(conn->mpUser->mShare, false) << endl;
+	omsg = os.str();
+	mOwner->DCPublicHS(omsg,conn);
+	return 1;
+}
+
 int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
@@ -486,7 +566,6 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 	
 	if(mOwner->mC.autoreg_class >= 0) {
 		if(!conn->mpUser) {
-			// this should never occur
 			return 0;
 		}
 		
@@ -684,28 +763,6 @@ int cDCConsole::CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn)
 	conn->ClearTimeOut(eTO_SETPASS);
 	return 1;
 }
-
-/** banlist * /
-int cDCConsole::CmdBanList(istringstream & cmd_line, cConnDC * conn, int bantype, bool filter)
-{
-	string ipnick;
-	ostringstream omsg;
-	cmd_line >> ipnick;
-	if(filter)
-	{
-		if(!ipnick.size())
-		{
-			omsg << "use with a paramater";
-			mOwner->DCPublicHS(omsg.str(), conn);
-			return 1;
-		}
-	}
-	omsg << "Sorry un available...";
-	mOwner->DCPublicHS(omsg.str(), conn);
-	return 1;
-	// @todo GetBanList mOwner->mBanList->GetBanList(conn, bantype, filter? &ipnick :NULL);
-	return 1;
-}*/
 
 /** This will hide cmd actions by a given user or op.*/
 int cDCConsole::CmdHideMe(istringstream & cmd_line, cConnDC * conn)
