@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef CUSER_H
 #define CUSER_H
-
 #include <string>
 #include "cobj.h"
 #include "cconndc.h"
@@ -40,7 +38,7 @@ namespace nEnums {
 /** several types of users with some differences .. for later
 	everyone is allowed to create no more then he is -1
 */
-typedef enum tUserCl
+enum tUserCl
 {
 	eUC_PINGER = -1, /// pinger user
 	eUC_NORMUSER = 0, ///< Regular user
@@ -224,6 +222,9 @@ public: // Public attributes
 	bool mHideShare;
 	/** class protection against kicking */
 	int mProtectFrom;
+	/** numeber of search **/
+	int mSearchNumber;
+
 
 protected: // Protected attributes
 

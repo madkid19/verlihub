@@ -19,7 +19,6 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #include "cuser.h"
 #include "cdcproto.h"
 #include "cchatconsole.h"
@@ -57,6 +56,7 @@ void cUserBase::Send(string &data, bool, bool)
 
 cUser::cUser() :
 	mShare(0),
+	mSearchNumber(0),
 	mFloodPM(0.00,30.,10,user_global_time.Get())
 {
 	mxConn = NULL;
@@ -86,6 +86,7 @@ cUser::cUser(const string &nick) :
 	mxConn(NULL),
 	mxServer(NULL),
 	mShare(0),
+	mSearchNumber(0),
 	mHideKicksForClass(eUC_NORMUSER),
 	mFloodPM(0.00,30.,30,user_global_time.Get())
 {
@@ -111,7 +112,6 @@ cUser::cUser(const string &nick) :
 	mHideShare = false;
 	memset(mFloodHashes, 0 , sizeof(mFloodHashes));
 	memset(mFloodCounters, 0 ,sizeof(mFloodCounters));
-	//@todo HideKick is to be replaced by usage HideKickForCLass
 }
 
 cUser::~cUser() {}
@@ -126,7 +126,7 @@ void cUser::Send(string &data, bool pipe, bool cache)
 	mxConn->Send(data, pipe, cache);
 }
 
-/** return tru if user needs a password and the password is correct */
+/** return true if user needs a password and the password is correct */
 bool cUser::CheckPwd(const string &pwd)
 {
 	if( !mxConn || !mxConn->mRegInfo ) return false;

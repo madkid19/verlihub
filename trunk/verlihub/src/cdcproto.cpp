@@ -1,20 +1,24 @@
 /***************************************************************************
-                          cdcproto.cpp  -  description
-                             -------------------
-    begin                : Wed Jul 2 2003
-    copyright            : (C) 2003 by Daniel Muller
-    email                : dan at verliba dot cz
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
+*   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
+*                                                                         *
+*   Copyright (C) 2006-2009 by Verlihub Project                           *
+*   devs at verlihub-project dot org                                      *
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+*   This program is distributed in the hope that it will be useful,       *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+*   GNU General Public License for more details.                          *
+*                                                                         *
+*   You should have received a copy of the GNU General Public License     *
+*   along with this program; if not, write to the                         *
+*   Free Software Foundation, Inc.,                                       *
+*   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+***************************************************************************/
 #include "cserverdc.h"
 #include "cdcproto.h"
 #include "cconndc.h"
@@ -30,7 +34,6 @@
 #include <stdio.h>
 #include "stringutils.h"
 #include "cdcconsole.h"
-
 #define CHECK_IP_CTM 1
 #define CHECK_NICK_RCTM 1
 #define CHECK_IP_ASRCH 0
@@ -874,7 +877,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	if(!conn->mpUser) return -2;
 	if(!conn->mpUser->mInList) return -3;
 	if(!conn->mpUser->Can(eUR_CHAT, mS->mTime.Sec(), 0)) return -4;
-
+	//global mainchat override access control by class --This will also block usr +cmds
 	if(conn->mpUser->mClass < mS->mC.mainchat_class) {
 		mS->DCPublicHS("Mainchat is currently disabled for non registered users.",conn);
 		return 0;
@@ -898,8 +901,6 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	{
 		omsg << "You are not " << msg->ChunkString(eCH_CH_NICK) << ".";
 		mS->DCPublicHS(omsg.str(),conn);
-		//if(conn->Log(2))
-		//	conn->LogStream() << "Claims to be " << msg->ChunkString(eCH_CH_NICK) << " in chat." << endl;
 		conn->CloseNice(1000, eCR_CHAT_NICK);
 		return -2;
 	}
@@ -963,7 +964,7 @@ int cDCProto::DC_Kick(cMessageDC * msg, cConnDC * conn)
 	string &nick = msg->ChunkString(eCH_1_PARAM);
 
 	// check rights
-	if(conn->mpUser && conn->mpUser->Can(eUR_KICK, mS->mTime.Sec()))
+	if(conn->mpUser->Can(eUR_KICK, mS->mTime.Sec()))
 	{
 		mS->DCKickNick(NULL, conn->mpUser, nick, mS->mEmpty, cServerDC::eKCK_Drop|cServerDC::eKCK_TBAN);
 		return 0;
@@ -992,7 +993,7 @@ bool cDCProto::isLanIP(string ip)
 	
 	long senderIP = cBanList::Ip2Num(ip);
 	// see RFC 1918
-	if( (senderIP > 167772160 && senderIP < 184549375) || (senderIP > 2886729728 && senderIP < 2887778303) || (senderIP > 3232235520 && senderIP < 3232301055)) return true;
+	if( (senderIP > 167772160UL && senderIP < 184549375UL) || (senderIP > 2886729728UL && senderIP < 2887778303UL) || (senderIP > 3232235520UL && senderIP < 3232301055UL)) return true;
 	return false;
 }
 
@@ -1015,7 +1016,7 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 		}
 		if(conn->mpUser->mShare < use_hub_share)
 		{
-			ReplaceVarInString(mS->mC.ctm_share_min, "min_share_use_hub", ostr, Simplify(use_hub_share));
+			ReplaceVarInString(mS->mC.ctm_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
 			mS->DCPrivateHS(ostr, conn);
 		}
 		return -4;
@@ -1036,11 +1037,10 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 			if(!isLanIP(other->mxConn->mAddrIP)) ip = ""; // LAN => WAN
 			else ip = conn->mAddrIP;
 		}
-		//else if(conn->mAddrIP == "127.0.0.1") ip = mS->externalIP;
 		else ip = conn->mAddrIP;
 		
 		if(ip.empty()) {
-			os << "You cannot connect to an external IP because you are in LAN";	
+			os << "You cannot connect to an external IP because you are in a LAN";	
 			string toSend = os.str();
 			conn->Send(toSend);
 			return -1;
@@ -1049,7 +1049,6 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 		os << "$ConnectToMe" << " " << nick << " " <<  ip << ":" << msg->ChunkString(eCH_CM_PORT);
 		ctm = os.str();
 		if(conn->Log(3)) LogStream() << "Fixed wrong IP in $ConnectToMe from " <<  msg->ChunkString(eCH_CM_IP) << " to " << ip << endl;
-		//return -1;
 	}
 	
 	#ifndef WITHOUT_PLUGINS
@@ -1135,7 +1134,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		}
 		if(conn->mpUser->mShare < use_hub_share) 
 		{
-			ReplaceVarInString(mS->mC.search_share_min, "min_share_use_hub", ostr, Simplify(use_hub_share));
+			ReplaceVarInString(mS->mC.search_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
 			mS->DCPrivateHS(ostr, conn);
 		}
 		return -4;
@@ -1165,7 +1164,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		};
 	}
 
-	if (mS->mSysLoad >= (eSL_HURRY + conn->mpUser->mClass))
+	if (mS->mSysLoad >= (eSL_CAPACITY + conn->mpUser->mClass))
 	{
 		if(mS->Log(3)) mS->LogStream() << "Skipping search, system is: " << mS->mSysLoad << endl;
 		os << "Sorry Hub is busy now, no search, try later..";
@@ -1214,14 +1213,15 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 
 	if(conn->mpUser->mClass >=  eUC_VIPUSER) delay=mS->mC.int_search_vip;
 	if(conn->mpUser->mClass >=  eUC_OPERATOR) delay=mS->mC.int_search_op;
-	// verify the delay
+	// verify the delay && conn->mpUser->mSearchNumber > mS->mC.search_number
 	if(!mS->MinDelay(conn->mpUser->mT.search,delay))
 	{
+		conn->mpUser->mSearchNumber = 0;
 		os << "Minimum search interval is:" << delay << "s";
 		mS->DCPublicHS(os.str(),conn);
 		return -1;
 	}
-
+	//conn->mpUser->mSearchNumber++;
 	// translate MultiSearch to Search
 	string omsg(msg->mStr);
 	if(msg->mType == eDC_MSEARCH)

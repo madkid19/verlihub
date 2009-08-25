@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef NUTILS_CTIMEOUT_H
 #define NUTILS_CTIMEOUT_H
-
 #include "ctime.h"
 
 namespace nUtils

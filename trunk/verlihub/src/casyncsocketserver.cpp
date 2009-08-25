@@ -19,9 +19,7 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #include "casyncsocketserver.h"
-
 #if defined _WIN32
 #  include <Winsock2.h>
 #else
@@ -119,6 +117,7 @@ int cAsyncSocketServer::run()
 			mT.main = now;
 			OnTimerBase(now);
 		}
+		mFrequency.Insert(mTime);
 	}
 	if(Log(1)) LogStream() << "Main loop stop(" << mRunResult <<")." << endl;
 	return mRunResult;
