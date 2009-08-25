@@ -19,10 +19,8 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #ifndef CDCCONF_H
 #define CDCCONF_H
-
 #include "cconfigbase.h"
 #include "cmessagedc.h"
 #include "cdctag.h"
@@ -107,10 +105,11 @@ public:
 	bool drop_invalid_key;
 	bool delayed_chat;
 	int delayed_ping;
-	double min_frequency;
+	double frequency_lock;
 	string nick_prefix;
 	string nick_prefix_autoreg;
 	bool nick_prefix_cc;
+	int host_header;
 	string hub_security;
 	string hub_category;
 	string hub_security_desc;

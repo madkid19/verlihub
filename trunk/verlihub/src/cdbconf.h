@@ -21,7 +21,6 @@
 ***************************************************************************/
 #ifndef NCONFIGCDBCONF_H
 #define NCONFIGCDBCONF_H
-
 #include "cconfigfile.h"
 
 using nConfig::cConfigFile;
