@@ -576,8 +576,13 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 		if (mSysLoad == eSL_PROGRESSIVE) mStatus = "Progressive Mode";
 		if (mSysLoad == eSL_NORMAL) mStatus = "Normal Mode";
 	}
+	if (mC.host_header ==1) {
 	omsg="$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
 	os << HUB_VERSION_NAME "-"<< HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << "|" << "<" << mC.hub_security << ">" << " RunTime: " << runtime.AsPeriod()<<"|" << "<" << mC.hub_security << ">" << " User Count: " << mUserCountTot <<"|" << "<" << mC.hub_security << ">" << " System Status: " << mStatus << "|";
+	}
+	else {
+	omsg="$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
+	}
 	cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
 	conn->Send(omsg, false);
 	os.str(mEmpty);
