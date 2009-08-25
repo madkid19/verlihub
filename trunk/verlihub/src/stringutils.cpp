@@ -19,16 +19,10 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #include "stringutils.h"
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#ifdef _WIN32
-#include <windows.h>
-#endif
-#include <sys/param.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -36,7 +30,9 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <ctype.h>
-
+#ifdef _WIN32
+#include <windows.h>
+#endif
 namespace nStringUtils
 {
 
@@ -72,18 +68,14 @@ void StrCutLeft(string &str, size_t cut)
 {
 	string tmp;
 	if(cut > str.length()) cut = str.length();
-	//cout << str.size() << " " << str.capacity() << " => ";
 	std::string(str, cut, str.size() - cut).swap(str);
-	//cout << str.size() << " " << str.capacity() << endl;
 }
 
 void StrCutLeft(const string &str1, string &str2, size_t cut)
 {
 	string tmp;
-	//cout << str2.size() << " " << str2.capacity() << " => ";
 	if(cut > str1.size()) cut = str1.size();
 	std::string(str1, cut, str1.size() - cut).swap(str2);	
-	//cout << str2.size() << " " << str2.capacity() << endl;
 }
 
 bool LoadFileInString(const string &FileName, string &dest)
@@ -221,25 +213,28 @@ void ReplaceVarInString(const string &src,const string &varname,string &dest, __
 	ReplaceVarInString(src, varname, dest, StringFrom(by));
 }
 
-string Simplify(unsigned long val)
+string convertByte(__int64 byte, bool UnitType)
 {
-	ostringstream os;
-	float mb = static_cast<float>(val);
-	if(mb >= 1024)
-	{
-		if(mb >= 1024 * 1024)
-		{
-			os << mb / 1024 * 1024 << "TB";
-		}
-		else
-		{
-			os << mb / 1024 << "GB";
+	static const char *byteUnit[] = {"B", "KB", "MB", "GB", "TB", "PB", "", "", ""};
+	static const char *byteSecUnit[] = {"B/s", "KB/s", "MB/s", "GB/s", "TB/s", "PB/s", "", "", ""};
+	//string result;
+	int unit;
+	
+	double long lByte = byte;
+	
+	if(lByte < 1024) {
+		unit = 0;
+	} else {
+		for(unit = 0; lByte > 1024; unit++) {
+			lByte /= 1024;	
 		}
 	}
-	else
-	{
-		os << val << "MB";
-	}
+	
+	ostringstream os (ostringstream::out);
+	os.precision(2);
+	os << fixed << lByte << " ";
+	if(UnitType)  os << byteSecUnit[unit];
+	else os << byteUnit[unit];
 	return os.str();
 }
 
