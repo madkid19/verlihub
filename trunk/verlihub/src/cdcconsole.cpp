@@ -1530,7 +1530,7 @@ bool cDCConsole::cfGag::operator()()
 	}
 
 	(*mOS) << penalty ;
-	if (ret) (*mOS) << " saved OK ";
+	if (ret) (*mOS) << " saved ";
 	else (*mOS) << " save error ";
 	return true;
 }
@@ -1953,7 +1953,7 @@ bool cDCConsole::cfRegUsr::operator()()
      		return false;
   	}
 	}
-	(*mOS) << "OK";
+	(*mOS) << "";
 	return true;
 }
 
