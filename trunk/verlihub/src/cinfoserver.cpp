@@ -104,6 +104,7 @@ void cInfoServer::Output(ostream &os, int Class)
 	os << "[::] Hello user count: " << mServer->mHelloUsers.size() << endl;
 	os << "[::] In Progress users: " << mServer->mInProgresUsers.size() << endl;
 	os << "[::] Active user count: " << mServer->mActiveUsers.size() << endl;
+	os << "[::] Passive user count: " << mServer->mPassiveUsers.size() << endl;
 	os << "[::] Op user count: " << mServer->mOpchatList.size() << endl;
 	os << "[::] Bot user count: " << mServer->mRobotList.size() << endl;
 	double total = 0, curr;

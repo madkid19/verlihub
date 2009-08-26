@@ -291,6 +291,7 @@ public: //Private attributes
 	cCompositeUserCollection mOpList;
 	cUserCollection mOpchatList;
 	cUserCollection mActiveUsers;
+	cUserCollection mPassiveUsers;
 	cUserCollection mHelloUsers;
 	cUserCollection mChatUsers;
 	cUserCollection mRobotList;

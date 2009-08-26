@@ -144,6 +144,8 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	mOpchatList.SetNickListSeparator("\r\n");
 	nctmp="$ActiveList ";
 	mActiveUsers.SetNickListStart(nctmp);
+	nctmp="$PassiveList ";
+	mPassiveUsers.SetNickListStart(nctmp);
 
 	// add the users
 	string speed(/*"Hub\x9"*/" "),mail(""),share("0");
@@ -396,6 +398,7 @@ bool cServerDC::AddToList(cUser *usr)
 	
 	usr->mInList = true;
 	if( !usr->IsPassive ) mActiveUsers.AddWithHash(usr, Hash);
+	if( usr->IsPassive ) mPassiveUsers.AddWithHash(usr, Hash);
 	if( usr->mClass >= eUC_OPERATOR && !
 		( usr->mxConn && usr->mxConn->mRegInfo && usr->mxConn->mRegInfo->mHideKeys))
 		mOpList.AddWithHash(usr, Hash);
@@ -446,6 +449,7 @@ bool cServerDC::RemoveNick(cUser *User)
 	if(mOpList.ContainsHash(Hash)) mOpList.RemoveByHash(Hash);
 	if(mOpchatList.ContainsHash(Hash)) mOpchatList.RemoveByHash(Hash);
 	if(mActiveUsers.ContainsHash(Hash)) mActiveUsers.RemoveByHash(Hash);
+	if(mPassiveUsers.ContainsHash(Hash)) mPassiveUsers.RemoveByHash(Hash);
 	if(mHelloUsers.ContainsHash(Hash)) mHelloUsers.RemoveByHash(Hash);
 	if(mChatUsers.ContainsHash(Hash)) mChatUsers.RemoveByHash(Hash);
 	if(mInProgresUsers.ContainsHash(Hash)) mInProgresUsers.RemoveByHash(Hash);
@@ -576,11 +580,11 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 		if (mSysLoad == eSL_PROGRESSIVE) mStatus = "Progressive Mode";
 		if (mSysLoad == eSL_NORMAL) mStatus = "Normal Mode";
 	}
-	if (mC.host_header ==1) {
+	if (mC.host_header == 1) {
 	omsg="$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
 	os << HUB_VERSION_NAME "-"<< HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << "|" << "<" << mC.hub_security << ">" << " RunTime: " << runtime.AsPeriod()<<"|" << "<" << mC.hub_security << ">" << " User Count: " << mUserCountTot <<"|" << "<" << mC.hub_security << ">" << " System Status: " << mStatus << "|";
 	}
-	else {
+	if (mC.host_header == 0) {
 	omsg="$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
 	}
 	cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
@@ -1069,6 +1073,7 @@ int cServerDC::OnTimer(cTime &now)
 	mOpList.FlushCache();
 	mOpchatList.FlushCache();
 	mActiveUsers.FlushCache();
+	mPassiveUsers.FlushCache();
 	mChatUsers.FlushCache();
 	mInProgresUsers.FlushCache();
 	
@@ -1124,6 +1129,7 @@ int cServerDC::OnTimer(cTime &now)
 	mUserList.AutoResize();
 	mHelloUsers.AutoResize();
 	mActiveUsers.AutoResize();
+	mPassiveUsers.AutoResize();
 	mChatUsers.AutoResize();
 	mOpList.AutoResize();
 	mOpchatList.AutoResize();
