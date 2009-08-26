@@ -639,7 +639,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		speed = msg->ChunkString(eCH_MI_SPEED);
 	}
 	
-	if(conn->mpUser->mHideShare == true) {
+	if(!conn->mpUser->mHideShare == false) {
 		sShare = "0";
 	} else {
 		sShare = msg->ChunkString(eCH_MI_SIZE);
