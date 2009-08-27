@@ -5,3 +5,4 @@ config.status
 *.Plo
 .directory
 Makefile
+libtool
