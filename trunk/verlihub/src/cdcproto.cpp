@@ -1004,8 +1004,7 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	ostringstream os;
 	if(msg->SplitChunks()) return -1;
 	if(!conn->mpUser || !conn->mpUser->mInList) return -1;
-	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0))
-	{
+	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0)) {
 		unsigned long use_hub_share;
 		if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
 			use_hub_share = mS->mC.min_share_use_hub;	
@@ -1014,13 +1013,16 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 		} else if(mS->mC.min_share_use_hub_vip && conn->GetTheoricalClass() == eUC_VIPUSER) {
 			use_hub_share = mS->mC.min_share_use_hub_vip;
 		}
-		if(conn->mpUser->mShare < use_hub_share)
-		{
+		use_hub_share = use_hub_share*1024*1024;
+		if(conn->mpUser->mShare < use_hub_share) {
 			ReplaceVarInString(mS->mC.ctm_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
-			mS->DCPrivateHS(ostr, conn);
+		} else {
+			ostr = "You are not allowed to download filelists";
 		}
+		mS->DCPrivateHS(ostr, conn);
 		return -4;
 	}
+	
 	string &nick = msg->ChunkString(eCH_CM_NICK);
 	
 	string ctm = msg->mStr;
