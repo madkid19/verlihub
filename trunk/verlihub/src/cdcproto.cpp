@@ -1134,11 +1134,13 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		} else if(mS->mC.min_share_use_hub_vip && conn->GetTheoricalClass() == eUC_VIPUSER) {
 			use_hub_share = mS->mC.min_share_use_hub_vip;
 		}
-		if(conn->mpUser->mShare < use_hub_share) 
-		{
-			ReplaceVarInString(mS->mC.search_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
-			mS->DCPrivateHS(ostr, conn);
+		use_hub_share = use_hub_share*1024*1024;
+		if(conn->mpUser->mShare < use_hub_share) {
+			ReplaceVarInString(mS->mC.ctm_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
+		} else {
+			ostr = "You are not allowed to download filelists";
 		}
+		mS->DCPrivateHS(ostr, conn);
 		return -4;
 	}
 
