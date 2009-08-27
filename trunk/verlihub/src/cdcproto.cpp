@@ -187,9 +187,9 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		return -2;
 	#endif
 
-	int limit=mS->mC.max_users_total; // user limit
+	int limit = mS->mC.max_users_total; // user limit
 	int limit_cc = mS->mC.max_users[conn->mGeoZone];
-	int limit_extra=0;
+	int limit_extra = 0;
 
 	// calculate user's limit
 	if(conn->GetTheoricalClass() == eUC_REGUSER ) limit_extra+=mS->mC.max_extra_regs;
@@ -200,21 +200,13 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 
 	limit += limit_extra;
 	limit_cc += limit_extra;
-	bool boolLimit = false;
-	//CC limit
-	if(conn->mGeoZone > 0 && conn->mGeoZone < 4)
-	{
-		boolLimit = mS->mC.cc_zone[conn->mGeoZone - 1].size() >= limit_cc;
 		
-	}
-	else if(conn->mGeoZone > 3 && conn->mGeoZone < 7)
-	{
-		boolLimit = (mS->mUserCount[conn->mGeoZone]) >= limit_cc;
-	}
-	
 	// Check the max_users limit
 	if( (conn->GetTheoricalClass() < eUC_OPERATOR) &&
-		((mS->mUserCountTot >= limit) ||  boolLimit)
+		(
+		  (mS->mUserCountTot >= limit) ||
+		  (mS->mC.cc_zone[0].size() &&  mS->mUserCount[conn->mGeoZone] >= limit_cc)
+		)
 	) {
 		os << mS->mC.msg_hub_full << "\r\nOnline users =" << mS->mUserCountTot;
 		if(conn->Log(2))
