@@ -1317,7 +1317,7 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 	// check the nick
 	if(!other)
 	{
-		ostr << "User " << str << "not found.";
+		ostr << "User " << str << " not found.";
 		mS->DCPublicHS(ostr.str(),conn);
 		return -2;
 	}
@@ -1325,7 +1325,7 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 	// check the priviledges
 	if(other->mClass >= conn->mpUser->mClass || other->mProtectFrom >= conn->mpUser->mClass)
 	{
-		ostr << "User " << str << "is too high for redirect (or protected).";
+		ostr << "User " << str << " is too high for redirect (or protected).";
 		mS->DCPublicHS(ostr.str(),conn);
 		return -3;
 	}
