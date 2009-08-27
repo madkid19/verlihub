@@ -877,11 +877,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	if(!conn->mpUser) return -2;
 	if(!conn->mpUser->mInList) return -3;
 	if(!conn->mpUser->Can(eUR_CHAT, mS->mTime.Sec(), 0)) return -4;
-	//global mainchat override access control by class --This will also block usr +cmds
-	if(conn->mpUser->mClass < mS->mC.mainchat_class) {
-		mS->DCPublicHS("Mainchat is currently disabled for non registered users.",conn);
-		return 0;
-	}
+	
 	cUser::tFloodHashType Hash = 0;
 	Hash = tHashArray<void*>::HashString(msg->mStr);
 	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_CHAT]))
@@ -919,8 +915,12 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 
 	send = true;
 
-
 	if(ParseForCommands(text, conn)) return 0;
+	
+	if(conn->mpUser->mClass < mS->mC.mainchat_class) {
+		mS->DCPublicHS("Mainchat is currently disabled for non registered users.",conn);
+		return 0;
+	}
 	////////// here is the part that finally distributes messages
 	// check message length only for less than vip regs
 	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text, conn)) 
