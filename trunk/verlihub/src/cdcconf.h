@@ -121,9 +121,6 @@ public:
 	bool dest_regme_chat;
 	bool dest_drop_chat;
 	bool report_dns_lookup;
-	bool check_ctm;
-	bool check_rctm;
-	bool check_asearch;
 	string extra_listen_ports;
 	string hub_version_special;
 	string hub_name;
@@ -136,7 +133,6 @@ public:
 	int hublist_port;
 	bool hublist_send_minshare;
 	/** checking prefferences */
-	string redir_host[128];
 	unsigned classdif_reg;
 	unsigned classdif_search;
 	unsigned classdif_download;
@@ -149,9 +145,9 @@ public:
 	int min_class_bc_vips;
 	int min_class_redir;
 	int max_class_int_login;
-	int redir_host_max;
 	int hide_all_kicks;
 	int optimize_userlist;
+	int search_number;
 	int int_search;
 	int int_search_pas;
 	int int_search_reg_pass;

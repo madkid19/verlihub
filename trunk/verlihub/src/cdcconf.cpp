@@ -115,6 +115,7 @@ void cDCConf::AddVars()
 	Add("max_share_vip",max_share_vip,(unsigned long)10*1024*1024);
 	Add("max_share_ops",max_share_ops,(unsigned long)10*1024*1024);
 // 	search configurations
+	Add("search_number", search_number, 1);
 	Add("int_search",int_search,32);
 	Add("int_search_pas",int_search_pas,48);
 	Add("int_search_reg",int_search_reg,16);

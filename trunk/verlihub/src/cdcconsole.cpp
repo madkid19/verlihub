@@ -485,14 +485,14 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	ostringstream os;
 	string omsg;
 	//This is here as manual values for true release info available to all
-	os << "\r\n[::] Release: Verlihub-0.9.9a (Thursday August 27 2009)" << endl;
+	os << "\r\n[::] Release: Verlihub-0.9.9a (Friday August 28 2009)" << endl;
 	os << "[::] Authors: Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
 	os << "[::] Authors: chaosuk (chaos@dchublist.com)" << endl;
 	os << "[::] Contributors: Stefano, Intruder, Rolex, Frog" << endl;
 	os << "[::] Credits: We would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << endl;
 	os << "[::] Website: http://www.verlihub-project.org" << endl;
 	os << "[::] Forums: http://forums.verlihub-project.org" << endl;
-	os << "[::] Website/Forums design: Stefan Simoncelli (netcelli@verlihub-project.org)" << endl;
+	os << "[::] Website/Forums design: Stefano Simoncelli (netcelli@verlihub-project.org)" << endl;
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;

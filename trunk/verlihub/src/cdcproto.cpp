@@ -1072,7 +1072,7 @@ int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn )
 	ostringstream ostr;
 
 	// check nick
-	if(mS->mC.check_rctm &&msg->ChunkString(eCH_RC_NICK) != conn->mpUser->mNick)
+	if(msg->ChunkString(eCH_RC_NICK) != conn->mpUser->mNick)
 	{
 		ostr << "Your nick isn't: " << msg->ChunkString(eCH_RC_NICK) << " but " << conn->mpUser->mNick;
 		mS->ConnCloseMsg(conn, ostr.str(), 1500, eCR_SYNTAX);
@@ -1128,9 +1128,9 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		}
 		use_hub_share = use_hub_share*1024*1024;
 		if(conn->mpUser->mShare < use_hub_share) {
-			ReplaceVarInString(mS->mC.ctm_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
+			ReplaceVarInString(mS->mC.search_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
 		} else {
-			ostr = "You are not allowed to download filelists";
+			ostr = "You are not allowed to search on this hub";
 		}
 		mS->DCPrivateHS(ostr, conn);
 		return -4;
@@ -1197,7 +1197,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 			delay=mS->mC.int_search_pas;
 			if(conn->mpUser->mClass ==  eUC_REGUSER) delay = mS->mC.int_search_reg_pass;
 			else if(conn->mpUser->mClass >  eUC_REGUSER) delay=int(1.5 * mS->mC.int_search_reg);
-			if(CHECK_NICK_PSRCH &&conn->mpUser->mNick != msg->ChunkString(eCH_PS_NICK))
+			if(conn->mpUser->mNick != msg->ChunkString(eCH_PS_NICK))
 			{
 				os << "Your nick isn't " << msg->ChunkString(eCH_PS_NICK) << " but " << conn->mpUser->mNick << " bye!";
 				mS->ConnCloseMsg(conn, os.str(),4000, eCR_SYNTAX);
@@ -1209,15 +1209,17 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 
 	if(conn->mpUser->mClass >=  eUC_VIPUSER) delay=mS->mC.int_search_vip;
 	if(conn->mpUser->mClass >=  eUC_OPERATOR) delay=mS->mC.int_search_op;
-	// verify the delay && conn->mpUser->mSearchNumber > mS->mC.search_number
-	if(!mS->MinDelay(conn->mpUser->mT.search,delay))
-	{
+	// verify the delay and the number of search
+	if(!mS->MinDelay(conn->mpUser->mT.search,delay)) {
+		if(conn->mpUser->mSearchNumber >= mS->mC.search_number) {
+			os << "You can do " << mS->mC.search_number << " search in " << delay << " seconds";
+			mS->DCPublicHS(os.str(),conn);
+			return -1;
+		}
+	} else {
 		conn->mpUser->mSearchNumber = 0;
-		os << "Minimum search interval is:" << delay << "s";
-		mS->DCPublicHS(os.str(),conn);
-		return -1;
 	}
-	//conn->mpUser->mSearchNumber++;
+	conn->mpUser->mSearchNumber++;
 	// translate MultiSearch to Search
 	string omsg(msg->mStr);
 	if(msg->mType == eDC_MSEARCH)
