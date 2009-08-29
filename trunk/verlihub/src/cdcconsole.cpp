@@ -69,6 +69,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdRedirTrigger(int(eCM_TRIGGERS),".(\\S+)trigger ?","(.*)$",&mFunRedirTrigger),
 	mCmdCustomRedir(int(eCM_CUSTOMREDIR),".(\\S+)redirect ?","(.*)$",&mFunCustomRedir),
 	mCmdGetConfig(int(eCM_GETCONFIG),".(gc|getconfig) ?","(\\[(\\S+)\\])?", &mFunGetConfig),
+	mCmdClean(int(eCM_CLEAN),".clean(\\S+) ?", "(\\S+)?", &mFunClean),
 	mConnTypeConsole(this),
 	mTriggerConsole(NULL),
 	mRedirectConsole(NULL)
@@ -101,6 +102,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdr.Add(&mCmdRedirTrigger);
 	mCmdr.Add(&mCmdCustomRedir);
 	mCmdr.Add(&mCmdGetConfig);
+	mCmdr.Add(&mCmdClean);
 	mCmdr.InitAll(this);
 	mUserCmdr.Add(&mCmdReport);
 	mUserCmdr.InitAll(this);
@@ -485,7 +487,7 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	ostringstream os;
 	string omsg;
 	//This is here as manual values for true release info available to all
-	os << "\r\n[::] Release: Verlihub-0.9.9a (Friday August 28 2009)" << endl;
+	os << "\r\n[::] Release: Verlihub-0.9.9a (Saturday August 29 2009)" << endl;
 	os << "[::] Authors: Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
 	os << "[::] Authors: chaosuk (chaos@dchublist.com)" << endl;
 	os << "[::] Contributors: Stefano, Intruder, Rolex, Frog" << endl;
@@ -1093,16 +1095,59 @@ bool cDCConsole::cfRaw::operator()()
 	return true;
 }
 
+bool cDCConsole::cfClean::operator()()
+{
+
+	static const char *cleanames[] = { "banlist", "unbanlist", "kicklist", "temprights" };
+	enum { CLEAN_BAN, CLEAN_UNBAN, CLEAN_KICK, CLEAN_TRIGHTS };
+	static const int cleanids[]= { CLEAN_BAN, CLEAN_UNBAN, CLEAN_KICK, CLEAN_TRIGHTS };
+	
+	if(!mConn->mpUser) return false;
+	if(mConn->mpUser->mClass < eUC_OPERATOR) return false;
+	
+	string tmp;
+	int CleanType = cBan::eBF_NICKIP;
+	if(mIdRex->PartFound(1)) {
+		mIdRex->Extract( 1, mIdStr, tmp);
+		CleanType = this->StringToIntFromList(tmp, cleanames, cleanids, sizeof(cleanames)/sizeof(char*));
+		if (CleanType < 0)
+		    return false;
+	}
+	switch (CleanType) {
+		case CLEAN_BAN:
+		  	mS->mBanList->TruncateTable();
+			(*mOS) << endl << "All bans have been deleted.";
+		break;
+		case CLEAN_UNBAN:
+		  	mS->mUnBanList->TruncateTable();
+			(*mOS) << endl << "All unbans have been deleted.";
+		break;
+		case CLEAN_KICK:
+		  	mS->mKickList->TruncateTable();
+			(*mOS) << endl << "All kicks have been deleted.";
+		break;
+		case CLEAN_TRIGHTS:
+		  	mS->mPenList->TruncateTable();
+			(*mOS) << endl << "All temp rights have been deleted.";
+		break;
+		default:
+			(*mOS) << "This command has not implemented yet.\r\nAvailable command are: " << endl;
+			return false; 
+		break;
+	}
+	return true;
+}
+
 bool cDCConsole::cfBan::operator()()
 {
 
 	static const char *bannames[]={"nick", "ip", "nickip", "", "range", "host1", "host2" , "host3", "hostr1",  "share", "prefix"};
 	static const int banids[]= {cBan::eBF_NICK, cBan::eBF_IP, cBan::eBF_NICKIP, cBan::eBF_NICKIP, cBan::eBF_RANGE,
-      cBan::eBF_HOST1, cBan::eBF_HOST2, cBan::eBF_HOST3, cBan::eBF_HOSTR1, cBan::eBF_SHARE, cBan::eBF_PREFIX };
+      cBan::eBF_HOST1, cBan::eBF_HOST2, cBan::eBF_HOST3, cBan::eBF_HOSTR1, cBan::eBF_SHARE, cBan::eBF_PREFIX};
 
 	enum { BAN_BAN, BAN_UNBAN, BAN_INFO, BAN_LIST };
-	static const char *prefixnames[]={"add", "new", "rm", "del", "un", "info", "check", "list", "ls" };
-	static const int prefixids[]= { BAN_BAN, BAN_BAN, BAN_UNBAN, BAN_UNBAN, BAN_UNBAN, BAN_INFO, BAN_INFO, BAN_LIST, BAN_LIST};
+	static const char *prefixnames[]={"add", "new", "rm", "del", "un", "info", "check", "list", "ls"};
+	static const int prefixids[]= { BAN_BAN, BAN_BAN, BAN_UNBAN, BAN_UNBAN, BAN_UNBAN, BAN_INFO, BAN_INFO, BAN_LIST, BAN_LIST };
 	
 	cBan Ban(mS);
 	int BanType = cBan::eBF_NICKIP;
@@ -1164,49 +1209,42 @@ bool cDCConsole::cfBan::operator()()
 
 	switch (BanAction)
 	{
-	case BAN_UNBAN:
-	case BAN_INFO:
-		if (unban)
-		{
-			if( !GetParStr(BAN_REASON,tmp))
-			{
-				(*mOS) << BAN_EREASON;
-				return false;
-			}
-			#ifndef WITHOUT_PLUGINS
-			if(!mS->mCallBacks.mOnUnBan.CallAll(Who, mConn->mpUser->mNick, tmp)) {
-				(*mOS) << "Action has been discarded by plugin";
-				return false;	
-			}
-			#endif
-			(*mOS) << "Unbanning...\r\n";
-		}
-
-		if(BanType == cBan::eBF_NICKIP)
-		{
-			Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_NICK, unban);
-			Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_IP, unban);
-			if(!unban)
-			{
-				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_RANGE, false);
-				string Host;
-				if (mConn->DNSResolveReverse(Who, Host)) {
-					Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOSTR1, false);
-					Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOST3, false);
-					Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOST2, false);
-					Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOST1, false);
+		case BAN_UNBAN:
+		case BAN_INFO:
+			if (unban) {
+				if( !GetParStr(BAN_REASON,tmp)) {
+					(*mOS) << BAN_EREASON;
+					return false;
 				}
+				#ifndef WITHOUT_PLUGINS
+				if(!mS->mCallBacks.mOnUnBan.CallAll(Who, mConn->mpUser->mNick, tmp)) {
+					(*mOS) << "Action has been discarded by plugin";
+					return false;	
+				}
+				#endif
+				(*mOS) << "Unbanning...\r\n";
 			}
-		}
-		else if(BanType == cBan::eBF_NICK) {
-			Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_NICK, unban);
-			Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_NICKIP, unban);
-		}
-		else
-		{
-			Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, BanType, unban);
-		}
-		(*mOS) << endl << "Total : " << Count << " bans.";
+
+			if(BanType == cBan::eBF_NICKIP) {
+				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_NICK, unban);
+				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_IP, unban);
+				if(!unban) {
+					Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_RANGE, false);
+					string Host;
+					if (mConn->DNSResolveReverse(Who, Host)) {
+						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOSTR1, false);
+						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOST3, false);
+						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOST2, false);
+						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOST1, false);
+					}
+				}
+			} else if(BanType == cBan::eBF_NICK) {
+				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_NICK, unban);
+				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_NICKIP, unban);
+			} else {
+				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, BanType, unban);
+			}
+			(*mOS) << endl << "Total : " << Count << " bans.";
 		break;
 	case BAN_BAN:
 		Ban.mNickOp = mConn->mpUser->mNick;
@@ -1220,21 +1258,18 @@ bool cDCConsole::cfBan::operator()()
 
 		switch (BanType)
 		{
-		case cBan::eBF_NICKIP:
-		case cBan::eBF_NICK:
-		case cBan::eBF_IP:
-			if( mS->mKickList->FindKick(Kick, Who, mConn->mpUser->mNick, 3000, true, true, IsNick) )
-			{
+			case cBan::eBF_NICKIP:
+			case cBan::eBF_NICK:
+			case cBan::eBF_IP:
+			if( mS->mKickList->FindKick(Kick, Who, mConn->mpUser->mNick, 3000, true, true, IsNick) ) {
 				mS->mBanList->NewBan(Ban, Kick, BanTime, BanType );
-				if( mParRex->PartFound(BAN_REASON) )
-				{
+				if( mParRex->PartFound(BAN_REASON) ) {
 					mParRex->Extract(BAN_REASON, mParStr,tmp);
 					Ban.mReason += "\r\n";
 					Ban.mReason += tmp;
 				}
 			} else {
-				if ( !mParRex->PartFound(BAN_REASON) )
-				{
+				if ( !mParRex->PartFound(BAN_REASON) ) {
 					(*mOS) << BAN_EREASON;
 					return false;
 				}

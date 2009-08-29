@@ -83,6 +83,7 @@ public:
 	bool GetCollation();
 	bool GetDescription(const string &);
 	bool CreateTable();
+	void TruncateTable();
 	bool AutoAlterTable(const cMySQLTable &original);
 	void AppendColumnDesc(const cMySQLColumn &col, ostream &os);
 	string mName;
@@ -127,6 +128,7 @@ public:
 	bool LoadPK();
 	bool SavePK(bool dup=false);
 	static void WriteStringConstant(ostream &os, const string &str);
+	void TruncateTable();
 	void CreateTable();
 	template <class T> void AddCol(const char *colName, const char *colType, const char *colDefault, bool colNull, T &var)
 	{

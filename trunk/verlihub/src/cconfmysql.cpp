@@ -153,6 +153,14 @@ bool cMySQLTable::CreateTable()
 	return true;
 }
 
+void cMySQLTable::TruncateTable()
+{
+	mQuery.OStream() << "TRUNCATE TABLE " << mName;
+	mQuery.Query();
+	mQuery.Clear();
+}
+
+
 bool cMySQLTable::AutoAlterTable(const cMySQLTable &original)
 {
 	string isNull, hasDefault;
@@ -209,6 +217,11 @@ void cConfMySQL::CreateTable()
 		mMySQLTable.AutoAlterTable(existing_desc);
 	else
 		mMySQLTable.CreateTable();
+}
+
+void cConfMySQL::TruncateTable()
+{
+	mMySQLTable.TruncateTable();
 }
 
 int cConfMySQL::Save()

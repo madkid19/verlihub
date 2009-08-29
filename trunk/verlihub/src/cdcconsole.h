@@ -108,7 +108,7 @@ public:
 	typedef cDCCommand::sDCCmdFunc cfDCCmdBase;
 	typedef cDCCommand cDCCmdBase;
 
-	enum{ eCM_CMD, eCM_BAN, eCM_GAG, eCM_TRIGGER, eCM_CUSTOMREDIR, eCM_SET, eCM_REG, eCM_INFO, eCM_RAW, eCM_WHO, eCM_KICK, eCM_PLUG, eCM_REPORT, eCM_BROADCAST, eCM_CONNTYPE, eCM_TRIGGERS, eCM_GETCONFIG};
+	enum{ eCM_CMD, eCM_BAN, eCM_GAG, eCM_TRIGGER, eCM_CUSTOMREDIR, eCM_SET, eCM_REG, eCM_INFO, eCM_RAW, eCM_WHO, eCM_KICK, eCM_PLUG, eCM_REPORT, eCM_BROADCAST, eCM_CONNTYPE, eCM_TRIGGERS, eCM_GETCONFIG, eCM_CLEAN };
 	
 	cServerDC *mServer;
 
@@ -149,7 +149,8 @@ private:
 	cDCCmdBase mCmdBc;
 	struct cfGetConfig : cfDCCmdBase { virtual bool operator()(); } mFunGetConfig;
 	cDCCmdBase mCmdGetConfig;
-	
+	struct cfClean : cfDCCmdBase { virtual bool operator()(); } mFunClean;
+	cDCCmdBase mCmdClean;
 	
 	// redirection consoles to other console
 	struct cfRedirToConsole : cfDCCmdBase {

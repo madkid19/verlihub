@@ -106,14 +106,12 @@ bool cPlug::Plugin()
 			bool result = false;
 
 			cVHPlugin *dest = GetDestPlugin();
-			if (dest)
-			{
+			if (dest) {
 				if (dest->SupportsMultipleScripts())
 					result = dest->AddScript(mPath, os);
 				else if (dest->SupportsScripts())
 					result = dest->LoadScript(mPath, os);
-				else
-				{
+				else {
 					mLastError = "Dest plugins does not support scripts";
 					SaveMe();
 					return false;
@@ -125,16 +123,13 @@ bool cPlug::Plugin()
 				SaveMe();
 				return result;
 			}
-		} else
-		{
-			if (pm->LoadPlugin(mPath))
-			{
+		} else {
+			if (pm->LoadPlugin(mPath)) {
 				mLoadTime = cTime().Sec();
 				mLastError = "Load OK";
 				SaveMe();
 				return true;
-			} else
-			{
+			} else {
 				mLastError = pm->GetError();
 				SaveMe();
 				return false;
