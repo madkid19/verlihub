@@ -56,12 +56,10 @@ bool nCmdr::cCmdr::ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar)
 {
 	if( Cmd->TestParams() )
 	{
-		if(Cmd->Execute(os, extrapar)) os << "";
+		if(Cmd->Execute(os, extrapar)) os << " OK";
 		else os << "Error";
 		return true;
-	}
-	else
-	{
+	} else {
 		os << "Params error.." << "\r\n";
 		Cmd->GetParamSyntax(os);
 		return false;
