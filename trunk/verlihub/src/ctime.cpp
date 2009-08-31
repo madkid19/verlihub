@@ -29,30 +29,6 @@
 #include <sstream>
 #if defined _WIN32
 #include <windows.h>
-
-/* /////////////////////////////////////////////////////////////////////////////
- * API functions
- */
-
-void gettimeofday(struct timeval *tv, struct timezone *tz)
-{
-	SYSTEMTIME              st;
-	union
-	{
-		FILETIME            ft;
-		unsigned __int64    ui64;
-	} u;
-
-	((void)tz);
-
-	GetLocalTime(&st);
-	SystemTimeToFileTime(&st, &u.ft);
-
-	u.ui64 -= (unsigned __int64)(24*3600)*((1970-1601)*365 + 92)*10000000ul;
-	tv->tv_sec  =   (long)(u.ui64 / 10000000);
-	tv->tv_usec =   (long)(u.ui64 % 10000000);
-}
-
 #endif
 
 using namespace std;
@@ -70,23 +46,28 @@ string cTime::AsString() const{
 
 std::ostream & operator<< (std::ostream &os, const cTime &t)
 {
-	#if !defined _WIN32
-	static char buf[26];
-	#else
-	char * buf;
-	#endif
+#ifdef WIN32
+static char *buf;
+#else
+#define CTIME_BUFFSIZE 26
+static char buf[CTIME_BUFFSIZE+1];
+#endif
+time_t rawtime =  t.tv_sec;
+struct tm st, *pst = &st;
 
 	long n, rest, i;
 
 	switch (t.mPrintType)
 	{
 	case 1:
-		#if !defined _WIN32
-		ctime_r((time_t*)&t.tv_sec,buf);
-		#else
-		buf = ctime( (const time_t*)&(t.tv_sec) );
-		#endif
-		buf[strlen(buf)-1]=0;
+         #ifdef WIN32
+		 buf = ctime( (const time_t*)&(t.tv_sec) );
+         #else
+         ctime_r((time_t*)&t.tv_sec, buf);
+         #endif
+
+		 
+		 buf[strlen(buf)-1]=0;
 		os << buf;
 		break;
 	case 2:
@@ -114,10 +95,10 @@ std::ostream & operator<< (std::ostream &os, const cTime &t)
 		if(++i <= 2) os << n << "sec ";
 
 		if(++i <= 2) os << t.tv_usec/1000 << "ms ";
-		if(++i <= 2) os << t.tv_usec%1000 << "µs ";
+		if(++i <= 2) os << t.tv_usec%1000 << "Âµs ";
 		break;
 	default :
-		os << t.tv_sec << "s " << t.tv_usec << "µs";
+		os << t.tv_sec << "s " << t.tv_usec << "Âµs";
 		break;
 	}
 	return os;
