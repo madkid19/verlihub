@@ -78,7 +78,7 @@ void cInfoServer::SetServer(cServerDC *Server)
 	mServer = Server;
 	Add("[::] Hub name", mServer->mC.hub_name);
 	Add("[::] Hub Owner", mServer->mC.hub_owner);
-	//Add("[::] Hub Category", mServer->mC.hub_category);
+	Add("[::] Hub Category", mServer->mC.hub_category);
 	Add("[::] Total user limit",mServer->mC.max_users_total);
 }
 

@@ -111,7 +111,7 @@ public:
 	bool nick_prefix_cc;
 	int host_header;
 	string hub_security;
-	//string hub_category;
+	string hub_category;
 	string hub_security_desc;
 	string opchat_name;
 	string opchat_desc;

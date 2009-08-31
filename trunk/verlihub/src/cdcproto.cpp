@@ -1594,8 +1594,8 @@ int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 		<< ConnType->mTagMinSlots << S 
 		<< mS->mC.tag_max_hubs << S
 		<< "VerliHub" << S
-		<< mS->mC.hub_owner;
-//		<< mS->mC.hub_category;
+		<< mS->mC.hub_owner << S
+		<< mS->mC.hub_category;
 		
 	string str = os.str();
 	conn->Send(str);
