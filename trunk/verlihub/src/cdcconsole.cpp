@@ -487,7 +487,7 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	ostringstream os;
 	string omsg;
 	//This is here as manual values for true release info available to all
-	os << "\r\n[::] Release: Verlihub-0.9.9a (Saturday August 29 2009)" << endl;
+	os << "\r\n[::] Release: Verlihub-0.9.9a (Monday August 31 2009)" << endl;
 	os << "[::] Authors: Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
 	os << "[::] Authors: chaosuk (chaos@dchublist.com)" << endl;
 	os << "[::] Contributors: Stefano, Intruder, Rolex, Frog" << endl;
@@ -523,6 +523,9 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	} 
 	if (conn->GetTheoricalClass() == eUC_OPERATOR) {
 		uType = "Operator"; sInt = mOwner->mC.int_search_op;
+	}
+	if (conn->GetTheoricalClass() == eUC_CHEEF) {
+		uType = "Super OP"; sInt = mOwner->mC.int_search_op;
 	}
 	if (conn->GetTheoricalClass() == eUC_ADMIN) {
 		uType = "Admin"; sInt = mOwner->mC.int_search_op;
