@@ -84,6 +84,7 @@ public:
 		eTC_MIN_VERSION, //< version too old
 		eTC_MAX_VERSION, //< version too recent
 		eTC_SOCK5, //< unallowed sock5 mode
+		eTC_PASSIVE, //< restrict passive connections
 	};
 	// tag's starting position in desc
 	int mPositionInDesc;

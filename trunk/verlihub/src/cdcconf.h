@@ -111,7 +111,7 @@ public:
 	bool nick_prefix_cc;
 	int host_header;
 	string hub_security;
-	string hub_category;
+	//string hub_category;
 	string hub_security_desc;
 	string opchat_name;
 	string opchat_desc;
@@ -182,6 +182,7 @@ public:
 	double tag_max_version[20];
 	bool tag_allow_none;
 	bool tag_allow_sock5;
+	bool tag_allow_passive;
 	int tag_min_class_ignore;
 	int tag_sum_hubs;
 	string cc_zone[3];
@@ -271,6 +272,7 @@ public:
 	string tag_min_limit;
 	string tag_min_ls_ratio;
 	string tag_no_sock;
+	string tag_no_passive;
 	
 	
 	

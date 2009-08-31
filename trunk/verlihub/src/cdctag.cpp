@@ -171,6 +171,13 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 
+	if ((mClientMode == eCM_PASSIVE) && !mC.tag_allow_passive )
+	{
+		os << mL.tag_no_passive;
+		code = eTC_PASSIVE;
+		return false;
+	}
+
 	if(mParser.mHubsRE.Exec( mTagBody ) >= 2)
 	{
 		mParser.mHubsRE.Extract(1,mTagBody,str);

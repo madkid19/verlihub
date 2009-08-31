@@ -65,7 +65,7 @@ void cDCConf::AddVars()
 // 	hub info and basic settings
 	Add("hub_name",hub_name,string("VerliHub"));
 	Add("hub_desc",hub_desc,string("No Description"));
-	Add("hub_category",hub_category,string(""));
+	//Add("hub_category",hub_category,string(""));
 	Add("hub_owner",hub_owner,string(""));
 	Add("hub_version",hub_version,VERSION);
 	Add("hub_version_special",hub_version_special,string(""));	
@@ -223,6 +223,7 @@ void cDCConf::AddVars()
 // 	tag configurations
 	Add("show_tags",show_tags,2);
 	Add("tag_allow_none",tag_allow_none, true);
+	Add("tag_allow_passive",tag_allow_passive, true);
 	Add("tag_allow_sock5",tag_allow_sock5, true);
 	Add("tag_sum_hubs", tag_sum_hubs, 2);
 	Add("tag_min_class_ignore",tag_min_class_ignore ,(int)eUC_OPERATOR);
@@ -307,6 +308,7 @@ void cDCLang::AddVars()
 	Add("tag_min_limit",tag_min_limit, string("Too low upload limit for your connection type (%[conn_type]), max ratio is %[tag_max_hs_ratio]"));
 	Add("tag_min_ls_ratio",tag_min_ls_ratio, string("Too upload limit for your connection type (%[conn_type]), min upload limit is %[tag_min_ls_ratio] per every slot"));
 	Add("tag_no_sock",tag_no_sock,string("Sock5 is not allowed here."));
+	Add("tag_no_passive",tag_no_passive,string("Passive connections are restricted. Consider changing to active."));
 	
 	
 	
