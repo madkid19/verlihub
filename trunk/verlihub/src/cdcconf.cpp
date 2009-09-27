@@ -251,7 +251,7 @@ void cDCConf::AddVars()
 	Add("msg_hub_full",msg_hub_full,string("<<User limit exceeded, hub is full.>>"));
 	Add("msg_nick_prefix",msg_nick_prefix, string("<<Invalid nick prefix>>"));
 	Add("msg_downgrade", msg_downgrade, string("<<Your client version is too recent.>>"));
-	Add("msg_banned_client", msg_banned_client, string("<<Your client version is too recent.>>"));
+	Add("msg_banned_client", msg_banned_client, string("<<Your client is banned.>>"));
 	Add("msg_upgrade",msg_upgrade, string("<<Your client version is too old, please upgrade!>>"));
 	Add("msg_replace_ban",msg_replace_ban, string(""));
 	Add("login_share_min",login_share_min,string("You share %[share]MB, but the min share is %[min_share]MB. (active:%[min_share_active]MB / passive:%[min_share_passive])"));
