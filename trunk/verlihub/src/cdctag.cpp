@@ -53,7 +53,7 @@ cDCTag::~cDCTag() { }
 
 bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 {
-	if(client->mBan) {
+	if(client && client->mBan) {
 		os << mServer->mC.msg_banned_client;
 		code = eTC_BANNED;
 		return false;
