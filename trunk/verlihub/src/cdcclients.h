@@ -19,77 +19,87 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#ifndef NDIRECTCONNECT_NTABLESCDCCLIENTS_H
-#define NDIRECTCONNECT_NTABLESCDCCLIENTS_H
+#ifndef NDIRECTCONNECTDCCLIENTS_H
+#define NDIRECTCONNECTDCCLIENTS_H
 #include "tmysqlmemorylist.h"
 #include "tlistconsole.h"
+#include "cdcconsole.h"
+#include <sstream>
+#include "cpcre.h"
+#include "cdctag.h"
+#include "cdcclient.h"
 
-using namespace nConfig;
-namespace nDirectConnect
-{
+using nConfig::tMySQLMemoryList;
+using namespace std;
+// forward declarations
+namespace nUtils { class cPCRE; };
 
-class cServerDC;
-class cDCConsole;
-
-namespace nTables
-{
-
-
-class cDCClient
-{
-public:
-	cDCClient();
-	virtual ~cDCClient(){};
-	string mName;
-	string mPrefixRegex; // the thing in front of the tag	
-	string mInTagID; // the first part of the tag
-	int mIncertitude;
-	int mPrefixVersionRank;
-	bool mLimitIsPerSlot;
-	double mMinVersion;
-	double mMaxVersion;
-	// Overriding and needed methods
-	virtual void OnLoad();
-	friend ostream &operator << (ostream &, cDCClient &);
-
-	// custom methods
-	bool CheckIt(const string &prefix, const string &InTagID, double &Version);
-};
-
-typedef tMySQLMemoryList<cDCClient, cServerDC> tDCClientsBase;
-
-/**
-@author Daniel Muller
-*/
-class cDCClients : public tDCClientsBase
-{
-public:
-	cDCClients(cServerDC *server);
-	virtual ~cDCClients();
+namespace nDirectConnect {
+	using namespace nDirectConnect::nTables;
+	/**
+	* Parser for DC Tag
+	* @author Daniel Muller, Simoncelli Davide
+	*/
+	class cDCTagParser
+	{
+		public:
+		// the constructor
+		cDCTagParser();
+		/** the global teg's regular expression */
+		nUtils::cPCRE mTagRE;
+		nUtils::cPCRE mModeRE;
+		nUtils::cPCRE mHubsRE;
+		nUtils::cPCRE mSlotsRE;
+		nUtils::cPCRE mLimitRE;
+	};
 	
-	// overiding methods
-	virtual void AddFields();
-	virtual bool CompareDataKey(const cDCClient &D1, const cDCClient &D2);
-};
+	class cServerDC;
+	class cDCConsole;
+	namespace nTables {
 
-typedef tListConsole<cDCClient, cDCClients, cDCConsole> tDCClientConsoleBase;
+		typedef tMySQLMemoryList<cDCClient, cServerDC> tClientsBase;
+		class cDCClients : public tClientsBase
+		{
+			static cDCTagParser mParser;
+			cServerDC *mServer;
+			public:
+				  int mPositionInDesc;
+				  typedef enum{ eCT_NOTAG, eCT_PLUSPLUS, eCT_DCGUI, eCT_ODC, eCT_DC, eCT_DCPRO, eCT_STRONGDC, eCT_IDC, eCT_ZDC, eCT_APEXDC, eCT_ZION, eCT_UNKNOWN } tClientType;
 
-class cDCClientConsole: public tDCClientConsoleBase
-{
-public:
-	cDCClientConsole(cDCConsole *console);
-	virtual ~cDCClientConsole();
-	virtual const char * GetParamsRegex(int cmd);
-	virtual cDCClients *GetTheList();
-	virtual const char *CmdSuffix();
-	virtual const char *CmdPrefix();
-	virtual void ListHead(ostream *os);
-	virtual bool IsConnAllowed(cConnDC *conn,int cmd);
-	virtual bool ReadDataFromCmd(cfBase *cmd, int CmdID, cDCClient &data);
-};
+			  
+				cDCClients(cServerDC *);
+				virtual ~cDCClients(){};
+				virtual void AddFields();;
+				cDCClient* FindTag(const string &tagID);
+				virtual bool CompareDataKey(const cDCClient &D1, const cDCClient &D2);
+				bool ParsePos(const string &desc);
+				cDCTag* ParseTag(const string &desc);
+				bool ValidateTag(cDCTag *tag, ostream &os, cConnType *conn_type, int &code);
+		};
 
-};
 
+		typedef tListConsole<cDCClient, cDCClients, cDCConsole> tDCClientConsoleBase;
+
+		class cDCClientConsole: public tDCClientConsoleBase
+		{
+			public:
+				cDCClientConsole(cDCConsole *console);
+				virtual ~cDCClientConsole();
+				virtual const char * GetParamsRegex(int cmd);
+				virtual cDCClients *GetTheList();
+				virtual const char *CmdSuffix();
+				virtual const char *CmdPrefix();
+				virtual void ListHead(ostream *os);
+				virtual bool IsConnAllowed(cConnDC *conn,int cmd);
+				virtual bool ReadDataFromCmd(cfBase *cmd, int CmdID, cDCClient &data);
+				virtual void GetHelpForCommand(int cmd, ostream &os);
+				virtual void GetHelp(ostream &os);
+
+		};
+
+
+	};
 };
 
 #endif
+ 

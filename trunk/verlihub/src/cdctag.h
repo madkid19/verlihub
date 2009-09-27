@@ -21,37 +21,57 @@
 ***************************************************************************/
 #ifndef CDCTAG_H
 #define CDCTAG_H
-#include <sstream>
-#include "cpcre.h"
+#include <string>
+#include "cdcclient.h"
 
 using namespace std;
 // forward declarations
-namespace nUtils { class cPCRE; };
+//namespace nUtils { class cPCRE; };
 
 namespace nDirectConnect
 {
-	namespace nTables { 
+	namespace nEnums {
+	      typedef enum{ eCM_NOTAG, eCM_ACTIVE, eCM_PASSIVE, eCM_SOCK5} tClientMode;
+	      
+		// Validate tag error code
+	        enum {
+			eTC_BANNED, // Client banned
+			eTC_PARSE, // Tag parse error
+			eTC_MAX_HUB, // Too many hubs
+			eTC_MAX_SLOTS, // Too many slots
+			eTC_MIN_SLOTS, //< Too few slots
+			eTC_MAX_HS_RATIO, // Hubs per slot
+			eTC_MIN_LIMIT, // Small upload limiter
+			eTC_MIN_LS_RATIO, // Small limiter per slot
+			eTC_MIN_VERSION, // Version too old
+			eTC_MAX_VERSION, // Version too recent
+			eTC_SOCK5, // Not allowed sock5
+			eTC_PASSIVE, // Restrict passive connections
+		};
+	}
+	namespace nTables {
 		class cDCConf;
 		class cDCLang;
 		class cConnType;
 	};
 	using namespace nDirectConnect::nTables;
+	using namespace nDirectConnect::nEnums;
 
 /** a parser for the dc info tag
   *@author Daniel Muller
   */
-class cDCTagParser
+/*class cDCTagParser
 {
 	public:
 	// the constructor
 	cDCTagParser();
-	/** the global teg's regular expression */
+	/** the global teg's regular expression *
 	nUtils::cPCRE mTagRE;
 	nUtils::cPCRE mModeRE;
 	nUtils::cPCRE mHubsRE;
 	nUtils::cPCRE mSlotsRE;
 	nUtils::cPCRE mLimitRE;
-};
+};*/
 
 /**dc info tag the <++ V:0.00,S:0,H:1> thing
   *@author Daniel Muller
@@ -60,48 +80,53 @@ class cDCTagParser
 class cDCTag
 {
 public:
-	cDCTag(const std::string &desc, cDCConf &, cDCLang &);
+	cDCTag(cServerDC *mS);
+	cDCTag(cServerDC *mS, cDCClient *c);
+	
 	~cDCTag();
-	bool ValidateTag(ostream &os, cConnType *, int&);
-	bool ParsePos(const std::string &desc);
+	
+	cServerDC *mServer;
+	
+	cDCClient *client;
+	
+	/** the parsed tag if available **/
+	
+	string mTag;
+	
+	/** The name of the client **/
+	
+	//string mClientName;
+	
+	/** The chunck in the tag that identify the client **/
+	
+	string mTagID;
 
-	// tag parser static - one for all
-	static cDCTagParser mParser;
-	cDCConf &mC;
-	cDCLang &mL;
 
-        typedef enum{ eCT_NOTAG, eCT_PLUSPLUS, eCT_DCGUI, eCT_ODC, eCT_DC, eCT_DCPRO, eCT_STRONGDC, eCT_IDC, eCT_ZDC, eCT_APEXDC, eCT_ZION, eCT_UNKNOWN } tClientType;
-	typedef enum{ eCM_NOTAG, eCM_ACTIVE, eCM_PASSIVE, eCM_SOCK5} tClientMode;
-
-	enum {
-		eTC_PARSE, //< tag parse error
-		eTC_MAX_HUB, //< too many hubs
-		eTC_MAX_SLOTS, //< too many slots
-		eTC_MIN_SLOTS, //< too few slots
-		eTC_MAX_HS_RATIO, //< hubs per slot
-		eTC_MIN_LIMIT, //< small upload limiter
-		eTC_MIN_LS_RATIO, //< small limiter per slot
-		eTC_MIN_VERSION, //< version too old
-		eTC_MAX_VERSION, //< version too recent
-		eTC_SOCK5, //< unallowed sock5 mode
-		eTC_PASSIVE, //< restrict passive connections
-	};
-	// tag's starting position in desc
-	int mPositionInDesc;
-
-	/** the client's type */
-	tClientType mClientType;
-
-	/** client's version */
+	/** The client version */
+	
 	double mClientVersion;
+	
+	/** The number of the hubs connected to **/
+	
+	int mTotHubs;
+	
+	/** The number of open slots **/
+	
+	int mSlots;
+	
+	/** Limit **/
+	
+	int mLimit;
 
-	/** the client's mode */
+	/** The mode of the client (active, passive or socket) **/
+	
 	tClientMode mClientMode;
-
-	/** the tag string */
-	std::string mTag;
-	/** the rest of tag after the Mode until the end*/
-	std::string mTagBody;
+	
+	/** The rest of tag (after the mode part to the end) **/
+	
+	string mTagBody;
+	
+	bool ValidateTag(ostream &os, cConnType *conn_type, int &code);
 	
 	friend ostream &operator << (ostream&os, cDCTag &tag);
 

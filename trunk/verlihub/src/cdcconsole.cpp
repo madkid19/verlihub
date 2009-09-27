@@ -35,6 +35,7 @@
 #include "ccommand.h"
 #include "ctriggers.h"
 #include "ccustomredirects.h"
+#include "cdcclients.h"
 #define BAN_EREASON "Please provide a valid reason"
 
 using nUtils::cTime;
@@ -50,13 +51,14 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mServer(s),
 	mTriggers(NULL),
 	mRedirects(NULL),
+	mDCClients(NULL),
 	mCmdr(this),
 	mUserCmdr(this),
  	mCmdBan(int(eCM_BAN),".(del|rm|un|info|list|ls)?ban([^_\\s]+)?(_(\\d+\\S))?( this (nick|ip))? ?", "(\\S+)( (.*)$)?", &mFunBan),
 	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|noctm|nosearch|kvip|maykick|noshare|mayreg|mayopchat) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
 	mCmdTrigger(int(eCM_TRIGGER),".(ft|trigger)(\\S+) ", "(\\S+) (.*)", &mFunTrigger),
 	mCmdSetVar(int(eCM_SET),".(set|=) ", "(\\[(\\S+)\\] )?(\\S+) (.*)", &mFunSetVar),
-	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
+	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info|list) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
 	mCmdRaw(int(eCM_RAW),".proto(\\S+)_(\\S+) ","(.*)", &mFunRaw),
 	mCmdCmd(int(eCM_CMD),".cmd(\\S+)","(.*)", &mFunCmd),
 	mCmdWho(int(eCM_WHO),".w(ho)?(\\S+) ","(.*)", &mFunWho),
@@ -68,23 +70,30 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdRedirConnType(int(eCM_CONNTYPE),".(\\S+)conntype ?","(.*)$",&mFunRedirConnType),
 	mCmdRedirTrigger(int(eCM_TRIGGERS),".(\\S+)trigger ?","(.*)$",&mFunRedirTrigger),
 	mCmdCustomRedir(int(eCM_CUSTOMREDIR),".(\\S+)redirect ?","(.*)$",&mFunCustomRedir),
+	mCmdDCClient(int(eCM_DCCLIENT),".(\\S+)client ?","(.*)$",&mFunDCClient),
 	mCmdGetConfig(int(eCM_GETCONFIG),".(gc|getconfig) ?","(\\[(\\S+)\\])?", &mFunGetConfig),
 	mCmdClean(int(eCM_CLEAN),".clean(\\S+) ?", "(\\S+)?", &mFunClean),
 	mConnTypeConsole(this),
 	mTriggerConsole(NULL),
-	mRedirectConsole(NULL)
+	mRedirectConsole(NULL),
+	mDCClientConsole(NULL)
 {
 	mTriggers = new cTriggers(mServer);	
 	mTriggers->OnStart();
 	mTriggerConsole = new cTriggerConsole(this);
 	
+	mDCClients = new cDCClients(mServer);
+	mDCClients->OnStart();
+	mDCClientConsole = new cDCClientConsole(this);
+
 	mRedirects = new cRedirects(mServer);
 	mRedirects->OnStart();
 	mRedirectConsole = new cRedirectConsole(this);
-
+	
 	mFunRedirConnType.mConsole = &mConnTypeConsole;
 	mFunRedirTrigger.mConsole = mTriggerConsole;
 	mFunCustomRedir.mConsole = mRedirectConsole;
+	mFunDCClient.mConsole = mDCClientConsole;
 	mCmdr.Add(&mCmdBan);
 	mCmdr.Add(&mCmdGag);
 	mCmdr.Add(&mCmdTrigger);
@@ -101,6 +110,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdr.Add(&mCmdRedirConnType);
 	mCmdr.Add(&mCmdRedirTrigger);
 	mCmdr.Add(&mCmdCustomRedir);
+	mCmdr.Add(&mCmdDCClient);
 	mCmdr.Add(&mCmdGetConfig);
 	mCmdr.Add(&mCmdClean);
 	mCmdr.InitAll(this);
@@ -117,6 +127,10 @@ cDCConsole::~cDCConsole(){
 	mRedirects = NULL;
 	if (mRedirectConsole) delete mRedirectConsole;
 	mRedirectConsole = NULL;
+	if (mDCClients) delete mDCClients;
+	mDCClients = NULL;
+	if (mDCClientConsole) delete mDCClientConsole;
+	mDCClientConsole = NULL;
 }
 
 /** act on op's command */
@@ -1750,12 +1764,10 @@ bool cDCConsole::cfPlug::operator()()
 
 bool cDCConsole::cfRegUsr::operator()()
 {
-	enum { eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO };
+	enum { eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO, eAC_LIST };
 	static const char * actionnames [] = { "n","new","newuser", "del","delete", "pass","passwd", "enable",
-		"disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set","=", "info" };
-	static const int actionids [] = { eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE,
-		eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET,
-		eAC_INFO };
+		"disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set","=", "info", "list" };
+	static const int actionids [] = { eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET, eAC_INFO, eAC_LIST };
 	
 	
 	if (this->mConn->mpUser->mClass < eUC_OPERATOR) return false;
@@ -1764,16 +1776,22 @@ bool cDCConsole::cfRegUsr::operator()()
 	mIdRex->Extract(2,mIdStr,tmp);
 	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
 	if (Action < 0) return false;
-
-	/*if(Action == eAC_SEARCH) {
-		(*mOS) << "Found nicks:\n";
-		string nick;
-		this->GetParStr(1,nick);
-		int offset, page;
+	//static cPCRE mParmSearch("^(\\d+\\.\\d+\\.\\d+\\.\\d+)((\\/(\\d+))|(\\.\\.|-)(\\d+\\.\\d+\\.\\d+\\.\\d+))?$",0);
+	if(Action == eAC_LIST) {
+		(*mOS) << "Found nicks:\n" << mParStr;
+		return true;
+		int offset, page, nClass = 0;
 		this->GetParInt(2, page);
 		this->GetParInt(3, offset);
-		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick);
-	}*/
+		string nick;
+		this->GetParInt(1, nClass);
+		if(!nClass) {
+			this->GetParStr(1,nick);
+		} else {
+		  
+		}
+		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick, nClass);
+	}
 
 //	"!r(eg)?(\S+) ", "(\\S+)( (((\\S+) )?(.*)))?"
 	string nick, par, field;

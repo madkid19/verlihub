@@ -364,7 +364,7 @@ int cDCProto::DC_Version(cMessageDC * msg, cConnDC * conn)
 	string &version=msg->ChunkString(eCH_1_PARAM);
 	if(conn->Log(3)) conn->LogStream() << "Version:" << version << endl;
 	//TODO Check protocol version
-	conn->mVersion=version;
+	conn->mVersion = version;
 	return 1;
 }
 
@@ -433,9 +433,8 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		conn->mConnType = ParseSpeed(msg->ChunkString(eCH_MI_SPEED));
 
 	// analyze check user's tag
-	cDCTag tag(msg->ChunkString(eCH_MI_DESC), mS->mC, mS->mL);
-
-	if (!mS->mC.tag_allow_none && tag.mPositionInDesc < 0 && conn->mpUser->mClass < eUC_OPERATOR && conn->mpUser->mClass != eUC_PINGER)
+	cDCTag *tag = mS->mCo->mDCClients->ParseTag(msg->ChunkString(eCH_MI_DESC));
+	if (!mS->mC.tag_allow_none && mS->mCo->mDCClients->mPositionInDesc < 0 && conn->mpUser->mClass < eUC_OPERATOR && conn->mpUser->mClass != eUC_PINGER)
 	{
 		cmsg = "Turn on your tag!!";
 		if(conn->Log(2)) conn->LogStream() << "No tag " << endl;
@@ -446,26 +445,26 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	// test for all but kick only  non-ops
 	bool TagValid = true;
 	int tag_result = 0;
-	if ( conn->mpUser->mClass < mS->mC.tag_min_class_ignore )
-	{
-		TagValid = tag.ValidateTag(os, conn->mConnType, tag_result);
+	if ( conn->mpUser->mClass < mS->mC.tag_min_class_ignore ) {
+		//TODO: Validate Tag
+		TagValid = tag->ValidateTag(os, conn->mConnType, tag_result);
 		#ifndef WITHOUT_PLUGINS
-		if (TagValid) TagValid = mS->mCallBacks.mOnValidateTag.CallAll(conn, &tag);
+		//if (TagValid) TagValid = mS->mCallBacks.mOnValidateTag.CallAll(conn, &tag);
 		#endif
 	}
-
+cout << *tag;
 	if(!TagValid)
 	{
-		if(conn->Log(2)) conn->LogStream() << "Invalid tag: (" << tag_result << ") " << tag << endl;
+		if(conn->Log(2)) conn->LogStream() << "Invalid tag: (" << tag_result << ")\n Tag info " << tag << endl;
 		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_TAG_INVALID);
 		return -1;
 	}
 
-	if( tag.mClientMode == cDCTag::eCM_PASSIVE || 
-			tag.mClientMode == cDCTag::eCM_SOCK5 )
+	if( tag->mClientMode == nDirectConnect::nEnums::eCM_PASSIVE || 
+			 tag->mClientMode == nDirectConnect::nEnums::eCM_SOCK5 )
 					conn->mpUser->IsPassive = true;
 	////////////////////// END TAG VERRIFICATION
-
+	delete tag;
 	// verify conditions
 	//    minimal share and maximal
 	string &str_share=msg->ChunkString(eCH_MI_SIZE);
@@ -605,13 +604,13 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 
 	//$MyINFO $ALL <nick> <interest>$ $<speed>$<e-mail>$<sharesize>$
 	//@todo @fixme tag.mPositionInDesc may be incorrect after the description has been modified by a plugin
-	tag.ParsePos(msg->ChunkString(eCH_MI_DESC));
-	desc.assign(msg->ChunkString(eCH_MI_DESC),0,tag.mPositionInDesc);
+	mS->mCo->mDCClients->ParsePos(msg->ChunkString(eCH_MI_DESC));
+	desc.assign(msg->ChunkString(eCH_MI_DESC),0,mS->mCo->mDCClients->mPositionInDesc);
 	if (mS->mC.desc_insert_mode) {
-		switch (tag.mClientMode) {
-		case cDCTag::eCM_ACTIVE: desc = "A " + desc; break;
-		case cDCTag::eCM_PASSIVE: desc = "P " + desc; break;
-		case cDCTag::eCM_SOCK5: desc = "5 " + desc; break;
+		switch (tag->mClientMode) {
+		case eCM_ACTIVE: desc = "A " + desc; break;
+		case eCM_PASSIVE: desc = "P " + desc; break;
+		case eCM_SOCK5: desc = "5 " + desc; break;
 		default: break;
 		}
 	}

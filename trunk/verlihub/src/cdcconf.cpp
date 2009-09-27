@@ -235,7 +235,7 @@ void cDCConf::AddVars()
 	Add("tag_max_hubs",tag_max_hubs,100);
 	static const char *cl_types[]={"", "plusplus","dcgui","odc","dc","dcpro", "strongdc", "idc", "zdc", "apexdc", "zion"};
 
-	for(int i=cDCTag::eCT_PLUSPLUS; i < cDCTag::eCT_UNKNOWN; i++)
+/*	for(int i=cDCTag::eCT_PLUSPLUS; i < cDCTag::eCT_UNKNOWN; i++)
 	{
 		varname.str(empty);
 		varname << "tag_min_version_" << cl_types[i];
@@ -243,7 +243,7 @@ void cDCConf::AddVars()
 		varname.str(empty);
 		varname << "tag_max_version_" << cl_types[i];
 		Add(varname.str(),tag_max_version[i],100.0);
-	}
+	}*/
 
 	Add("cc_zone1",cc_zone[0],string(""));
 	Add("cc_zone2",cc_zone[1],string(""));

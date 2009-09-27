@@ -24,6 +24,7 @@
 #include <string>
 #include "ctriggers.h"
 #include "ccustomredirects.h"
+#include "cdcclients.h"
 #include "cobj.h"
 #include "cban.h"
 #include "ccmdr.h"
@@ -41,7 +42,9 @@ namespace nTables {
 	class cTriggers;
 	class cTriggerConsole;
 	class cRedirects;
+	class cDCClients;
 	class cRedirectConsole;
+	class cDCClientConsole;
 }
 using namespace nTables;
 using namespace nInfo;
@@ -108,13 +111,15 @@ public:
 	typedef cDCCommand::sDCCmdFunc cfDCCmdBase;
 	typedef cDCCommand cDCCmdBase;
 
-	enum{ eCM_CMD, eCM_BAN, eCM_GAG, eCM_TRIGGER, eCM_CUSTOMREDIR, eCM_SET, eCM_REG, eCM_INFO, eCM_RAW, eCM_WHO, eCM_KICK, eCM_PLUG, eCM_REPORT, eCM_BROADCAST, eCM_CONNTYPE, eCM_TRIGGERS, eCM_GETCONFIG, eCM_CLEAN };
+	enum{ eCM_CMD, eCM_BAN, eCM_GAG, eCM_TRIGGER, eCM_CUSTOMREDIR, eCM_DCCLIENT, eCM_SET, eCM_REG, eCM_INFO, eCM_RAW, eCM_WHO, eCM_KICK, eCM_PLUG, eCM_REPORT, eCM_BROADCAST, eCM_CONNTYPE, eCM_TRIGGERS, eCM_GETCONFIG, eCM_CLEAN };
 	
 	cServerDC *mServer;
 
 	cTriggers *mTriggers;
 	
 	cRedirects *mRedirects;
+	
+	cDCClients *mDCClients;
 private:
 	cCmdr mCmdr;
 	cCmdr mUserCmdr;
@@ -156,13 +161,15 @@ private:
 	struct cfRedirToConsole : cfDCCmdBase {
 		virtual bool operator()();
 		tConsoleBase<cDCConsole> *mConsole;
-	} mFunRedirConnType, mFunRedirTrigger, mFunCustomRedir;
+	} mFunRedirConnType, mFunRedirTrigger, mFunCustomRedir, mFunDCClient;
 	cDCCmdBase mCmdRedirConnType;
 	cDCCmdBase mCmdRedirTrigger;
 	cDCCmdBase mCmdCustomRedir;
+	cDCCmdBase mCmdDCClient;
 	cConnTypeConsole mConnTypeConsole;
 	cTriggerConsole *mTriggerConsole;
 	cRedirectConsole *mRedirectConsole;
+	cDCClientConsole *mDCClientConsole;
 };
 
 };
