@@ -288,6 +288,8 @@ namespace nDirectConnect {
 				return "^(\\S+)("
 						"( -t ?(-?\\S+))?|" //[ -t<tag_id>]
 						"( -b ?(-?\\d))?|" //[ -b<yes/no>]
+						"( -v ?(-?\\d))?|" //[ -v<min_version>]
+						"( -V ?(-?\\d))?|" //[ -V<max_version>]
 						"( -e ?(-?\\d))?|" // [ -e<1/0>]
 						")*\\s*$"; // the end of message
 			case eLC_DEL:
@@ -303,12 +305,16 @@ namespace nDirectConnect {
    			eDATA_NAME, eDATA_CHOICE,
    			eDATA_TAGIDp, eDATA_TAGID,
 			eDATA_CLIENTBANNEDp, eDATA_CLIENTBANNED,
+			eDATA_MINVp, eDATA_MINV,
+			eDATA_MAXVp, eDATA_MAXV,
 			eDATA_ENABLEp, eDATA_ENABLE };
 			
 		cmd->GetParStr(eDATA_NAME,data.mName);
 		cmd->GetParStr(eDATA_TAGID,data.mTagID);
 		cmd->GetParBool(eDATA_CLIENTBANNED,data.mBan);
 		cmd->GetParInt(eDATA_ENABLE, data.mEnable);
+		cmd->GetParInt(eDATA_MINV, data.mMinVersion);
+		cmd->GetParInt(eDATA_MAXV, data.mMaxVersion);
 		return true;
 	}
 		
