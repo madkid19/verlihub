@@ -1790,7 +1790,7 @@ bool cDCConsole::cfRegUsr::operator()()
 		} else {
 		  
 		}
-		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick, nClass);
+//		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick, nClass);
 	}
 
 //	"!r(eg)?(\S+) ", "(\\S+)( (((\\S+) )?(.*)))?"
