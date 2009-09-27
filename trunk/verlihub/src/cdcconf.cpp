@@ -233,17 +233,7 @@ void cDCConf::AddVars()
 	Add("show_speed",show_speed,1);
 	Add("tag_max_hs_ratio",tag_max_hs_ratio,100.0);
 	Add("tag_max_hubs",tag_max_hubs,100);
-	static const char *cl_types[]={"", "plusplus","dcgui","odc","dc","dcpro", "strongdc", "idc", "zdc", "apexdc", "zion"};
-
-/*	for(int i=cDCTag::eCT_PLUSPLUS; i < cDCTag::eCT_UNKNOWN; i++)
-	{
-		varname.str(empty);
-		varname << "tag_min_version_" << cl_types[i];
-		Add(varname.str(),tag_min_version[i],0.0);
-		varname.str(empty);
-		varname << "tag_max_version_" << cl_types[i];
-		Add(varname.str(),tag_max_version[i],100.0);
-	}*/
+	Add("allow_uknown_tag",allow_uknown_tag,1);
 
 	Add("cc_zone1",cc_zone[0],string(""));
 	Add("cc_zone2",cc_zone[1],string(""));
@@ -261,6 +251,7 @@ void cDCConf::AddVars()
 	Add("msg_hub_full",msg_hub_full,string("<<User limit exceeded, hub is full.>>"));
 	Add("msg_nick_prefix",msg_nick_prefix, string("<<Invalid nick prefix>>"));
 	Add("msg_downgrade", msg_downgrade, string("<<Your client version is too recent.>>"));
+	Add("msg_banned_client", msg_banned_client, string("<<Your client version is too recent.>>"));
 	Add("msg_upgrade",msg_upgrade, string("<<Your client version is too old, please upgrade!>>"));
 	Add("msg_replace_ban",msg_replace_ban, string(""));
 	Add("login_share_min",login_share_min,string("You share %[share]MB, but the min share is %[min_share]MB. (active:%[min_share_active]MB / passive:%[min_share_passive])"));

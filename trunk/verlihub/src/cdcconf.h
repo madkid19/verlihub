@@ -178,8 +178,7 @@ public:
 
 	int tag_max_hubs;
 	double tag_max_hs_ratio;
-	double tag_min_version[20];
-	double tag_max_version[20];
+	bool allow_uknown_tag;
 	bool tag_allow_none;
 	bool tag_allow_sock5;
 	bool tag_allow_passive;
@@ -205,6 +204,7 @@ public:
 	double timeout_length[6];
 
 	string msg_banned;
+	string msg_banned_client;
 	string msg_hub_full;
 	string msg_nick_prefix;
 	string msg_chat_onoff;
