@@ -313,8 +313,8 @@ namespace nDirectConnect {
 		cmd->GetParStr(eDATA_TAGID,data.mTagID);
 		cmd->GetParBool(eDATA_CLIENTBANNED,data.mBan);
 		cmd->GetParInt(eDATA_ENABLE, data.mEnable);
-		cmd->GetParInt(eDATA_MINV, data.mMinVersion);
-		cmd->GetParInt(eDATA_MAXV, data.mMaxVersion);
+		cmd->GetParDouble(eDATA_MINV, data.mMinVersion);
+		cmd->GetParDouble(eDATA_MAXV, data.mMaxVersion);
 		return true;
 	}
 		
