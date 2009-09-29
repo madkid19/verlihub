@@ -452,7 +452,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		//if (TagValid) TagValid = mS->mCallBacks.mOnValidateTag.CallAll(conn, &tag);
 		#endif
 	}
-cout << *tag;
+
 	if(!TagValid)
 	{
 		if(conn->Log(2)) conn->LogStream() << "Invalid tag: (" << tag_result << ")\n Tag info " << tag << endl;
