@@ -996,7 +996,7 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	if(msg->SplitChunks()) return -1;
 	if(!conn->mpUser || !conn->mpUser->mInList) return -1;
 	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0)) {
-		unsigned long use_hub_share = 0;
+		unsigned long use_hub_share= 0;
 		if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
 			use_hub_share = mS->mC.min_share_use_hub;	
 		} else if(mS->mC.min_share_use_hub_reg && conn->GetTheoricalClass() == eUC_REGUSER) {
@@ -1117,7 +1117,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	if(!conn->mpUser->mInList) return -2;
 	if(!conn->mpUser->Can(eUR_SEARCH, mS->mTime.Sec(), 0))
 	{
-		unsigned long use_hub_share = 0;
+		unsigned long use_hub_share= 0;
 		if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
 			use_hub_share = mS->mC.min_share_use_hub;	
 		} else if(mS->mC.min_share_use_hub_reg && conn->GetTheoricalClass() == eUC_REGUSER) {
