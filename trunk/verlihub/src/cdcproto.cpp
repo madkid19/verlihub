@@ -1128,8 +1128,6 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		use_hub_share = use_hub_share*1024*1024;
 		if(conn->mpUser->mShare < use_hub_share) {
 			ReplaceVarInString(mS->mC.search_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
-		} else {
-			ostr = "You are not allowed to search on this hub";
 		}
 		mS->DCPrivateHS(ostr, conn);
 		return -4;
@@ -1162,7 +1160,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	if (mS->mSysLoad >= (eSL_CAPACITY + conn->mpUser->mClass))
 	{
 		if(mS->Log(3)) mS->LogStream() << "Skipping search, system is: " << mS->mSysLoad << endl;
-		os << "Sorry Hub is busy now, no search, try later..";
+		os << "Sorry hub is busy now, no search, try later..";
 		mS->DCPublicHS(os.str(),conn);
 		return -2;
 	}
