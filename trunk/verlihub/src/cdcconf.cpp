@@ -223,6 +223,7 @@ void cDCConf::AddVars()
 // 	tag configurations
 	Add("show_tags",show_tags,2);
 	Add("tag_allow_none",tag_allow_none, true);
+	Add("tag_allow_uknown",tag_allow_uknown,1);
 	Add("tag_allow_passive",tag_allow_passive, true);
 	Add("tag_allow_sock5",tag_allow_sock5, true);
 	Add("tag_sum_hubs", tag_sum_hubs, 2);
@@ -233,7 +234,6 @@ void cDCConf::AddVars()
 	Add("show_speed",show_speed,1);
 	Add("tag_max_hs_ratio",tag_max_hs_ratio,100.0);
 	Add("tag_max_hubs",tag_max_hubs,100);
-	Add("allow_uknown_tag",allow_uknown_tag,1);
 
 	Add("cc_zone1",cc_zone[0],string(""));
 	Add("cc_zone2",cc_zone[1],string(""));

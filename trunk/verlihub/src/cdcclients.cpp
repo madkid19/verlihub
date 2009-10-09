@@ -171,9 +171,7 @@ namespace nDirectConnect {
 			}
 		}
 		//TODO: Use FindData
-		//TODO: Check if we have an uknown client or a client with wrong TAG
 		tag->client = FindTag(tag->mTagID);
-		//tag->mClientName = client->mName;
 		// Detect client mode
 		if(mParser.mModeRE.Exec(desc) >= 0) {
 			mParser.mModeRE.Extract(1,desc,str);

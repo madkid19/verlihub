@@ -501,7 +501,7 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	ostringstream os;
 	string omsg;
 	//This is here as manual values for true release info available to all
-	os << "\r\n[::] Release: Verlihub-0.9.9a (Monday August 31 2009)" << endl;
+	os << "\r\n[::] Release: Verlihub-0.9.9a (Friday October 9 2009)" << endl;
 	os << "[::] Authors: Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
 	os << "[::] Authors: chaosuk (chaos@dchublist.com)" << endl;
 	os << "[::] Contributors: Stefano, Intruder, Rolex, Frog" << endl;

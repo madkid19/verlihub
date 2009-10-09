@@ -35,7 +35,8 @@ namespace nDirectConnect
 	      
 		// Validate tag error code
 	        enum {
-			eTC_BANNED, // Client banned
+			eTC_BANNED, // Banned client
+			eTC_UNKNOWN, // Unkown client
 			eTC_PARSE, // Tag parse error
 			eTC_MAX_HUB, // Too many hubs
 			eTC_MAX_SLOTS, // Too many slots

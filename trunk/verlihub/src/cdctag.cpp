@@ -53,6 +53,7 @@ cDCTag::~cDCTag() { }
 
 bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 {
+  
 	if(client && client->mBan) {
 		os << mServer->mC.msg_banned_client;
 		code = eTC_BANNED;
@@ -79,6 +80,13 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 	}
 		
 	string MsgToUser;
+	
+	if(!mServer->mC.tag_allow_uknown && !client) {
+		
+		os << "Unkwnon clients are not allowed in this hub";
+		code = eTC_UNKNOWN;
+		return false;
+	}
 	if(mTotHubs > mServer->mC.tag_max_hubs) {
 		ReplaceVarInString(mServer->mL.tag_max_hubs, "tag_max_hubs", MsgToUser,mServer->mC.tag_max_hubs);
 		os << MsgToUser;
@@ -117,8 +125,8 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 	
 		
 	if ( mLimit >= 0 ) {
-	//TODO: Why this???
-	//if (tag->mClientType == eCT_DCGUI) limit *= slot;
+		//Well, DCGUI bug!
+		//if (tag->mClientType == eCT_DCGUI) limit *= slot;
 		if( (conn_type->mTagMinLimit) > mLimit ) {
 			ReplaceVarInString(mServer->mL.tag_min_limit, "conn_type", MsgToUser, conn_type->mIdentifier);
 			ReplaceVarInString(MsgToUser, "tag_max_hs_ratio", MsgToUser, conn_type->mTagMinLimit);
@@ -134,7 +142,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 			return false;
 		}
 	}
-    //TODO: Disable version checking if ver is -1
+	//TODO: Disable version checking if ver is -1
 	if (client && mClientVersion < client->mMinVersion ) {
 		ReplaceVarInString(mServer->mL.msg_upgrade, "msg_upgrade", MsgToUser, mServer->mC.msg_upgrade);
 		ReplaceVarInString(MsgToUser, "client_type", MsgToUser, mTagID);
