@@ -27,6 +27,7 @@ using namespace std;
 #include <string>
 #include <iostream>
 #include "cdcconf.h"
+#include "gettext.h"
 
 using std::string;
 using namespace std;
@@ -83,7 +84,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 	
 	if(!mServer->mC.tag_allow_uknown && !client) {
 		
-		os << "Unkwnon clients are not allowed in this hub";
+		os << _("Unknown clients are not allowed in this hub");
 		code = eTC_UNKNOWN;
 		return false;
 	}
