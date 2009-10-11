@@ -286,8 +286,8 @@ namespace nDirectConnect {
 				return "^(\\S+)("
 						"( -t ?(-?\\S+))?|" //[ -t<tag_id>]
 						"( -b ?(-?\\d))?|" //[ -b<yes/no>]
-						"( -v ?(-?\\d))?|" //[ -v<min_version>]
-						"( -V ?(-?\\d))?|" //[ -V<max_version>]
+						"( -v ?(-?[1-9]{0,1}[0-9]{1}(?:\\.[0-9]{0,3})?))?|" //[ -v<min_version>]
+						"( -V ?(-?[1-9]{0,1}[0-9]{1}(?:\\.[0-9]{0,3})?))?|" //[ -V<max_version>]
 						"( -e ?(-?\\d))?|" // [ -e<1/0>]
 						")*\\s*$"; // the end of message
 			case eLC_DEL:
@@ -309,6 +309,10 @@ namespace nDirectConnect {
 			
 		cmd->GetParStr(eDATA_NAME,data.mName);
 		cmd->GetParStr(eDATA_TAGID,data.mTagID);
+		if(data.mTagID.empty()) {
+			//os << _("Tag ID for a client cannot be empty");
+			return false;
+		}
 		cmd->GetParBool(eDATA_CLIENTBANNED,data.mBan);
 		cmd->GetParInt(eDATA_ENABLE, data.mEnable);
 		cmd->GetParDouble(eDATA_MINV, data.mMinVersion);
