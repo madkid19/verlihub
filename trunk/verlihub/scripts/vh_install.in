@@ -166,7 +166,7 @@ if $db_create ; then
 	echo
 
 	echo "You'll be now promted by $MYSQL client for password of $mysql_root@$mysql_host"
-	$MYSQL -h "$mysql_host" -u "$mysql_root" -p -e "CREATE DATABASE IF NOT EXISTS `$mysql_data`; GRANT ALL ON `$mysql_data`.* to '$mysql_user'@'$mysql_this_host' identified by '$mysql_pass'"
+	$MYSQL -h "$mysql_host" -u "$mysql_root" -p -e "CREATE DATABASE IF NOT EXISTS \`$mysql_data\`; GRANT ALL ON \`$mysql_data\`.* to '$mysql_user'@'$mysql_this_host' identified by '$mysql_pass'"
 	Sep
 
 	TestDB "$mysql_host" "$mysql_user" "$mysql_pass" "$mysql_data" && db_exists=true || db_exists=false
