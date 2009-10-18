@@ -1250,7 +1250,6 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 		return -1;
 	if(!conn->mpUser || !conn->mpUser->mInList) return -2;
 	ostringstream os;
-
 	// check the nick
 	if(conn->mpUser->mNick != msg->ChunkString(eCH_SR_FROM))
 	{
@@ -1261,7 +1260,6 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 		mS->ConnCloseMsg(conn, os.str(),4000, eCR_SYNTAX);
 		return -1;
 	}
-	
 	string &str = msg->ChunkString(eCH_SR_TO);
 	cUser *other = mS->mUserList.GetUserByNick ( str );
 	// check other nick
@@ -1271,8 +1269,9 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	string ostr(msg->mStr,0 ,msg->mChunks[eCH_SR_TO].first - 1);
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgSR.CallAll(conn, (string *)&ostr))
+	if (!mS->mCallBacks.mOnParsedMsgSR.CallAll(conn, (string *)&ostr)) {
 		return -2;
+	}
 	#endif
 
 	// send it
