@@ -306,10 +306,9 @@ namespace nDirectConnect {
 			eDATA_MINVp, eDATA_MINV,
 			eDATA_MAXVp, eDATA_MAXV,
 			eDATA_ENABLEp, eDATA_ENABLE };
-			
 		cmd->GetParStr(eDATA_NAME,data.mName);
 		cmd->GetParStr(eDATA_TAGID,data.mTagID);
-		if(data.mTagID.empty()) {
+		if(CmdID == eLC_ADD && data.mTagID.empty()) {
 			//os << _("Tag ID for a client cannot be empty");
 			return false;
 		}
