@@ -1,7 +1,15 @@
-2009-08-17 chaos (0.9.9a)
+2009-20-18 chaos/netcelli (0.9.9a)
+	 * Added msg_banned_client variable for banned client message
+	 * Added tag_allow_unknown variable not to allow client that are not in dcclient table
+	 * Added custom tag managment
+	 * Added invalid key flag in help for custom redirects that was missed
+	 * Added new flag 64 for hub busy (thx to Rolex)
+	 * Added OnParsedMsgSR callback that is called for passive search result
+	 * Fixed vh_install script. It may fails because char ` was not escaped (thx to r3b3lu)
 	 * Added cheef desc status in info
 	 * Added passive user list
 	 * Fixed hide share
+	 * Fixed wrong use hub share
 	 * Removed OK confirmation on command success. Now if no error then success. Also reglist.
 	 * Updated plugman info outputs
 	 * Removed hublink plugin (no longer supported)
