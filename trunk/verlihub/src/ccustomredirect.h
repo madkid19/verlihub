@@ -34,7 +34,8 @@ namespace nDirectConnect {
 			eShareLimit = 0x00004,
 			eTag = 0x000008,
 			eWrongPasswd = 0x000010,
-			eInvalidKey = 0x000020
+			eInvalidKey = 0x000020,
+			eHubBusy = 0x000040
 		};
 	};
 	class cConnDC;

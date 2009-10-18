@@ -65,6 +65,9 @@ namespace nDirectConnect {
 			case eCR_INVALID_KEY:
 				return eInvalidKey;
 			break;
+			case eCR_HUB_LOAD:
+				return eHubBusy;
+			break;
 			default: return 0;
 		}
 	}
@@ -158,6 +161,8 @@ namespace nDirectConnect {
 		help += "4  \tUser does not enforce share rules\r\n";
 		help += "8  \tWrong or unknown tag\r\n";
 		help += "16\tWrong password\r\n";
+		help += "32\tInvalid key\r\n";
+		help += "64\tHub is busy\r\n";
 		
 		help += "\r\nRemember to make the sum of the selected flags above\r\n";
 		cDCProto::EscapeChars(help,help);
