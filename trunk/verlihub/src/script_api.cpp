@@ -74,12 +74,11 @@ bool KickUser(char *OP,char *nick, char *reason)
 {
 	cServerDC *server = GetCurrentVerlihub();
 	cUser *OPusr = GetUser(OP);
-	ostringstream os;
 	if(OPusr)
 	{
 		if(server)
 		{
-			server->DCKickNick(&os, OPusr, nick, reason, cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
+			server->DCKickNick(NULL, OPusr, nick, reason, cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
 			return true;
 		}
 		else
