@@ -72,7 +72,7 @@ function TestTables # (table1 table2 ...)
 
 function getMySQLSocket
 {
-  MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf"
+  MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf /usr/local/etc/my.cnf"
   for FILE in $MYSQL_CONF
     do
       if [ -r $FILE ]; then
