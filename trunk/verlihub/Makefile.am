@@ -8,8 +8,8 @@ dirsettings.h: Makefile
 	echo '#define SYSCONFDIR "$(sysconfdir)"' >>$@
 	echo '#define PREFIXDIR "${prefix}"' >> $@
 
-SUBDIRS = src plugins scripts share
-EXTRA_DIST = noapos_mysql noapos_pcre config_geoip verlihub.spec
+SUBDIRS = src plugins scripts share po
+EXTRA_DIST = noapos_mysql noapos_pcre config_geoip verlihub.spec config.rpath ChangeLog  AUTHORS COPYING INSTALL LICENSE TODO config.h.in
 DIST_SUBDIRS = $(SUBDIRS)
 bin_SCRIPTS = verlihub_config
 

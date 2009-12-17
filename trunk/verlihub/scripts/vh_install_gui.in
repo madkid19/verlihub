@@ -1,0 +1,478 @@
+#!@BASH_PATH@
+
+#########################################################################
+# Title      :    vh_install_gui                                        #
+# Author     :    Dumitra Codrut Mihai (Seth) {sethbv@gmail.com}        #
+# Date       :    2009-12-11                                            #
+# Requires   :    dialog                                                #
+#########################################################################
+# Description                                                           #
+#   Verlihub Installation script (GUI)                                  #
+#   Based on the old vh_install but with added functionality            #
+#########################################################################
+# Thanks     : Fifty - for testing and ideas                            #
+#            : Netcelli - for testing and bug finding :-)               #
+#            : RoLex - for code suggestions                             #
+#########################################################################
+
+
+DIALOG=`whereis dialog | awk '{ print $2 }'`
+
+if [ -z "$DIALOG" ]; then
+    echo "ERROR: This script requires dialog to function, please consider installing it"
+    exit
+fi
+
+IFS=$'\n'
+VER='1.1'
+LOG="./install.log"
+MACHINE_TYPE=`uname -m`
+VERLI_SITE="http://www.verlihub-project.org/download"
+LUA_SITE="http://www.lua.org/ftp"
+LUA_SOCKET_SITE="http://luaforge.net/frs/download.php/2664"
+LDCONFIG=`whereis ldconfig | awk '{ print $2 }'`
+
+if [ -d "~/tmp" ]; then
+    TEMP_DIR="~/tmp/verlihub_install"
+    _temp="~/tmp/answer.$$"
+else
+    TEMP_DIR="/tmp/verlihub_install"
+    _temp="/tmp/answer.$$"
+fi
+
+if [ $USER == "root" ]; then
+	default_cfgdir="/etc/verlihub"
+	port_default=411
+else
+	default_cfgdir="$HOME/.verlihub"
+	port_default=4111
+fi
+
+install_menu() {
+
+#wget -P $TEMP_DIR "http://www.verlihub-project.org/download/latest.ver" 2> $LOG
+
+#LUA_VER=`cat $TEMP_DIR/latest.ver | grep "lualib" | head -n 1 | cut -d"=" -f2`
+#LUA_PLUG_VER=`cat $TEMP_DIR/latest.ver | grep "luaplug" | head -n 1 | cut -d"=" -f2`
+#LUA_SOCKET_VER=`cat $TEMP_DIR/latest.ver | grep "luasocket" | head -n 1 | cut -d"=" -f2`
+#FORBID_VER=`cat $TEMP_DIR/latest.ver | grep "forbid" | head -n 1 | cut -d"=" -f2`
+#CHATROOM_VER=`cat $TEMP_DIR/latest.ver | grep "chatroom" | head -n 1 | cut -d"=" -f2`
+#IPLOG_VER=`cat $TEMP_DIR/latest.ver | grep "iplog" | head -n 1 | cut -d"=" -f2`
+#PYTHON_VER=`cat $TEMP_DIR/latest.ver | grep "python" | head -n 1 | cut -d"=" -f2`
+#REPLACER_VER=`cat $TEMP_DIR/latest.ver | grep "replacer" | head -n 1 | cut -d"=" -f2`
+#ISP_VER=`cat $TEMP_DIR/latest.ver | grep "isp" | head -n 1 | cut -d"=" -f2`
+#MESSENGER_VER=`cat $TEMP_DIR/latest.ver | grep "messenger" | head -n 1 | cut -d "=" -f2`
+#STATS_VER=`cat $TEMP_DIR/latest.ver | grep "stats" | head -n 1 | cut -d "=" -f2`
+
+$DIALOG --title "Welcome to Verlihub's installation script for plugins" \
+	--checklist "Move using [UP] [DOWN],[Space] to select\nPlease choose what plugins you want to install" 19 86 10 \
+	"Lua" "Support for lua scripts v$LUA_PLUG_VER" off\
+	"Forbid" "Filter chat from forbidden words v$FORBID_VER" off\
+	"Chatroom" "Multiple chatrooms to separate chat topics v$CHATROOM_VER" off\
+	"IPLog" "Log ip's, nicks; history commands v$IPLOG_VER" off\
+	"Python" "Support for python scripts v$PYTHON_VER" off\
+	"Replacer" "Replace some words by other v$REPLACER_VER" off\
+	"ISP" "Internet Service Provider settings, country codes..etc v$ISP_VER" off\
+	"Messenger" "Offline messages system $MESSENGER_VER" off\
+	"Stats" "Statistics plugin, trace diverse values in the database v$STATS_VER" off 2>$_temp
+list=`cat $_temp`
+
+for name in $list
+do
+    if [ $name = "\"Lua"\" ]; then
+	$DIALOG --infobox "Installing LUA Library, LuaSocket and LUA Plugin." 7 40
+## Download Lua Library
+#    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+#suffix="-64-bit"
+#wget -P $TEMP_DIR $VERLI_SITE/download/lua-$LUA_VER$suffix.tar.gz 2> $LOG
+#    else
+#wget -P $TEMP_DIR $LUA_SITE/lua-$LUA_VER.tar.gz 2> $LOG
+#    fi
+#    if [ "$?" != "0" ]; then
+#	$DIALOG --title "Download Error" --msgbox "Could not download Lua Library." 7 40
+#	exit
+#    fi
+## Uncompress Lua Library
+#tar zxvf $TEMP_DIR/lua-$LUA_VER$suffix.tar.gz 2> $LOG
+#    if [ "$?" != "0" ]; then
+#	$DIALOG --title "Uncompressing Error" --msgbox "Could not uncompress Lua Library." 7 40
+#	exit
+#    fi
+## Cd to folder
+#pushd $TEMP_DIR/lua-$LUA_VER$suffix 2> $LOG
+## Compile Lua Library
+#	 make linux && $get_rights make install 2> $LOG
+#popd
+## Download LuaSocket
+#wget -P $TEMP_DIR $LUA_SOCKET_SITE/luasocket-$LUA_SOCKET_VER.tar.gz 2> $LOG
+#    if [ "$?" != "0" ]; then
+#	$DIALOG --title "Download Error" --msgbox "Could not download LuaSocket" 7 40
+#	exit
+#    fi
+## Uncompress LuaSocket
+#tar zxvf $TEMP_DIR/luasocket-$LUA_SOCKET_VER.tar.gz 2> $LOG
+#    if [ "$?" != "0" ]; then
+#	$DIALOG --title "Uncompressing Error" --msgbox "Could not uncompress Luasocket." 7 40
+#	exit
+#    fi
+## Compile LuaSocket
+#pushd $TEMP_DIR/luasocket-$LUA_SOCKET_VER 2> $LOG
+#	make && $get_rights make install 2> $LOG
+#popd
+#$get_rights ln /usr/local/lib/lua/5.1/socket/core.so /usr/local/lib/libluasocket.so 2> $LOG
+#$get_rights ln /usr/local/lib/lua/5.1/mime/core.so /usr/local/lib/libluamime.so 2> $LOG
+#    if [ "$?" = "0" ]; then
+#	$DIALOG --infobox "LuaSocket Installation Completed Successfully." 6 40
+#	
+#    else
+#	$DIALOG --title "LuaSocket Installation Error" --msgbox "Error \
+#	Luasocket installation could not complete." 10 50
+#	exit
+#    fi
+## Download LUA Plugin
+#wget -P $TEMP_DIR $VERLI_SITE/lua-$LUA_PLUG_VER.tar.gz 2> $LOG
+#    if [ "$?" != "0" ]; then
+#	$DIALOG --title "Download Error" --msgbox "Could not download Lua Plugin." 7 40
+#	exit
+#    fi
+## Uncompress Lua Plugin
+#tar zxvf $TEMP_DIR/lua-$LUA_PLUG_VER.tar.gz 2> $LOG
+#    if [ "$?" != "0" ]; then
+#	$DIALOG --title "Uncompressing Error" --msgbox "Could not uncompress Lua Plugin." 7 40
+#	exit
+#    fi
+## Compile Lua Plugin
+#pushd $TEMP_DIR/lua-$LUA_PLUG_VER 2> $LOG
+#./configure --with-luasocket && make && $get_rights make install 2> $LOG
+#    if [ "$?" = "0" ]; then
+#	$DIALOG --infobox "Lua Plugin Installation completed successfully." 6 40
+#	$LDCONFIG
+#    else
+#	$DIALOG --title "Lua Plugin Installation Error" --msgbox "Error \
+#	lua plugin installation could not complete." 10 50
+#	exit
+#    fi
+
+    elif [ $name = "\"Forbid"\" ]; then
+	$DIALOG --title "Installation Status" --msgbox "Installing Forbid Plugin." 7 40
+	## wget forbid and install it
+	## link http://downloads.sourceforge.net/verlihub/forbid-1.3.tar.gz
+    elif [ $name = "\"Chatroom"\" ]; then
+	$DIALOG --title "Installation Status" --msgbox "Installing Chatroom Plugin." 7 40
+	## wget chatroom and install it
+	## link http://downloads.sourceforge.net/verlihub/chatroom-1.1.tar.gz
+    elif [ $name = "\"IPLog"\" ]; then
+	$DIALOG --title "Installation Status" --msgbox "Installing IPLog Plugin." 7 40
+	## wget iplog and install it
+	## link http://downloads.sourceforge.net/verlihub/iplog-1.1.tar.gz
+    elif [ $name = "\"Python"\" ]; then
+	$DIALOG --title "Installation Status" --msgbox "Installing Python Plugin." 7 40
+	## wget python and install it
+	## link http://downloads.sourceforge.net/verlihub/python.tar.gz
+    elif [ $name = "\"Replacer"\" ]; then
+	$DIALOG --title "Installation Status" --msgbox "Installing Replacer Plugin." 7 40
+	## wget replacer and install it
+	## link http://downloads.sourceforge.net/verlihub/replacer-1.1.tar.gz
+    elif [ $name = "\"ISP"\" ]; then
+	$DIALOG --title "Installation Status" --msgbox "Installing ISP Plugin." 7 40
+	## wget isp and install it
+	## link http://downloads.sourceforge.net/verlihub/isp-1.1.tar.gz
+    elif [ $name = "\"Messenger"\" ]; then
+	$DIALOG --title "Installation Status" --msgbox "Installing Messenger Plugin." 7 40
+	## wget messenger and install it
+	## link http://downloads.sourceforge.net/verlihub/messanger-1.2.tar.gz
+    elif [ $name = "\"Stats"\" ]; then 
+	$DIALOG --title "Installation Status" --msgbox "Installing Stats Plugin." 7 40
+	## wget stats and install it
+	## link http://downloads.sourceforge.net/verlihub/stats-1.1.tar.gz
+    fi
+done
+}
+
+setup_hub() {
+
+MYSQL=mysql
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+datadir=@datadir@
+getdb=$bindir/vh_getdb
+shell=@BASH_PATH@
+LD_RUNPATH=$LD_RUNPATH:@libdir@
+timestamp=`date +%s`
+
+$LDCONFIG
+if [ ! $PWD ]; then PWD=`pwd`; fi
+
+function die
+{
+	echo $1
+	exit 1
+}
+
+function TestDB # (host, user, pass, database )
+{
+	$MYSQL -h "$1" -u "$2" -p"$3" -e "show databases" "$4" &>/dev/null  && return 0 || return 1
+}
+
+function TestTables # (table1 table2 ...)
+{
+	while [ $1 ]; do
+		$getdb --testtable "$1" || return 1
+		shift
+	done
+	return 0
+}
+
+function getMySQLSocket
+{
+	MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf /var/db/mysql/my.cnf ~/.my.cnf /usr/local/etc/my.cnf"
+	for FILE in $MYSQL_CONF
+	do
+	if [ -r $FILE ]; then
+	SOCKET=$(cat $FILE | grep "^socket" | head -n 1 | cut -d"=" -f2| tr -d " ")
+	fi
+	done
+}
+
+function CreateTables
+{
+
+	TestTables "reglist" "SetupList" && return 0
+	echo Wait few seconds..
+	getMySQLSocket
+	export "MYSQL_UNIX_PORT=$SOCKET"
+	VERLIHUB_CFG=$cfg_dir $bindir/verlihub 22 &>$cfg_dir/install_log &
+	vh_pid=$!
+	sleep 5
+	kill -9 $vh_pid &>/dev/null
+	TestTables "reglist" "SetupList" || return 1
+	return 0
+}
+
+function PrintCfgFolderStatus # (folder)
+{
+	if [ $1 ] && [ -d $1 ]; then
+		status=`ls -ld "$1"|cut -d\  -f 1`
+	else
+		status="-inexisting-"
+	fi
+	
+	echo -n $1 $status
+}
+
+realuser="$USER"
+$DIALOG --backtitle "Give me some info" \
+	--form "Please enter your username below" 10 40 0 \
+	    "Username:" 2 4 "$realuser" 2 15 10 0 2>$_temp
+    if [ ${?} -ne 0 ]; then return; fi
+        realname=`cat $_temp`
+$DIALOG --title "Hello $realname," --msgbox "Let's start with the configuration of database access..." 7 40
+
+db_info_ok=false
+
+until $db_info_ok;
+do
+$DIALOG --backtitle "Mysql settings" \
+	--form "Hi $realname - you can use [up] [down] to select input field " 15 60 0 \
+	    "DB Data" 2 4 "" 2 15 20 0\
+	    "DB User" 4 4 "" 4 15 20 0\
+	    "DB Pass" 6 4 "" 6 15 20 0\
+	    "DB Host" 8 4 "" 8 15 20 0 2>$_temp
+	if [ ${?} -ne 0 ]; then return; fi
+
+	set $(cat $_temp)
+	mysql_data=$1
+	mysql_user=$2
+	mysql_pass=$3
+	mysql_host=$4
+
+	TestDB "$mysql_host" "$mysql_user" "$mysql_pass" "$mysql_data" && db_exists=true || db_exists=false
+	$db_exists && $DIALOG --title "Mysql Status" --msgbox "This database account exists." 6 30 || $DIALOG --title "Mysql Status" --msgbox "This database accound cannot be accessed." 6 30
+
+$DIALOG --yesno "Is this info correct? \n \
+	    Database: $mysql_data \n \
+	    Username: $mysql_user \n \
+	    Password: $mysql_pass \n \
+	    Hostname: $mysql_host" 10 40 && db_info_ok=true || $DIALOG --title "Mysql Status" --msgbox "Ok, let's try again." 6 30
+
+done
+
+db_create=false
+if ! $db_exists; then
+$DIALOG --yesno "Do you want to create the database now?" 10 30 && db_create=true
+fi
+
+if $db_create ; then
+$DIALOG --backtitle "Mysql settings" \
+	--form "Mysql administrator username?" 10 40 0 \
+	   "Username:" 2 4 "root" 2 15 10 0 2>$_temp
+	if [ ${?} -ne 0 ]; then return; fi
+
+	mysql_root=`cat $_temp`
+
+	if [ $mysql_host != "localhost" ]; then
+$DIALOG --title "MySQL settings " \
+	--form "Verlihub's server as host from the mysql's scope is?" 10 40 0 \
+	    "Hostname:" 2 4 "" 2 15 10 0 2>$_temp
+	if [ ${?} -ne 0 ]; then return; fi
+	
+	mysql_this_host=`cat $_temp`
+	else
+		mysql_this_host="localhost"
+	fi;
+
+$DIALOG --title "MySQL settings" --msgbox "You'll be now prompted by $MYSQL client for password of $mysql_root@$mysql_host" 7 60
+
+	$MYSQL -h "$mysql_host" -u "$mysql_root" -p -e "CREATE DATABASE IF NOT EXISTS \`$mysql_data\`; GRANT ALL ON \`$mysql_data\`.* to '$mysql_user'@'$mysql_this_host' identified by '$mysql_pass'"
+	TestDB "$mysql_host" "$mysql_user" "$mysql_pass" "$mysql_data" && db_exists=true || db_exists=false
+	$db_exists && $DIALOG --title "MySQL Status" --msgbox "This database account exists." 6 30 || $DIALOG --title "MySQL Status" --msgbox "WARNING: This database account cannot be accessed, consider starting the $MYSQL server." 10 50
+fi;
+
+verlihub_cfg_dir1=`echo -n "1 - variable \$VERLIHUB_CFG - "; PrintCfgFolderStatus "$VERLIHUB_CFG"; echo`
+verlihub_cfg_dir2=`echo -n "2 - ./.verlihub - "; PrintCfgFolderStatus "$PWD/.verlihub"; echo`
+verlihub_cfg_dir3=`echo -n "3 - $HOME/.verlihub - "; PrintCfgFolderStatus "$HOME/.verlihub"; echo`
+verlihub_cfg_dir4=`echo -n "4 - $prefix/etc/verlihub - "; PrintCfgFolderStatus "$prefix/etc/verlihub"; echo`
+verlihub_cfg_dir5=`echo -n "5 - /etc/verlihb - "; PrintCfgFolderStatus "/etc/verlihub"; echo`
+
+$DIALOG --title "Verlihub's config folder" --msgbox "$realname, you need to choose a place for the configuration files:\nThe order of folder that verlihub is looking for is following:\n$verlihub_cfg_dir1\n$verlihub_cfg_dir2\n$verlihub_cfg_dir3\n$verlihub_cfg_dir4\n$verlihub_cfg_dir5\nIf two or more folders exist, lower number has priority" 12 70
+
+cfg_info_ok=false
+
+until $cfg_info_ok;
+do
+vh_cfg=`$bindir/vh_getcfg`
+$DIALOG --title "Verlihub's config folder " \
+	--form "What will be the configuration folder ?" 10 50 0 \
+	    "Folder: " 2 4 "$vh_cfg" 2 15 25 0 2>$_temp
+	if [ ${?} -ne 0 ]; then return; fi
+	
+	cfg_dir=`cat $_temp`
+
+	[ -d $cfg_dir ] && cfg_exists=true || cfg_exists=false
+	$cfg_exists && $DIALOG --title "Verlihub's config folder" --msgbox "This config folder already exists and may be overwitten (with a backup)" 6 60 || $DIALOG --title "Verlihub's config folder" --msgbox "The config folder $cfg_dir does not exist and will be created." 6 60
+	
+$DIALOG --yesno "Do you want to continue with these settings? (if not then select another folder)" 10 60 && cfg_info_ok=true || $DIALOG --title "Verlihub's config folder" --msgbox "Ok, let's try again." 6 30
+done
+
+
+
+cfg_create=true
+if $cfg_exists; then
+$DIALOG --yesno "Do you want to overwrite the existing configuration?" 10 60 || cfg_create=false
+fi
+
+if $cfg_create ; then
+	mkdir -p $cfg_dir
+	cfg_dbconfig="$cfg_dir/dbconfig"
+	cfg_backup="$cfg_dir/_backup"
+
+	# backup eventually the original config
+	if [ -e $cfg_dbconfig ]; then
+		tmpdir=/tmp/vh_install_$$_$timestamp
+		mkdir $tmpdir
+		mv $cfg_dir/* $tmpdir
+		mv $tmpdir $cfg_dir/_backup
+$DIALOG --title "Verlihub's config folder" --msgbox "The original configuration has been moved to $cfg_backup" 6 60
+	fi
+
+	echo "db_host = $mysql_host" >  $cfg_dbconfig
+	echo "db_data = $mysql_data" >> $cfg_dbconfig
+	echo "db_user = $mysql_user" >> $cfg_dbconfig
+	echo "db_pass = $mysql_pass" >> $cfg_dbconfig
+
+$DIALOG --title "Verlihub's config folder" --msgbox "Written: $cfg_dbconfig" 6 40
+
+	cp -R @datadir@/config/* $cfg_dir
+	mkdir -p $cfg_dir/plugins
+	mkdir -p $cfg_dir/scripts
+	ln -s @libdir@/libplug_pi.so $cfg_dir/plugins
+fi
+
+[ -f $cfg_dbconfig ] && cfg_exists=true || cfg_exists=false
+
+if ! $db_exists ||  ! $cfg_exists ; then
+$DIALOG --title "ERROR" --msgbox "Your installation is NOT complete\nEither you were unable to create database or config folder\nWithout both valid i cannot continue\nCome back with necessary info, permissions and running $MYSQL server and run me again" 10 70
+	exit 1
+fi
+
+export VERLIHUB_CFG=$cfg_dir
+
+CreateTables || die "ERROR: verlihub's $MYSQL tables do not exist, cannot continue installation. Please check $cfg_dir/install_log file for more info";
+#CreateTables  || $DIALOG --title "ERROR" --msgbox "Verlihub's $MYSQL tables do not exist, cannot continue installation. Please check $cfg_dir/install_log file for more info" 8 50
+
+$DIALOG --title "Hub Settings" --msgbox "$realname, I will now ask you a few more questions about your future hub.." 8 50
+
+setup_info_ok=false
+until $setup_info_ok; do
+
+	hostname=`hostname`
+$DIALOG --backtitle "Hub Settings" \
+	--form "Hi $realname - you can use [up] [down] to select input field PS:\ndon't use any special characters, you'll be able to use them later " 18 70 0 \
+	    "Master Name:" 2 4 "[SU]$USER" 2 16 20 0\
+	    "Master Pass:" 4 4 "$timestamp" 4 16 20 0\
+	    "Hub Port:" 6 4 "$port_default" 6 16 20 0\
+	    "Hub Host:" 8 4 "$hostname" 8 16 20 0\
+	    "Hub Name:" 10 4 "hub of $realname" 10 16 20 0 2>$_temp
+	if [ ${?} -ne 0 ]; then return; fi
+
+	set $(cat $_temp)
+	vh_master=$1
+	vh_passwd=$2
+	vh_hubport=$3
+	vh_hubhost=$4
+	vh_hubname=$5
+
+	vh_master=`echo $vh_master | tr " |$" "___"`
+
+$DIALOG --yesno "Is this info correct? \n \
+	    Hub Name: $vh_hubname \n \
+	    Hub Address: dchub://$vh_hubhost:$vh_hubport \n \
+	    Master User: $vh_master \n \
+	    Master's password: $vh_passwd" 10 50 && setup_info_ok=true || $DIALOG --title "Hub Settings" --msgbox "Ok, let's try again." 6 30
+done
+
+$DIALOG --title "Hub Settings" --msgbox "Settings are going to be created or updated" 8 40
+
+$bindir/vh_setup "hub_name" -f "config" -v "$vh_hubname"
+$bindir/vh_setup "hub_host" -f "config" -v "$vh_hubhost:$vh_hubport"
+$bindir/vh_setup "listen_port" -f "config" -v "$vh_hubport"
+
+$bindir/vh_regnick -f -c 10 -n "$vh_master" -p "$vh_passwd"
+$bindir/vh_getdb --script $datadir/sql/default_reglist.sql
+
+$DIALOG --title "Success" --msgbox "The hub is configured and you may now start it and enjoy it" 8 40
+
+exit 0
+}
+
+quit() {
+rm $_temp
+rm -rf $TEMP_DIR
+rm $LOG
+exit 0
+}
+
+main_menu() {
+$DIALOG --backtitle "Welcome to Verlihub's installation script" --title " vh_install_gui - Version $VER "\
+	--cancel-label "Quit" \
+	--menu "Move using [UP] [DOWN], [Enter] to select" 17 60 10\
+	Compile-Plugins "Compile Verlihub Plugins "\
+	New-Hub "Setup another hub on your server"\
+	Quit "Exit installation script" 2>$_temp
+
+opt=${?}
+    if [ $opt != 0 ]; then quit; fi
+	menuitem=`cat $_temp`
+#	echo "menu=$menuitem"
+    case $menuitem in
+	Fresh-Install) install_menu;;
+	New-Hub) setup_hub;;
+	Quit) quit;;
+    esac
+}
+
+while true; do
+	main_menu
+done

@@ -3,6 +3,9 @@
 INCLUDES = $(all_includes)
 # the library search path.
 bin_PROGRAMS = verlihub
+#Fix LOCALEDIR
+localedir = $(datadir)/locale
+DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 verlihubdir=$(pkgincludedir)
 verlihub_HEADERS = cantiflood.h casyncconn.h casyncsocketserver.h cban.h cbanlist.h ccallbacklist.h ccallbacklist.h cchatconsole.h ccmdr.h ccmdr.h ccommand.h ccommand.h cconfigbase.h cconfigfile.h cconfigitembase.h cconfmysql.h cconnbase.h cconnchoose.h cconnchoose.h cconndc.h cconnpoll.h cconnpoll.h cconnselect.h cconntypes.h cdbconf.h cdbconf.h cdcclient.h cdcclients.h cdccommand.h cdcconf.h cdcconsole.h cdcproto.h cdctag.h cfreqlimiter.h cgeoip.h cgeoip.h cinfoserver.h cinterpolexp.h ckick.h ckicklist.h ckicklist.h cmeanfrequency.h cmessagedc.h cmutex.h cmysql.h cobj.h coperator.h cpcre.h cpenaltylist.h cpenaltylist.h cpluginbase.h cpluginloader.h cpluginloader.h cpluginmanager.h cpluginmanager.h cprotocol.h cprotocommand.h cquery.h creglist.h creguserinfo.h cserverdc.h csetuplist.h csetuplist.h ctempfunctionbase.h cthread.h cthreadwork.h ctime.h ctimeout.h ctrigger.h ctriggers.h curr_date_time.h cusercollection.h cusercollection.h cuser.h cvhplugin.h cvhplugin.h cvhpluginmgr.h cvhpluginmgr.h cworkerthread.h dll.h make_time.h script_api.h stringutils.h tcache.h tchashlistmap.h tchashlistmap.h thasharray.h thasharray.h tlistconsole.h tlistplugin.h tmysqlmemoryhash.h tmysqlmemorylist.h tmysqlmemoryordlist.h tpluginbase.h ccustomredirects.h ccustomredirect.h
@@ -15,7 +18,7 @@ all_sources = cantiflood.cpp casyncconn.cpp casyncsocketserver.cpp cban.cpp cban
 if DEBUG
 lib_LIBRARIES = libverlihub.a
 libverlihub_a_SOURCES = $(all_sources)
-verlihub_LDADD = libverlihub.a $(PCRE_LIBS) $(MYSQL_LIBS) $(DLOPEN_LIBS) $(CRYPT_LIBS) $(GEOIP_LIBS)
+verlihub_LDADD = libverlihub.a @LIBINTL@ $(PCRE_LIBS) $(MYSQL_LIBS) $(DLOPEN_LIBS) $(CRYPT_LIBS) $(GEOIP_LIBS)
 libverlihub_a_CXXFLAGS = $(AM_CXXFLAGS)
 else
 lib_LTLIBRARIES = libverlihub.la libvhapi.la

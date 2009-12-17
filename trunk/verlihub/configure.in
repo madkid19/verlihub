@@ -167,6 +167,9 @@ if test "$ac_cxx_have_old_str_string" = yes; then
 	AC_DEFINE(OLD_STD_STRING,,[define if the std::sting::compare with two integers and one string are string first])
 fi
 
+AM_GNU_GETTEXT_VERSION([0.16])
+AM_GNU_GETTEXT([external])
+
 AM_MAINTAINER_MODE
 
 #
@@ -197,6 +200,7 @@ AC_CONFIG_FILES([Makefile
 		 plugins/plugman/Makefile
 		 verlihub.spec
 		 verlihub_config
+		 po/Makefile.in
 		 scripts/vh_restart
 		 scripts/vh_runhub
 		 scripts/vh_getcfg
@@ -204,6 +208,8 @@ AC_CONFIG_FILES([Makefile
 		 scripts/vh_trigger
 		 scripts/vh_regnick
 		 scripts/vh_install
+		  scripts/vh_install_cli
+		  scripts/vh_install_gui
 		 scripts/vh_setup
 		 share/sql/default_pi_plug.sql
 		 ])
