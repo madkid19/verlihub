@@ -167,8 +167,8 @@ if test "$ac_cxx_have_old_str_string" = yes; then
 	AC_DEFINE(OLD_STD_STRING,,[define if the std::sting::compare with two integers and one string are string first])
 fi
 
-AM_GNU_GETTEXT_VERSION([0.16])
-AM_GNU_GETTEXT([external])
+#AM_GNU_GETTEXT_VERSION([0.16])
+#AM_GNU_GETTEXT([external])
 
 AM_MAINTAINER_MODE
 
