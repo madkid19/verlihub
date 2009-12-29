@@ -1282,7 +1282,15 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Redirect an user to another hub; if the user is found it sends a msg frist. The user couldnt be redirected because of not found or protected */
+/**
+  Redirect an user to another hub.
+  If the user is found, send him a message and then he is redirected. The user may not be redirected because he is a protetect user
+	
+  @param[in,out] msg The NMDC message
+  @param[in,out] tr The user who sent the message
+  @return The result
+*/
+
 int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 //$ForceMove <newIp>
 //$To: <victimNick> From: <senderNick> $<<senderNick>> You are being re-directed to <newHub> because: <reasonMsg>
@@ -1332,17 +1340,15 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 
 	Create_PM(omsg,conn->mpUser->mNick, msg->ChunkString(eCH_FM_NICK), conn->mpUser->mNick, redReason);
 
-	if(other->mxConn)
-	{
-		// send it
+	if(other->mxConn) {
+		// Send $ForceMove and PM
 		other->mxConn->Send(omsg);
-		// close it
+		// Close user connection
 		other->mxConn->CloseNice(3000, eCR_FORCEMOVE);
-		if(conn->Log(2)) conn->LogStream() << "ForceMove " << str  << " to: " << msg->ChunkString(eCH_FM_DEST)<< " because : " << msg->ChunkString(eCH_FM_REASON) << endl;
-	}
-	else
-	{
-		mS->DCPrivateHS("You can't move Hub-security.",conn);
+		if(conn->Log(2))
+			conn->LogStream() << "ForceMove " << str  << " to: " << msg->ChunkString(eCH_FM_DEST)<< " because : " << msg->ChunkString(eCH_FM_REASON) << endl;
+	} else {
+		mS->DCPrivateHS("User is not online or you tried to move a bot.",conn);
 	}
 	return 0;
 }
@@ -1351,7 +1357,8 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 /** Extended support features */
 int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 {
-	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO");
+	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO ZPipe");
+	cout << "$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO ZPipe" << endl;
 	istringstream is(msg->mStr);
 
 	string feature;
@@ -1366,7 +1373,7 @@ int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 		else if(feature == "NoGetINFO") conn->mFeatures |= eSF_NOGETINFO;
 		else if(feature == "QuickList") conn->mFeatures |= eSF_QUICKLIST;
 		else if(feature == "BotINFO") conn->mFeatures |= eSF_BOTINFO;
-		else if(feature == "ZPipe0") conn->mFeatures |= eSF_ZLIB;
+		else if(feature == "ZPipe" || feature == "ZPipe0") conn->mFeatures |= eSF_ZLIB;
 	}
 	conn->Send(omsg);
 	return 0;

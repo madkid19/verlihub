@@ -42,6 +42,7 @@
 #include "cvhpluginmgr.h"
 #include "cmeanfrequency.h"
 #include "cworkerthread.h"
+#include "czlib.h"
 
 using namespace std;
 using nMySQL::cMySQL;
@@ -150,6 +151,7 @@ using namespace nUtils;
 using namespace nDirectConnect;
 using namespace nServer;
 using namespace nProtocol;
+using namespace nZlib;
 using namespace ::nDirectConnect::nTables;
 using namespace ::nDirectConnect::nPlugin;
 
@@ -196,6 +198,7 @@ public:
 	cKickList *mKickList;
 	cChatRoom *mOpChat;
 	cConnTypes *mConnTypes;
+	cZLib *mZLib;
 	string mExecPath; // the filename of this process
 public:
 	cServerDC(string CfgBase = string("./.verlihub"), const string &ExecPath= "");

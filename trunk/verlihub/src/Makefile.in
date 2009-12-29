@@ -83,7 +83,7 @@ am__libverlihub_a_SOURCES_DIST = cantiflood.cpp casyncconn.cpp \
 	ctimeout.cpp ctrigger.cpp ctriggers.cpp cusercollection.cpp \
 	cuser.cpp cvhplugin.cpp cvhpluginmgr.cpp cworkerthread.cpp \
 	script_api.cpp stringutils.cpp thasharray.cpp tpluginbase.cpp \
-	ccustomredirects.cpp ccustomredirect.cpp
+	ccustomredirects.cpp ccustomredirect.cpp czlib.cpp
 am__objects_1 = libverlihub_a-cantiflood.$(OBJEXT) \
 	libverlihub_a-casyncconn.$(OBJEXT) \
 	libverlihub_a-casyncsocketserver.$(OBJEXT) \
@@ -146,7 +146,8 @@ am__objects_1 = libverlihub_a-cantiflood.$(OBJEXT) \
 	libverlihub_a-thasharray.$(OBJEXT) \
 	libverlihub_a-tpluginbase.$(OBJEXT) \
 	libverlihub_a-ccustomredirects.$(OBJEXT) \
-	libverlihub_a-ccustomredirect.$(OBJEXT)
+	libverlihub_a-ccustomredirect.$(OBJEXT) \
+	libverlihub_a-czlib.$(OBJEXT)
 @DEBUG_TRUE@am_libverlihub_a_OBJECTS = $(am__objects_1)
 libverlihub_a_OBJECTS = $(am_libverlihub_a_OBJECTS)
 libLTLIBRARIES_INSTALL = $(INSTALL)
@@ -170,7 +171,7 @@ am__libverlihub_la_SOURCES_DIST = cantiflood.cpp casyncconn.cpp \
 	ctimeout.cpp ctrigger.cpp ctriggers.cpp cusercollection.cpp \
 	cuser.cpp cvhplugin.cpp cvhpluginmgr.cpp cworkerthread.cpp \
 	script_api.cpp stringutils.cpp thasharray.cpp tpluginbase.cpp \
-	ccustomredirects.cpp ccustomredirect.cpp
+	ccustomredirects.cpp ccustomredirect.cpp czlib.cpp
 am__objects_2 = cantiflood.lo casyncconn.lo casyncsocketserver.lo \
 	cban.lo cbanlist.lo ccallbacklist.lo cchatconsole.lo ccmdr.lo \
 	ccommand.lo cconfigbase.lo cconfigfile.lo cconfigitembase.lo \
@@ -187,7 +188,7 @@ am__objects_2 = cantiflood.lo casyncconn.lo casyncsocketserver.lo \
 	ctimeout.lo ctrigger.lo ctriggers.lo cusercollection.lo \
 	cuser.lo cvhplugin.lo cvhpluginmgr.lo cworkerthread.lo \
 	script_api.lo stringutils.lo thasharray.lo tpluginbase.lo \
-	ccustomredirects.lo ccustomredirect.lo
+	ccustomredirects.lo ccustomredirect.lo czlib.lo
 @DEBUG_FALSE@am_libverlihub_la_OBJECTS = $(am__objects_2)
 libverlihub_la_OBJECTS = $(am_libverlihub_la_OBJECTS)
 @DEBUG_FALSE@am_libverlihub_la_rpath = -rpath $(libdir)
@@ -398,7 +399,7 @@ verlihub_HEADERS = cantiflood.h casyncconn.h casyncsocketserver.h \
 	tchashlistmap.h tchashlistmap.h thasharray.h thasharray.h \
 	tlistconsole.h tlistplugin.h tmysqlmemoryhash.h \
 	tmysqlmemorylist.h tmysqlmemoryordlist.h tpluginbase.h \
-	ccustomredirects.h ccustomredirect.h
+	ccustomredirects.h ccustomredirect.h czlib.h
 nodist_verlihub_HEADERS = ../dirsettings.h
 all_sources = cantiflood.cpp casyncconn.cpp casyncsocketserver.cpp \
 	cban.cpp cbanlist.cpp ccallbacklist.cpp cchatconsole.cpp \
@@ -417,7 +418,7 @@ all_sources = cantiflood.cpp casyncconn.cpp casyncsocketserver.cpp \
 	ctimeout.cpp ctrigger.cpp ctriggers.cpp cusercollection.cpp \
 	cuser.cpp cvhplugin.cpp cvhpluginmgr.cpp cworkerthread.cpp \
 	script_api.cpp stringutils.cpp thasharray.cpp tpluginbase.cpp \
-	ccustomredirects.cpp ccustomredirect.cpp
+	ccustomredirects.cpp ccustomredirect.cpp czlib.cpp
 @DEBUG_TRUE@lib_LIBRARIES = libverlihub.a
 @DEBUG_TRUE@libverlihub_a_SOURCES = $(all_sources)
 @DEBUG_FALSE@verlihub_LDADD = libverlihub.la
@@ -631,6 +632,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cvhplugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cvhpluginmgr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cworkerthread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/czlib.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-cantiflood.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-casyncconn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-casyncsocketserver.Po@am__quote@
@@ -695,6 +697,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-cvhplugin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-cvhpluginmgr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-cworkerthread.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-czlib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-script_api.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-stringutils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libverlihub_a-thasharray.Po@am__quote@
@@ -1677,6 +1680,20 @@ libverlihub_a-ccustomredirect.obj: ccustomredirect.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='ccustomredirect.cpp' object='libverlihub_a-ccustomredirect.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libverlihub_a_CXXFLAGS) $(CXXFLAGS) -c -o libverlihub_a-ccustomredirect.obj `if test -f 'ccustomredirect.cpp'; then $(CYGPATH_W) 'ccustomredirect.cpp'; else $(CYGPATH_W) '$(srcdir)/ccustomredirect.cpp'; fi`
+
+libverlihub_a-czlib.o: czlib.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libverlihub_a_CXXFLAGS) $(CXXFLAGS) -MT libverlihub_a-czlib.o -MD -MP -MF "$(DEPDIR)/libverlihub_a-czlib.Tpo" -c -o libverlihub_a-czlib.o `test -f 'czlib.cpp' || echo '$(srcdir)/'`czlib.cpp; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libverlihub_a-czlib.Tpo" "$(DEPDIR)/libverlihub_a-czlib.Po"; else rm -f "$(DEPDIR)/libverlihub_a-czlib.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='czlib.cpp' object='libverlihub_a-czlib.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libverlihub_a_CXXFLAGS) $(CXXFLAGS) -c -o libverlihub_a-czlib.o `test -f 'czlib.cpp' || echo '$(srcdir)/'`czlib.cpp
+
+libverlihub_a-czlib.obj: czlib.cpp
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libverlihub_a_CXXFLAGS) $(CXXFLAGS) -MT libverlihub_a-czlib.obj -MD -MP -MF "$(DEPDIR)/libverlihub_a-czlib.Tpo" -c -o libverlihub_a-czlib.obj `if test -f 'czlib.cpp'; then $(CYGPATH_W) 'czlib.cpp'; else $(CYGPATH_W) '$(srcdir)/czlib.cpp'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libverlihub_a-czlib.Tpo" "$(DEPDIR)/libverlihub_a-czlib.Po"; else rm -f "$(DEPDIR)/libverlihub_a-czlib.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='czlib.cpp' object='libverlihub_a-czlib.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libverlihub_a_CXXFLAGS) $(CXXFLAGS) -c -o libverlihub_a-czlib.obj `if test -f 'czlib.cpp'; then $(CYGPATH_W) 'czlib.cpp'; else $(CYGPATH_W) '$(srcdir)/czlib.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

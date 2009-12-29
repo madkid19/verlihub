@@ -85,6 +85,7 @@ bool cConnDC::SetUser(cUser *usr)
 int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 {
 	if(!mWritable) return 0;
+	
 	if(data.size() >= MAX_SEND_SIZE-1)
 	{
 		if(Log(2))
@@ -93,12 +94,25 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 		data.resize( MAX_SEND_SIZE -1,' ');
 	}
 	if(Log(5)) LogStream() << "OUT: " << data.substr(0,100) << endl;
+	
 	if(msLogLevel >= 3)
 		Server()->mNetOutLog << data.size() << " "
 			<< data.size() << " "
 			<< 1 << " " << data.substr(0,10) << endl;
 
 	if(IsComplete) data.append("|");
+	
+	
+	if(GetLSFlag(eLS_LOGIN_DONE) == eLS_LOGIN_DONE && mFeatures & eSF_ZLIB) {
+		size_t compressedDataLen = 0;
+		char *compressedData = Server()->mZLib->Compress(data.c_str(), data.size(), compressedDataLen);
+		if(compressedData == NULL) {
+			if(Log(5))
+				LogStream() << "Error compressing data with ZLib. Fall back to uncompressed data" << endl;
+		} else {
+			data.assign(compressedData, compressedDataLen);
+		}
+	}
 	int ret = Write(data, Flush);
 	mTimeLastAttempt.Get();
 	if (mxServer) {

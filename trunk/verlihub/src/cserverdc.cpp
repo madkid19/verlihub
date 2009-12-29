@@ -43,6 +43,7 @@
 #include "cconntypes.h"
 #include "cdcconsole.h"
 #include "ctriggers.h"
+
 #define HUB_VERSION_CLASS "(" __CURR_DATE_TIME__ ")"
 #define HUB_VERSION_STRING VERSION
 #define LOCK_VERSION PACKAGE
@@ -109,7 +110,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	mUnBanList = new cUnBanList(this);
 	mPenList = new cPenaltyList(mMySQL);
 	mKickList = new cKickList(mMySQL);
-
+	mZLib = new cZLib();
 	int i;
 	for ( i = 0; i <= USER_ZONES; i++ ) mUserCount[i]=0;
 	for ( i = 0; i <= USER_ZONES; i++ ) mUploadZone[i].SetPeriod(60.);
@@ -1364,38 +1365,46 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
     \fn nDirectConnect::cServerDC::DCKickNick(cUser *OP, const string &Nick, const string &Reason,
     	int flags)
  */
-void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const string &Nick, const string &Reason,
-	int flags)
+/**
+	
+  Kick an user and close the connection
+	
+  @param[in,out] use_os
+  @param[in,out] OP A pointer to cUser object of the operator who kicked the user.
+  @param[in] Nick The string of the nick to kick
+  @param[in] Reason The reason of the kick
+  @param[in] flags Change the behavior of the kick. For ex. also drop the user
+*/
+
+void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const string &Nick, const string &Reason, int flags)
 {
 	ostringstream ostr;
 	cUser *user = mUserList.GetUserByNick(Nick);
 	string NewReason(Reason);
 	cKick OldKick;
 	
-	// is it a kickable user?
+	// Check if it is possible to kick the user
 	if(user && user->mxConn &&
-		(user->mClass + (int) mC.classdif_kick <= OP->mClass) &&
-		(OP->Can(eUR_KICK, mTime.Sec())) &&
+	    (user->mClass + (int) mC.classdif_kick <= OP->mClass) &&
+	    (OP->Can(eUR_KICK, mTime.Sec())) &&
 		//mClass >= eUC_OPERATOR) &&
-		(OP->mNick != Nick))
+	    (OP->mNick != Nick))
 	{
-		if (user->mProtectFrom < OP->mClass)
-		{
-			if(flags & eKCK_Reason)
-			{
+		cout << "Checking if he is protected" << endl;
+		if (user->mProtectFrom < OP->mClass) {
+			if(flags & eKCK_Reason) {
 				user->mToBan = false;
 				// auto kickban
-				if(mP.mKickBanPattern.Exec(Reason) >= 0)
-				{
-					unsigned u=0;
+				if(mP.mKickBanPattern.Exec(Reason) >= 0) {
+					unsigned u = 0;
 					string bantime;
 					mP.mKickBanPattern.Extract(1,Reason,bantime);
-					if(bantime.size())
-					{
+					if(bantime.size()) {
 						ostringstream os;
 						if(!(u=Str2Period(bantime,os))) DCPublicHS(os.str(),OP->mxConn);
 					}
-					if (u > mC.tban_max) u = mC.tban_max;
+					if (u > mC.tban_max)
+						u = mC.tban_max;
 					if (
 						(!u && OP->Can(eUR_PBAN, this->mTime)) ||
 						((u > 0) &&
@@ -1409,18 +1418,18 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					if ( mC.msg_replace_ban.size())
 						mP.mKickBanPattern.Replace(0, NewReason, mC.msg_replace_ban);
 				}
+				cout << "mKickList->AddKick DB stuff" << endl;
 				mKickList->AddKick(user->mxConn, OP->mNick, &Reason, OldKick);
 
-				if(Reason.size())
-				{
+				cout << "Sending msg" << endl;
+				if(Reason.size()) {
 					string omsg;
 					ostr << "<" << OP->mNick << "> is kicking " << Nick << " because: " << NewReason;
-					omsg=ostr.str();
+					omsg = ostr.str();
 					if(!mC.hide_all_kicks && !OP->mHideKick )
 						SendToAll(omsg, OP->mHideKicksForClass ,int(eUC_MASTER));
 
-					if(flags & eKCK_PM)
-					{
+					if(flags & eKCK_PM) {
 						ostr.str(mEmpty);
 						ostr << "You are being kicked because: " << NewReason;
 						DCPrivateHS(ostr.str(), user->mxConn, &OP->mNick);
@@ -1428,27 +1437,24 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 				}
 			}
 
-
-			if(flags & eKCK_Drop)
-			{
-				// reply to kicker
+			if(flags & eKCK_Drop) {
+				cout << "Dropping" << endl;
+				
+				// Send the message to the kicker
 				ostr.str(mEmpty);
-				ostr << ((flags &eKCK_TBAN)?"Kicked user ":"Droping user ") << Nick
-					<< " IP: " << user->mxConn->AddrIP();
+				ostr << ((flags & eKCK_TBAN) ? "Kicked user " : "Droping user ") << Nick << " IP: " << user->mxConn->AddrIP();
 				if(user->mxConn->AddrHost().length())
 					ostr << " Host: " << user->mxConn->AddrHost();
 				ostr << " .. ;)";
 
-
-				// log it
 				if(user->mxConn->Log(2))
 					user->mxConn->LogStream() << "Kicked by " << OP->mNick << ", ban " << mC.tban_kick << "s"<< endl;
-				if(OP->Log(3)) OP->LogStream() << "Kicking " << Nick << endl;
+				if(OP->Log(3))
+					OP->LogStream() << "Kicking " << Nick << endl;
 
 				bool Disconnect = true;
 				mKickList->AddKick(user->mxConn, OP->mNick, NULL, OldKick);
-				if (OldKick.mReason.size())
-				{
+				if (OldKick.mReason.size()) {
 					#ifndef WITHOUT_PLUGINS
 					Disconnect = mCallBacks.mOnOperatorKicks.CallAll(OP, user, &OldKick.mReason);
 					#endif
@@ -1457,23 +1463,24 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					Disconnect = mCallBacks.mOnOperatorDrops.CallAll(OP, user);
 					#endif
 				}
+				cout << "Closing user connection" << endl;
 				if (Disconnect) {
 					user->mxConn->CloseNice(1000, eCR_KICKED);
 					if (!(flags &eKCK_TBAN))
 						ReportUserToOpchat(user->mxConn,OP->mNick + " dropped ", mC.dest_drop_chat);
 				}
-				else ostr << "\r\nsorry, I don't wanna kick him";
+				else
+					ostr << "\r\nsorry, I don't wanna kick him";
 
 				// temp ban kicked user
-				if (flags & eKCK_TBAN)
-				{
+				if (flags & eKCK_TBAN) {
+				  cout << "Temp ban" << endl;
 					cBan Ban(this);
 					cKick Kick;
 
 					mKickList->FindKick(Kick, user->mNick, OP->mNick, 30, true, true);
 
-					if(user->mToBan)
-					{
+					if(user->mToBan) {
 						mBanList->NewBan(Ban, Kick, user->mBanTime, cBan::eBF_NICKIP );
 						ostr << "\r\nand he is being banned " ;
 						Ban.DisplayKick(ostr);
@@ -1489,9 +1496,7 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 				else
 					(*use_os) << ostr.str();
 			}
-		}
-		else if(flags & eKCK_Drop)
-		{
+		} else if(flags & eKCK_Drop) {
 			ostr.str(mEmpty);
 			ostr << "Error kicking user " << Nick << " because he's protected against all classes below (" << user->mProtectFrom << ")";
 			DCPublicHS(ostr.str(),OP->mxConn);

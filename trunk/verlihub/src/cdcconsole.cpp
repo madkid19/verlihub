@@ -1692,8 +1692,8 @@ bool cDCConsole::cfKick::operator()()
 			mParRex->Extract(2,mParStr,text);
 		case eAC_DROP:
 			mS->DCKickNick(mOS, this->mConn->mpUser, nick, text,
-				(Action == eAC_KICK)?
-				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN):
+				(Action == eAC_KICK) ?
+				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN) :
 				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason));
 		break;
 		default: (*mOS) << "Not implemented" << endl;

@@ -144,18 +144,18 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		}
 	}
 	//TODO: Disable version checking if ver is -1
-	if (client && mClientVersion < client->mMinVersion ) {
+	if (client && client->mMinVersion > -1 && mClientVersion < client->mMinVersion ) {
 		ReplaceVarInString(mServer->mL.msg_upgrade, "msg_upgrade", MsgToUser, mServer->mC.msg_upgrade);
-		ReplaceVarInString(MsgToUser, "client_type", MsgToUser, mTagID);
+		ReplaceVarInString(MsgToUser, "client_type", MsgToUser, client->mName);
 		ReplaceVarInString(MsgToUser, "tag_min_version", MsgToUser, client->mMinVersion);
 		os << MsgToUser << endl;
 		code = eTC_MIN_VERSION;
 		return false;
 	}
 
-	if (client && mClientVersion > client->mMaxVersion) {
+	if (client && client->mMaxVersion > -1 && mClientVersion > client->mMaxVersion) {
 		ReplaceVarInString(mServer->mL.msg_downgrade, "msg_downgrade", MsgToUser, mServer->mC.msg_downgrade);
-		ReplaceVarInString(MsgToUser, "client_type", MsgToUser, mTagID);
+		ReplaceVarInString(MsgToUser, "client_type", MsgToUser, client->mName);
 		ReplaceVarInString(MsgToUser, "tag_max_version", MsgToUser, client->mMaxVersion);
 		os << MsgToUser << endl;
 		code = eTC_MAX_VERSION;
