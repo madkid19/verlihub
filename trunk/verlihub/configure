@@ -19847,7 +19847,7 @@ VERLIHUB_LIBS="$PCRE_LIBS $MYSQL_LIBS $DLOPEN_LIBS $CRYPT_LIBS $GEOIP_LIBS $PTHR
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile scripts/Makefile share/Makefile plugins/Makefile plugins/plugman/Makefile verlihub.spec verlihub_config po/Makefile.in scripts/vh_restart scripts/vh_runhub scripts/vh_getcfg scripts/vh_getdb scripts/vh_trigger scripts/vh_regnick scripts/vh_install scripts/vh_install_cli scripts/vh_install_gui scripts/vh_setup share/sql/default_pi_plug.sql"
+ac_config_files="$ac_config_files Makefile src/Makefile scripts/Makefile share/Makefile plugins/Makefile plugins/plugman/Makefile verlihub.spec verlihub_config scripts/vh_restart scripts/vh_runhub scripts/vh_getcfg scripts/vh_getdb scripts/vh_trigger scripts/vh_regnick scripts/vh_install scripts/vh_install_cli scripts/vh_install_gui scripts/vh_setup share/sql/default_pi_plug.sql"
 
 
 cat >confcache <<\_ACEOF
@@ -20858,7 +20858,6 @@ do
     "plugins/plugman/Makefile") CONFIG_FILES="$CONFIG_FILES plugins/plugman/Makefile" ;;
     "verlihub.spec") CONFIG_FILES="$CONFIG_FILES verlihub.spec" ;;
     "verlihub_config") CONFIG_FILES="$CONFIG_FILES verlihub_config" ;;
-    "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
     "scripts/vh_restart") CONFIG_FILES="$CONFIG_FILES scripts/vh_restart" ;;
     "scripts/vh_runhub") CONFIG_FILES="$CONFIG_FILES scripts/vh_runhub" ;;
     "scripts/vh_getcfg") CONFIG_FILES="$CONFIG_FILES scripts/vh_getcfg" ;;

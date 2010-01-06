@@ -200,7 +200,6 @@ AC_CONFIG_FILES([Makefile
 		 plugins/plugman/Makefile
 		 verlihub.spec
 		 verlihub_config
-		 po/Makefile.in
 		 scripts/vh_restart
 		 scripts/vh_runhub
 		 scripts/vh_getcfg
