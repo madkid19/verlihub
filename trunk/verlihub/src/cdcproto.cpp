@@ -1358,16 +1358,15 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 {
 	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO ZPipe");
-	cout << "$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO ZPipe" << endl;
 	istringstream is(msg->mStr);
 
 	string feature;
 	is >> feature;
-	while(1)
-	{
+	while(1) {
 		feature = this->mS->mEmpty;
 		is >> feature;
-		if(!feature.size()) break;
+		if(!feature.size())
+			break;
 		if(feature == "OpPlus") conn->mFeatures |= eSF_OPPLUS;
 		else if(feature == "NoHello") conn->mFeatures |= eSF_NOHELLO;
 		else if(feature == "NoGetINFO") conn->mFeatures |= eSF_NOGETINFO;

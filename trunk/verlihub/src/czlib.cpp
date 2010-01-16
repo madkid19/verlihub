@@ -32,7 +32,6 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
 	strm.data_type = Z_TEXT;
-	strm.opaque = Z_NULL;
 	
 	if (deflateInit(&strm, Z_BEST_COMPRESSION) != Z_OK)
 		return NULL;
@@ -46,7 +45,7 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 	// compress
 	if(deflate(&strm, Z_FINISH) != Z_STREAM_END) {
 		deflateEnd(&strm);
-		return NULL;		
+		return NULL;
 	}
 	/*if(IsComplete) {
 		memcpy(outBuffer+strm.total_out, "|", 1);
@@ -54,7 +53,6 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 	}*/
 	
 	outLen = strm.total_out + 5; /** $ZOn and pipe **/
-	//memcpy(outBuffer+strm.total_out, 0, 1);
 	deflateEnd(&strm);
 	return outBuffer;
 }

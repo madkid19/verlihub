@@ -84,8 +84,11 @@ bool cConnDC::SetUser(cUser *usr)
 		n is the size of data, if not specified, or zero, the null terminated string is mesured */
 int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 {
-	if(!mWritable) return 0;
-	
+	if(!mWritable)
+		return 0;
+
+//	cout << "Called send " << endl;
+//	cout << "Uncompressed buffer (" << data.size() << " bytes) " << data << endl;
 	if(data.size() >= MAX_SEND_SIZE-1)
 	{
 		if(Log(2))
@@ -102,18 +105,19 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 
 	if(IsComplete) data.append("|");
 	
-	
+	string dataToSend = data;
 	if(GetLSFlag(eLS_LOGIN_DONE) == eLS_LOGIN_DONE && mFeatures & eSF_ZLIB) {
 		size_t compressedDataLen = 0;
-		char *compressedData = Server()->mZLib->Compress(data.c_str(), data.size(), compressedDataLen);
+		char *compressedData = Server()->mZLib->Compress(dataToSend.c_str(), dataToSend.size(), compressedDataLen);
 		if(compressedData == NULL) {
 			if(Log(5))
 				LogStream() << "Error compressing data with ZLib. Fall back to uncompressed data" << endl;
 		} else {
-			data.assign(compressedData, compressedDataLen);
+			dataToSend.assign(compressedData, compressedDataLen);
+			//cout << "Compressed buffer (" << dataToSend.size() << " bytes) " << dataToSend << endl;
 		}
 	}
-	int ret = Write(data, Flush);
+	int ret = Write(dataToSend, Flush);
 	mTimeLastAttempt.Get();
 	if (mxServer) {
 		// cout << "Send " << data.size() << "bytes" << endl;
