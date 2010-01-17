@@ -453,13 +453,11 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 	string tmpline;
 	
 	getline(cmd_line,text);
-	if ((mOwner->mC.disable_me_cmd) || (mOwner->mC.mainchat_class > 0 && conn->mpUser->mClass < eUC_REGUSER))
-	{
+	if ((mOwner->mC.disable_me_cmd) || (mOwner->mC.mainchat_class > 0 && conn->mpUser->mClass < eUC_REGUSER)) {
 		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
 		return 1;
 	}
-	while(cmd_line.good())
-	{
+	while(cmd_line.good()) {
 		tmpline="";
 		getline(cmd_line,tmpline);
 		text += "\r\n" + tmpline;
@@ -677,7 +675,6 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 	
 }
 
-/** hub topic by H_C_K */
 int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 {
 	ostringstream os;
@@ -715,25 +712,20 @@ int cDCConsole::CmdKick(istringstream & cmd_line, cConnDC * conn)
 	string omsg, OtherNick, Reason;
 	string tmpline;
 	
-	if( conn && conn->mpUser && conn->mpUser->Can(eUR_KICK, mOwner->mTime.Sec()))
-	{
+	if( conn && conn->mpUser && conn->mpUser->Can(eUR_KICK, mOwner->mTime.Sec())) {
 		cmd_line >> OtherNick;
 		getline(cmd_line,Reason);
-		while(cmd_line.good())
-		{
+		while(cmd_line.good()) {
 			tmpline="";
 			getline(cmd_line,tmpline);
 			Reason += "\r\n" + tmpline;
 		}
 		if (Reason[0] == ' ') Reason = Reason.substr(1);
-		if (Reason.size() > 3)
-		{
+		if (Reason.size() > 3) {
 			mOwner->DCKickNick(&os, conn->mpUser, OtherNick, Reason,
 				cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
 		}
-	}
-	else
-	{
+	} else {
 		os << "You cannot kick anyone!!" ;
 	}
 	omsg = os.str();
@@ -783,14 +775,12 @@ int cDCConsole::CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn)
 	return 1;
 }
 
-/** This will hide cmd actions by a given user or op.*/
 int cDCConsole::CmdHideMe(istringstream & cmd_line, cConnDC * conn)
 {
 	int cls = -1;
 	cmd_line >> cls;
 	ostringstream omsg;
-	if(cls < 0)
-	{
+	if(cls < 0) {
 		omsg << "Please use: !hideme <class>\r\n where <class> is the maximum class of users, that may not see your cmd actions." << endl;
 		mOwner->DCPublicHS(omsg.str(),conn);
 		return 1;
@@ -802,12 +792,6 @@ int cDCConsole::CmdHideMe(istringstream & cmd_line, cConnDC * conn)
 	return 1;
 }
 
-
-/*!
-    \fn cDCConsole::CmdUserLimit(istringstream & cmd_line, cConnDC * conn)
-    \param
-    usage: !userlimit <max_users> [<minutes>=60]
- */
 int cDCConsole::CmdUserLimit(istringstream & cmd_line, cConnDC * conn)
 {
 	string str;
@@ -893,9 +877,7 @@ int cDCConsole::CmdClass(istringstream &cmd_line, cConnDC *conn)
 	return 1;
 }
 
-/** hidekick users until reconnect
-	# usage !hidekick <nick> ...
-*/
+
 int cDCConsole::CmdHideKick(istringstream &cmd_line, cConnDC *conn)
 {
 	ostringstream os;
@@ -921,9 +903,6 @@ int cDCConsole::CmdHideKick(istringstream &cmd_line, cConnDC *conn)
 	return 1;
 }
 
-/** unhidekick user
-	usage: !unhidekick <nick> ...
-*/
 int cDCConsole::CmdUnHideKick(istringstream &cmd_line, cConnDC *conn)
 {
 	ostringstream os;

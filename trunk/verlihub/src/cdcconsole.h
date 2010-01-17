@@ -83,26 +83,127 @@ public:
 	int CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn);
 	int CmdUInfo(istringstream & cmd_line, cConnDC * conn);
 	int CmdRInfo(istringstream & cmd_line, cConnDC * conn);
+	
+	/**
+	    * Handle +myinfo. This command returns the information about the user.
+	    * @param cmd_line The stream. Not used.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1.
+	 */
 	int CmdMyInfo(istringstream & cmd_line, cConnDC * conn);
+	
+	/**
+	    * Handle +myip. This command returns the IP address of the user.
+	    * @param cmd_line The stream. Not used.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1.
+	 */
 	int CmdMyIp(istringstream & cmd_line, cConnDC * conn);
+	
+	/**
+	    * Handle +me <message>. This command lets an user to talk in 3rd person.
+	    * @param cmd_line The stream that contains the message.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return 0 if an error occured or 1 otherwise.
+	 */	
 	int CmdMe(istringstream & cmd_line, cConnDC * conn);
-	int CmdReport(istringstream & cmd_line, cConnDC * conn);
+	
+	/**
+	    * Handle +regme <password>. This command sends a report to OpChat in order to ask registration to Hub Operator or register an user automatically if autoreg_class config variable is set properly.
+	    * @param cmd_line The stream that contains the password.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return 0 if an error occured or 1 otherwise.
+	 */
 	int CmdRegMe(istringstream & cmd_line, cConnDC * conn);
-	int CmdKick (istringstream & cmd_line, cConnDC * conn);
-	int CmdChat (istringstream & cmd_line, cConnDC * conn, bool swith);
-	/** make a secret user/op */
+	
+	/**
+	    * Handle +kick <user> <reason>. This command will kick an user with the given reason.
+	    * @param cmd_line The stream that contains user and the reason.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1.
+	 */
+	int CmdKick(istringstream & cmd_line, cConnDC * conn);
+	
+	/**
+	    * Handle +chat and +nochat. These two commands are used to talk in mainchat.
+	    * @param cmd_line The stream. Not Used.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @param switchon. If set to true add the user to mChatUsers list that contains the users that can talk in mainchat. False value does the opposite.
+	    * @return 0 if the user does not exist or 1 otherwise.
+	 */
+	int CmdChat(istringstream & cmd_line, cConnDC * conn, bool switchon);
+	
+	/**
+	    * Handle !hideme or !hm <class>. This command will hide any commands for users with class lower than <class>.
+	    * @param cmd_line The stream that contains the class.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1
+	 */
 	int CmdHideMe(istringstream & cmd_line, cConnDC * conn);
-	/** progressively change user limit */
+	
+	/**
+	    * Handle !ul(imit) <users> <time>. This command will progressively increase the max allowed users in the hub in <time>. The time must be speficied in minutes; this value can be ommited and default value is 60 minutes.
+	    * @param cmd_line The stream that contains the number of users and the time.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1
+	 */
 	int CmdUserLimit(istringstream & cmd_line, cConnDC * conn);
+	
+	/**
+	    * Handle !unhidekick <user>. This command will un-hide kick made by <user>, previously hidden by using !hidekick <user> command.
+	    * @param cmd_line The stream that contains the username.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1
+	 */
 	int CmdUnHideKick(istringstream &cmd_line, cConnDC *conn);
+	
+	/**
+	    * Handle !hidekick <user>. This command will hide kick made by <user> until he reconnects to the hub.
+	    * @param cmd_line The stream that contains the username.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1
+	 */
 	int CmdHideKick(istringstream &cmd_line, cConnDC *conn);
+
+	/**
+	    * Handle !class <nick> <new_class>. This command will change temporarily the user's class.
+	    * @param cmd_line The stream that contains the data like the username and the class.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1
+	 */
 	int CmdClass(istringstream &cmd_line, cConnDC *conn);
-	int CmdUnGag(istringstream &cmd_line, cConnDC *conn);
-	int CmdGag(istringstream &cmd_line, cConnDC *conn);
+	
+	
+	/**
+	    * Handle !protect <user> <class> command. This command protects an user against another one with lower class than <class>.
+	    * @param cmd_line The stream that contains the data like the username to protect and the class.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1
+	 */
 	int CmdProtect(istringstream &cmd_line, cConnDC *conn);
+	
+	/**
+	    * Handle !reload command to reload VerliHub cache like triggers, custom redirects, configuration and reglist.
+	    * @param cmd_line The stream. Not used
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1
+	 */
 	int CmdReload (istringstream &cmd_line, cConnDC *conn);
+	
+	/**
+	    * Handle !commands or !cmds to show the list of available and register commands in VerliHub console.
+	    * @param cmd_line The stream. Not used
+	    * @param conn Pointer to user's connection which to send the list of command.
+	    * @return Always 1
+	 */
 	int CmdCmds (istringstream &cmd_line, cConnDC *conn);
-	 /** sets a hub topic **/
+	
+	/**
+	    * Handle !topic <msg> command to set the hub topic for the hub. The topic will be appended after the hub name and look like this: <HUB NAME> - <TOPIC>
+	    * @param cmd_line The stream the contains the topic.
+	    * @param conn Pointer to user's connection which set the hub topic. It is used to send error message.
+	    * @return Always 1
+	 */
 	 int CmdTopic(istringstream & cmd_line, cConnDC * conn); 
 
 	static cPCRE mIPRangeRex;
