@@ -125,7 +125,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 		ReplaceVarInString(buf, "IP", buf, conn->AddrIP());
 		ReplaceVarInString(buf, "HOST", buf, conn->AddrHost());
 		ReplaceVarInString(buf, "NICK", buf, conn->mpUser->mNick);
-		ReplaceVarInString(buf, "SHARE", buf, conn->mpUser->mShare);
+		ReplaceVarInString(buf, "SHARE", buf, convertByte(conn->mpUser->mShare, false));
 	  }
 	  
 	  ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.size());
@@ -135,7 +135,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	  ReplaceVarInString(buf, "HUBNAME", buf, server.mC.hub_name);
 	  ReplaceVarInString(buf, "HUBTOPIC", buf,server.mC.hub_topic);
 	  ReplaceVarInString(buf, "VERSION_DATE", buf, __CURR_DATE_TIME__);
-	  ReplaceVarInString(buf, "TOTAL_SHARE", buf,server.mTotalShare);
+	  ReplaceVarInString(buf, "TOTAL_SHARE", buf, convertByte(server.mTotalShare, false));
 	  char tmf[3];
 	  sprintf(tmf,"%02d",lt->tm_sec);
 	  ReplaceVarInString(buf, "ss",buf, tmf);
@@ -174,7 +174,6 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	    server.DCPrivateHS(buf, conn, &sender);
 	  }
 	}
-	// @CHANGED by dReiska -ENDS-
 	return 1;
 }
 
