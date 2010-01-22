@@ -19,57 +19,25 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#include "cserverdc.h"
+
 #include "ccustomredirect.h"
-#include "cconndc.h"
-#include "curr_date_time.h"
-#include "stringutils.h"
-#include <stdlib.h>
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 
-using namespace nStringUtils;
 namespace nDirectConnect {
+
+	using namespace nEnums;
+	
 	namespace nTables {
-		
-		/**
-		
-		Class constructor
-		
-		*/
-	  
+		 
 		cRedirect::cRedirect()
 		{
 			mEnable = 1;
 			mFlag = 0;
 		}
 		
-		/**
-		
-		Class destructor
-		
-		*/
-		
-		cRedirect::~cRedirect(){}
-		
-		/**
-		
-		This function is called when cRedirect object is created. Here it is not useful so the body is empty
-		
-		*/
-		
-		void cRedirect::OnLoad()
-		{}
-		
-		/**
-		
-		Redefine << operator to describe a redirect and show its status
-		
-		@param[in,out] os The stream where to store the description.
-		@param[in,out] tr The cRedirect object that describes the redirect
-		@return The stream
-		*/
+		cRedirect::~cRedirect() {}
 		
 		ostream &operator << (ostream &os, cRedirect &tr)
 		{
