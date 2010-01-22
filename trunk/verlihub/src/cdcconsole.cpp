@@ -133,7 +133,6 @@ cDCConsole::~cDCConsole(){
 	mDCClientConsole = NULL;
 }
 
-/** act on op's command */
 int cDCConsole::OpCommand(const string &str, cConnDC * conn)
 {
 	istringstream cmd_line(str);
@@ -144,8 +143,7 @@ int cDCConsole::OpCommand(const string &str, cConnDC * conn)
 	if(!conn || !conn->mpUser) return 0;
 	tUserCl cl=conn->mpUser->mClass;
 
-	switch(cl)
-	{
+	switch(cl) {
 		case eUC_MASTER:
 			if( cmd == "!quit"      ) return CmdQuit(cmd_line,conn,0);
 			if( cmd == "!restart"   ) return CmdQuit(cmd_line,conn,1);
@@ -153,8 +151,11 @@ int cDCConsole::OpCommand(const string &str, cConnDC * conn)
 				mOwner->mUserList.DumpProfile(cerr);
 				return 1;
 		 	}
-			if( cmd == "!core_dump"   ) return CmdQuit(cmd_line,conn,-1);
-			if( cmd == "!hublist"   ) { mOwner->RegisterInHublist(mOwner->mC.hublist_host, mOwner->mC.hublist_port, conn); return 1;}
+			if( cmd == "!core_dump" ) return CmdQuit(cmd_line,conn,-1);
+			if( cmd == "!hublist"   ) {
+				mOwner->RegisterInHublist(mOwner->mC.hublist_host, mOwner->mC.hublist_port, conn);
+				return 1;
+			}
 		case eUC_ADMIN:
 			if( cmd == "!userlimit" || cmd=="!ul" ) return CmdUserLimit(cmd_line,conn);
 			if( cmd == "!reload"    || cmd=="!re" ) return CmdReload(cmd_line,conn);
@@ -173,20 +174,15 @@ int cDCConsole::OpCommand(const string &str, cConnDC * conn)
 			if( cmd == "!unhidekick" || cmd=="!uhk") return CmdUnHideKick(cmd_line, conn);
 			if( cmd == "!commands"   || cmd=="!cmds") return CmdCmds(cmd_line,conn);
 
-			try
-			{
-				if(mCmdr.ParseAll(str, os, conn) >= 0)
-				{
+			try {
+				if(mCmdr.ParseAll(str, os, conn) >= 0) {
 					mOwner->DCPublicHS(os.str().c_str(),conn);
 					return 1;
 				}
-			}
-			catch(const char *ex)
-			{
+			} catch(const char *ex) {
 				if(Log(0)) LogStream() << "Exception in commands: " << ex << endl;
 			}
-			catch (...)
-			{
+			catch (...) {
 				if(Log(0)) LogStream() << "Exception in commands.." << endl;
 			}
 
@@ -194,27 +190,23 @@ int cDCConsole::OpCommand(const string &str, cConnDC * conn)
 		default: return 0;
 		break;
 	}
-	if (mTriggers->DoCommand(conn,cmd, cmd_line, *mOwner))
+	if (mTriggers->DoCommand(conn,cmd, cmd_line, *mOwner)) 
 		return 1;
 	return 0;
 }
 
-
-/** act on usr's command */
 int cDCConsole::UsrCommand(const string & str, cConnDC * conn)
 {
 	istringstream cmd_line(str);
 	ostringstream os;
 	string cmd;
-	if (mOwner->mC.disable_usr_cmds)
-	{
+	if (mOwner->mC.disable_usr_cmds) {
 		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
 		return 1;
 	}
 	cmd_line >> cmd;
 
-	switch(conn->mpUser->mClass)
-	{
+	switch(conn->mpUser->mClass) {
 		case eUC_MASTER:
 		case eUC_ADMIN:
 		case eUC_CHEEF:
@@ -247,17 +239,15 @@ int cDCConsole::UsrCommand(const string & str, cConnDC * conn)
 	return 0;
 }
 
-
-/** get user's ip */
 int cDCConsole:: CmdGetip(istringstream &cmd_line, cConnDC *conn)
 {
 	ostringstream os;
 	string s;
 	cUser * user;
-	while(cmd_line.good())
-	{
+	while(cmd_line.good()) {
 		cmd_line >> s;
-		if(cmd_line.fail()) break;
+		if(cmd_line.fail())
+			break;
 		user = mOwner->mUserList.GetUserByNick(s);
 		if(user && user-> mxConn )
 			os << mOwner->mL.user << ": " << s << mOwner->mL.ip << ": " << user->mxConn->AddrIP() << endl;
@@ -269,7 +259,6 @@ int cDCConsole:: CmdGetip(istringstream &cmd_line, cConnDC *conn)
 
 }
 
-/** list commands */
 int cDCConsole::CmdCmds(istringstream &cmd_line , cConnDC *conn)
 {
 	ostringstream os;
@@ -281,24 +270,22 @@ int cDCConsole::CmdCmds(istringstream &cmd_line , cConnDC *conn)
 	return 1;
 }
 
-/** get user's host */
 int cDCConsole::CmdGethost(istringstream &cmd_line , cConnDC *conn)
 {
 	ostringstream os;
 	string s;
 	cUser * user;
-	while(cmd_line.good())
-	{
+	while(cmd_line.good()) {
 		cmd_line >> s;
 		if(cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
-		if(user && user->mxConn)
-		{
+		if(user && user->mxConn) {
 			if(!mOwner->mUseDNS)
 				user->mxConn->DNSLookup();
 			os << mOwner->mL.user << ": " << s << " " << mOwner->mL.host << ": " << user->mxConn->AddrHost() << endl;
+		} else {
+		  os << mOwner->mL.user << ": " << s << mOwner->mL.not_in_userlist << endl;
 		}
-		else     os << mOwner->mL.user << ": " << s << mOwner->mL.not_in_userlist << endl;
 	}
 	mOwner->DCPublicHS(os.str().c_str(),conn);
 	return 1;
@@ -310,21 +297,21 @@ int cDCConsole::CmdGetinfo(istringstream &cmd_line , cConnDC *conn )
 	ostringstream os;
 	string s;
 	cUser * user;
-	while(cmd_line.good())
-	{
+	while(cmd_line.good()) {
 		cmd_line >> s;
-		if(cmd_line.fail()) break;
+		if(cmd_line.fail())
+			break;
 		user = mOwner->mUserList.GetUserByNick(s);
-		if(user && user->mxConn)
-		{
+		if(user && user->mxConn) {
 			if(!mOwner->mUseDNS)
 				user->mxConn->DNSLookup();
 			os << mOwner->mL.user << ": " << s
 				 << " " << mOwner->mL.ip << ": " << user->mxConn->AddrIP()
 				 << " " << mOwner->mL.host << ": " << user->mxConn->AddrHost()
 				 << " " << "CC: " << user->mxConn->mCC << endl;
+		} else {
+			os << mOwner->mL.user << ": " << s << mOwner->mL.not_in_userlist << endl;
 		}
-		else     os << mOwner->mL.user << ": " << s << mOwner->mL.not_in_userlist << endl;
 	}
 	mOwner->DCPublicHS(os.str().c_str(),conn);
 	return 1;
@@ -369,7 +356,6 @@ bool cDCConsole::cfGetConfig::operator()()
 	return true;
 }
 
-/** show all variables along with their values */
 int cDCConsole::CmdGetconfig(istringstream & , cConnDC * conn)
 {
 	ostringstream os;
@@ -380,10 +366,10 @@ int cDCConsole::CmdGetconfig(istringstream & , cConnDC * conn)
 	return 1;
 }
 
-/** send help message corresponding to connection */
 int cDCConsole::CmdHelp(istringstream &, cConnDC * conn)
 {
-	if(!conn || !conn->mpUser) return 1;
+	if(!conn || !conn->mpUser)
+		return 1;
 	string file;
 	mTriggers->TriggerAll(cTrigger::eTF_HELP, conn);
 	return 1;
@@ -399,15 +385,13 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 	cmd_line >> cc_zone;
 	
 	getline(cmd_line,str);
-	while(cmd_line.good())
-	{
+	while(cmd_line.good()) {
 		tmpline="";
 		getline(cmd_line,tmpline);
 		str += "\r\n" + tmpline;
 	}
 	
-	if(! str.size())
-	{
+	if(! str.size()) {
 		ostr << "Usage example: !ccbc :US:GB: <message>. Please type !help for more info" << endl;
                 mOwner->DCPublicHS(ostr.str(), conn);
 		return 1;
@@ -743,8 +727,7 @@ int cDCConsole::CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn)
 	if(!mOwner->mR->FindRegInfo(ui,conn->mpUser->mNick))
 		return 0;
 
-	if(!ui.mPwdChange)
-	{
+	if(!ui.mPwdChange) {
 		ostr << mOwner->mL.pwd_cannot;
 		mOwner->DCPrivateHS(ostr.str(),conn);
 		mOwner->DCPublicHS(ostr.str(),conn);
@@ -752,16 +735,14 @@ int cDCConsole::CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn)
 	}
 
 	cmd_line >> str >> crypt;
-	if(str.size() < mOwner->mC.password_min_len)
-	{
+	if(str.size() < mOwner->mC.password_min_len) {
 		string str;
 		ReplaceVarInString(mOwner->mL.pwd_min,"length",str, mOwner->mC.password_min_len);
 		mOwner->DCPrivateHS(str,conn);
 		mOwner->DCPublicHS(str,conn);
 		return 1;
 	}
-	if(!mOwner->mR->ChangePwd(conn->mpUser->mNick, str,crypt))
-	{
+	if(!mOwner->mR->ChangePwd(conn->mpUser->mNick, str,crypt)) {
 		ostr << mOwner->mL.pwd_set_error;
 		mOwner->DCPrivateHS(ostr.str(),conn);
 		mOwner->DCPublicHS(ostr.str(),conn);

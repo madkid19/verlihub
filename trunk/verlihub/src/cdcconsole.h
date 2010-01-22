@@ -36,6 +36,7 @@
 using namespace std;
 using namespace nCmdr;
 
+// nDirectConnect namespace
 namespace nDirectConnect {
 
 namespace nTables {
@@ -53,34 +54,116 @@ class cConnDC;
 class cServerDC;
 
 /**
-  * \brief Command interpreter for operators and normal users
-  * @author Daniel Muller
-  * Contains all functions that are executed for !commands or +commands (except the triggers)
-  */
+	 * cDCConsole class. VerliHub console and command interpreter for users' and operators' commands.
+	 * Triggers are not handled by this class.
+	 *
+	 * @author Daniel Muller
+	 * @version 1.1
+*/
 
 class cDCConsole : public cDCConsoleBase
 {
 public:
-	cDCConsole(cServerDC *, cMySQL &);
+	/**
+	    * Class constructor.
+	    * @param s Pointer to VerliHub server.
+	    * @param mysql The connection object to MySQL database.
+	*/
+	cDCConsole(cServerDC *s, cMySQL &mysql);
+	
+	/**
+	    * Class destructor.
+	*/
 	virtual ~cDCConsole();
-	/** act on op's command */
+	
+	/**
+	    * Handle operator's commands like !restart, !quit, etc. In case the command does not exist, it is passed to Trigger console
+	    * @param command The command to run.
+	    * @param conn The user's connection that wants to run the command.
+	    * @return 0 if an error occurred, 1 otherwise.
+	*/
 	virtual int OpCommand(const string &, cConnDC*);
-	/** act on usr's command */
+	
+	/**
+	    * Handle user's commands like +myinfo, +chat, +report, etc. In case the command does not exist, it is passed to Trigger console
+	    * @param command The command to run.
+	    * @param conn The user's connection that wants to run the command.
+	    * @return 0 if an error occurred, 1 otherwise.
+	*/
 	virtual int UsrCommand(const string & , cConnDC * );
-	/** get user's ip */
+	
+	/**
+	    * Handle !getip or !gi. This command sends to the user his IP address.
+	    * @param cmd_line The stream. Not used.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1.
+	*/
 	int  CmdGetip(istringstream &, cConnDC *);
-	/** get user's host */
+	
+	/**
+	    * Handle !gethost <user1> <user2> or !gh.  These commands send users' hostname.
+	    * @param cmd_line The stream that contains the list of users.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1.
+	*/
 	int CmdGethost(istringstream & , cConnDC * );
-	/** get user's host and ip */
+	
+	/**
+	    * Handle !getinfo <user1> <user2> ..or !gi. These commands send users' information like Country Code, IP address and host.
+	    * @param cmd_line The stream that contains the list of users.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return 0 if an error occurred, 1 otherwise.
+	*/
 	int CmdGetinfo(istringstream &cmd_line , cConnDC *conn );
-	/** quit program */
+
+	/**
+	    * Handle !quit or !restart. These commands shutdown or restart the hub.
+	    * @param cmd_line The stream. Not used.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1.
+	*/
 	int CmdQuit(istringstream &, cConnDC * conn,int code);
-	/** show all variables along with their values */
+
+	/**
+	    * Handle !getconfig or !gc. These commands returns the list of available config variables with values.
+	    * @param cmd_line The stream. Not used.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1.
+	*/
 	int CmdGetconfig(istringstream & cmd_line, cConnDC * conn);
-	/** send help message corresponding to connection */
+
+	/**
+	    * Handle !help. This command sends the available help message depending on user class.
+	    * Command is handled by Trigger console.
+	    * @param cmd_line The stream. Not used.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1.
+	*/
 	int CmdHelp(istringstream & cmd_line, cConnDC * conn);
+	
+	/**
+	    * Handle !ccbroadcast <CC list> <message> or !ccbc. This command sends a message to all users that belong to a Country in CC list.
+	    * @param cmd_line The stream that contains the country code list and the message.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return Always 1.
+	*/
 	int CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn,int cl_min, int cl_max);
+	
+	/**
+	    * Handle +password <password>. This command is used by the user to set his password when he has been registered for the first time.
+	    * @param cmd_line The stream that contains the password.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return 0 if an error occurred, 1 otherwise.
+	*/
 	int CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn);
+	
+	/**
+	    * Handle +info. This command sends to the user information about himself and the hub.
+	    * @param cmd_line The stream. Not used.
+	    * @param conn Pointer to user's connection which to send the result message.
+	    * @return 0 if an error occurred, 1 otherwise.
+	*/
+	
 	int CmdUInfo(istringstream & cmd_line, cConnDC * conn);
 	int CmdRInfo(istringstream & cmd_line, cConnDC * conn);
 	
@@ -89,7 +172,7 @@ public:
 	    * @param cmd_line The stream. Not used.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1.
-	 */
+	*/
 	int CmdMyInfo(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
@@ -97,7 +180,7 @@ public:
 	    * @param cmd_line The stream. Not used.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1.
-	 */
+	*/
 	int CmdMyIp(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
@@ -105,7 +188,7 @@ public:
 	    * @param cmd_line The stream that contains the message.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return 0 if an error occured or 1 otherwise.
-	 */	
+	*/	
 	int CmdMe(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
@@ -113,7 +196,7 @@ public:
 	    * @param cmd_line The stream that contains the password.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return 0 if an error occured or 1 otherwise.
-	 */
+	*/
 	int CmdRegMe(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
@@ -121,7 +204,7 @@ public:
 	    * @param cmd_line The stream that contains user and the reason.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1.
-	 */
+	*/
 	int CmdKick(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
@@ -130,7 +213,7 @@ public:
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @param switchon. If set to true add the user to mChatUsers list that contains the users that can talk in mainchat. False value does the opposite.
 	    * @return 0 if the user does not exist or 1 otherwise.
-	 */
+	*/
 	int CmdChat(istringstream & cmd_line, cConnDC * conn, bool switchon);
 	
 	/**
@@ -138,7 +221,7 @@ public:
 	    * @param cmd_line The stream that contains the class.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1
-	 */
+	*/
 	int CmdHideMe(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
@@ -146,7 +229,7 @@ public:
 	    * @param cmd_line The stream that contains the number of users and the time.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1
-	 */
+	*/
 	int CmdUserLimit(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
@@ -154,7 +237,7 @@ public:
 	    * @param cmd_line The stream that contains the username.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1
-	 */
+	*/
 	int CmdUnHideKick(istringstream &cmd_line, cConnDC *conn);
 	
 	/**
@@ -162,7 +245,7 @@ public:
 	    * @param cmd_line The stream that contains the username.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1
-	 */
+	*/
 	int CmdHideKick(istringstream &cmd_line, cConnDC *conn);
 
 	/**
@@ -170,7 +253,7 @@ public:
 	    * @param cmd_line The stream that contains the data like the username and the class.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1
-	 */
+	*/
 	int CmdClass(istringstream &cmd_line, cConnDC *conn);
 	
 	
@@ -179,7 +262,7 @@ public:
 	    * @param cmd_line The stream that contains the data like the username to protect and the class.
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1
-	 */
+	*/
 	int CmdProtect(istringstream &cmd_line, cConnDC *conn);
 	
 	/**
@@ -187,7 +270,7 @@ public:
 	    * @param cmd_line The stream. Not used
 	    * @param conn Pointer to user's connection which to send the result message.
 	    * @return Always 1
-	 */
+	*/
 	int CmdReload (istringstream &cmd_line, cConnDC *conn);
 	
 	/**
@@ -195,7 +278,7 @@ public:
 	    * @param cmd_line The stream. Not used
 	    * @param conn Pointer to user's connection which to send the list of command.
 	    * @return Always 1
-	 */
+	*/
 	int CmdCmds (istringstream &cmd_line, cConnDC *conn);
 	
 	/**
@@ -203,8 +286,8 @@ public:
 	    * @param cmd_line The stream the contains the topic.
 	    * @param conn Pointer to user's connection which set the hub topic. It is used to send error message.
 	    * @return Always 1
-	 */
-	 int CmdTopic(istringstream & cmd_line, cConnDC * conn); 
+	*/
+	int CmdTopic(istringstream & cmd_line, cConnDC * conn); 
 
 	static cPCRE mIPRangeRex;
 	static bool GetIPRange(const string &range, unsigned long &from, unsigned long &to);
@@ -214,12 +297,16 @@ public:
 
 	enum{ eCM_CMD, eCM_BAN, eCM_GAG, eCM_TRIGGER, eCM_CUSTOMREDIR, eCM_DCCLIENT, eCM_SET, eCM_REG, eCM_INFO, eCM_RAW, eCM_WHO, eCM_KICK, eCM_PLUG, eCM_REPORT, eCM_BROADCAST, eCM_CONNTYPE, eCM_TRIGGERS, eCM_GETCONFIG, eCM_CLEAN };
 	
+	// Pointr to VerliHub server
 	cServerDC *mServer;
 
+	// Pointer to Trigger console to handle custom commands not defined here
 	cTriggers *mTriggers;
 	
+	// Pointer to Redirect console to handle custom redirect commands
 	cRedirects *mRedirects;
 	
+	// Pointer to Client console to handle custom client TAG
 	cDCClients *mDCClients;
 private:
 	cCmdr mCmdr;

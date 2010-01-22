@@ -63,6 +63,19 @@ namespace nDirectConnect {
 				*/
 				virtual ~cRedirect();
 
+				/**
+				* This function is called when cRedirect object is created. Here it is not useful so the body is empty
+				*/
+				virtual void OnLoad() {};
+				
+				/**
+				* Redefine << operator to print a redirect and show its status
+				* @param os The stream where to store the description.
+				* @param tr The cRedirect object that describes the redirect
+				* @return The stream
+				*/
+				friend ostream &operator << (ostream &, cRedirect &);
+				
 				// The flag to determinate the kind of the redirect
 				int mFlag;
 				
@@ -71,20 +84,6 @@ namespace nDirectConnect {
 				
 				// Enable or disable redirect
 				int mEnable;
-				
-				/**
-				* This function is called when cRedirect object is created. Here it is not useful so the body is empty
-				*/
-				virtual void OnLoad() {};
-				
-				/**
-				Redefine << operator to print a redirect and show its status
-				
-				@param os The stream where to store the description.
-				@param tr The cRedirect object that describes the redirect
-				@return The stream
-				*/
-				friend ostream &operator << (ostream &, cRedirect &);
 		};
 	};
 };

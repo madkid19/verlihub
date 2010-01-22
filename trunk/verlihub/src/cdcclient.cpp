@@ -19,22 +19,11 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#include "cserverdc.h"
 #include "cdcclient.h"
-#include "cconndc.h"
-#include "stringutils.h"
-#include <stdlib.h>
 
-using namespace nStringUtils;
 namespace nDirectConnect {
 	namespace nTables {
-		
-		/**
-		
-		Class constructor
-		
-		*/
-	  
+			  
 		cDCClient::cDCClient()
 		{
 			mName = "Unknown";
@@ -44,32 +33,8 @@ namespace nDirectConnect {
 			mBan = false;
 		}
 		
-		/**
-		
-		Class destructor
-		
-		*/
-		
 		cDCClient::~cDCClient(){}
-		
-		/**
-		
-		This function is called when cRedirect object is created. Here it is not useful so the body is empty
-		
-		*/
-		
-		void cDCClient::OnLoad()
-		{}
-		
-		/**
-		
-		Redefine << operator to describe a redirect and show its status
-		
-		@param[in,out] os The stream where to store the description.
-		@param[in,out] tr The cRedirect object that describes the redirect
-		@return The stream
-		*/
-		
+				
 		ostream &operator << (ostream &os, cDCClient &tr)
 		{
 			os << "\r" << tr.mName << " - " << tr.mTagID;

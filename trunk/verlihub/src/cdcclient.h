@@ -22,7 +22,6 @@
 #ifndef NDIRECTCONNECTCLIENT_H
 #define NDIRECTCONNECTCLIENT_H
 #include <string>
-#include "cserverdc.h"
 
 using namespace std;
 
@@ -32,36 +31,55 @@ namespace nDirectConnect {
 	namespace nTables {
 
 		/**
-		  This class represents a redirect
-
-		  @author Simoncelli Davide
+		* This class represents a client with a TAG
+		*
+		*  @author Simoncelli Davide
+		*  @version 1.0
 		*/
 
 		class cDCClient
 		{
 			public:
+				/**
+				* Class constructor
+				*/
 				cDCClient();
 				
+				/**
+				* Class destructor
+				*/
 				virtual ~cDCClient();
-
-				string mName;
-				
-				string mTagID;
-				
-				double mMinVersion;
-				
-				double mMaxVersion;
-				
-				bool mBan;
 				
 				/**
-				  Enable or disable a client
+				* This function is called when cDCClient object is created. Here it is not useful so the body is empty
 				*/
+				virtual void OnLoad() {};
 				
-				int mEnable;
-				
-				virtual void OnLoad();
+				/**
+				* Redefine << operator to print a client and show its description
+				    * @param os The stream where to store the description.
+				    * @param tr The cDCClient object that describes the redirect
+				    * @return The stream
+				*/
 				friend ostream &operator << (ostream &, cDCClient &);
+
+				// Name of the client
+				string mName;
+				
+				// Unique string to identufy the client
+				string mTagID;
+				
+				// Min version allowed
+				double mMinVersion;
+				
+				// Max version allowed
+				double mMaxVersion;
+				
+				// Client is banned from the hub
+				bool mBan;
+				
+				//  Enable or disable a client
+				int mEnable;
 		};
 	};
 };
