@@ -35,21 +35,41 @@ using namespace nStringUtils;
 
 namespace nConfig {
 
-/**
-@author Daniel Muller
-*/
+  /**
+  * Load data to memory from a given table and store and modify them.
+  *
+  * @author Daniel Muller
+  * @version 1.1
+  */
 template<class DataType, class OwnerType> class tMySQLMemoryList : public cConfMySQL
 {
 public:
-
+	
+	/**
+	* Class constructor.
+	    * @param mysql The connection object to MySQL database.
+	    * @param owner An instance of the object that owns DataType.
+	    * @param tablename The name of the table where to store data.
+	*/
 	tMySQLMemoryList(cMySQL &mysql, OwnerType *owner, string tablename) :
 		cConfMySQL(mysql), mOwner(owner)
 	{
 		mMySQLTable.mName = tablename;
 	}
 
+	/**
+	* Class destructor.
+	* Allocated object are removed from the list and deleted
+	*/
 	virtual ~tMySQLMemoryList(){ this->Empty();}
 
+	/**
+	* This method is called before loading data from mysql table to memory.
+	* By default table is created if it does not exist, default sql files are loaded and queries run and then data are loaded into memory.
+	    * @see AddFields()
+	    * @see InstallDefaultData()
+	    * @see ReloadAll()
+	*/
 	virtual void OnStart()
 	{
 		AddFields();
@@ -62,19 +82,23 @@ public:
 	typedef vector<DataType *> tMyDataType;
 	typedef typename tMyDataType::iterator iterator;
 
+	/**
+	* This method is called when data are going to be loaded to memory.
+	*/
 	virtual void OnLoadData(DataType &Data)
 	{
 		Data.OnLoad();
 	}
 	
 	/**
-	 * \brief add all field you want in this function
-	 * */
+	* Add columns to the table and specify where to store the value of the column for each row.
+	    * @see cConfMySQL::AddCol()
+	*/
 	virtual void AddFields()=0;
 
 	/**
-	 * \brief empty what is in the memory storage
-	 * */
+	* Clean the list and delete the object from memory.
+	*/
 	virtual void Empty() {
 		for (typename tMyDataType::iterator it = mData.begin(); it != mData.end(); ++it) {
 			if (*it != NULL) {
@@ -86,14 +110,15 @@ public:
 	}
 
 	/**
-	 * \return the number of elements in the list loaded in memory
-	 * */
+	* Return the number of objects loaded into memory.
+	    * @return The number of objects in the list.
+	*/
 	virtual int Size(){ return mData.size();}
 
 	/**
-	 * \brief Loads all data from the database into memory
-	 * \return the number of elements loaded
-	 * */
+	* Load all data from the table into memory.
+	    * @return The number of loaded elements.
+	*/
 	virtual int ReloadAll()
 	{
 		cQuery Query(mQuery); // make a second query for safety reasons
@@ -121,15 +146,22 @@ public:
 		return n;
 	}
 
+	/**
+	* Add new data to the list and return the allocated object.
+	    * @return The allocated object.
+	*/
 	virtual DataType *AppendData(DataType const &data)
 	{
 		DataType *copy = new DataType(data);
 		mData.push_back(copy);
 		return copy;
 	}
+
 	/**
-	 * \brief Add data into memory and database too, if you add twice same, it may be duplicated
-	 * */
+	* Add new data to the list and store it to the table. <b>Please notice</b> that this method differs from AppendData() because every element is also stored into the database.
+	* Also no check is done if the same element already exist in memory or in the table, so duplicated may be added.
+	    * @return The allocated object.
+	*/
 	virtual DataType *AddData(DataType const &data)
 	{
 		DataType *copy = this->AppendData(data);
@@ -138,6 +170,10 @@ public:
 		return copy;
 	}
 
+	/**
+	* Update an existing row in the table.
+	    * @return The number of affected rows.
+	*/
 	virtual int UpdateData(DataType &data)
 	{
 		SetBaseTo(&data);
@@ -145,9 +181,8 @@ public:
 	}
 
 	/**
-	 * \brief Removes data from database, given probably by the PK
-	 *
-	 * */
+	* Delete data from the table and the memory.
+	*/
 	virtual void DelData(DataType &data)
 	{
 		SetBaseTo(&data);
@@ -166,8 +201,16 @@ public:
 		}
 	}
 
+	/**
+	* Find out if DataType objects are equal.
+	    * @return True if the two objects are equal or false otherwise.
+	*/
 	virtual bool CompareDataKey(const DataType &D1, const DataType &D2){ return false; }
 
+	/**
+	* Find an object into the list with the same key.
+	* @return The object if it is in the list or NULL otherwise.
+	*/
 	virtual DataType *FindData(DataType &ByKey)
 	{
 		iterator it;
@@ -178,20 +221,28 @@ public:
 		return NULL;
 	}
 
-	
+	/**
+	* Set how the data should be ordered when fetching them from the table.
+	    * @param Order The order. Allowed values are <i>ASC</i> for ascending order and <i>DESC</i> for descrising order.
+	*/
 	void SetSelectOrder(const string &Order)
 	{
 		this->mOrderString = Order;
 	}
 
+	/**
+	* Set extra condition in WHERE clause.
+	* <b>Make sure</b> the query is valid or no data is fetched from the database.
+	*/
 	void SetSelectWhere(const string &Order)
 	{
 		this->mWhereString = Order;
 	}
 	
 	/**
-	 * \brief save data on n-th position
-	 * */
+	* Save data to the given position in the table.
+	    * @param n The position
+	*/
 	void SaveData(size_t n)
 	{
 		if (n < mData.size())
@@ -202,8 +253,8 @@ public:
 	}
 
 	/**
-	 * \brief load default data script from a file
-	 * */
+	* Load default sql files and run them.
+	*/
 	bool InstallDefaultData()
 	{
 		mQuery.Clear();
@@ -222,34 +273,44 @@ public:
 		}
 		return _Result;
 	}
-	
+
 	/**
-	 * \brief Get the i-th element from the list
-	 * */
+	* Return the i-th element in the list.
+	    * @return The i-th element.
+	*/
 	DataType * operator[](int i)
 	{
 		if( i < 0 || i >= Size() ) return NULL;
 		return mData[i];
 	}
-
+      
+	/**
+	* Return an iterator to the first element of the list.
+	* @return The i-th element.
+	*/
 	iterator begin() { return mData.begin();}
+	
+	/**
+	* Return an iterator to the last element of the list.
+	* @return The i-th element.
+	*/
 	iterator end() { return mData.end();}
 
 private:
+	// List containter
 	tMyDataType mData;
 
 protected:
+	// How data should be ordered when fetching them
 	string mOrderString;
+	
+	// Extra condition in WHERE clause
 	string mWhereString;
 
-	/**
-	 * The prototype of given data
-	 * */
+	// Prototype of data
 	DataType mModel;
 
-	/**
-	 * The owner object of this one
-	 * */
+	// The owner object
 	OwnerType *mOwner;
 };
 
