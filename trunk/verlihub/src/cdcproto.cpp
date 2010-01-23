@@ -125,43 +125,6 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	return 0;
 }
 
-/*
-int cDCProto::DC_ZON(cMessageDC * msg, cConnDC * conn)
-{
-	char *output;
-	string source = "$ZOn|";
-	int level = Z_BEST_COMPRESSION;
-	int inputLength = msg->mStr.size();
-	z_stream stream;
-	 memset(&stream, 0 , sizeof(stream));
-	
-	/* allocate deflate state *
-	stream.zalloc = Z_NULL;
-	stream.zfree = Z_NULL;
-	stream.data_type = Z_TEXT;
-	int ret = deflateInit(&stream, level);
-	if (ret != Z_OK)
-		return ret;
-	
-	stream.avail_in = inputLength;
-	stream.next_in = (Bytef*) msg->mStr.c_str();
-
-	stream.next_out = (Bytef*) output;
-	stream.avail_out = bf_unused (work);
-	
-	if (deflate (&stream, Z_FINISH) != Z_STREAM_END) {
-		deflateEnd (&stream);
-		return 0;
-	}
-	int outputLength = stream.total_out
-
-    	if(inputLength >= outputLength) {
-        	return 0;
-	}
-	msg->mStr = str(stream.total_out);
-	deflateEnd(&stream);
-}*/
-
 /** Treat the DC message in a appropriate way */
 int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 {
@@ -204,8 +167,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	// Check the max_users limit
 	if( (conn->GetTheoricalClass() < eUC_OPERATOR) &&
 		(
-		  (mS->mUserCountTot >= limit) ||
-		  (mS->mC.cc_zone[0].size() &&  mS->mUserCount[conn->mGeoZone] >= limit_cc)
+		  (mS->mUserCountTot >= limit) ||   (mS->mUserCount[conn->mGeoZone] >= limit_cc)
 		)
 	) {
 		os << mS->mC.msg_hub_full << "\r\nOnline users =" << mS->mUserCountTot;

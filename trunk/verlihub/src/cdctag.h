@@ -23,10 +23,9 @@
 #define CDCTAG_H
 #include <string>
 #include "cdcclient.h"
+#include "cserverdc.h"
 
 using namespace std;
-// forward declarations
-//namespace nUtils { class cPCRE; };
 
 namespace nDirectConnect
 {
@@ -40,7 +39,7 @@ namespace nDirectConnect
 			eTC_PARSE, // Tag parse error
 			eTC_MAX_HUB, // Too many hubs
 			eTC_MAX_SLOTS, // Too many slots
-			eTC_MIN_SLOTS, //< Too few slots
+			eTC_MIN_SLOTS, // Too few slots
 			eTC_MAX_HS_RATIO, // Hubs per slot
 			eTC_MIN_LIMIT, // Small upload limiter
 			eTC_MIN_LS_RATIO, // Small limiter per slot

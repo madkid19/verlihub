@@ -33,23 +33,23 @@ namespace nDirectConnect {
 			mBan = false;
 		}
 		
-		cDCClient::~cDCClient(){}
-				
+		cDCClient::~cDCClient() {}
+		
 		ostream &operator << (ostream &os, cDCClient &tr)
 		{
 			os << "\r" << tr.mName << " - " << tr.mTagID;
-			if(tr.mMinVersion < 0 && tr.mMaxVersion < 0)
-				os << " all version";
-			else if(tr.mMinVersion >= 0 && tr.mMaxVersion < 0)
-				os << ">=" << tr.mMinVersion;
-			else if(tr.mMinVersion < 0 && tr.mMaxVersion >= 0)
-				os << "<=" << tr.mMaxVersion;
-			else
-				os << tr.mMinVersion << "-" << tr.mMaxVersion;
-			os << " (";
-			if(tr.mEnable) os << "Enable";
-			else os << "Disable";
-			os << ")";
+ 			if(tr.mMinVersion < 0 && tr.mMaxVersion < 0)
+ 				os << " all version";
+ 			else if(tr.mMinVersion >= 0 && tr.mMaxVersion < 0)
+ 				os << ">=" << tr.mMinVersion;
+ 			else if(tr.mMinVersion < 0 && tr.mMaxVersion >= 0)
+ 				os << "<=" << tr.mMaxVersion;
+ 			else
+ 				os << tr.mMinVersion << "-" << tr.mMaxVersion;
+ 			os << " (";
+ 			if(tr.mEnable) os << "Enable";
+ 			else os << "Disable";
+ 			os << ")";
 			return os;
 		}
 	};

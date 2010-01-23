@@ -24,6 +24,7 @@
 
 #include <cstring>
 #include <string>
+#include <stdint.h>
 
 #define ZLIB_BUFFER_SIZE 256*1024 /** deflateInit() will allocate on the order of 256K bytes for the internal state **/
 

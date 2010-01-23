@@ -47,10 +47,7 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 		deflateEnd(&strm);
 		return NULL;
 	}
-	/*if(IsComplete) {
-		memcpy(outBuffer+strm.total_out, "|", 1);
-		outBufferLen = strm.total_out+5; /** $ZOn and pipe **
-	}*/
+	//TODO: Check if outLen > inputLen => no compression
 	
 	outLen = strm.total_out + 5; /** $ZOn and pipe **/
 	deflateEnd(&strm);
