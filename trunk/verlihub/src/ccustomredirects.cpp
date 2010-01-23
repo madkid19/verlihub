@@ -135,7 +135,7 @@ namespace nDirectConnect {
 		switch(cmd)
 		{
 			case eLC_LST: 
-				help_str = "!lstredirect\r\nGive the list of redirect"; 
+				help_str = "!lstredirect\r\nShow the list of redirects"; 
 				break;
 			case eLC_ADD: 
 			case eLC_MOD:

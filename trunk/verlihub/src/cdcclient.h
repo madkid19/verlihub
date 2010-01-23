@@ -21,6 +21,7 @@
 ***************************************************************************/
 #ifndef NDIRECTCONNECTCLIENT_H
 #define NDIRECTCONNECTCLIENT_H
+#include <sstream>
 #include <string>
 
 using namespace std;
