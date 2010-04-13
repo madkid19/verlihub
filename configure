@@ -15270,6 +15270,14 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
    ;;
+ *-*-darwin*)
+   SYSTEM=APPLE
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_APPLE 1
+_ACEOF
+
+   ;;
  *-*-cygwin*)
    SYSTEM=CYGWIN
 
