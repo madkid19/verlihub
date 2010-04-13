@@ -30,6 +30,11 @@ case $host in
    SYSTEM=LINUX
    AC_DEFINE(HAVE_LINUX, 1,  Linux environment)
    ;;
+	 ase $host in
+ *-*-darwin*)
+   SYSTEM=APPLE
+   AC_DEFINE(HAVE_APPLE, 1,  Mac OS X environment)
+   ;;
  *-*-cygwin*)
    SYSTEM=CYGWIN
    AC_DEFINE(HAVE_CYGWIN, 1,  Cygwin environment)

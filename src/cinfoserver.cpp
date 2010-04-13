@@ -40,7 +40,7 @@ cInfoServer::cInfoServer()
 
 void cInfoServer::SystemInfo(ostream &os)
 {
-	#if ! defined _WIN32 && ! defined HAVE_FREEBSD
+	#if ! defined _WIN32 && ! defined HAVE_FREEBSD && ! defined HAVE_APPLE
 	struct sysinfo serverInfo;
 	if(sysinfo(&serverInfo)) {
 		os << "Cannot retrive system information";
