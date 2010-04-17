@@ -349,8 +349,9 @@ private:
 		sCallBacks(cVHPluginMgr * mgr) :
 			mOnNewConn(mgr, "VH_OnNewConn", &cVHPlugin::OnNewConn),
 			mOnCloseConn(mgr, "VH_OnCloseConn", &cVHPlugin::OnCloseConn),
-			mOnUnknownMsg( mgr, "VH_OnUnknownMsg", &cVHPlugin::OnUnknownMsg),
-			mOnParsedMsgAny( mgr, "VH_OnParsedMsgAny", &cVHPlugin::OnParsedMsgAny),
+			mOnUnknownMsg(mgr, "VH_OnUnknownMsg", &cVHPlugin::OnUnknownMsg),
+			mOnParsedMsgSupport(mgr, "VH_OnParsedMsgSupport", &cVHPlugin::OnParsedMsgSupport),
+			mOnParsedMsgAny(mgr, "VH_OnParsedMsgAny", &cVHPlugin::OnParsedMsgAny),
 			mOnParsedMsgPM(mgr, "VH_OnParsedMsgPM", &cVHPlugin::OnParsedMsgPM),
 			mOnParsedMsgChat(mgr, "VH_OnParsedMsgChat", &cVHPlugin::OnParsedMsgChat),
 			mOnParsedMsgSearch(mgr, "VH_OnParsedMsgSearch", &cVHPlugin::OnParsedMsgSearch),
@@ -381,6 +382,7 @@ private:
 		cVHCBL_Connection	mOnNewConn;
 		cVHCBL_Connection	mOnCloseConn;
 		cVHCBL_Message		mOnUnknownMsg;
+		cVHCBL_Message		mOnParsedMsgSupport;
 		cVHCBL_Message		mOnParsedMsgAny;
 		cVHCBL_Message		mOnParsedMsgPM;
 		cVHCBL_Message		mOnParsedMsgChat;

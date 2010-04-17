@@ -6,3 +6,10 @@ config.status
 .directory
 Makefile
 libtool
+*.lo
+*.o
+autom4te.cache
+*.kdev4
+.libs
+*.la
+.deps

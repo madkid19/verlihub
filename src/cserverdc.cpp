@@ -601,7 +601,8 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	if(!this->mUseDNS) conn->SetTimeOut(eTO_KEY, mC.timeout_length[eTO_KEY], mTime);
 #endif
 	#ifndef WITHOUT_PLUGINS
-	mCallBacks.mOnNewConn.CallAll(conn);
+	if(!mCallBacks.mOnNewConn.CallAll(conn))
+		return -1;
 	#endif
 	return 0;
 }
