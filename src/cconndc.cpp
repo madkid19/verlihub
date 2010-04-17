@@ -87,14 +87,11 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 	if(!mWritable)
 		return 0;
 
-//	cout << "Called send " << endl;
-//	cout << "Uncompressed buffer (" << data.size() << " bytes) " << data << endl;
-	if(data.size() >= MAX_SEND_SIZE-1)
-	{
+	if(data.size() >= MAX_SEND_SIZE-1) {
 		if(Log(2))
 			LogStream() << "Truncating too long message from: "
 				<< data.size() << " to " << MAX_SEND_SIZE -1 << " Message starts with: " << data.substr(0,10) << endl;
-		data.resize( MAX_SEND_SIZE -1,' ');
+		data.resize(MAX_SEND_SIZE -1,' ');
 	}
 	if(Log(5)) LogStream() << "OUT: " << data.substr(0,100) << endl;
 	
@@ -107,14 +104,19 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 	
 	string dataToSend = data;
 	if(GetLSFlag(eLS_LOGIN_DONE) == eLS_LOGIN_DONE && mFeatures & eSF_ZLIB) {
+		// If data should be buffered append content to zlib buffer
+		if(!Flush) {
+			Server()->mZLib->AppendData(dataToSend.c_str(), dataToSend.size());
+			return 1;
+		}
 		size_t compressedDataLen = 0;
 		char *compressedData = Server()->mZLib->Compress(dataToSend.c_str(), dataToSend.size(), compressedDataLen);
+		// Compression failed
 		if(compressedData == NULL) {
 			if(Log(5))
 				LogStream() << "Error compressing data with ZLib. Fall back to uncompressed data" << endl;
 		} else {
 			dataToSend.assign(compressedData, compressedDataLen);
-			//cout << "Compressed buffer (" << dataToSend.size() << " bytes) " << dataToSend << endl;
 		}
 	}
 	int ret = Write(dataToSend, Flush);

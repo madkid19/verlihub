@@ -53,3 +53,12 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 	deflateEnd(&strm);
 	return outBuffer;
 }
+
+void cZLib::AppendData(const char *buffer, size_t len)
+{
+	if(outBufferLen < len)
+		for(; outBufferLen < len; outBufferLen += ZLIB_BUFFER_SIZE);
+	outBuffer = (char *) realloc(outBuffer, outBufferLen);
+	memcpy(outBuffer + bufferPos, buffer, len);
+	bufferPos += len;
+}

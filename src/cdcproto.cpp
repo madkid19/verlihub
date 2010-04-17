@@ -34,11 +34,6 @@
 #include <stdio.h>
 #include "stringutils.h"
 #include "cdcconsole.h"
-#define CHECK_IP_CTM 1
-#define CHECK_NICK_RCTM 1
-#define CHECK_IP_ASRCH 0
-#define CHECK_NICK_PSRCH 1
-#define CHECK_NICK_SR 1
 
 using std::string;
 using namespace nStringUtils;
@@ -427,11 +422,11 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 					conn->mpUser->IsPassive = true;
 	////////////////////// END TAG VERRIFICATION
 	delete tag;
-	// verify conditions
-	//    minimal share and maximal
+	
+	// Check min and max share conditions
 	string &str_share=msg->ChunkString(eCH_MI_SIZE);
-	if(str_share.size() > 18) // that is too much
-	{
+	// Share is too big
+	if(str_share.size() > 18) {
 		conn->CloseNow();
 		return -1;
 	}
@@ -440,47 +435,39 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	shareB = StringAsLL(str_share);
 	share  = shareB/(1024*1024);
 
-	if (conn->GetTheoricalClass() <= eUC_OPERATOR)
-	{
+	if (conn->GetTheoricalClass() <= eUC_OPERATOR) {
 		// calculate minimax
 		__int64 min_share=mS->mC.min_share;
 		__int64 max_share=mS->mC.max_share;
 		__int64 min_share_p, min_share_a;
 		
-		if (conn->GetTheoricalClass() == eUC_PINGER )
-		{
+		if (conn->GetTheoricalClass() == eUC_PINGER) {
 			min_share = 0;
-		}
-		else
-		{
-			if (conn->GetTheoricalClass() >= eUC_REGUSER )
-			{
+		} else {
+			if (conn->GetTheoricalClass() >= eUC_REGUSER) {
 				min_share = mS->mC.min_share_reg;
 				max_share = mS->mC.max_share_reg;
 			}
-			if (conn->GetTheoricalClass() >= eUC_VIPUSER )
-			{
+			if (conn->GetTheoricalClass() >= eUC_VIPUSER) {
 				min_share = mS->mC.min_share_vip;
 				max_share = mS->mC.max_share_vip;
 			}
 	
-			if (conn->GetTheoricalClass() >= eUC_OPERATOR)
-			{
+			if (conn->GetTheoricalClass() >= eUC_OPERATOR) {
 				min_share = mS->mC.min_share_ops;
 				max_share = mS->mC.max_share_ops;
 			}
 		}
 		min_share_a = min_share;
 
-		min_share_p = (__int64)(min_share * mS->mC.min_share_factor_passive);
+		min_share_p = (__int64) (min_share * mS->mC.min_share_factor_passive);
 		if (conn->mpUser->IsPassive)
 			min_share = min_share_p;
 		
 		/*if (conn->mpUser->Can(eUR_NOSHARE, mS->mTime.Sec()))
 			min_share = 0;
 		*/
-		if((share < min_share) || (max_share && (share > max_share)))
-		{
+		if((share < min_share) || (max_share && (share > max_share))) {
 			if (share < min_share) cmsg = mS->mC.login_share_min;
 			else cmsg = mS->mC.login_share_max;
 			ReplaceVarInString(cmsg,"share",cmsg,share);
@@ -496,8 +483,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		// this is a second share limit, (if NON-zero)
 		// under imit disables search and download
 		
-		if(conn->GetTheoricalClass() <= eUC_VIPUSER)
-		{
+		if(conn->GetTheoricalClass() <= eUC_VIPUSER) {
 			unsigned long temp_min_share = 0;
 			// TODO: Rename to min_share_use_hub_guest
 			if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
@@ -513,8 +499,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 			
 				if (conn->mpUser->IsPassive)
 					temp_min_share = (__int64)(temp_min_share * mS->mC.min_share_factor_passive);
-				if (share < temp_min_share)
-				{
+				if (share < temp_min_share) {
 					conn->mpUser->SetRight(eUR_SEARCH, 0);
 					conn->mpUser->SetRight(eUR_CTM, 0);
 				}
@@ -524,7 +509,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 			conn->mpUser->SetRight(eUR_SEARCH, 0);
 			conn->mpUser->SetRight(eUR_CTM, 0);
 		}
-		if ((conn->GetTheoricalClass() < mS->mC.min_class_use_hub_passive) && !(conn->mpUser->IsPassive == false) ){
+		if ((conn->GetTheoricalClass() < mS->mC.min_class_use_hub_passive) && !(conn->mpUser->IsPassive == false)) {
 			conn->mpUser->SetRight(eUR_SEARCH, 0);
 			conn->mpUser->SetRight(eUR_CTM, 0);
 		}
@@ -606,27 +591,24 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		sShare
 		);
 	// OPS have hidden myinfo
-	if (( conn->mpUser->mClass >= eUC_OPERATOR) && (mS->mC.show_tags < 3))
+	if ( (conn->mpUser->mClass >= eUC_OPERATOR) && (mS->mC.show_tags < 3)) {
 		myinfo_full = myinfo_basic;
-	else
+	} else {
 		myinfo_full = msg->mStr;
+	}
 
 	// login or send to all
-	if(conn->mpUser->mInList)
-	{
+	if(conn->mpUser->mInList) {
 		/** send it to all only if ...
 		* it's not too often
 		* it has changed against the last time
 		* and send only the version that has changed only to those who want it
 		*/
-		if(mS->MinDelay(conn->mpUser->mT.info,mS->mC.int_myinfo))
-		{
+		if(mS->MinDelay(conn->mpUser->mT.info,mS->mC.int_myinfo)) {
 			string send_myinfo;
-			if(myinfo_full != conn->mpUser->mMyINFO)
-			{
+			if(myinfo_full != conn->mpUser->mMyINFO) {
 				conn->mpUser->mMyINFO = myinfo_full;
-				if(myinfo_basic != conn->mpUser->mMyINFO_basic)
-				{
+				if(myinfo_basic != conn->mpUser->mMyINFO_basic) {
 					conn->mpUser->mMyINFO_basic = myinfo_basic;
 	
 					send_myinfo = GetMyInfo(conn->mpUser, eUC_NORMUSER);
@@ -638,9 +620,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 			}
 
 		}
-	}
-	else // user logs in the first time
-	{
+	} else { // user logs in the first time
 		// keep it
 		conn->mpUser->mMyINFO = myinfo_full;
 		conn->mpUser->mMyINFO_basic = myinfo_basic;

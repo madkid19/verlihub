@@ -38,11 +38,16 @@ class cZLib
 		cZLib();
 		~cZLib();
 		
+		void AppendData(const char *buffer, size_t len);
 		char *Compress(const char *buffer, size_t len, size_t &outLen);
 		//char *GetOutput(size_t &len) { len = outBufferLen; return outBuffer; };
 		
 	private:
+		// Compressed data
 		char *outBuffer;
+		// Current position in the buffer
+		size_t bufferPos;
+		// Total buffer length
 		size_t outBufferLen;
 };
 
