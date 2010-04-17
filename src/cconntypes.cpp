@@ -63,10 +63,10 @@ void cConnTypes::AddFields()
 	AddCol("identifier","varchar(16)","", false, mModel.mIdentifier);
 	AddPrimaryKey("identifier");
 	AddCol("description","varchar(64)","no description",true,mModel.mDescription);
-	AddCol("tag_min_slots","tinyint(4)", "0", true, mModel.mTagMinSlots); 
-	AddCol("tag_max_slots","tinyint(4)", "100", true, mModel.mTagMaxSlots); 
-	AddCol("tag_min_limit","double", "-1", true, mModel.mTagMinLimit); 
-	AddCol("tag_min_ls_ratio","double", "-1", true, mModel.mTagMinLSRatio); 
+	AddCol("tag_min_slots","INT(4)", "0", true, mModel.mTagMinSlots); 
+	AddCol("tag_max_slots","INT(4)", "100", true, mModel.mTagMaxSlots); 
+	AddCol("tag_min_limit","DOUBLE", "-1", true, mModel.mTagMinLimit); 
+	AddCol("tag_min_ls_ratio","DOUBLE", "-1", true, mModel.mTagMinLSRatio); 
 	mMySQLTable.mExtra =" PRIMARY KEY(identifier)";
 }
 
