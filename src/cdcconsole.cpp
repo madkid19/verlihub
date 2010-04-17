@@ -669,6 +669,8 @@ int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 		mOwner->DCPublicHS("You do not have permissions to change the topic.",conn);
 		return 1;
 	}	
+	if(topic[0] == ' ')
+		topic = topic.substr(1);
 	if (topic.length() > 255)
 	{
 		os << "Topic must be max 255 characters long. Your topic was "
