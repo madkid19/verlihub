@@ -114,7 +114,7 @@ if(Path.substr(0,2) == "./") {
 		Path = string(cPath);
 		delete cPath;
 #elif defined HAVE_FREEBSD
-		Path = getcwd(NULL, MAXPATHLEN);
+	Path = getcwd(NULL, PATH_MAX);
 #else
 		Path = get_current_dir_name();
 #endif
