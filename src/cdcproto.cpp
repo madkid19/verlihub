@@ -140,11 +140,6 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		return -1;
 	}
 
-	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgValidateNick.CallAll(conn, msg))
-		return -2;
-	#endif
-
 	int limit = mS->mC.max_users_total; // user limit
 	int limit_cc = mS->mC.max_users[conn->mGeoZone];
 	int limit_extra = 0;
@@ -211,6 +206,14 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 			conn->CloseNow();
 			return -1;
 		}
+		
+		#ifndef WITHOUT_PLUGINS
+		if (!mS->mCallBacks.mOnParsedMsgValidateNick.CallAll(conn, msg)) {
+			conn->CloseNice(1000, eCR_INVALID_USER);
+			return -2;
+		}
+		#endif
+		
 	}catch(...)
 	{
 		if(mS->ErrLog(2)) mS->LogStream() << "Unhandled exception in cServerDC::DC_ValidateNick" << endl;
@@ -1316,6 +1319,12 @@ int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 		else if(feature == "BotINFO") conn->mFeatures |= eSF_BOTINFO;
 		else if(feature == "ZPipe" || feature == "ZPipe0") conn->mFeatures |= eSF_ZLIB;
 	}
+	#ifndef WITHOUT_PLUGINS
+	if(!mS->mCallBacks.mOnParsedMsgSupport.CallAll(conn, msg)) {
+		conn->CloseNice(1000, eCR_LOGIN_ERR);
+		return -1;
+	}
+	#endif
 	conn->Send(omsg);
 	return 0;
 }
@@ -1568,7 +1577,6 @@ int cDCProto::DCO_Banned(cMessageDC * msg, cConnDC * conn)
 
 	return 0;
 }
-
 
 /** Send hub's topic  */
 int cDCProto::DCO_GetTopic(cMessageDC *, cConnDC * conn)
