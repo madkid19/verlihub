@@ -409,7 +409,8 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		//TODO: Validate Tag
 		TagValid = tag->ValidateTag(os, conn->mConnType, tag_result);
 		#ifndef WITHOUT_PLUGINS
-		//if (TagValid) TagValid = mS->mCallBacks.mOnValidateTag.CallAll(conn, &tag);
+		if (TagValid)
+			TagValid = mS->mCallBacks.mOnValidateTag.CallAll(conn, tag);
 		#endif
 	}
 

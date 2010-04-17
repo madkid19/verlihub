@@ -43,7 +43,7 @@ bool cGeoIP::GetCC(const string &hostname, string &CC)
 		CC = "--";
 		return false;
 	} else {
-		CC=country_code;
+		CC = country_code;
 		return true;
 	}
 }
