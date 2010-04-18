@@ -583,14 +583,13 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	}
 	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
 	if (mC.host_header == 1) {
-		os << HUB_VERSION_NAME "-"<< HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << "|" << "<" << mC.hub_security << ">" << " RunTime: " << runtime.AsPeriod()<<"|" << "<" << mC.hub_security << ">" << " User Count: " << mUserCountTot <<"|" << "<" << mC.hub_security << ">" << " System Status: " << mStatus << "|";
+		os << "This hub is running version " << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << " of " HUB_VERSION_NAME <<  " (RunTime: "<< runtime.AsPeriod()<<" / Current user count: "<< mUserCountTot <<")|";
+		cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
 	}
-	cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
 	conn->Send(omsg, false);
 	os.str(mEmpty);
 
-	if (mSysLoad >= eSL_RECOVERY)
-	{
+	if (mSysLoad >= eSL_RECOVERY) {
 		os << "The hub is currently unable to service your request. Please try again in a few minutes.";
 		DCPublicHS(os.str(), conn);
 		conn->CloseNice(500, eCR_HUB_LOAD);
@@ -1077,30 +1076,27 @@ int cServerDC::OnTimer(cTime &now)
 	mInProgresUsers.FlushCache();
 	
 	mSysLoad = eSL_NORMAL;
-	if ( mFrequency.mNumFill > 0 ) 
-	{
+	if(mFrequency.mNumFill > 0)  {
 		double freq = mFrequency.GetMean(mTime);
-		if(freq < 12.0 * mC.frequency_lock) mSysLoad = eSL_PROGRESSIVE;
-		if(freq < 8.0 * mC.frequency_lock) mSysLoad = eSL_CAPACITY;
-		if(freq < 4.0 * mC.frequency_lock) mSysLoad = eSL_RECOVERY;
-		if(freq < 2.0 * mC.frequency_lock) mSysLoad = eSL_SYSTEM_DOWN;
+	
+		if(freq < 1.2 * mC.min_frequency) mSysLoad = eSL_PROGRESSIVE;
+		if(freq < 1.0 * mC.min_frequency) mSysLoad = eSL_CAPACITY;
+		if(freq < 0.8 * mC.min_frequency) mSysLoad = eSL_RECOVERY;
+		if(freq < 0.5 * mC.min_frequency) mSysLoad = eSL_SYSTEM_DOWN;
 	}	
 
-	if ( mC.max_upload_kbps > 0.00001) 
-	{
+	if(mC.max_upload_kbps > 0.00001) {
 		int zone;
 		double total_upload=0.;
-		for ( zone = 0; zone <= USER_ZONES; zone ++ )
+		for(zone = 0; zone <= USER_ZONES; zone++)
 			total_upload += this->mUploadZone[zone].GetMean(this->mTime);
-		if ((total_upload / 1024.0) > mC.max_upload_kbps)
-		{
+		if ((total_upload / 1024.0) > mC.max_upload_kbps) {
 			mSysLoad = eSL_PROGRESSIVE;
 		}
 	}
 
 	// perform all temp functions
-	for (tTFIt i = mTmpFunc.begin(); i != mTmpFunc.end(); i++)
-	{
+	for (tTFIt i = mTmpFunc.begin(); i != mTmpFunc.end(); i++) {
 		if (*i) {
 			// delete finished functions
 			if((*i)->done()) {
@@ -1118,8 +1114,7 @@ int cServerDC::OnTimer(cTime &now)
 		mBanList->RemoveOldShortTempBans(mTime.Sec());
 	if (bool(mHublistTimer.mMinDelay) && mHublistTimer.Check(mTime , 1) == 0)
 		this->RegisterInHublist(mC.hublist_host, mC.hublist_port, NULL);
-	if (bool(mReloadcfgTimer.mMinDelay) && mReloadcfgTimer.Check(mTime , 1) == 0)
-	{
+	if (bool(mReloadcfgTimer.mMinDelay) && mReloadcfgTimer.Check(mTime , 1) == 0) {
 		mC.Load();
 		mCo->mTriggers->ReloadAll();
 		if (mC.use_reglist_cache) mR->UpdateCache();

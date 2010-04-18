@@ -196,7 +196,8 @@ void cDCConf::AddVars()
 	Add("hide_all_kicks",hide_all_kicks,0);
 	Add("timer_conn_period", mS.timer_conn_period, 4);
 	Add("timer_serv_period", mS.timer_serv_period, 1);
-	Add("frequency_lock", frequency_lock, 2.0 );
+	Add("min_frequency", min_frequency, 0.3);
+	Add("step_delay", mS.mStepDelay, 50);
 	Add("max_upload_kbps",max_upload_kbps, 2000000.0);
 	Add("timer_reloadcfg_period", mS.mReloadcfgTimer.mMinDelay.tv_sec, (__typeof__( mS.mHublistTimer.mMinDelay.tv_sec))300); // 5 minutes
 	Add("use_reglist_cache",use_reglist_cache, true);

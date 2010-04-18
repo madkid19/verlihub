@@ -117,6 +117,11 @@ int cAsyncSocketServer::run()
 			mT.main = now;
 			OnTimerBase(now);
 		}
+		#if !defined _WIN32
+		::usleep(mStepDelay*1000);
+		#else
+		::Sleep(mStepDelay);
+		#endif
 		mFrequency.Insert(mTime);
 	}
 	if(Log(1)) LogStream() << "Main loop stop(" << mRunResult <<")." << endl;

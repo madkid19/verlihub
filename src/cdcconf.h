@@ -105,7 +105,7 @@ public:
 	bool drop_invalid_key;
 	bool delayed_chat;
 	int delayed_ping;
-	double frequency_lock;
+	double min_frequency;
 	string nick_prefix;
 	string nick_prefix_autoreg;
 	bool nick_prefix_cc;
