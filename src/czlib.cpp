@@ -6,10 +6,11 @@
 
 using namespace nZlib;
 
-cZLib::cZLib()
+cZLib::cZLib() :
+bufferPos(0),
+outBufferLen(ZLIB_BUFFER_SIZE)
 {
 	outBuffer = (char *) calloc(ZLIB_BUFFER_SIZE, 1);
-	outBufferLen = ZLIB_BUFFER_SIZE;
 	memcpy(outBuffer, "$ZOn|", 5);
 }
 
@@ -51,6 +52,7 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 	
 	outLen = strm.total_out + 5; /** $ZOn and pipe **/
 	deflateEnd(&strm);
+	bufferPos = 0;
 	return outBuffer;
 }
 
