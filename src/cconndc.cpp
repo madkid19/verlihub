@@ -103,7 +103,7 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 	if(IsComplete) data.append("|");
 	
 	string dataToSend = data;
-	if(GetLSFlag(eLS_LOGIN_DONE) == eLS_LOGIN_DONE && mFeatures & eSF_ZLIB) {
+	if(/*GetLSFlag(eLS_LOGIN_DONE) == eLS_LOGIN_DONE &&*/ mFeatures & eSF_ZLIB) {
 		// If data should be buffered append content to zlib buffer
 		if(!Flush) {
 			Server()->mZLib->AppendData(dataToSend.c_str(), dataToSend.size());
