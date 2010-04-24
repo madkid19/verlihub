@@ -139,7 +139,7 @@ public:
 	cUser(const string &nick);
 	virtual ~cUser();
 	virtual bool CanSend(); 
-	virtual void Send(string &data, bool pipe, bool cache=true);
+	virtual void Send(string &data, bool pipe, bool flush=true);
 	/** check for the right to ... */
 	inline int HaveRightTo(unsigned int mask){ return mRights & mask; }
 	/** return tru if user needs a password and the password is correct */

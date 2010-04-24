@@ -121,9 +121,9 @@ bool cUser::CanSend()
 	return mInList && mxConn && mxConn->ok;
 }
 
-void cUser::Send(string &data, bool pipe, bool cache)
+void cUser::Send(string &data, bool pipe, bool flush)
 {
-	mxConn->Send(data, pipe, cache);
+	mxConn->Send(data, pipe, flush);
 }
 
 /** return true if user needs a password and the password is correct */

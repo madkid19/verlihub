@@ -7,10 +7,12 @@
 using namespace nZlib;
 
 cZLib::cZLib() :
-bufferPos(0),
-outBufferLen(ZLIB_BUFFER_SIZE)
+zBufferPos(0),
+outBufferLen(ZLIB_BUFFER_SIZE),
+zBufferLen(ZLIB_BUFFER_SIZE)
 {
 	outBuffer = (char *) calloc(ZLIB_BUFFER_SIZE, 1);
+	zBuffer = (char *) calloc(ZLIB_BUFFER_SIZE, 1);
 	memcpy(outBuffer, "$ZOn|", 5);
 }
 
@@ -18,17 +20,20 @@ cZLib::~cZLib()
 {
 	if(outBuffer)
 		free(outBuffer);
+	if(zBuffer)
+		free(zBuffer);
 }
 
 char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 {
 	z_stream strm;
 	bzero((void *) &strm, sizeof(strm));
-	if(outBufferLen < len)
-		for(; outBufferLen < len; outBufferLen += ZLIB_BUFFER_SIZE);
+	if((zBufferLen - zBufferPos) < len)
+		for(; (zBufferLen - zBufferPos) < len; zBufferLen += ZLIB_BUFFER_SIZE);
 	
-	outBuffer = (char *) realloc(outBuffer, outBufferLen);
-	
+	zBuffer = (char *) realloc(zBuffer, zBufferLen);
+  
+  
 	/* allocate deflate state */
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
@@ -36,31 +41,47 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 	
 	if (deflateInit(&strm, Z_BEST_COMPRESSION) != Z_OK)
 		return NULL;
+  
+	// Copy data in ZLib buffer
+	memcpy(zBuffer + zBufferPos, buffer, len);
+	zBufferPos += len;
+  
+	// Increase out buffer if not enough
+	if(outBufferLen < zBufferPos)
+		for(; outBufferLen < zBufferPos; outBufferLen += ZLIB_BUFFER_SIZE);
+  
+	strm.avail_in = (uInt) zBufferPos;
+	strm.next_in  = (Bytef*) zBuffer;
 	
-	strm.avail_in = (uInt) len;
-	strm.next_in  = (Bytef*) buffer;
-	
-	strm.next_out = (Bytef*) outBuffer+ 5; /** $ZOn| **/
-	strm.avail_out = (uInt) (outBufferLen-5);
+	strm.next_out = (Bytef*) outBuffer + ZON_LEN; /** $ZOn| **/
+	strm.avail_out = (uInt) (outBufferLen - ZON_LEN);
 	
 	// compress
 	if(deflate(&strm, Z_FINISH) != Z_STREAM_END) {
 		deflateEnd(&strm);
 		return NULL;
 	}
-	//TODO: Check if outLen > inputLen => no compression
-	
+    
 	outLen = strm.total_out + 5; /** $ZOn and pipe **/
 	deflateEnd(&strm);
-	bufferPos = 0;
+  
+	//TODO: Check if outLen > inputLen => no compression
+	if(zBufferPos < outLen) {
+	  
+	}
+	//Clear for DEBUG
+	//zBuffer[zBufferPos] = '\0';
+	zBufferPos = 0;
 	return outBuffer;
 }
 
 void cZLib::AppendData(const char *buffer, size_t len)
 {
-	if(outBufferLen < len)
-		for(; outBufferLen < len; outBufferLen += ZLIB_BUFFER_SIZE);
-	outBuffer = (char *) realloc(outBuffer, outBufferLen);
-	memcpy(outBuffer + bufferPos, buffer, len);
-	bufferPos += len;
+	// Increase ZLib buffer if not enough
+	if((zBufferLen - zBufferPos) < len)
+		for(; (zBufferLen - zBufferPos) < len; zBufferLen += ZLIB_BUFFER_SIZE);
+	
+	zBuffer = (char *) realloc(zBuffer, zBufferLen);
+	memcpy(zBuffer + zBufferPos, buffer, len);
+	zBufferPos += len;
 }

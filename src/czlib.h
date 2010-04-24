@@ -26,7 +26,8 @@
 #include <string>
 #include <stdint.h>
 
-#define ZLIB_BUFFER_SIZE 256*1024 /** deflateInit() will allocate on the order of 256K bytes for the internal state **/
+#define ZLIB_BUFFER_SIZE 256*1024 // deflateInit() will allocate on the order of 256K bytes for the internal state
+#define ZON_LEN 5 // $ZOn and pipe message length
 
 using namespace std;
 
@@ -43,10 +44,14 @@ class cZLib
 		//char *GetOutput(size_t &len) { len = outBufferLen; return outBuffer; };
 		
 	private:
+		char * zBuffer;
+		// Current position in the buffer
+		size_t zBufferPos;
+		
+		size_t zBufferLen;
 		// Compressed data
 		char *outBuffer;
-		// Current position in the buffer
-		size_t bufferPos;
+		
 		// Total buffer length
 		size_t outBufferLen;
 };

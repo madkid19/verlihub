@@ -122,7 +122,6 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 	int ret = Write(dataToSend, Flush);
 	mTimeLastAttempt.Get();
 	if (mxServer) {
-		// cout << "Send " << data.size() << "bytes" << endl;
 		// Server()->mUploadZone[mGeoZone].Dump();
 		Server()->mUploadZone[mGeoZone].Insert(Server()->mTime, (int) dataToSend.size());
 		// Server()->mUploadZone[mGeoZone].Dump();
