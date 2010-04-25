@@ -1,7 +1,7 @@
 /***************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2009 by Verlihub Project                           *
+*   Copyright (C) 2006-20010 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -33,22 +33,22 @@ using namespace ::nDirectConnect::nTables;
 namespace nDirectConnect
 {
 
-
 cConnDC::cConnDC(int sd, cAsyncSocketServer *server)
-	: cAsyncConn(sd,server)
+: cAsyncConn(sd,server)
 {
 	mpUser = NULL;
 	SetClassName("ConnDC");
 	mLogStatus = 0;
 	memset(&mTO,0, sizeof(mTO));
-	//REM mBan.mBanType = 0;
 	mFeatures = 0;
 	mSendNickList = false;
 	mNickListInProgress = false;
 	mConnType = NULL;
 	mCloseReason = 0;
-	SetTimeOut(eTO_LOGIN, Server()->mC.timeout_length[eTO_LOGIN], server->mTime); // timeout to login on 10 minutes
-	mGeoZone = 0; // default - all other then specified countries
+	// Set default login timeout
+	SetTimeOut(eTO_LOGIN, Server()->mC.timeout_length[eTO_LOGIN], server->mTime);
+	// Default zone
+	mGeoZone = 0;
 	mRegInfo = NULL;
 	mSRCounter = 0;
 }
@@ -59,16 +59,14 @@ cConnDC::~cConnDC()
 	mRegInfo = NULL;
 }
 
-/** returns true if ok, unless false */
 bool cConnDC::SetUser(cUser *usr)
 {
-	if(!usr)
-	{
+	if(!usr) {
 		if(ErrLog(0)) LogStream() << "Trying to add a NULL user" << endl;
 		return false;
 	}
-	if(mpUser)
-	{
+	
+	if(mpUser) {
 		if(ErrLog(1)) LogStream() << "Trying to add user when it's actually done" << endl;
 		delete usr;
 		return false;
@@ -80,8 +78,6 @@ bool cConnDC::SetUser(cUser *usr)
 	return true;
 }
 
-/** Send raw data whenever it's next possible,
-		n is the size of data, if not specified, or zero, the null terminated string is mesured */
 int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 {
 	if(!mWritable)
@@ -103,7 +99,7 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 	if(IsComplete) data.append("|");
 	
 	string dataToSend = data;
-	if(/*GetLSFlag(eLS_LOGIN_DONE) == eLS_LOGIN_DONE &&*/ mFeatures & eSF_ZLIB) {
+	if(mFeatures & eSF_ZLIB) {
 		// If data should be buffered append content to zlib buffer
 		if(!Flush) {
 			Server()->mZLib->AppendData(dataToSend.c_str(), dataToSend.size());
@@ -130,7 +126,6 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 	return ret;
 }
 
-/** log the event */
 int cConnDC::StrLog(ostream & ostr, int level)
 {
 	if(cObj::StrLog(ostr,level))
@@ -146,25 +141,21 @@ int cConnDC::StrLog(ostream & ostr, int level)
 	return 0;
 }
 
-/** set log status flag to a given one in the user*/
 void cConnDC::SetLSFlag(unsigned int st)
 {
 	mLogStatus |= st;
 }
 
-/** set log status flag to a given one in the user*/
 void cConnDC::ReSetLSFlag(unsigned int st)
 {
 	mLogStatus = st;
 }
 
-/** get log status flag to a given one in the user */
 unsigned int cConnDC::GetLSFlag(unsigned int st)
 {
 	return mLogStatus & st;
 }
 
-/** this is called every period of time */
 int cConnDC::OnTimer(cTime &now)
 {
 	ostringstream os;
@@ -240,12 +231,11 @@ int cConnDC::OnTimer(cTime &now)
 	return 0;
 }
 
-/** storno the timeout */
 int cConnDC::ClearTimeOut(tTimeOut to)
 {
 	if(to >= eTO_MAXTO) return 0;
 	mTO[to].Disable();
-	return 1; //ok
+	return 1;
 }
 
 int cConnDC::SetTimeOut(tTimeOut to, double Sec, cTime &now)
@@ -257,7 +247,6 @@ int cConnDC::SetTimeOut(tTimeOut to, double Sec, cTime &now)
 	return 1;
 }
 
-/** return true if time is not out yet */
 int cConnDC::CheckTimeOut(tTimeOut to, cTime &now)
 {
 	if(to >= eTO_MAXTO) return 0;
@@ -265,8 +254,6 @@ int cConnDC::CheckTimeOut(tTimeOut to, cTime &now)
 	return 1;
 }
 
-
-/** this is called when write buffer gets empty */
 void cConnDC::OnFlushDone()
 {
 	mBufSend.erase(0,mBufSend.size());
@@ -286,7 +273,6 @@ void cConnDC::OnFlushDone()
 	}
 }
 
-/** function called before closing nicely */
 int cConnDC::OnCloseNice()
 {
 	if(mxServer) {

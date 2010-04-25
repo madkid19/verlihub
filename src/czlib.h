@@ -33,26 +33,60 @@ using namespace std;
 
 namespace nZlib {
 
+  /**
+  * ZLib compression class.
+  * This class is used to compress data by using ZLib compression method and it is also possible to cache data 
+  * and then compress it.
+  * 
+  * @author Simoncelli Davide
+  * @version 1.0
+  */
+  
 class cZLib 
 {
 	public:
+		/**
+		* Class constructor
+		*/
 		cZLib();
+		
+		/**
+		* Class destructor
+		*/
 		~cZLib();
 		
+		/**
+		 * Append new data to internal buffer and do not compresse them.
+		 *
+		 * @param buffer Pointer to buffer data.
+		 * @param len Data length.
+		*/
 		void AppendData(const char *buffer, size_t len);
+		
+		/**
+		* Compress data.
+		*
+		* @param buffer Pointer to buffer data.
+		* @param len Data length.
+		* @param outLen Length of compressed data.
+		* @return Pointer to compressed data.
+		*/
 		char *Compress(const char *buffer, size_t len, size_t &outLen);
-		//char *GetOutput(size_t &len) { len = outBufferLen; return outBuffer; };
 		
 	private:
+		// Internal buffer to store uncompressed data
 		char * zBuffer;
+		
 		// Current position in the buffer
 		size_t zBufferPos;
 		
+		// Internal buffer length
 		size_t zBufferLen;
-		// Compressed data
+		
+		// Compressed data buffer
 		char *outBuffer;
 		
-		// Total buffer length
+		// Compressed data buffer length
 		size_t outBufferLen;
 };
 

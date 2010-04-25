@@ -1,7 +1,7 @@
 /***************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2009 by Verlihub Project                           *
+*   Copyright (C) 2006-20010 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -38,195 +38,271 @@ namespace nDirectConnect
 	namespace nProtocol { class cDCProto; }
 	using nProtocol::cDCProto;
 
-
-class cUser;
-class cServerDC;
-
-
-/** LOGIN STATUS, unless all these aren't ok, user won't be let to do no more
- * than something .. */
+	class cUser;
+	class cServerDC;
 
 namespace nEnums {
 
-typedef enum
-{
-	eLS_KEYOK   = 1 << 0, //< the key was all right
-	eLS_VALNICK = 1 << 1, //< validate valid nick
-	eLS_PASSWD  = 1 << 2, //< password was ok, if userneeds no passw this is set to true
-	eLS_VERSION = 1 << 3, //< version of client is ok
-	eLS_MYINFO  = 1 << 4, //< myinfo is received and ok
-	eLS_ALOWED  = 1 << 5, //< user is allowd to enter the hub, hub isn't full
-	eLS_NICKLST = 1 << 6, //< user received complete nicklist
-	eLS_LOGIN_DONE = eLS_KEYOK|eLS_VALNICK|eLS_PASSWD|eLS_VERSION|eLS_MYINFO|eLS_ALOWED|eLS_NICKLST // all
-} tLogStatus;
+	// Login status flags
+	typedef enum
+	{
+		eLS_KEYOK   = 1 << 0, // Key is ok
+		eLS_VALNICK = 1 << 1, // Validate nick sent
+		eLS_PASSWD  = 1 << 2, // User does not need to send a password or password is ok
+		eLS_VERSION = 1 << 3, // Client version is ok
+		eLS_MYINFO  = 1 << 4, // MyInfo received and parsed
+		eLS_ALOWED  = 1 << 5, // User can enter the hub
+		eLS_NICKLST = 1 << 6, // User received complete nicklist
+		eLS_LOGIN_DONE = eLS_KEYOK|eLS_VALNICK|eLS_PASSWD|eLS_VERSION|eLS_MYINFO|eLS_ALOWED|eLS_NICKLST // All flags set (login complete)
+	} tLogStatus;
 
-typedef enum
-{
-	eTO_KEY=0,  //< after lock, waiting for key
-	eTO_VALNICK, //< after lock also waiting for the validation of nick
-	eTO_LOGIN,  //< after accept, until DoUserLogin
-	eTO_MYINFO, //< after getionfo until myinfo
-	eTO_FLUSH,  //< from some wites to flush
-	eTO_SETPASS, //< setting password after login without pass
-	eTO_MAXTO   //< no use
-} tTimeOut;
+	// Login timeout flags
+	typedef enum
+	{
+		eTO_KEY=0,  	// Waiting for key after lock
+		eTO_VALNICK,	// Waiting for validate nick after lock
+		eTO_LOGIN,  	// User is logging in
+		eTO_MYINFO, 	// Waiting for MyINFO
+		eTO_FLUSH, 	// Waiting for flushing data from buffer
+		eTO_SETPASS, 	// Waiting for password
+		eTO_MAXTO   	// Not used
+	} tTimeOut;
 
-typedef enum
-{
-	eSF_OPPLUS    = 1     , //< OpPlus commands
-	eSF_NOHELLO   = 1 << 1, //< NoHello
-	eSF_NOGETINFO = 1 << 2, //< NoGetINFO
-	eSF_PASSIVE   = 1 << 3, //< passive users, they don't get passive search
-	eSF_QUICKLIST = 1 << 4, //< a quicklist extention
-	eSF_BOTINFO   = 1 << 5, // BOTInfo extention
- 	eSF_ZLIB      = 1 << 6 //< ZPipe extention
-}tSupportFeature;
-
-/**  \brief DC user's connection type
-  *
-  *  As is defined by user in the options dialog
-  * /
-typedef enum tConnectionType
-{
-	eCT_DEFAULT, //< Any non defined connection type
-	eCT_MODEM28, //< 28.8 kbps modem
-	eCT_MODEM33, //< 33.6 kbps modem connection
-	eCT_MODEM56, //< 56kbps modem
-	eCT_MODEM,  //< just a modem
-	eCT_ISDN,  //< isdn
-	eCT_CABLE, //< cable
-	eCT_DSL, //< DSL
-	eCT_SATELLITE, //< satellite
-	eCT_MICROWAVE, //< microwave
-	eCT_WIRELESS, //< Wireless
-	eCT_LANT1, //< Lan T1
-	eCT_LANT3, //< Lan T3
-	eCT_UNDEF //< wrong type
-};
-*/
+	// Support flags ($Support)
+	typedef enum
+	{
+		eSF_OPPLUS    = 1     , // OpPlus
+		eSF_NOHELLO   = 1 << 1, // NoHello
+		eSF_NOGETINFO = 1 << 2, // NoGetINFO
+		eSF_PASSIVE   = 1 << 3, // Passive user
+		eSF_QUICKLIST = 1 << 4, // Quicklist extention
+		eSF_BOTINFO   = 1 << 5, // BOTinfo extention
+		eSF_ZLIB      = 1 << 6 	// ZPipe extention
+	} tSupportFeature;
 
 };
 
 using namespace ::nDirectConnect::nEnums;
 
-// forward declarations
 class cDCBanRecord;
-
 class cConnDC;
 
 class cDCConnFactory : public cConnFactory
 {
-public:
-	cDCConnFactory(cServerDC *server);
-	virtual ~cDCConnFactory(){}
-	virtual cAsyncConn * CreateConn(tSocket sd=0);
-	virtual void DeleteConn(cAsyncConn * &);
-protected:
-	cServerDC *mServer;
+ public:
+		cDCConnFactory(cServerDC *server);
+		virtual ~cDCConnFactory(){}
+		virtual cAsyncConn * CreateConn(tSocket sd=0);
+		virtual void DeleteConn(cAsyncConn * &);
+ protected:
+		cServerDC *mServer;
 };
 
-/**a direct connect client connection
-  *@author Daniel Muller
-  */
+/**
+* This class represents a connection.
+* 
+* @author Daniel Muller
+* @version 1.0
+*/
 
-
-//***************** the class
 class cConnDC : public cAsyncConn
 {
 	friend class nProtocol::cDCProto;
-public:
-	cConnDC(int sd=0, cAsyncSocketServer *server=NULL);
-	virtual ~cConnDC();
-	/** returns true if ok, unless false */
-	bool SetUser(cUser *usr);
-	/** set log status flag to a given one in the user*/
-	void SetLSFlag(unsigned int st);
-	// set flags to given value
-	void ReSetLSFlag(unsigned int st);
-public: // Public attributes
-	/** a pointer to dc user, this is the only class that can destroy it,
-		and that must keep it until it's end, server creates it */
-	cUser * mpUser;
-	/** client's version string */
-	string mVersion;
-	/** supported extended protocol features */
-	unsigned mFeatures;
-	/** info about registration */
-	cRegUserInfo *mRegInfo;
-	/** if nicklist is to send on userlogin */
-	bool mSendNickList;
-	/** true while sending first nicklist */
-	bool mNickListInProgress;
-	/** indicates whether nicklist should be skipped or not */
-	bool mSkipNickList;
-	/** conetion type */
-	cConnType *mConnType;
-	/** country code */
-	string mCC;
-	/** geographic zone according to country code */
-	int mGeoZone;
-	/** closing details ..*/
-	int mCloseReason;
-	virtual void CloseNow(int Reason = 0);
-	virtual void CloseNice(int msec, int Reason = 0);
-	/** return pointer to the server */
-	inline cServerDC * Server(){return (cServerDC*) mxServer;}
-	/** Send raw data whenever it's next possible,
-	n is the size of data, if not specified, or zero, the null unterminated string is mesured
-	the dc separator is appended |
+ public:
+	/**
+	* Class constructor.
 	*/
-	//int Send(const char * data, int n=-1);
-	/** Send raw data whenever it's next possible,
-		n is the size of data, if not specified, or zero, the null terminated string is mesured */
-	int Send(string & data, bool AddPipe=true, bool Flush = true);
-	/** log the event */
-	virtual int StrLog(ostream & ostr, int level);
-	/** get log status flag to a given one in the user */
+	cConnDC(int sd=0, cAsyncSocketServer *server=NULL);
+	
+	/**
+	* Class destructor.
+	*/
+	virtual ~cConnDC();
+	
+	/**
+	* Check if timeout is expired for the given action.
+	* @param t The action.
+	* @param now Current time.
+	* @return 1 if timeout is expired or 0 otherwise.
+	*/
+	int CheckTimeOut(tTimeOut t, cTime &now);
+	
+	/**
+	* Reset and clear the timeout for the given action.
+	* @return 1 if timeout is cleared or 0 otherwise.
+	*/
+	int ClearTimeOut(tTimeOut);
+	
+	/**
+	* Close the connection with the given reason after msec milliseconds are elapsed.
+	* @param Reason The reason.
+	* @param msed Time in milliseconds before closing the connection.
+	*/
+	virtual void CloseNice(int msec, int Reason = 0);
+	
+	/**
+	* Close the connection with the given reason.
+	* @param Reason The reason.
+	*/
+	virtual void CloseNow(int Reason = 0);
+	
+	/**
+	* Return if the given login status flag is set or not.
+	* @param st Status flag.
+	* @return Zero if flag is not set or the value of the given status flag if set.
+	*/
 	unsigned int GetLSFlag(unsigned int st);
-	/** the ithe class that user may have if he validates password */
+	
+	/**
+	* Try to guess the class of the user. Remember a valid class is returned only when the user is validated
+	* @param ostr The message of the event
+	* @param level The log level of the event.
+	* @return The user class.
+	*/
 	int GetTheoricalClass()
 	{
-		if (!mRegInfo) return 0;
-		if(!mRegInfo->mEnabled) return 0;
+		if (!mRegInfo)
+			return 0;
+		if(!mRegInfo->mEnabled)
+			return 0;
 		//if (mRegInfo->mClass < 0) return 1; /* wtf ?*/
 		return mRegInfo->mClass;
 	}
-	/** this is called every period of time */
-	virtual int OnTimer(cTime &now);
-private:
-	cTime mTimeLastAttempt;
-	/** login status */
-	unsigned int mLogStatus;
-	//bool isCompressed;
-
-public: // Protected methods
-	/** Set's the timeout for given action, after timeout if not cleared, connection is closed */
-	int SetTimeOut(tTimeOut, double Sec, cTime &now);
-	/** storno the timeout */
-	int ClearTimeOut(tTimeOut);
-	/** return true if time is not out yet */
-	int CheckTimeOut(tTimeOut t, cTime &now);
-	/** this is called when write buffer gets empty */
-	void OnFlushDone();
-	/** return true if timeout is set */
-	//int IsSetTimeOut(tTimeOut);
+	
+	/**
+	* Check if the user needs a password.
+	* @return True if the user must provide a password, false otherwise.
+	*/
 	bool NeedsPassword();
 	
-protected: // Protected attributes
-	/** time out's */
+	/**
+	* This method is called when output/write buffer is flushed and got empty.
+	*/
+	void OnFlushDone();
+	
+	/**
+	* This method is called every period of time.
+	* @param now Current time.
+	* @return Always zero.
+	*/
+	virtual int OnTimer(cTime &now);
+	
+	/**
+	* Reset login status flag and set a new value.
+	* @param st Status flag.
+	*/
+	void ReSetLSFlag(unsigned int st);
+	
+	/**
+	* Set login status flag. Other flags are not override.
+	* @param st Status flag.
+	*/
+	void SetLSFlag(unsigned int st);
+	
+	/**
+	* Set the cUser object linked with the connection.
+	* @param usr Pointer to cUser object.
+	* @return True if successful, otherwise false.
+	*/
+	bool SetUser(cUser *usr);
+	
+	/**
+	* Send raw data to the user.
+	* @param data Raw data to send.
+	* @param AddPipe Set it to true if a pipe must be added to the end of data.
+	* @param Flush Set it to true if raw data should be send immediatly or stored in internal buffer.
+	* @return The result.
+	*/
+	int Send(string & data, bool AddPipe=true, bool Flush = true);
+	
+	/**
+	* Return a pointer to cServerDC object.
+	* @return The pointer to cServerDC object.
+	*/
+	inline cServerDC * Server(){return (cServerDC*) mxServer;}
+	
+	/**
+	* Set the timeout for the given action.
+	* If timeout is not cleared (action is timeout), the connection is closed.
+	* @param action The action.
+	* @param Sec Timeout in seconds.
+	* @param now Current time.
+	* @return 1 if timeout is set or 0 otherwise.
+	*/
+	int SetTimeOut(tTimeOut, double Sec, cTime &now);
+	
+	/**
+	* Log an event.
+	* @param ostr The message of the event.
+	* @param level The log level of the event.
+	* @return 1 if message is logged or 0 otherwise.
+	*/
+	virtual int StrLog(ostream & ostr, int level);
+   
+	// Pointer to cUser object
+	cUser * mpUser;
+	
+	// Client version
+	string mVersion;
+	
+	// Protocol extenstion supported by the client
+	unsigned mFeatures;
+	
+	// Pointer to cRegUserInfo that handles registration
+	cRegUserInfo *mRegInfo;
+	
+	// True if nicklist is sent on user login
+	bool mSendNickList;
+	
+	// True while sending nicklist
+	bool mNickListInProgress;
+	
+	// True if nicklist should be skipped
+	bool mSkipNickList;
+	
+	// Pointer to cConnType object that represent the type of connection
+	cConnType *mConnType;
+	
+	// Country code
+	string mCC;
+	
+	// Geographic zone according to country code
+	int mGeoZone;
+	
+	// Reason of why connection was closed
+	int mCloseReason;
+	
+ private:
+	// Last login attempt
+	cTime mTimeLastAttempt;
+	
+	// Login status flags
+	unsigned int mLogStatus;
+
+ protected:
+	/**
+	* This method is called before closing the connection.
+	* Send the redirect protocol message ($ForceMove) to the user.
+	* @return 1 if message is sent or 0 otherwise.
+	* @see CloseNice(int msec, int Reason = 0)
+	*/
+	int OnCloseNice();
+   
+	// Timeout handlers
 	cTimeOut mTO[eTO_MAXTO];
-	/** time ins */
+	
+	// Structure that is used to ping the user and check if he is stil alive
 	struct sTimes
 	{
 		cTime key;
 		cTime ping;
 		sTimes():key(0l),ping(0l){};
 	};
+	// Ping handler
 	sTimes mT;
+	
+	// Search result counter
 	int mSRCounter;
-protected: // Protected methods
-	/** function called before closing nicely */
-	int OnCloseNice();
 };
 
 };
