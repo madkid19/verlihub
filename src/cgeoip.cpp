@@ -24,15 +24,9 @@
 namespace nUtils {
 
 cGeoIP::cGeoIP()
+: mGI(GeoIP_new(GEOIP_STANDARD))
 {
-// 	const char * hostname;
-// const char * country_code;
-// const char * country_name;
-// GeoIPRegion * region;
-// GeoIPRecord * gir;
-// const char * org;
-// char * db_info;
-	mGI = GeoIP_new(GEOIP_STANDARD);
+	
 }
 
 bool cGeoIP::GetCC(const string &hostname, string &CC)
@@ -52,6 +46,5 @@ cGeoIP::~cGeoIP()
 {
 	GeoIP_delete(mGI);
 }
-
 
 };

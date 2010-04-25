@@ -27,17 +27,34 @@ using std::string;
 
 namespace nUtils {
 
-/**
-class is able to convert ip address to country code
-
-@author Daniel Muller
-*/
+  /**
+  * Class to convert IP address or hostname to country code.
+  * 
+  * @author Daniel Muller
+  * @version 1.0
+  */
+  
 class cGeoIP{
-public:
+ public:
+	/**
+	* Class constructor.
+	*/
 	cGeoIP();
+	
+	/**
+	* Class destructor.
+	*/
 	~cGeoIP();
+	
+	/**
+	* Return the country code for the given hostname.
+	* @param hostname The hostname.
+	* @param CC String where to store country code.
+	* @return True if it is possible to get country code, false otherwise.
+	*/
 	bool GetCC(const string &hostname, string &CC);
-private:
+ private:
+	// GeoIP instance
 	GeoIP * mGI;
 };
 
