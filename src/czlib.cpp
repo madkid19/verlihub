@@ -69,6 +69,7 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 	if(zBufferPos < outLen) {
 		cout << "Fallback to raw data (compressed size: " << outLen << " bytes; raw size: " << zBufferPos << " bytes)";
 		outLen = zBufferPos;
+		zBufferPos = 0;
 		return zBuffer;
 	}
 	
