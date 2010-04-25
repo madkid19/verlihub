@@ -120,7 +120,6 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -130,21 +129,21 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	static string omsg;
 	ostringstream os;
 
-	// log this event
-	if(conn->Log(3)) conn->LogStream() << "User " << nick << " tries to login" << endl;
+	// Log new user
+	if(conn->Log(3))
+		conn->LogStream() << "User " << nick << " tries to login" << endl;
 
-	// test valid ip and nick, close conn eventually
-	if(!mS->ValidateUser(conn, nick))
-	{
+	// Check if nick is valid or close the connection
+	if(!mS->ValidateUser(conn, nick)) {
 		conn->CloseNice(1000,eCR_INVALID_USER);
 		return -1;
 	}
-
-	int limit = mS->mC.max_users_total; // user limit
+	// User limit
+	int limit = mS->mC.max_users_total;
 	int limit_cc = mS->mC.max_users[conn->mGeoZone];
 	int limit_extra = 0;
 
-	// calculate user's limit
+	// Calculate user limits
 	if(conn->GetTheoricalClass() == eUC_REGUSER ) limit_extra+=mS->mC.max_extra_regs;
 	if(conn->GetTheoricalClass() == eUC_VIPUSER ) limit_extra+=mS->mC.max_extra_vips;
 	if(conn->GetTheoricalClass() == eUC_OPERATOR) limit_extra+=mS->mC.max_extra_ops;
@@ -161,8 +160,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		)
 	) {
 		os << mS->mC.msg_hub_full << "\r\nOnline users =" << mS->mUserCountTot;
-		if(conn->Log(2))
-		{
+		if(conn->Log(2)) {
 			conn->LogStream()
 				<< "Hub is full (" << mS->mUserCountTot
 				<< "/" << limit << "::"
@@ -178,7 +176,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		mS->mUserCount[conn->mGeoZone] ++;
 	}
 
-	// send hubname
+	// Send hub name
 	cDCProto::Create_HubName(omsg,mS->mC.hub_name,mS->mC.hub_topic);
 	#ifndef WITHOUT_PLUGINS
 	if(cServerDC::sCurrentServer->mCallBacks.mOnHubName.CallAll(nick, omsg))
@@ -187,22 +185,18 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		conn->Send(omsg);
 	}
 
-	if (conn->NeedsPassword())
-	{
+	if (conn->NeedsPassword()) {
 		omsg="$GetPass";
 		conn->Send(omsg);
-	}
-	else
-	{ // the user doesn't need password, so he's already in
+	} else { 
 		mS->DCHello(nick, conn);
 		conn->SetLSFlag(eLS_PASSWD);
 	}
-	try
-	{
+	
+	try {
 		cUser *NewUser = new cUser(nick);
 		NewUser->mFloodPM.SetParams(0.0, 1. * mS->mC.int_flood_pm_period, mS->mC.int_flood_pm_limit);
-		if(!conn->SetUser(NewUser))
-		{
+		if(!conn->SetUser(NewUser)) {
 			conn->CloseNow();
 			return -1;
 		}
@@ -214,17 +208,17 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		}
 		#endif
 		
-	}catch(...)
-	{
-		if(mS->ErrLog(2)) mS->LogStream() << "Unhandled exception in cServerDC::DC_ValidateNick" << endl;
-		omsg="Sorry :(";
-		if(conn->Log(2)) conn->LogStream() << "Fatal error calling SetUser; closing..." << endl;
+	} catch(...) {
+		if(mS->ErrLog(2))
+			mS->LogStream() << "Unhandled exception in cServerDC::DC_ValidateNick" << endl;
+		omsg = "Sorry :(";
+		if(conn->Log(2))
+			conn->LogStream() << "Fatal error calling SetUser; closing..." << endl;
 		mS->ConnCloseMsg(conn,omsg,1000);
 		return -1;
 	}
 
-	if (conn->mRegInfo && (conn->mRegInfo->mClass == eUC_PINGER))
-	{
+	if (conn->mRegInfo && (conn->mRegInfo->mClass == eUC_PINGER)) {
 		conn->mpUser->Register();
 		mS->mR->Login(conn, nick);
 	}
@@ -234,7 +228,6 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_Key(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -262,7 +255,6 @@ int cDCProto::DC_Key(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -270,31 +262,28 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 
 	string omsg;
 	
-	if(!conn->mpUser)
-	{
+	if(!conn->mpUser) {
 		omsg = "Bad login sequence; you must provide a valid nick first.";
-		if(conn->Log(1))conn->LogStream() << "Mypass before validatenick" << endl;
+		if(conn->Log(1))
+			conn->LogStream() << "Mypass before validatenick" << endl;
 		mS->ConnCloseMsg(conn,omsg,1000, eCR_LOGIN_ERR);
 		return -1;
 	}
-	if(conn->mpUser->CheckPwd(pwd)) // check the password
-	{
+	// Check user password
+	if(conn->mpUser->CheckPwd(pwd)) {
 		conn->SetLSFlag( eLS_PASSWD );
-		// setup the user class..
+		// Setup user class
 		conn->mpUser->Register();
 		mS->mR->Login(conn, conn->mpUser->mNick);
 		mS->DCHello(conn->mpUser->mNick,conn);
-		// if op .. send LoggedIn and Oplist
-		if(conn->mpUser->mClass >= eUC_OPERATOR)
-		{
+		// If op send LoggedIn and Oplist
+		if(conn->mpUser->mClass >= eUC_OPERATOR) {
 			omsg = "$LogedIn ";
 			omsg+= conn->mpUser->mNick;
 			conn->Send(omsg, true);
 		}
-	}
-	else // wrong password
-	{
-	      // User is regged so report it
+	} else { // wrong password
+		// User is regged so report it
 		if(conn->mRegInfo && conn->mRegInfo->getClass() > 0) {
 			omsg = "$BadPass";
 			conn->Send(omsg);
@@ -316,13 +305,13 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_Version(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
 	conn->SetLSFlag( eLS_VERSION );
 	string &version=msg->ChunkString(eCH_1_PARAM);
-	if(conn->Log(3)) conn->LogStream() << "Version:" << version << endl;
+	if(conn->Log(5))
+		conn->LogStream() << "Version:" << version << endl;
 	//TODO Check protocol version
 	conn->mVersion = version;
 	return 1;
@@ -686,7 +675,6 @@ int cDCProto::DC_GetINFO(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -703,7 +691,8 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 			msg->ChunkString(eCH_PM_NICK) != conn->mpUser->mNick
 		)
 	{
-		if(conn->Log(2)) conn->LogStream() << "Pretend to be someone else in PM (" << msg->ChunkString(eCH_PM_FROM) << ")." <<endl;
+		if(conn->Log(2))
+			conn->LogStream() << "Pretend to be someone else in PM (" << msg->ChunkString(eCH_PM_FROM) << ")." <<endl;
 		conn->CloseNow();
 		return -1;
 	}
@@ -711,11 +700,9 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 	now.Get();
 	int fl = 0;
 	fl = - conn->mpUser->mFloodPM.Check(now);
-	if((conn->mpUser->mClass < eUC_OPERATOR) && fl )
-	{
+	if((conn->mpUser->mClass < eUC_OPERATOR) && fl) {
 		if(conn->Log(1)) conn->LogStream() << "Floods PM (" << msg->ChunkString(eCH_PM_FROM) << ")." <<endl;
-		if( fl >= 3)
-		{
+		if(fl >= 3) {
 			mS->DCPrivateHS("Flooding PM", conn);
 			mS->ReportUserToOpchat(conn,string("*** PM Flood detected: ")+msg->ChunkString(eCH_PM_MSG));
 			conn->CloseNow();
@@ -725,12 +712,9 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 
 	cUser::tFloodHashType Hash = 0;
 	Hash = tHashArray<void*>::HashString(msg->ChunkString(eCH_PM_MSG));
-	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR))
-	{
-		if(Hash == conn->mpUser->mFloodHashes[eFH_PM])
-		{
-			if( conn->mpUser->mFloodCounters[eFC_PM]++ > mS->mC.max_flood_counter_pm)
-			{
+	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR)) {
+		if(Hash == conn->mpUser->mFloodHashes[eFH_PM]) {
+			if( conn->mpUser->mFloodCounters[eFC_PM]++ > mS->mC.max_flood_counter_pm) {
 					mS->DCPrivateHS("Flooding PM", conn);
 					mS->ReportUserToOpchat(conn,string("*** PM Same Message Flood detected: ")+msg->ChunkString(eCH_PM_MSG));
 					conn->CloseNow();
@@ -742,33 +726,29 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 	}
 	conn->mpUser->mFloodHashes[eFH_PM] = Hash;
 
-	// find other user
-	cUser *other = mS->mUserList.GetUserByNick ( str );
-	if(!other) return -2;
+	// Find other user
+	cUser *other = mS->mUserList.GetUserByNick(str);
+	if(!other)
+		return -2;
 	//NOTE: It seems to be there a crash on Windows when using Lua plugin and a Lua script calls DelRobot
-	if(conn->mpUser->mClass + mS->mC.classdif_pm < other->mClass)
-	{
+	if(conn->mpUser->mClass + mS->mC.classdif_pm < other->mClass) {
 		mS->DCPrivateHS("You cannot talk to this user.", conn);
 		mS->DCPublicHS("You cannot talk to this user.", conn);
 		return -4;
 	}
 
-	// log it
-	if(mS->Log(5)) mS->LogStream()
-		<< "PM from:" << conn->mpUser->mNick
-		<< " To: " << msg->ChunkString(eCH_PM_TO) << endl;
+	// Log it
+	if(mS->Log(5))
+		mS->LogStream() << "PM from:" << conn->mpUser->mNick << " To: " << msg->ChunkString(eCH_PM_TO) << endl;
 
 	#ifndef WITHOUT_PLUGINS
 	if (!mS->mCallBacks.mOnParsedMsgPM.CallAll(conn, msg)) return 0;
 	#endif
 
-   // send it
-	if(other->mxConn)
-	{
+	// Send it
+	if(other->mxConn) {
 		other->mxConn->Send(msg->mStr);
-	}
-	else if (mS->mRobotList.ContainsNick(str))
-	{
+	} else if (mS->mRobotList.ContainsNick(str)) {
 		((cUserRobot*)mS->mRobotList.GetUserBaseByNick(str))->ReceiveMsg(conn, msg);
 	}
 	return 0;
@@ -789,16 +769,14 @@ bool cDCProto::CheckChatMsg(const string &text, cConnDC *conn)
 	err_message = Server->mL.chat_msg_long;
 	
 	if(count > limit) IsWrong = true;
-	else if(!LimitLines(text,Server->mC.max_chat_lines))
-	{
+	else if(!LimitLines(text,Server->mC.max_chat_lines)) {
 		limit = Server->mC.max_chat_lines;
 		count = 0;
 		err_message = Server->mL.chat_msg_lines;
 		IsWrong = true;
 	} else return true;
 	
-	if(IsWrong)
-	{
+	if(IsWrong) {
 		ReplaceVarInString(err_message,"LIMIT",err_message, limit);
 		ReplaceVarInString(err_message,"COUNT",err_message, count);
 		ReplaceVarInString(err_message,"MSG",err_message, text);
@@ -807,7 +785,6 @@ bool cDCProto::CheckChatMsg(const string &text, cConnDC *conn)
 	}
 }
 
-/** Send a message in mainchat */
 int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -817,21 +794,19 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	
 	cUser::tFloodHashType Hash = 0;
 	Hash = tHashArray<void*>::HashString(msg->mStr);
-	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_CHAT]))
-	{
+	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_CHAT])) {
 		return -5;
 	}
 	conn->mpUser->mFloodHashes[eFH_CHAT] = Hash;
 
 	stringstream omsg;
 	bool send=false;
-	// set minimum chat delay
+	// Set minimum chat delay
 	long delay=mS->mC.int_chat_ms; 
 	if(conn->mpUser->mClass >=  eUC_VIPUSER) delay=0;
 
-	// check if nick is ok
-	if( (msg->ChunkString(eCH_CH_NICK) != conn->mpUser->mNick) )
-	{
+	// Check if nick is ok
+	if( (msg->ChunkString(eCH_CH_NICK) != conn->mpUser->mNick) ) {
 		omsg << "You are not " << msg->ChunkString(eCH_CH_NICK) << ".";
 		mS->DCPublicHS(omsg.str(),conn);
 		conn->CloseNice(1000, eCR_CHAT_NICK);
@@ -840,9 +815,8 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 
 	string &text= msg->ChunkString(eCH_CH_MSG);
 
-	// check if delay is ok
-	if(!mS->MinDelayMS(conn->mpUser->mT.chat,delay))
-	{
+	// Check if delay is ok
+	if(!mS->MinDelayMS(conn->mpUser->mT.chat,delay)) {
 		cTime now;
 		cTime diff=now-conn->mpUser->mT.chat;
 		omsg << "Not sent: " <<  text << endl << "Minimum delay for chat is: " << delay << "ms. And you made: " << diff.AsPeriod() << " " << diff.MiliSec();
@@ -863,16 +837,14 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text, conn)) 
 		return 0;
 
-	// if this is a kick message, process it separately
+	// If this is a kick message, process it separately
 	if( (mKickChatPattern.Exec(text) >= 4) &&
 		(
 			!mKickChatPattern.PartFound(1) ||
 			(mKickChatPattern.Compare(2,text,conn->mpUser->mNick) == 0)
 		)
 	){
-		if (conn->mpUser->mClass >= eUC_OPERATOR)
-		{
-			// now it is for sure a kick-like message
+		if (conn->mpUser->mClass >= eUC_OPERATOR) {
 			string kick_reason;
 			mKickChatPattern.Extract(4,text,kick_reason);
 			string nick;
@@ -888,8 +860,9 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 		send = false;
 	#endif
 
-	// finally send the message
-	if(send) mS->mChatUsers.SendToAll(msg->mStr);
+	// Finally send the message
+	if(send)
+		mS->mChatUsers.SendToAll(msg->mStr);
 	return 0;
 }
 

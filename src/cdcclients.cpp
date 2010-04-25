@@ -249,8 +249,10 @@ namespace nDirectConnect {
 			case eLC_ADD: 
 			case eLC_MOD:
 				help_str = "!(add|mod)tag <name>"
-						"[ -t <tag_id>]"
+						" -t <tag_id>"
 						"[ -b <\"yes/no\">]"
+						"[ -v <\"min_version\">]"
+						"[ -V <\"max_version\">]"
 						"[ -e <enable/disable>]";
 				break;
 			case eLC_DEL:

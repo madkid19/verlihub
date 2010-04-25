@@ -29,9 +29,7 @@ using nUtils::cPCRE;
 using namespace std;
 using namespace nServer;
 
-/**
-  * \brief Encaplulates all Direct Connect related classes methods etc..
-  */
+// All Direct Connect related classes.
 namespace nDirectConnect {
 
 	namespace nTables{ class cConnType; };
@@ -41,9 +39,7 @@ namespace nDirectConnect {
 	class cUser;
 	class cUserBase;
 
-/**
-  * \brief Mostly DC protocol related stuff
-  */
+// Protocol stuff
 namespace nProtocol {
 
 using namespace ::nDirectConnect;
@@ -51,40 +47,76 @@ using ::nDirectConnect::cConnDC;
 
 class cMessageDC;
 
-/**protocol part of the server
-  *@author Daniel Muller
-  */
+/**
+* Protocol message managment class.
+*
+* @author Daniel Muller
+* @version 1.1
+*/
 class cDCProto : public cProtocol
 {
 	friend class ::nDirectConnect::cServerDC;
-public:
+ public:
+	/**
+	* Class constructor.
+	* @param serv An instance of Direct Connect hub server.
+	*/
 	cDCProto(cServerDC *serv);
+	
+	/**
+	* Class destructor.
+	*/
 	virtual ~cDCProto(){};
-	virtual int TreatMsg(cMessageParser *msg, cAsyncConn *conn); //override
+	
+	/**
+	* Create the parser to process protocol messages.
+	* @return serv An instance of the parser
+	*/
 	virtual cMessageParser *CreateParser();
+	
+	/**
+	* Delete a parser.
+	* @param parse The parser to delete.
+	*/
 	virtual void DeleteParser(cMessageParser *);	
 	
-	/** sends userlist and oplist */
+	/**
+	* Send user and op lists to the user.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
 	int NickList(cConnDC *);
-	/** test if text is a console command and parse it by console eventually
-	return 1 if it was a command else return 0 */
- 	int ParseForCommands(const string &, cConnDC *);
+	
+	/**
+	* Check if the message is a command and pass it to the console.
+	* @param msg The message.
+	* @param conn User connection.
+	* @return 1 if the message is a command, 0 otherwise.
+	*/
+	int ParseForCommands(const string &, cConnDC *);
+	
+	/**
+	* Process a given protocol message that has been already parsed.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	virtual int TreatMsg(cMessageParser *msg, cAsyncConn *conn);
+	
+	
 protected:
-	cServerDC *mS;
-	/** Treat the DC message in a appropriate way */
-	int DC_ValidateNick(cMessageDC *msg, cConnDC *conn);
-	/** Treat the DC message in a appropriate way */
-	int DC_Key(cMessageDC * msg, cConnDC * conn);
-	/** Treat the DC message in a appropriate way */
+	
+	/**
+	* Treat $MyPass protocol message.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
 	int DC_MyPass(cMessageDC * msg, cConnDC * conn);
+	
+	
 	/** Treat the DC message in a appropriate way */
 	int DC_GetNickList(cMessageDC * msg, cConnDC * conn);
-	/** Treat the DC message in a appropriate way */
-	int DC_Version(cMessageDC * msg, cConnDC * conn);
-	/** Treat the DC message in a appropriate way */
-	int DC_Chat(cMessageDC * msg, cConnDC * conn);
-	/** Treat the DC message in a appropriate way */
-	int DC_To(cMessageDC * msg, cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_GetINFO(cMessageDC * msg, cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
@@ -103,12 +135,6 @@ protected:
 	int DC_Search(cMessageDC * msg, cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_SR(cMessageDC * msg, cConnDC * conn);
-	/** Treat the DC message in a appropriate way */
-	//int DC_ZON(cMessageDC * msg, cConnDC * conn);
-
-	/****************************/
-	/** extended supports features */
-	int DCE_Supports(cMessageDC * msg, cConnDC * conn);
 	/** Network info (neo Modus) */
 	int DCM_NetInfo(cMessageDC * msg, cConnDC * conn);
 	/** operator ban */
@@ -123,31 +149,185 @@ protected:
 	int DCO_WhoIP(cMessageDC * msg, cConnDC * conn);
 	/** operator getbanlist filtered by the parameter */
 	int DCO_Banned(cMessageDC * msg, cConnDC * conn);
-	/** get hub topic */
-	int DCO_GetTopic(cMessageDC * msg, cConnDC * conn);
+
 	/** operator set hub topic */
-	int DCO_SetTopic(cMessageDC * msg, cConnDC * conn);public: // Public attributes
-	const string &GetMyInfo(cUserBase * User, int ForClass);
-	static void Create_MyINFO(string &dest, const string&nick, const string &desc, const string&speed, const string &mail, const string &share);
-	void Append_MyInfoList(string &dest, const string &MyINFO, const string &MyINFO_basic, bool DoBasic);
-	static void Create_PM(string &dest,const string &from, const string &to, const string &sign, const string &text);
-	static void Create_PMForBroadcast(string &start,string &end, const string &from, const string &sign, const string &text);
-	static void Create_HubName(string &dest, string &name, string &topic);
+	int DCO_SetTopic(cMessageDC * msg, cConnDC * conn);
+  
+ public:
+	/**
+	* Check if a message is valid (max length and max lines per message). 
+	* If message is not valid, a proper message describing the problem is sent to the user.
+	* @param text The message.
+	* @param conn User connection.
+	* @return True if the message is valid or false otherwise.
+	*/
+	static bool CheckChatMsg(const string &text, cConnDC *conn);
+	
+	/**
+	* Create a message to send in mainchat.
+	* @param dest String to store the result.
+	* @param nick The sender.
+	* @param text The message.
+	*/
 	static void Create_Chat(string &dest, const string&nick,const string &text);
+	
+	/**
+	* Create protocol message for hub name ($HubName).
+	* Hub topic, if not empty, is also appended after hub name.
+	* @param dest String to store the result.
+	* @param name Hub name.
+	* @param topice Hub topic.
+	*/
+	static void Create_HubName(string &dest, string &name, string &topic);
+	
+	/**
+	* Create MyINFO string ($MyINFO protocol message).
+	* @param dest String to store MyINFO.
+	* @param nick Nickname.
+	* @param desc Description.
+	* @param speed Speed.
+	* @param mail E-Mail address.
+	* @param share Share in bytes.
+	*/
+	static void Create_MyINFO(string &dest, const string&nick, const string &desc, const string&speed, const string &mail, const string &share);
+	
+	/**
+	* Create a private message ($To protocol message).
+	* @param dest String to store private message.
+	* @param from The sender.
+	* @param to The recipient.
+	* @param sign The sender.
+	* @param text The message.
+	*/
+	static void Create_PM(string &dest,const string &from, const string &to, const string &sign, const string &text);
+	
+	/**
+	* Create a private message that should be sent to everyone ($To protocol message).
+	* @param start Destination filled with first part of the protocol message ($To: ).
+	* @param end Destination that contains the rest of the protocol message.
+	* @param from The sender.
+	* @param sign The sender.
+	* @param text The message.
+	*/
+	static void Create_PMForBroadcast(string &start,string &end, const string &from, const string &sign, const string &text);
+	
+	/**
+	* Create quit protocol message ($Quit).
+	* @param dest String to store quit message.
+	* @param nick The nick.
+	*/
 	static void Create_Quit(string &dest, const string&nick);
-	cConnType *ParseSpeed(const std::string &speed);
+	
+	/**
+	* Treat mainchat messages.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_Chat(cMessageDC * msg, cConnDC * conn);
+	
+	/**
+	* Treat $Key protocol message.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_Key(cMessageDC * msg, cConnDC * conn);
+	
+	/**
+	* Treat $To protocol message.
+	* Check also private message flood.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_To(cMessageDC * msg, cConnDC * conn);
+	
+	
+	/**
+	* Treat $ValidateNick protocol message.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_ValidateNick(cMessageDC *msg, cConnDC *conn);
+	
+	/**
+	* Treat $Version protocol message.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_Version(cMessageDC * msg, cConnDC * conn);
+	
+	/**
+	* Parse client's extensions and send $Support.
+	* @param msg The parse message.
+	* @param conn User connection.
+	* @return Always 0.
+	*/
+	int DCE_Supports(cMessageDC * msg, cConnDC * conn);
+	
+	/**
+	* Send hub topic to an user.
+	* @param msg Not used.
+	* @param conn User connection.
+	* @return Always 0.
+	*/
+	int DCO_GetTopic(cMessageDC * msg, cConnDC * conn);
+	
+	/**
+	* Escape DC string.
+	* @param msg The message to escape.
+	* @param dest Result message.
+	* @param WithDCN If true /%DCNXXX%/ is used instead of $#XXXX;
+	*/
 	static void EscapeChars(const string &, string &, bool WithDCN = false);
+	
+	/**
+	* Escape DC string.
+	* @param msg The message to escape.
+	* @param len The length of the string
+	* @param WithDCN If true /%DCNXXX%/ is used instead of $#XXXX;
+	*/
 	static void EscapeChars(const char *, int, string &, bool WithDCN = false);
+	
+	/**
+	* Check if the IP belongs to private network.
+	* @param ip IP address (DOT-notation).
+	* @return True if the IP belongs to private network or false otherwise.
+	*/
+	static bool isLanIP(string);
+	
+	/**
+	* Calculate the key from the given lock.
+	* @param lock The lock.
+	* @param fkey The result (key).
+	*/
+	static void Lock2Key(const string &lock, string &fkey);
+	
+	/**
+	* Parse speed chunck and return a pointer to connection type object.
+	* If it is not possible to get a connection type, a default object is returned
+	* @param speed The speed.
+	* @return Pointer to connection type object.
+	*/
+	cConnType *ParseSpeed(const std::string &speed);
+	
+	const string &GetMyInfo(cUserBase * User, int ForClass);
+	void Append_MyInfoList(string &dest, const string &MyINFO, const string &MyINFO_basic, bool DoBasic);
 	static void UnEscapeChars(const string &, string &, bool WithDCN = false);
 	static void UnEscapeChars(const string &, char *, int &len ,bool WithDCN = false);
-	static void Lock2Key(const string &lock, string &fkey);
-	static bool CheckChatMsg(const string &text, cConnDC *conn);
 	static bool CheckIP(cConnDC * conn, string &ip);
-	static bool isLanIP(string);
-	/** regex for kick chat messages */
+	
+	// Message kick regex
 	cPCRE mKickChatPattern;
+	
+	// Ban regex
 	cPCRE mKickBanPattern;
 
+	// Direct Connect hub server
+	cServerDC *mS;
 };
 };
 };
