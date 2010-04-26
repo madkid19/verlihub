@@ -907,7 +907,6 @@ bool cDCProto::isLanIP(string ip)
 	return false;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 {
 	string ostr;
@@ -938,8 +937,9 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	string ctm = msg->mStr;
 
 	cUser *other = mS->mUserList.GetUserByNick ( nick );
-	// check nick and connection
+	// Check nick and connection
 	if(!other || !other->mxConn) return -1;
+	
 	// Check if the user can download and also if the other user hides the share
 	if((conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) || other->mHideShare) return -4;
 
@@ -970,7 +970,7 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 
 
 	if(other->mxConn)
-		other->mxConn->Send( ctm );
+		other->mxConn->Send(ctm);
 	return 0;
 }
 
@@ -1019,23 +1019,20 @@ int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn )
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 {
 	string ostr;
 	ostringstream os;
 	if(msg->SplitChunks()) return -1;
 
-	// check if user is logged in at least
-	if(!conn->mpUser)
-	{
+	// Check if user is logged in
+	if(!conn->mpUser) {
 		if(conn->Log(1)) conn->LogStream() << "Can't search without user" << endl;
 		conn->CloseNow();
 		return -1;
 	}
 	if(!conn->mpUser->mInList) return -2;
-	if(!conn->mpUser->Can(eUR_SEARCH, mS->mTime.Sec(), 0))
-	{
+	if(!conn->mpUser->Can(eUR_SEARCH, mS->mTime.Sec(), 0)) {
 		unsigned long use_hub_share= 0;
 		if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
 			use_hub_share = mS->mC.min_share_use_hub;	
@@ -1047,15 +1044,13 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		use_hub_share = use_hub_share*1024*1024;
 		if(conn->mpUser->mShare < use_hub_share) {
 			ReplaceVarInString(mS->mC.search_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
+			mS->DCPrivateHS(ostr, conn);
 		}
-		mS->DCPrivateHS(ostr, conn);
 		return -4;
 	}
 
-	if(conn->mpUser->mClass < eUC_OPERATOR) 
-	{
-		switch(msg->mType)
-		{
+	if(conn->mpUser->mClass < eUC_OPERATOR)  {
+		switch(msg->mType) {
 			case eDC_MSEARCH:
 			case eDC_SEARCH:
 				if(msg->ChunkString(eCH_AS_SEARCHPATTERN).size() < mS->mC.min_search_chars) {
@@ -1076,8 +1071,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		};
 	}
 
-	if (mS->mSysLoad >= (eSL_CAPACITY + conn->mpUser->mClass))
-	{
+	if (mS->mSysLoad >= (eSL_CAPACITY + conn->mpUser->mClass)) {
 		if(mS->Log(3)) mS->LogStream() << "Skipping search, system is: " << mS->mSysLoad << endl;
 		os << "Sorry hub is busy now, no search, try later..";
 		mS->DCPublicHS(os.str(),conn);
@@ -1085,17 +1079,14 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	}
 	cUser::tFloodHashType Hash = 0;
 	Hash = tHashArray<void*>::HashString(msg->mStr);
-	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_SEARCH]))
-	{
+	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_SEARCH])) {
 		return -4;
 	}
 	conn->mpUser->mFloodHashes[eFH_SEARCH] = Hash;
 
-	// todo kontorly
-	// calculate delay & do some verifications
+	// Calculate delay and do some checks
 	int delay=10;
-	switch(msg->mType)
-	{
+	switch(msg->mType) {
 		case eDC_MSEARCH:
 		case eDC_SEARCH:
 			delay=mS->mC.int_search;
@@ -1113,8 +1104,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 			delay=mS->mC.int_search_pas;
 			if(conn->mpUser->mClass ==  eUC_REGUSER) delay = mS->mC.int_search_reg_pass;
 			else if(conn->mpUser->mClass >  eUC_REGUSER) delay=int(1.5 * mS->mC.int_search_reg);
-			if(conn->mpUser->mNick != msg->ChunkString(eCH_PS_NICK))
-			{
+			if(conn->mpUser->mNick != msg->ChunkString(eCH_PS_NICK)) {
 				os << "Your nick isn't " << msg->ChunkString(eCH_PS_NICK) << " but " << conn->mpUser->mNick << " bye!";
 				mS->ConnCloseMsg(conn, os.str(),4000, eCR_SYNTAX);
 				return -1;
@@ -1123,8 +1113,8 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		default: return -5; break;
 	}
 
-	if(conn->mpUser->mClass >=  eUC_VIPUSER) delay=mS->mC.int_search_vip;
-	if(conn->mpUser->mClass >=  eUC_OPERATOR) delay=mS->mC.int_search_op;
+	if(conn->mpUser->mClass >=  eUC_VIPUSER) delay = mS->mC.int_search_vip;
+	if(conn->mpUser->mClass >=  eUC_OPERATOR) delay = mS->mC.int_search_op;
 	// verify the delay and the number of search
 	if(!mS->MinDelay(conn->mpUser->mT.search,delay)) {
 		if(conn->mpUser->mSearchNumber >= mS->mC.search_number) {
@@ -1136,10 +1126,9 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		conn->mpUser->mSearchNumber = 0;
 	}
 	conn->mpUser->mSearchNumber++;
-	// translate MultiSearch to Search
+	// Translate MultiSearch to Search
 	string omsg(msg->mStr);
-	if(msg->mType == eDC_MSEARCH)
-	{
+	if(msg->mType == eDC_MSEARCH) {
 		omsg="$Search ";
 		omsg+=msg->ChunkString(eCH_AS_ADDR);
 		omsg+=' ';
@@ -1151,8 +1140,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		return -2;
 	#endif
 
-	// send message finally
-	// todo use classdif_search , sendtoall with minclass
+	// Send message
 	if(msg->mType == eDC_SEARCH_PAS) {
 		conn->mSRCounter = 0;
 		mS->mActiveUsers.SendToAll(omsg, mS->mC.delayed_search);
@@ -1162,16 +1150,14 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks())
 		return -1;
 	if(!conn->mpUser || !conn->mpUser->mInList) return -2;
 	ostringstream os;
-	// check the nick
-	if(conn->mpUser->mNick != msg->ChunkString(eCH_SR_FROM))
-	{
+	// Check nickname
+	if(conn->mpUser->mNick != msg->ChunkString(eCH_SR_FROM)) {
 		if(conn->Log(1)) conn->LogStream() << "Claims to be someone else in search response. Dropping connection." << endl;
 		if(conn->mpUser)
 			os << "Your nick isn't " << msg->ChunkString(eCH_SR_FROM)
@@ -1180,11 +1166,12 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 		return -1;
 	}
 	string &str = msg->ChunkString(eCH_SR_TO);
-	cUser *other = mS->mUserList.GetUserByNick ( str );
-	// check other nick
-	if(!other) return -1;
+	cUser *other = mS->mUserList.GetUserByNick(str);
+	// Check other nick
+	if(!other)
+		return -1;
 
-	// cut off the end
+	// Cut the end
 	string ostr(msg->mStr,0 ,msg->mChunks[eCH_SR_TO].first - 1);
 
 	#ifndef WITHOUT_PLUGINS
@@ -1193,9 +1180,8 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	}
 	#endif
 
-	// send it
-	if((other->mxConn) && (!mS->mC.max_passive_sr || (other->mxConn->mSRCounter++ < mS->mC.max_passive_sr))) 
-	{
+	// Send it
+	if((other->mxConn) && (!mS->mC.max_passive_sr || (other->mxConn->mSRCounter++ < mS->mC.max_passive_sr))) {
 		other->mxConn->Send( ostr, true, false );
 	}
 	return 0;
@@ -1494,8 +1480,6 @@ int cDCProto::DCO_GetBanList(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Detect BOT that sends $BotINFO and send it $HubINFO string */
-
 int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -1529,7 +1513,6 @@ int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** who is with given ip */
 int cDCProto::DCO_WhoIP(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -1544,7 +1527,6 @@ int cDCProto::DCO_WhoIP(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** operator getbanlist filtered by the parameter */
 int cDCProto::DCO_Banned(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -1552,7 +1534,6 @@ int cDCProto::DCO_Banned(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Send hub's topic  */
 int cDCProto::DCO_GetTopic(cMessageDC *, cConnDC * conn)
 {
 	string topic("$HubTopic ");
