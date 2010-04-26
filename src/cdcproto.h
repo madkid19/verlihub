@@ -105,7 +105,15 @@ class cDCProto : public cProtocol
 	
 	
 protected:
-	
+
+	/**
+	* Treat $ConnectToMe protocol message.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_ConnectToMe(cMessageDC * msg, cConnDC * conn);
+  
 	/**
 	* Treat $MyPass protocol message.
 	* @param msg The parsed message.
@@ -114,6 +122,46 @@ protected:
 	*/
 	int DC_MyPass(cMessageDC * msg, cConnDC * conn);
 	
+	/**
+	* Treat $Search protocol message.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_Search(cMessageDC * msg, cConnDC * conn);
+	
+	/**
+	* Treat $SR protocol message.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_SR(cMessageDC * msg, cConnDC * conn);
+	
+	/**
+	* Treat $BotINFO protocol message.
+	* If the user client sent BotINFO in support, send also $HubINFO.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DCB_BotINFO(cMessageDC * msg, cConnDC * conn);
+	
+	/**
+	* Treat protocol message. NOT IMPLEMENTED.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DCO_Banned(cMessageDC * msg, cConnDC * conn);
+	
+	/**
+	* Treat $WhoIP protocol message and send requested users' IP.
+	* @param msg The parsed message.
+	* @param conn User connection.
+	* @return A negative number if an error occurs or zero otherwise.
+	*/
+	int DCO_WhoIP(cMessageDC * msg, cConnDC * conn);
 	
 	/** Treat the DC message in a appropriate way */
 	int DC_GetNickList(cMessageDC * msg, cConnDC * conn);
@@ -122,19 +170,13 @@ protected:
 	/** Treat the DC message in a appropriate way */
 	int DC_MyINFO(cMessageDC * msg, cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
-	int DC_ConnectToMe(cMessageDC * msg, cConnDC * conn);
-	/** Treat the DC message in a appropriate way */
 	int DC_Kick(cMessageDC * msg, cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_OpForceMove(cMessageDC * msg, cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_RevConnectToMe(cMessageDC * msg, cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
-	int DC_MultiConnectToMe(cMessageDC * msg, cConnDC * conn);
-	/** Treat the DC message in a appropriate way */
-	int DC_Search(cMessageDC * msg, cConnDC * conn);
-	/** Treat the DC message in a appropriate way */
-	int DC_SR(cMessageDC * msg, cConnDC * conn);
+	int DC_MultiConnectToMe(cMessageDC * msg, cConnDC * conn);	
 	/** Network info (neo Modus) */
 	int DCM_NetInfo(cMessageDC * msg, cConnDC * conn);
 	/** operator ban */
@@ -143,13 +185,7 @@ protected:
 	int DCO_UnBan(cMessageDC * msg, cConnDC * conn);
 	/** operator getbanlist */
 	int DCO_GetBanList(cMessageDC * msg, cConnDC * conn);
-	/** Bot information */
-	int DCB_BotINFO(cMessageDC * msg, cConnDC * conn);
-	/** who is with given ip */
-	int DCO_WhoIP(cMessageDC * msg, cConnDC * conn);
-	/** operator getbanlist filtered by the parameter */
-	int DCO_Banned(cMessageDC * msg, cConnDC * conn);
-
+	
 	/** operator set hub topic */
 	int DCO_SetTopic(cMessageDC * msg, cConnDC * conn);
   

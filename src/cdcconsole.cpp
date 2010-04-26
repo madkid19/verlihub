@@ -335,9 +335,9 @@ int cDCConsole::CmdQuit(istringstream &, cConnDC * conn, int code)
 bool cDCConsole::cfGetConfig::operator()()
 {
 	ostringstream os;
-/*TODO change to usercan*/;
+
 	if (mConn->mpUser->mClass < eUC_ADMIN) {
-		*mOS << "no rights ";
+		*mOS << "No rights ";
 		return false;
 	}
 	string file;
@@ -345,8 +345,7 @@ bool cDCConsole::cfGetConfig::operator()()
 	const int max = 60;
 	const int width = 5;
 	GetParStr(2, file);
-	if(!file.size()) 
-	{
+	if(!file.size())  {
 		for(it = mS->mC.mvItems.begin();it != mS->mC.mvItems.end();it++)
 			os << "\r\n[::]  " << setw(width) << setiosflags(ios::left) << mS->mC.mhItems.GetByHash(*it)->mName << setiosflags(ios::right) <<"    =   " << *(mS->mC.mhItems.GetByHash(*it)) << "\r\n";
 	} else {
@@ -483,7 +482,7 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	ostringstream os;
 	string omsg;
 	//This is here as manual values for true release info available to all
-	os << "\r\n[::] Release: Verlihub-0.9.9a (Monday October 26 2009)" << endl;
+	os << "\r\n[::] Release: Verlihub-0.9.9a (Monday April 26 2010)" << endl;
 	os << "[::] Authors: Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
 	os << "[::] Authors: chaosuk (chaos@dchublist.com)" << endl;
 	os << "[::] Contributors: Stefano, Intruder, Rolex, Frog" << endl;
@@ -579,7 +578,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			ReplaceVarInString(mOwner->mL.autoreg_nick_prefix, "prefix", omsg, prefix);
 			ReplaceVarInString(omsg, "nick", omsg, conn->mpUser->mNick);
 			mOwner->DCPublicHS(omsg,conn);
-			return 0;
+			return 1;
 		}
 		
 		user_share = conn->mpUser->mShare / (1024*1024);
