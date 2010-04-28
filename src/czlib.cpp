@@ -64,10 +64,9 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
     
 	outLen = strm.total_out + 5; /** $ZOn and pipe **/
 	deflateEnd(&strm);
-  
 	// If compressed data is bigger than raw data, fallback to raw data
 	if(zBufferPos < outLen) {
-		cout << "Fallback to raw data (compressed size: " << outLen << " bytes; raw size: " << zBufferPos << " bytes)";
+		
 		outLen = zBufferPos;
 		zBufferPos = 0;
 		return zBuffer;
