@@ -811,6 +811,7 @@ MYSQL_VERSION
 MYSQL_LIBS
 MYSQL_CFLAGS
 MYSQL_CONFIG
+SYSTEM
 CXXCPP
 CPP
 OTOOL64
@@ -2548,15 +2549,6 @@ am__tar='${AMTAR} chof - "$$tardir"'; am__untar='${AMTAR} xf -'
 
 
 
-
-{ $as_echo "$as_me:$LINENO: result: ***
-*** Checking compiler...
-***
-" >&5
-$as_echo "***
-*** Checking compiler...
-***
-" >&6; }
 
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
@@ -4854,13 +4846,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4857: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4849: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4860: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4852: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4863: output\"" >&5)
+  (eval echo "\"\$as_me:4855: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -6066,7 +6058,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6069 "configure"' > conftest.$ac_ext
+  echo '#line 6061 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8639,11 +8631,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8642: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8634: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8646: \$? = $ac_status" >&5
+   echo "$as_me:8638: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8978,11 +8970,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8981: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8973: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8985: \$? = $ac_status" >&5
+   echo "$as_me:8977: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9083,11 +9075,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9086: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9078: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9090: \$? = $ac_status" >&5
+   echo "$as_me:9082: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9138,11 +9130,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9141: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9133: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9145: \$? = $ac_status" >&5
+   echo "$as_me:9137: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11951,7 +11943,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 11954 "configure"
+#line 11946 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12047,7 +12039,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 12050 "configure"
+#line 12042 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14067,11 +14059,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14070: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14062: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14074: \$? = $ac_status" >&5
+   echo "$as_me:14066: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14166,11 +14158,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14169: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14161: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14173: \$? = $ac_status" >&5
+   echo "$as_me:14165: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14218,11 +14210,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14221: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14213: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14225: \$? = $ac_status" >&5
+   echo "$as_me:14217: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15223,6 +15215,7 @@ fi
 
 
 
+have_freebsd=""
 export PATH=".:$am_aux_dir:$PATH"
 { $as_echo "$as_me:$LINENO: checking host system type" >&5
 $as_echo_n "checking host system type... " >&6; }
@@ -15316,14 +15309,6 @@ _ACEOF
 esac
 echo "Your OS is $host"
 
-{ $as_echo "$as_me:$LINENO: result: ***
-*** Checking 3rd party libraries (mysql, prec, geoip, zlib, etc.)...
-***
-" >&5
-$as_echo "***
-*** Checking 3rd party libraries (mysql, prec, geoip, zlib, etc.)...
-***
-" >&6; }
 
 { $as_echo "$as_me:$LINENO: checking for mysql-devel" >&5
 $as_echo_n "checking for mysql-devel... " >&6; }
@@ -16372,7 +16357,7 @@ else
   PCRE_LIBS="$ac_save_PCRE_LIBS"
   PCRE_VERSION="$ac_save_PCRE_VERSION"
 
-			echo "Install pcre devel"
+			echo "Please install pcre-devel package"
 			exit -1
 
 fi
@@ -16872,6 +16857,13 @@ if test x$ac_cv_path_lib_geoip_present = xyes ; then
 		    CXXFLAGS="$CXXFLAGS $GEOIP_CFLAGS"
 		    echo "adding $GEOIP_CFLAGS to CXXFLAGS"
 		    echo "adding $GEOIP_LIBS to LDFLAGS"
+		    		    if test $SYSTEM = "FREEBSD"  ; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_LIBGEOIP 1
+_ACEOF
+
+		    fi;
 
 else
 # Restore saved variables if test fails
@@ -16890,6 +16882,80 @@ fi
 
 
 
+
+{ $as_echo "$as_me:$LINENO: checking for GeoIP_new in -lGeoIP" >&5
+$as_echo_n "checking for GeoIP_new in -lGeoIP... " >&6; }
+if test "${ac_cv_lib_GeoIP_GeoIP_new+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lGeoIP  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char GeoIP_new ();
+int
+main ()
+{
+return GeoIP_new ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 $as_test_x conftest$ac_exeext
+       }; then
+  ac_cv_lib_GeoIP_GeoIP_new=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_GeoIP_GeoIP_new=no
+fi
+
+rm -rf conftest.dSYM
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_GeoIP_GeoIP_new" >&5
+$as_echo "$ac_cv_lib_GeoIP_GeoIP_new" >&6; }
+if test "x$ac_cv_lib_GeoIP_GeoIP_new" = x""yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGEOIP 1
+_ACEOF
+
+  LIBS="-lGeoIP $LIBS"
+
+fi
 
 { $as_echo "$as_me:$LINENO: checking for pcre_get_stringnumber in -lpcre" >&5
 $as_echo_n "checking for pcre_get_stringnumber in -lpcre... " >&6; }
@@ -17573,81 +17639,6 @@ else
 fi
 
 
-{ $as_echo "$as_me:$LINENO: checking for GeoIP_new in -lGeoIP" >&5
-$as_echo_n "checking for GeoIP_new in -lGeoIP... " >&6; }
-if test "${ac_cv_lib_GeoIP_GeoIP_new+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lGeoIP  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char GeoIP_new ();
-int
-main ()
-{
-return GeoIP_new ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_cxx_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_GeoIP_GeoIP_new=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_GeoIP_GeoIP_new=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_GeoIP_GeoIP_new" >&5
-$as_echo "$ac_cv_lib_GeoIP_GeoIP_new" >&6; }
-if test "x$ac_cv_lib_GeoIP_GeoIP_new" = x""yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBGEOIP 1
-_ACEOF
-
-  LIBS="-lGeoIP $LIBS"
-
-fi
-
-
 
 
 
@@ -18081,14 +18072,6 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 
-{ $as_echo "$as_me:$LINENO: result: ***
-*** Checking header files...
-***
-" >&5
-$as_echo "***
-*** Checking header files...
-***
-" >&6; }
 
 
 

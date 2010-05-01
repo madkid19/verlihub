@@ -43,10 +43,9 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/verlihub.spec.in $(srcdir)/verlihub_config.in \
 	$(top_srcdir)/configure $(top_srcdir)/share/Makefile.in \
-	$(top_srcdir)/share/sql/default_pi_plug.sql.in ABOUT-NLS \
-	AUTHORS COPYING ChangeLog INSTALL NEWS TODO config.guess \
-	config.rpath config.sub depcomp install-sh ltconfig ltmain.sh \
-	missing mkinstalldirs
+	$(top_srcdir)/share/sql/default_pi_plug.sql.in AUTHORS COPYING \
+	ChangeLog INSTALL NEWS TODO config.guess config.sub depcomp \
+	install-sh ltconfig ltmain.sh missing mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -169,6 +168,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 SUB_PLUGINS = @SUB_PLUGINS@
+SYSTEM = @SYSTEM@
 VERLIHUB_LIBS = @VERLIHUB_LIBS@
 VERSION = @VERSION@
 ac_ct_CC = @ac_ct_CC@
@@ -452,7 +452,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/po $(distdir)/scripts $(distdir)/share $(distdir)/share/sql
+	$(mkdir_p) $(distdir)/. $(distdir)/scripts $(distdir)/share $(distdir)/share/sql
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -494,7 +494,8 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
-	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
+	-find "$(distdir)" -type d ! -perm -755 \
+		-exec chmod u+rwx,go+rx {} \; -o \
 	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
 	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
 	  ! -type d ! -perm -444 -exec $(SHELL) $(install_sh) -c -m a+r {} {} \; \

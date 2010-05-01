@@ -234,10 +234,10 @@ finish_eval=""
 hardcode_into_libs=yes
 
 # Compile-time system search path for libraries.
-sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4 /usr/lib64 /lib64 /usr/x86_64-pc-linux-gnu/lib"
+sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3 /usr/lib64 /lib64 /usr/x86_64-pc-linux-gnu/lib"
 
 # Run-time system search path for libraries.
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr/lib32/opengl/nvidia/lib //usr/lib64/opengl/nvidia/lib /lib /usr/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4 /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib64/xulrunner-1.9.1 /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/native_threads/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/classic/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/server/ /usr/lib64/qca1 /usr/lib64/qca2 /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/thunderbird /usr/games/lib /usr/games/lib64 /usr/games/lib32 /opt/flash-libcompat /usr/lib64/libstdc++-v3/ /usr/lib32/libstdc++-v3/ "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr/lib32/opengl/nvidia/lib //usr/lib64/opengl/nvidia/lib /lib /usr/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3 /usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4 /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/xulrunner-1.9.2 /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/native_threads/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/classic/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/server/ /usr/lib64/qca2 /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /usr/games/lib /usr/games/lib64 /usr/games/lib32 /opt/flash-libcompat /usr/lib32/libstdc++-v3/ "
 
 # Whether dlopen is supported.
 dlopen_support=unknown
@@ -9040,17 +9040,17 @@ file_list_spec=""
 hardcode_action=immediate
 
 # The directories searched by this compiler when creating a shared library.
-compiler_lib_search_dirs="/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4 /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4 /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/../../../../lib64 /lib/../lib64 /usr/lib/../lib64 /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/../../../../x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/../../.."
+compiler_lib_search_dirs="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3 /usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3 /usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/../../../../lib64 /lib/../lib64 /usr/lib/../lib64 /usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/../../../../x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/../../.."
 
 # Dependencies to place before and after the objects being linked to
 # create a shared library.
-predep_objects="/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/../../../../lib64/crti.o /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/crtbeginS.o"
-postdep_objects="/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/crtendS.o /usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/../../../../lib64/crtn.o"
+predep_objects="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/../../../../lib64/crti.o /usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/crtbeginS.o"
+postdep_objects="/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/crtendS.o /usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/../../../../lib64/crtn.o"
 predeps=""
 postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4 -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4 -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/../../../../x86_64-pc-linux-gnu/lib -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.3.4/../../.."
+compiler_lib_search_path="-L/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3 -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3 -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/../../../../x86_64-pc-linux-gnu/lib -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.4.3/../../.."
 
 # ### END LIBTOOL TAG CONFIG: CXX

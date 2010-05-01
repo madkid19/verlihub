@@ -448,9 +448,9 @@ exit 0
 }
 
 quit() {
-rm $_temp
+rm -f $_temp
 rm -rf $TEMP_DIR
-rm $LOG
+rm -f $LOG
 exit 0
 }
 

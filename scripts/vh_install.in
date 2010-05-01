@@ -8,7 +8,7 @@ shell=@BASH_PATH@
 
 DIALOG=`whereis dialog | awk '{ print $2 }'`
 
-if [ -z "$DIALOG" ]; then
+if [ -z "$DIALOG" ] || [ "@SYSTEM@" == "FREEBSD" ]; then
     @bindir@/vh_install_cli
 else
     @bindir@/vh_install_gui
