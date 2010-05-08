@@ -1170,7 +1170,6 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	// Check other nick
 	if(!other)
 		return -1;
-
 	// Cut the end
 	string ostr(msg->mStr,0 ,msg->mChunks[eCH_SR_TO].first - 1);
 
@@ -1182,7 +1181,7 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 
 	// Send it
 	if((other->mxConn) && (!mS->mC.max_passive_sr || (other->mxConn->mSRCounter++ < mS->mC.max_passive_sr))) {
-		other->mxConn->Send( ostr, true, false );
+		other->mxConn->Send(ostr, true);
 	}
 	return 0;
 }
@@ -1238,7 +1237,7 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 	omsg += msg->ChunkString(eCH_FM_DEST);
 	omsg += "|";
 
-	string redReason("You are being re-directed to: ");
+	string redReason("You are being redirected to: ");
 	redReason += msg->ChunkString(eCH_FM_DEST);
 	redReason += " because: ";
 	redReason += msg->ChunkString(eCH_FM_REASON);

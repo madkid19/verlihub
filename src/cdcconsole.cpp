@@ -78,7 +78,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mRedirectConsole(NULL),
 	mDCClientConsole(NULL)
 {
-	mTriggers = new cTriggers(mServer);	
+	mTriggers = new cTriggers(mServer);
 	mTriggers->OnStart();
 	mTriggerConsole = new cTriggerConsole(this);
 	

@@ -97,7 +97,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	if(!timeTrigger) ReplaceVarInString(sender, "NICK", sender, conn->mpUser->mNick);
 	
 	
-	if (mFlags & eTF_DB || mFlags & eTF_EXECUTE) {
+	if (mFlags & eTF_DB) {
 	  buf = mDefinition;
 	} else {
 	  ReplaceVarInString(mDefinition,"CFG", filename, server.mConfigBaseDir);

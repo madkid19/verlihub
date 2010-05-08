@@ -328,7 +328,9 @@ void cAsyncSocketServer::TimeStep()
 			cAsyncConn *new_conn;
 			do
 			{
+			  
 				new_conn = conn->Accept();
+				
 				if(new_conn) addConnection(new_conn);
 				i++;
 			} while(new_conn && i <= 101);
