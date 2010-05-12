@@ -54,15 +54,15 @@ public:
 
 namespace nEnums
 {
-/** Type of socket connection
-  */
+  
+// Type of socket connection
 enum tConnType
 {
-	eCT_LISTEN,    //< listening tcp connection
-	eCT_CLIENT,    //< client connection connected to me (server)
-	eCT_CLIENTUDP, //< udp client
-	eCT_SERVER,    //< i'm client connected to another sever (TCP)
-	eCT_SERVERUDP  //< udp server
+	eCT_LISTEN,    // Listening tcp connection
+	eCT_CLIENT,    // TCP client connection that is connected to the server
+	eCT_CLIENTUDP, // UDP cleint connection
+	eCT_SERVER,    // TCP server connection
+	eCT_SERVERUDP  // UDP server connection
 };
 
 enum
@@ -80,65 +80,106 @@ using namespace nUtils;
 
 class cMessageParser;
 
-/**a network connection for asynchronous (rather non-blocking) server
-  *@author Daniel Muller
-  *@author Janos Horvath (udp support)
-  */
+/**
+ * Network connection class for asynchronous (aka non-blocking) connection
+ * @author Daniel Muller
+ * @author Janos Horvath (UDP support)
+ */
 
 class cAsyncConn : public cConnBase, public cObj
 {
-public:
+ public:
 	cAsyncConn(int sd=0, cAsyncSocketServer *s=NULL, tConnType ct= eCT_CLIENT);
 	cAsyncConn(const string & host, int port, bool udp=false);
 	virtual ~cAsyncConn();
-	/** close connection to peer */
+	
+	/**
+	* Close the connection.
+	*/
 	void Close();
-	/** flush as much from output buffer as possible to the iochannel */
+	
+	/**
+	* Flush and send output buffer data as much as possible to I/O channel.
+	*/
 	void Flush();
-	/** socket descriptor */
+	
+	// Socket descriptor
 	tSocket mSockDesc;
-private: // Private attributes
-	/** string for line */
+	
+ private:
+	//Pointer to read line string
 	string *mxLine;
-	/** line status */
+	
+	// Line status (partily read, no line, etc.)
 	int meLineStatus;
-	/** msBuffer End Position */
+	
+	// End buffer position
 	int mBufEnd;
-	/** msBuffer read Position */
+	
+	// Read buffer position
 	int mBufReadPos;
-	/** registered flags in selector */
+	
+	// Registered flags
 	int mRegFlag;
-	/** time to close the connection */
+	
+	// Time when to close the connection
 	cTime mCloseAfter;
 
+	// Connection list
 	typedef list<cAsyncConn*> tConnList;
+	
+	// Connection iterator
 	typedef tConnList::iterator tCLIt;
 	
-public:
-	tCLIt mIterator;
-	/** indicate whether server should take care of this connection */
-	bool ok;
-	/** indicates, if data is allowed to insert into the buffer, you can set it as you wish */
-	bool mWritable;
-	/** flags externall to poll, but used by poller in a way */
-	int mExtraPoll;
-	/** read property for meLineStatus */
-	int LineStatus(){return meLineStatus;}
-	/** you can provide a string for reading a line by this function
-		<precond>
-		LineStatus() == AC_LS_NO_LINE
-		</precond> */
-	void SetLineToRead(string *,char , int max=-1);
-	/** clears the line status */
+ public:
+	/**
+	* Reset the status of the line and delimiter to default value (new line).
+	*/
 	void ClearLine();
-	/** return the line's pointer and keep it */
-	string * GetLine();
-	/** No descriptions */
+	
+	/**
+	* Close the connection after given milliseconds.
+	* @param msec Millisecond
+	*/
 	void CloseNice(int msec=0);
+	
+	/**
+	* Return the pointer to the line.
+	* @return Pointer string 
+	*/
+	string * GetLine();
+	
+	/**
+	* Return the status of the line.
+	* @return Line status
+	*/
+	int LineStatus() { return meLineStatus; }
+	
+	/**
+	* Set a pointer where to store the line to read and the delimiter.
+	* @param strp Pointer to allocated memory area where to store read line (default delimiter is new line).
+	* @param delimiter Delimiter for lines
+	* @param max Max length of line
+	*/
+	void SetLineToRead(string *,char , int max=-1);
+	
+
 	/** reads a line from the msBuffer preaviously filled by ReadAll into private members */
 	int ReadLineLocal();
+	
+	// Connection iterator
+	tCLIt mIterator;
+	
+	// Indicate if the server should take care of this connection or not
+	bool ok;
+	
+	// Indicate if data is allowed to be stored in the out buffer
+	bool mWritable;
+	
+	/** flags externall to poll, but used by poller in a way */
+	int mExtraPoll;
 public:
-	/** external pointer to the server class */
+	// Pointer to server class
 	cAsyncSocketServer * mxServer;
 	cConnFactory * mxMyFactory;
 	cConnFactory * mxAcceptingFactory;
