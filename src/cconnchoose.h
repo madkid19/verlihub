@@ -68,12 +68,11 @@ using namespace nUtils;
 namespace nServer {
 
 /**
-the base class providing interface for both polling and for selecting connections
-
-@author Daniel Muller
-
-What do I need from this class?
--------------------------------
+ * This class is an interface for polling an selecting connection and it provides the following features:
+ * - Connections managment
+ * - Register and unregister connection depending on I/O operation (read, write)
+ * - Random access to a connection by socket id
+ * @author Daniel Muller
 
 both:
 -----
@@ -95,7 +94,6 @@ poll:
 
 select:
 -------
-
 
 */
 
@@ -123,6 +121,11 @@ public:
 	typedef tHashArray<cConnBase*> tConnList;
 	#endif
 
+	/**
+	* Add new connection to be handled by connection manager.
+	* @param conn The connection.
+	* @return True if connection is added; otherwise false.
+	*/
 	virtual bool AddConn(cConnBase *);
 	virtual bool DelConn(cConnBase *);
 	virtual bool HasConn(cConnBase *);
@@ -132,10 +135,28 @@ public:
 
 	virtual int Choose(cTime &) = 0;
 
-	inline void OptIn ( cConnBase *conn, tChEvent);
-	inline void OptOut( cConnBase *conn, tChEvent);
-	inline int OptGet( cConnBase *conn );
-	inline int RevGet( cConnBase *conn );
+	/**
+	* Register the connection for the given I/O operations.
+	* @param conn The connection.
+	* @param event Bitwise OR list of I/O operation.
+	*/
+	inline void OptIn (cConnBase *conn, tChEvent);
+	
+	/**
+	* Unregister the connection for the given I/O operations.
+	* @param conn The connection.
+	* @param event Bitwise OR list of I/O operation.
+	*/
+	inline void OptOut(cConnBase *conn, tChEvent);
+	
+	/**
+	* Return I/O operations for the given connection.
+	* @param conn The connection.
+	* @return Bitwise OR list of I/O operation.
+	* @see OptIn(cConnBase *conn, tChEvent events)
+	*/
+	inline int OptGet(cConnBase *conn);
+	inline int RevGet(cConnBase *conn);
 	inline bool RevTest( cConnBase *conn );
 
 	virtual void OptIn ( tSocket, tChEvent) = 0;
