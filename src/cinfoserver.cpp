@@ -23,7 +23,7 @@
 #include "stringutils.h"
 #include "cserverdc.h"
 #include "curr_date_time.h"
-#if ! defined _WIN32 && ! defined HAVE_FREEBSD
+#if ! defined _WIN32 && ! defined HAVE_FREEBSD && ! defined HAVE_APPLE
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
 #include <sys/time.h>
