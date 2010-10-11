@@ -25,14 +25,7 @@
 #include <config.h>
 #endif
 #include "cconfigbase.h"
-#if defined _WIN32 || HAVE_OSTREAM
 #include <ostream>
-#else
-namespace std{
-#include <ostream.h>
-};
-#endif
-
 
 using std::ostream;
 

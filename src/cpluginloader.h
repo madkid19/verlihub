@@ -25,9 +25,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#if HAVE_DLFCN_H
 #include <dlfcn.h>
-#endif
 #ifdef _WIN32
 #include <windows.h>
 #endif

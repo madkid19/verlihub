@@ -27,13 +27,7 @@
 #include "cobj.h"
 #include "ccommand.h"
 #include <vector>
-#if defined _WIN32 || HAVE_OSTREAM
 #include <ostream>
-#else
-namespace std{
-#include <ostream.h>
-};
-#endif
 
 
 using std::vector;
