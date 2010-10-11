@@ -23,9 +23,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#if HAVE_DLFCN_H
 #include <dlfcn.h>
-#endif
 
 namespace nPlugin {
 
