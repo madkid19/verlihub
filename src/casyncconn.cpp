@@ -23,6 +23,7 @@
 #include <config.h>
 #endif
 #include "casyncsocketserver.h"
+#include "cserverdc.h"
 #if defined _WIN32
 #  include <Winsock2.h>
 #  define ECONNRESET WSAECONNRESET
@@ -32,13 +33,7 @@
 #  define sockoptval_t char
 #endif
 
-#if defined _WIN32 || HAVE_OSTREAM
 #include <ostream>
-#else
-namespace std{
-#include <ostream.h>
-};
-#endif
 
 #if HAVE_ERRNO_H
 #include <errno.h>
@@ -221,11 +216,6 @@ int cAsyncConn::ReadLineLocal()
 	return len+1;
 }
 
-/** you can provide a string for reading a line by this function
-<precond>
-LineStatus() == AC_LS_NO_LINE
-strp != NULL
-</precond> */
 void cAsyncConn::SetLineToRead(string *strp,char delim, int max)
 {
 	if(LineStatus() != AC_LS_NO_LINE) throw "cAsyncConn::SetLineToRead - precondition not ok";
@@ -732,65 +722,63 @@ int cAsyncConn::Write(const string &data, bool Flush)
 {
 	static string tmp;
 
-	// Append data to older data in buffer
-	// but only if something is there and if free space
-	// 1st) check the size
-	if(mBufSend.size()+ data.size() >= mMaxBuffer)
-	{
-		if(Log(2)) LogStream() << "Buffer is too big, closing" << endl;
+	// Append data to older data in buffer but only if there is free space
+	if(mBufSend.size()+ data.size() >= mMaxBuffer) {
+		if(Log(2))
+			LogStream() << "Buffer is too big, closing" << endl;
 		CloseNow();
 		return -1;
 	}
 
 	Flush = Flush || (mBufSend.size() > (mMaxBuffer >> 1));
 	
-	// a buffer from which to send data
+	// Pointer to buffer for data to send
 	const char *send_buffer;
-	// size of data to send
+	
+	// Size of buffer
 	size_t send_size;
-	// indicator from which we rae sending
+	
+	// Data are added to old buffer content
 	bool appended;
 
-	// second decide whether append or not
-	if(mBufSend.size() || !Flush)
-	{
+	// Check if we have to append data to buffer or send them immediatly
+	if(mBufSend.size() || !Flush) {
 		mBufSend.append(data.data(), data.size());
 		send_buffer= mBufSend.data();
 		send_size  = mBufSend.size();
 		appended   = true;
-	}
-	else
-	{
+	} else {
 		send_buffer= data.data();
 		send_size  = data.size();
 		appended   = false;
 	}
 
-	// if there isn't anything to send, don't bother
-	if(!send_size) return 0;
+	// Check if there is anything to send
+	if(!send_size)
+		return 0;
 
-	if (!Flush) return 0;
+	// We have appended data, so do not send now
+	if (!Flush)
+		return 0;
 	
-	// make copy of send_size, size_sent will be modified by next function
+	// Make copy of send_size, because SendALl method will change it
 	size_t size_sent = send_size;
-	// now send the data, as much as possible
-	if(SendAll(send_buffer,size_sent) == -1)
-	{
-		// analyze the error
-		if((errno != EAGAIN) && (errno != EINTR))
-		{
-			// error during writing, remove the user
+	// Send the data as much as possible
+	if(SendAll(send_buffer,size_sent) == -1) {
+	  ((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "[" << AddrIP() << "]" << "Error sending data " << send_buffer << "(size:" << send_size << "; sent: " << size_sent << "; buffsent size:" << mBufSend.size() << ")" << endl;
+	  ((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Error: " << strerror(errno) << " (code: " << errno << endl;
+		// Analyze the error
+		if((errno != EAGAIN) && (errno != EINTR)) {
+			// Error during writing, remove the user
 			if(Log(2)) LogStream() << "Error during writing, closing" << endl;
 			CloseNow();
 			return -1;
 		}
 
-		// if something has been sent, but not all, update the buffer
-		if(size_sent > 0)
-		{
+		// If something has been sent, but not all, update the buffer
+		if(size_sent > 0) {
 			mTimeLastIOAction.Get();
-			// now it depends on if we appended or not
-			// * if we appended, assign the rest of string to the buffer
+			// If we appended, assign the rest of string to the buffer
 			if(!appended)
 				// this is supposed to actually reduce the size of mBufSend
 				// it does a copy so it is slower but memory usage is important thing
@@ -798,49 +786,46 @@ int cAsyncConn::Write(const string &data, bool Flush)
 			else
 				// this makes mBuffSend not grow
 				StrCutLeft( mBufSend, size_sent);
-		}
-		else
-		{
-			// close nice was called, we must close the connection even if the data cannot be transmitted.
+		} else {
+			// Close nice was called, we must close the connection even if the data cannot be transmitted.
 			if(bool(mCloseAfter)) CloseNow();
 		}
 
 		// Buffer overfill protection - only on registered connections
-		if(mxServer && ok)
-		{
-			// be chosen next time to send the rest of it
+		if(mxServer && ok) {
+			// Choose the connection to send the rest of data as soon as possible
 			mxServer->mConnChooser.cConnChoose::OptIn(this, cConnChoose::eCC_OUTPUT);
 
-			if(mBufSend.size() < MAX_SEND_UNBLOCK_SIZE )
-			{
+			// If buffer size is lower then UNBLOCK size, allow read operation on the connection
+			if(mBufSend.size() < MAX_SEND_UNBLOCK_SIZE) {
 				mxServer->mConnChooser.cConnChoose::OptIn(this, cConnChoose::eCC_INPUT);
+				((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Unblocking read operation on socket " << endl;
 				if(Log(5)) LogStream() << "UnBlock INPUT" << endl;
-			}
-			else if( mBufSend.size() >= MAX_SEND_FILL_SIZE )
-			{
+			} // If buffer is bigger than max send size, block read operation
+			else if(mBufSend.size() >= MAX_SEND_FILL_SIZE) {
 				mxServer->mConnChooser.cConnChoose::OptOut(this, cConnChoose::eCC_INPUT);
+				((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Blocking read operation on socket " << endl;
 				if(Log(5)) LogStream() << "Block INPUT" << endl;
 			}
 		}
-	}
-	else // everything sent all right
-	{
-		// on success clear output buffer
-		if(appended) mBufSend.erase(0, mBufSend.size());
+	} else { // All data has been sent
+		// Clear output buffer
+		if(appended)
+			mBufSend.erase(0, mBufSend.size());
 		ShrinkStringToFit(mBufSend);
 
-		// close nice was called, so we close now
-		if(bool(mCloseAfter)) CloseNow();
+		// If close nice was called, close the connection
+		if(bool(mCloseAfter))
+			CloseNow();
 
-		// unregister writing
-		if(mxServer && ok)
-		{
+		// Unregister the connection for write operation
+		if(mxServer && ok) {
 			mxServer->mConnChooser.cConnChoose::OptOut(this, cConnChoose::eCC_OUTPUT);
 			if(Log(5)) LogStream() << "Blocking OUTPUT " << endl;
 		}
 
 		mTimeLastIOAction.Get();
-		// report that is done
+		// Report flush is done
 		OnFlushDone();
 	}
 	return size_sent;
