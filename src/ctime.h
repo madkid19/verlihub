@@ -24,13 +24,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#if defined _WIN32 || HAVE_OSTREAM
 #include <ostream>
-#else
-namespace std{
-#include <ostream.h>
-};
-#endif
 #include <time.h>
 #if defined _WIN32
 #include <Winsock2.h>
