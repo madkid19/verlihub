@@ -198,6 +198,7 @@ SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION 1.0.0 SOVERSION ${VERLIHUB_
 target_link_libraries(libverlihub ${VERLIHUB_LIBS})
 
 ADD_LIBRARY(vhapi SHARED "script_api.cpp")
+SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION 1.0.0 SOVERSION ${VERLIHUB_SOVERSION})
 #target_link_libraries(vhapi "-module -shared -dy")
 
 # ----------------------------------------------------------------------------------------------------
