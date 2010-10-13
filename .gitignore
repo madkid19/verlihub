@@ -13,3 +13,6 @@ autom4te.cache
 .libs
 *.la
 .deps
+build/
+verlihub_config
+!scripts/vh*.in
