@@ -52,22 +52,37 @@ public:
 	  */
 	virtual int Choose(cTime &tmout){ return this->Select(tmout); };
 
-	/** \brief subscribe for a given IO operations
-	  *
-	  * \param sock the socket to subscribe for the IO operation
-	  * \param events bitwise ORed list of IO operations
-	  * \sa tChEvent
-	  */
-	virtual void OptIn ( tSocket sock, tChEvent events);
-	/// \brief unsubscribe \sa \OptIn
-	virtual void OptOut( tSocket, tChEvent);
-	/// \brief get the list of subscriptions \se OptIn
+	/**
+	* Register the connection for the given I/O operation.
+	* @param conn The connection.
+	* @param event Bitwise OR list of I/O operation.
+	*/
+	virtual void OptIn(tSocket sock, tChEvent events);
+	
+	/**
+	* Unregister the connection for the given I/O operation.
+	* @param conn The connection.
+	* @param event Bitwise OR list of I/O operation.
+	*/
+	virtual void OptOut(tSocket, tChEvent);
+	
+	/**
+	* Return I/O operations for the given connection.
+	* @param conn The connection.
+	* @return Bitwise OR list of I/O operation.
+	* @see OptIn(tSocket sock, tChEvent events)
+	*/
 	virtual int OptGet( tSocket );
 	/// \brief get the result after Choose operation
 	virtual int RevGet( tSocket );
 	/// \brief test wheather the choose result is non-nul
 	virtual bool RevTest( tSocket );
 
+	
+	/** 
+	* Wrapper for fd_set structure. It provides constructor and = operator.
+	* @author Daniel Muller
+	*/
 	struct sFDSet : public fd_set
 	{
 		sFDSet(){ FD_ZERO(this);}

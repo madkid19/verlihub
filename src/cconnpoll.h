@@ -53,17 +53,40 @@ public:
 	  * \sa cConnChoose::Choose
 	  */
 	virtual int Choose(cTime &tmout){ return this->poll(tmout.MiliSec()); };
-	/// @see cConnChoose::OptIn
+	
+	/**
+	* Register the connection for the given I/O operation.
+	* @param conn The connection.
+	* @param event Bitwise OR list of I/O operation.
+	*/
 	virtual void OptIn ( tSocket, tChEvent);
-	/// @see cConnChoose::OptOut
+	
+	/**
+	* Unregister the connection for the given I/O operations.
+	* @param conn The connection.
+	* @param event Bitwise OR list of I/O operation.
+	*/
 	virtual void OptOut( tSocket, tChEvent);
+	
+	/**
+	* Unregister the connection for the given I/O operation.
+	* @param conn The connection.
+	* @param event Bitwise OR list of I/O operation.
+	*/
 	virtual int OptGet( tSocket );
 	/// @see cConnChoose::RevGet
 	virtual int RevGet( tSocket );
 	virtual bool RevTest( tSocket );
+	
+	/**
+	* Add new connection to be handled by connection manager.
+	* @param conn The connection.
+	* @return True if connection is added; otherwise false.
+	*/
 	virtual bool AddConn(cConnBase *);
 
-	/** Wrapper for system defined pollfd, provides constructor, and reset methods
+	/** 
+	  * Wrapper for pollfd structure. It provides constructor and reset method
 	  * @author Daniel Muller
 	*/
 	struct cPollfd: public pollfd
@@ -72,7 +95,7 @@ public:
 		void reset(){fd=-1;events=revents=0;};
 	};
 
-	virtual bool RevTest( cPollfd & );
+	virtual bool RevTest(cPollfd &);
 
 	int poll(int wp_sec);
 	typedef vector<cPollfd> tFDArray;

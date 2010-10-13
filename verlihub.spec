@@ -1,6 +1,6 @@
 Summary: Direct Connect (p2p) Server
 Name: verlihub
-Version: 0.9.8e 
+Version: 0.9.9a 
 Release: 1
 License: GPL
 Group: Applications/Internet

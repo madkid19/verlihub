@@ -1,4 +1,21 @@
-2009-20-18 chaos/netcelli (0.9.9a)
+2010-04-18 chaos/netcelli (0.9.9a)
+	 * Fixed bug when host_header is set to 0
+	 * Fixed broken OnValidateTag callback
+	 * Fixed OnParsedMsgValidateNick that was never called and connection wasn't dropped correctly (just after validatenick timeout)
+	 * Added OnParsedMsgSupport callback
+	 * Fixed tag_min_slots bug because mysql cannot accepts values greater than 127
+	 * Fixed compiler errors on FreeBSD (thx to Ck-NoSFeRaTU)
+	 * Added byte conversion for SHARE and TOTAL_SHARE variables in trigger
+	 * Added ZPipe support (ZLib)
+	 * Added graphic installation using dialog command (thx to Seth for writing this script)
+	 * Added path to MySQL conf file on FreeBSD (thx to Wic)
+	 * Fixed bug in KickUser API: result message wasn't send to the OP
+	 * Fixed OnParsedMsgSR callback
+	 * Escape char ` in bash or it tries to execute command (thx to r3b3lu for report)
+	 * Added custom TAG managment
+	 * Added tag_allow_unknown variable not to allow client that are not in dcclient table
+	 * Removed annoing message if an user has no rights to search
+	 * Fixed banned client message to replace with config var
 	 * Added msg_banned_client variable for banned client message
 	 * Added tag_allow_unknown variable not to allow client that are not in dcclient table
 	 * Added custom tag managment

@@ -180,9 +180,9 @@ bool cMessageDC::SplitChunks()
 			if(!SplitOnTwo('?',eCH_AS_QUERY, eCH_AS_SEARCHLIMITS, eCH_AS_SEARCHPATTERN,0)) mError =1;
 			break;
 		case eDC_SR:
-			// search result $SR <resultNick> <filepath>^E<filesize> <freeslots>/<totalslots>^E<hubname> (<hubhost>[:<hubport>])^E<searchingNick>
-			//               $SR <resultNick> <filepath>^E<filesize> <freeslots>/<totalslots>^ETTH:<TTH-ROOT> (<hub_ip>[:<hubport>])^E<searchingNick>
-			//               $SR <resultNick> <filepath>^E           <freeslots>/<totalslots>^ETTH:<TTH-ROOT> (<hub_ip>:[hubport]>)^E<searchingNick>
+			// $SR <senderNick> <filepath>^E<filesize> <freeslots>/<totalslots>^E<hubname> (<hubhost>[:<hubport>])^E<searchingNick>
+			// $SR <senderNick> <filepath>^E<filesize> <freeslots>/<totalslots>^ETTH:<TTH-ROOT> (<hub_ip>[:<hubport>])^E<searchingNick>
+			// $SR <senderNick> <filepath>^E<freeslots>/<totalslots>^ETTH:<TTH-ROOT> (<hub_ip>:[hubport]>)^E<searchingNick>
 			//           1)      ----FROM----|-----------------------------------(PATH)--------------------------------------------------------------
 			//           2)                  |-------PATH-----------|----------------------(SLOTS)---------------------------------------------------
 			//           3)                                         |-----------SLOTS---------|-------------(HUBINFO)--------------------------------
