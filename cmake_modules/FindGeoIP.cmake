@@ -1,7 +1,7 @@
 # - Find GeoIP
 # Find the GeoIP includes and library
 # This module defines
-#  GEOIP_INCLUDE_DIR, where to find mysql.h
+#  GEOIP_INCLUDE_DIR, where to find geoip.h
 #  GEOIP_LIBRARIES, the libraries needed to use GeoIP.
 #  GEOIP_FOUND, If false, do not try to use GeoIP.
 #
@@ -18,8 +18,8 @@ ELSE(GEOIP_INCLUDE_DIR AND GEOIP_LIBRARIES)
 		SET(GEOIP_FOUND TRUE)
 		MESSAGE(STATUS "Found GeoIP: ${GEOIP_INCLUDE_DIR}, ${GEOIP_LIBRARIES}")
 	ELSE(GEOIP_INCLUDE_DIR AND GEOIP_LIBRARIES)
-		SET(MYSQL_FOUND FALSE)
-		MESSAGE(STATUS "GeoIP not found.Please download and install it http://www.maxmind.com/download/geoip/api/c/")
+		SET(GEOIP_FOUND FALSE)
+		MESSAGE(STATUS "GeoIP not found. Please download and install it http://www.maxmind.com/download/geoip/api/c/")
 	ENDIF(GEOIP_INCLUDE_DIR AND GEOIP_LIBRARIES)
 	
 	mark_as_advanced(GEOIP_INCLUDE_DIR GEOIP_LIBRARIES)
