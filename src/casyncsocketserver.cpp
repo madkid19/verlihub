@@ -165,6 +165,7 @@ void cAsyncSocketServer::setmPort( const int& _newVal){
 	it's deleted, when no more use for it*/
 void cAsyncSocketServer::addConnection(cAsyncConn *new_conn)
 {
+
 	if(!new_conn) throw "addConnection null pointer";
 	if(!new_conn->ok)
 	{
@@ -172,12 +173,18 @@ void cAsyncSocketServer::addConnection(cAsyncConn *new_conn)
 		new_conn->mxMyFactory->DeleteConn(new_conn);
 		return;
 	}
+	
 	mConnChooser.AddConn(new_conn);
 
 	mConnChooser.cConnChoose::OptIn(
 		(cConnBase *)new_conn,
 		cConnChoose::tChEvent( cConnChoose::eCC_INPUT|cConnChoose::eCC_ERROR));
 	tCLIt it = mConnList.insert(mConnList.begin(),new_conn);
+	
+	sConnectionChecker * connChecker = new sConnectionChecker(new_conn);
+	connChecker->lastSeen.mLast = mTime;
+	lastConnection.push_back(connChecker);
+	
 	new_conn->mIterator = it;
 	if(0 > OnNewConn(new_conn)) delConnection(new_conn);
 }

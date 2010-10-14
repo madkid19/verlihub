@@ -179,18 +179,18 @@ ADD_CUSTOM_COMMAND(
 
 )
 ADD_CUSTOM_TARGET(make_time.h ALL)
-LIST(APPEND ${VERLIHUB_SRCS} make_time.h)
+LIST(APPEND ${VERLIHUB_HDRS} make_time.h)
+
+SET(VERLIHUB_LIBS ${OPENSSL_LIBRARIES} ${MYSQL_LIBRARIES} ${GEOIP_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${GEOIP_INCLUDE_DIR} ${PCRE_INCLUDE_DIR})
+set(CMAKE_CXX_FLAGS "-Wall")
 # ----------------------------------------------------------------------------------------------------
 
 # TODO: Do not compile *.cpp files twice for verlihub anb libverlihub.
 # See: http://www.paraview.org/Wiki/CMake_FAQ#Does_that_mean_I_have_to_build_all_my_library_objects_twice.2C_once_for_shared_and_once_for_static.3F.21_I_don.27t_like_that.21
-SET(VERLIHUB_LIBS ${OPENSSL_LIBRARIES} ${MYSQL_LIBRARIES} ${GEOIP_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${GEOIP_INCLUDE_DIR} ${PCRE_INCLUDE_DIR})
-
 ADD_EXECUTABLE(verlihub ${VERLIHUB_SRCS} verlihub.cpp)
 target_link_libraries(verlihub ${VERLIHUB_LIBS})
 
-#ADD_LIBRARY(libverlihub STATIC ${VERLIHUB_SRCS})
 ADD_LIBRARY(libverlihub SHARED ${VERLIHUB_SRCS})
 SET_TARGET_PROPERTIES(libverlihub PROPERTIES OUTPUT_NAME "verlihub")
 SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION 1.0.0 SOVERSION ${VERLIHUB_SOVERSION})
@@ -214,4 +214,4 @@ INSTALL(TARGETS vhapi libverlihub verlihub
 	LIBRARY DESTINATION lib
 )
 INSTALL(FILES ${VERLIHUB_HDRS} ../dirsettings.h DESTINATION include/${PROJECT_NAME})
-INSTALL(FILES ../verlihub_config DESTINATION bin)
+INSTALL(FILES ${VERLIHUB_BINARY_DIR}/verlihub_config DESTINATION bin)
