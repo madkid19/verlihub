@@ -403,10 +403,10 @@ private:
 		cVHCBL_String		mNickListNicks;
 		cVHCBL_String		mNickListInfos;
 		cVHCBL_String		mOpListNicks;
-		cVHCBL_Strings		mOnHubName;
 		cVHCBL_StringInt	mOnNewReg;
-		cVHCBL_StrIntInt	mOnUpdateClass;
 		cVHCBL_StringInt	mOnDelReg;
+		cVHCBL_StrIntInt	mOnUpdateClass;
+		cVHCBL_Strings		mOnHubName;
 		cVHCBL_Ban		mOnNewBan;
 		cVHCBL_StrStrStr	mOnUnBan;
 	};

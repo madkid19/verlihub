@@ -8,8 +8,8 @@ using namespace nZlib;
 
 cZLib::cZLib() :
 zBufferPos(0),
-outBufferLen(ZLIB_BUFFER_SIZE),
-zBufferLen(ZLIB_BUFFER_SIZE)
+zBufferLen(ZLIB_BUFFER_SIZE),
+outBufferLen(ZLIB_BUFFER_SIZE)
 {
 	outBuffer = (char *) calloc(ZLIB_BUFFER_SIZE, 1);
 	zBuffer = (char *) calloc(ZLIB_BUFFER_SIZE, 1);

@@ -102,7 +102,6 @@ istream & operator >> (istream &is, cRegUserInfo &ui)
 
 ostream & operator << (ostream &os, cRegUserInfo &ui)
 {
-	static const char *CryptNames[] = {"plain", "encrypted", "md5", "err", "err", "err"};
 	os << "[::] Nick: " << ui.mNick << "\r\n";
 	os << "[::] Class: " << ui.mClass << "\r\n";
 	os << "[::] Password set:" << ((ui.mPasswd.size() != 0)?"Yes":"No") << "\r\n";

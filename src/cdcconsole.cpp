@@ -67,12 +67,12 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdPlug(int(eCM_PLUG),".plug(in|out|list|reg|reload) ","(\\S+)( (.*)$)?", &mFunPlug),
 	mCmdReport(int(eCM_REPORT),"\\+report ","(\\S+)( (.*)$)?", &mFunReport),
 	mCmdBc(int(eCM_BROADCAST),".(bc|broadcast|oc|ops|regs|guests|vips|cheefs|admins|masters)( |\\r\\n)","(.*)$", &mFunBc), // |ccbc|ccbroadcast
+	mCmdGetConfig(int(eCM_GETCONFIG),".(gc|getconfig) ?","(\\[(\\S+)\\])?", &mFunGetConfig),
+	mCmdClean(int(eCM_CLEAN),".clean(\\S+) ?", "(\\S+)?", &mFunClean),
 	mCmdRedirConnType(int(eCM_CONNTYPE),".(\\S+)conntype ?","(.*)$",&mFunRedirConnType),
 	mCmdRedirTrigger(int(eCM_TRIGGERS),".(\\S+)trigger ?","(.*)$",&mFunRedirTrigger),
 	mCmdCustomRedir(int(eCM_CUSTOMREDIR),".(\\S+)redirect ?","(.*)$",&mFunCustomRedir),
 	mCmdDCClient(int(eCM_DCCLIENT),".(\\S+)client ?","(.*)$",&mFunDCClient),
-	mCmdGetConfig(int(eCM_GETCONFIG),".(gc|getconfig) ?","(\\[(\\S+)\\])?", &mFunGetConfig),
-	mCmdClean(int(eCM_CLEAN),".clean(\\S+) ?", "(\\S+)?", &mFunClean),
 	mConnTypeConsole(this),
 	mTriggerConsole(NULL),
 	mRedirectConsole(NULL),
@@ -342,7 +342,6 @@ bool cDCConsole::cfGetConfig::operator()()
 	}
 	string file;
 	cConfigBaseBase::tIVIt it;
-	const int max = 60;
 	const int width = 5;
 	GetParStr(2, file);
 	if(!file.size())  {
@@ -607,7 +606,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			string text;
 			getline(cmd_line,text);
 		
-			if( text.size() < mOwner->mC.password_min_len ) {
+			if(text.size() < (unsigned int) mOwner->mC.password_min_len) {
 				omsg = mOwner->mL.pwd_min;
 				mOwner->DCPublicHS(omsg,conn);
 				return 0;
@@ -736,7 +735,7 @@ int cDCConsole::CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn)
 	}
 
 	cmd_line >> str >> crypt;
-	if(str.size() < mOwner->mC.password_min_len) {
+	if(str.size() < (unsigned int) mOwner->mC.password_min_len) {
 		string str;
 		ReplaceVarInString(mOwner->mL.pwd_min,"length",str, mOwner->mC.password_min_len);
 		mOwner->DCPrivateHS(str,conn);
@@ -1639,8 +1638,6 @@ bool cDCConsole::cfKick::operator()()
 
 	ostringstream os;
 	string CoolNick, ostr;
-	int i;
-	cUser *other;
 
 	switch(Action)
 	{
@@ -1795,7 +1792,7 @@ bool cDCConsole::cfRegUsr::operator()()
 	{
 		
 		if ((MyClass < eUC_MASTER) && !(
-			(MyClass >= (ui.mClass+mS->mC.classdif_reg) &&
+			(MyClass >= (int) (ui.mClass+mS->mC.classdif_reg) &&
 			MyClass >= (ui.mClassProtect)) ||
 			((Action == eAC_INFO) &&(MyClass >= (ui.mClass - 1)))
 		 ))

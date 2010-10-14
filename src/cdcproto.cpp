@@ -774,7 +774,8 @@ bool cDCProto::CheckChatMsg(const string &text, cConnDC *conn)
 		count = 0;
 		err_message = Server->mL.chat_msg_lines;
 		IsWrong = true;
-	} else return true;
+	} else
+		return true;
 	
 	if(IsWrong) {
 		ReplaceVarInString(err_message,"LIMIT",err_message, limit);
@@ -783,6 +784,7 @@ bool cDCProto::CheckChatMsg(const string &text, cConnDC *conn)
 		Server->DCPublicHS(err_message,conn);
 		return false;
 	}
+	return false;
 }
 
 int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
@@ -1786,8 +1788,8 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const char *buf, int len, 
 
 void nDirectConnect::nProtocol::cDCProto::Lock2Key(const string &Lock, string &fkey)
 {
-	int count = 0, len = Lock.size(), offset = 0;
-	char *key = 0, *tkey= 0;
+	int count = 0, len = Lock.size();
+	char *key = 0;
 	char * lock = new char[len+1];
 	UnEscapeChars(Lock, lock, len, true);
 	

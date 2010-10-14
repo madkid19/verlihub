@@ -46,14 +46,13 @@ string cTime::AsString() const{
 
 std::ostream & operator<< (std::ostream &os, const cTime &t)
 {
-#ifdef WIN32
-static char *buf;
-#else
-#define CTIME_BUFFSIZE 26
-static char buf[CTIME_BUFFSIZE+1];
-#endif
-time_t rawtime =  t.tv_sec;
-struct tm st, *pst = &st;
+	#ifdef WIN32
+	static char *buf;
+	#else
+	#define CTIME_BUFFSIZE 26
+	static char buf[CTIME_BUFFSIZE+1];
+	#endif
+	struct tm st;
 
 	long n, rest, i;
 

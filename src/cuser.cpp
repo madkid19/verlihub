@@ -174,28 +174,28 @@ long nDirectConnect::cUser::ShareEnthropy(const string &sharesize)
 	size_t i,j;
 	long score = 0;
 	// calculate counts of every byte in the sharesize string
-	for( i = 0; i < sharesize.size(); i++ )
-	{
+	for(i = 0; i < sharesize.size(); i++) {
 		count[i] = 0;
-		for( j = i+1; j < sharesize.size(); j++ )
+		for(j = i+1; j < sharesize.size(); j++)
 			if(sharesize[i]==sharesize[j]) ++ count[i];
 	}
 
 	// make the weighted sum
-	for( i = 0; i < sharesize.size(); ) score += count[i]*++i;
+	for(i = 0; i < sharesize.size();)
+		score += count[i]*++i;
 
 	// calculate the differences
-	for( i = 0; i < sharesize.size()-1; i++ )
+	for(i = 0; i < sharesize.size()-1; i++)
 		diff[i] = 10 + sharesize[i-1] - sharesize[i];
 
 	// calculate counts of every byte in the sharesize string differences
-	for( i = 0; i < sharesize.size()-1; i++ )
-	{
+	for(i = 0; i < sharesize.size()-1; i++) {
 		count[i] = 0;
-		for( j = i+1; j < sharesize.size(); j++ )
+		for(j = i+1; j < sharesize.size(); j++)
 			if(diff[i]==diff[j]) ++ count[i];
 	}
-	for( i = 0; i < sharesize.size(); ) score += count[i]*++i;
+	for(i = 0; i < sharesize.size();)
+		score += count[i]*++i;
 
 	return score;
 }

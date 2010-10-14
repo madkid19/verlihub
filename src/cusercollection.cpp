@@ -222,8 +222,8 @@ cCompositeUserCollection::cCompositeUserCollection(bool keepNicks, bool keepInfo
 	: cUserCollection(keepNicks,keepInfos),
 	mKeepIPList(keepips),
 	mIpListMaker(mIpList),
+	mInfoListCB(ilcb),
 	mNickListCB(nlcb),
-	mInfoListCB(ilcb), 
 	mRemakeNextIPList(true)
 {};
 

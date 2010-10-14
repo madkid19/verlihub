@@ -51,32 +51,27 @@ int cConfigFile::Load()
 	char ch;
 
 	ifstream is(mFile.c_str());
-	if(!is.is_open())
-	{
+	if(!is.is_open()) {
 		if(ErrLog(1))LogStream() << "Can't open file '" << mFile << "' for reading." << endl;
 		return 0;
 	}
 
-	while(!is.eof())
-	{
+	while(!is.eof()) {
 		ch = ' ';
 		is >> name;
-		if(name[name.size()-1] != '=')
-		{
+		if(name[name.size()-1] != '=') {
 			is >> ch >> ws;
-			if( ch == ' ' ) break;
+			if(ch == ' ')
+				break;
 
-		}
-		else
-		{
+		} else {
 			ch='=';
 			name.assign(name,0,name.size()-1);
 		}
 
 		getline(is,str);
-		if( ch != '=' ) break;
-		if( ci = operator[](name) )
-		{
+		if(ch != '=') break;
+		if((ci = operator[](name))) {
 			ss = new istringstream(str);
 			//ss->str(str);
 			ss->seekg(0,istream::beg);

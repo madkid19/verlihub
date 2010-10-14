@@ -77,6 +77,7 @@ public:
 	
 	virtual bool RegisterAll() {
 		RegisterCallBack("VH_OnUserCommand");
+		return true;
 	}
 	
 	virtual bool OnUserCommand(cConnDC *conn, string *str) {

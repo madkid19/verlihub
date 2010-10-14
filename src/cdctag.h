@@ -57,22 +57,6 @@ namespace nDirectConnect
 	using namespace nDirectConnect::nTables;
 	using namespace nDirectConnect::nEnums;
 
-/** a parser for the dc info tag
-  *@author Daniel Muller
-  */
-/*class cDCTagParser
-{
-	public:
-	// the constructor
-	cDCTagParser();
-	/** the global teg's regular expression *
-	nUtils::cPCRE mTagRE;
-	nUtils::cPCRE mModeRE;
-	nUtils::cPCRE mHubsRE;
-	nUtils::cPCRE mSlotsRE;
-	nUtils::cPCRE mLimitRE;
-};*/
-
 /**dc info tag the <++ V:0.00,S:0,H:1> thing
   *@author Daniel Muller
   */

@@ -16,3 +16,4 @@ autom4te.cache
 build/
 verlihub_config
 !scripts/vh*.in
+*/Makefile

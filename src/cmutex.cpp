@@ -56,7 +56,7 @@ int cMutex::UnLock()
 
 bool cMutex::TryLock()
 {
-	return mLastError=pthread_mutex_trylock(&mMutex) == 0;
+	return (mLastError=pthread_mutex_trylock(&mMutex)) == 0;
 }
 
 

@@ -868,10 +868,11 @@ string * cAsyncConn::FactoryString()
 bool nServer::cAsyncConn::DNSLookup()
 {
 	struct hostent *hp;
-	if(mAddrHost.size()) return true;
-	if(hp=gethostbyaddr((char *)&mIp,sizeof(mIp),AF_INET))
-		mAddrHost=hp->h_name;
-	return hp != NULL;
+	if(mAddrHost.size())
+	    	return true;
+	if((hp=gethostbyaddr((char *)&mIp,sizeof(mIp),AF_INET)))
+		mAddrHost = hp->h_name;
+	return (hp != NULL);
 }
 
 unsigned long nServer::cAsyncConn::DNSResolveHost(const string &host)
@@ -895,7 +896,7 @@ bool nServer::cAsyncConn::DNSResolveReverse(const string &ip, string &host)
 #else
 	addr.s_addr = inet_addr(ip.c_str());
 #endif
-	if(hp = gethostbyaddr((char *)&addr,sizeof(addr),AF_INET))
+	if((hp = gethostbyaddr((char *)&addr,sizeof(addr),AF_INET)))
 		host=hp->h_name;
 	return hp != NULL;
 }

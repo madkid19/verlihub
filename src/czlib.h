@@ -41,8 +41,8 @@ namespace nZlib {
   * @author Simoncelli Davide
   * @version 1.0
   */
-  
-class cZLib 
+
+class cZLib
 {
 	public:
 		/**

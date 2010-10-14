@@ -99,8 +99,9 @@ namespace nDirectConnect {
 			if(redirect->mEnable && !redirect->mFlag && j < 10) { DefaultRedirect[j] = (char *) redirect->mAddress.c_str(); j++;}
 		}
 		if(!i) {
-			// use default redirect	
-			if(!j) return "";
+			// Use default redirect
+			if(!j)
+				return (char*) "";
 			Random(j);
 			return DefaultRedirect[j];
 		}

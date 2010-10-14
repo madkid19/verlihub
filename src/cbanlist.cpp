@@ -296,7 +296,7 @@ int nDirectConnect::nTables::cBanList::DeleteAllBansBy(const string &IP, const s
 {
 	mQuery.OStream() << "DELETE FROM " << mMySQLTable.mName << " WHERE ";
 	if(Flags & cBan::eBF_IP) mQuery.OStream() << " ip = '" << IP << "'";
-	if(Flags & cBan::eBF_IP | cBan::eBF_NICK) mQuery.OStream() << " AND";
+	if(Flags & (cBan::eBF_IP | cBan::eBF_NICK)) mQuery.OStream() << " AND";
 	if(Flags & cBan::eBF_NICK) mQuery.OStream() << " nick = '" << Nick << "'";
 
 	return mQuery.Query();

@@ -113,8 +113,8 @@ public:
 
 	struct iterator
 	{
-		tFDs::iterator mIT;
 		cConnSelect *mSel;
+		tFDs::iterator mIT;
 		iterator(){}
 		iterator(cConnSelect *sel, tFDs::iterator it) : mSel(sel), mIT(it)
 		{}
