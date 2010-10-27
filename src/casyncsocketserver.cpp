@@ -181,10 +181,6 @@ void cAsyncSocketServer::addConnection(cAsyncConn *new_conn)
 		cConnChoose::tChEvent( cConnChoose::eCC_INPUT|cConnChoose::eCC_ERROR));
 	tCLIt it = mConnList.insert(mConnList.begin(),new_conn);
 	
-	sConnectionChecker * connChecker = new sConnectionChecker(new_conn);
-	connChecker->lastSeen.mLast = mTime;
-	lastConnection.push_back(connChecker);
-	
 	new_conn->mIterator = it;
 	if(0 > OnNewConn(new_conn)) delConnection(new_conn);
 }
@@ -219,6 +215,7 @@ void cAsyncSocketServer::delConnection(cAsyncConn *old_conn)
 /** perform input operation, read all data from the connection, return number of bytes read, return negative number, if error occured */
 int cAsyncSocketServer::input(cAsyncConn *conn)
 {
+    	cout << "Input connection" << endl;
 	int just_read=0;
 	// read all data available into a buffer
 		if(conn->ReadAll()<=0) return 0;
