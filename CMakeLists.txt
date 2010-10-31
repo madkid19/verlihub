@@ -41,6 +41,9 @@ Find_Package(Threads REQUIRED)
 
 CHECK_INCLUDE_FILES(string.h HAVE_STRING_H)
 CHECK_INCLUDE_FILES(errno.h HAVE_ERRNO_H)
+CHECK_INCLUDE_FILES(sys/poll.h HAVE_SYS_POLL_H)
+#TODO: Fix creguserinfo.cpp for HAVE_LIBSSL and crypto stuff
+CHECK_INCLUDE_FILES(openssl/md5.h HAVE_OPENSSL_MD5_H)
 
 # SET _WIN32 definition
 IF(WIN32)
