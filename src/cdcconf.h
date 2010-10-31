@@ -178,7 +178,7 @@ public:
 
 	int tag_max_hubs;
 	double tag_max_hs_ratio;
-	bool tag_allow_uknown;
+	bool tag_allow_unknown;
 	bool tag_allow_none;
 	bool tag_allow_sock5;
 	bool tag_allow_passive;

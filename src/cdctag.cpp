@@ -62,13 +62,13 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 	}
   
 	//not parsed tag, unknown tag
-	if ((mClientMode == eCM_SOCK5) && !mServer->mC.tag_allow_sock5 ) {
+	if ((mClientMode == eCM_SOCK5) && !mServer->mC.tag_allow_sock5) {
 		os << mServer->mL.tag_no_sock;
 		code = eTC_SOCK5;
 		return false;
 	}
 		
-	if ((mClientMode == eCM_PASSIVE) && !mServer->mC.tag_allow_passive ) {
+	if ((mClientMode == eCM_PASSIVE) && !mServer->mC.tag_allow_passive) {
 		os << mServer->mL.tag_no_passive;
 		code = eTC_PASSIVE;
 		return false;

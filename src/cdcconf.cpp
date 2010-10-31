@@ -224,7 +224,7 @@ void cDCConf::AddVars()
 // 	tag configurations
 	Add("show_tags",show_tags,2);
 	Add("tag_allow_none",tag_allow_none, true);
-	Add("tag_allow_uknown",tag_allow_uknown,1);
+	Add("tag_allow_unknown",tag_allow_unknown,1);
 	Add("tag_allow_passive",tag_allow_passive, true);
 	Add("tag_allow_sock5",tag_allow_sock5, true);
 	Add("tag_sum_hubs", tag_sum_hubs, 2);
