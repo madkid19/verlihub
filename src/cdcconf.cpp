@@ -206,6 +206,7 @@ void cDCConf::AddVars()
 	Add("delayed_myinfo",delayed_myinfo, 1);
 	Add("drop_invalid_key",drop_invalid_key, 0);
 	Add("delayed_ping",delayed_ping,60);
+	Add("disable_zlib", disable_zlib, 0);
 
 	static const char *to_names [] = { "key", "nick", "login", "myinfo", "flush", "setpass"};
 	double to_default [] = { 60. , 30., 600., 40., 30., 300. };

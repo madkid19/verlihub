@@ -164,6 +164,7 @@ public:
 	int disable_regme_cmd;
 	int disable_usr_cmds; 
 	int disable_report_cmd;
+	bool disable_zlib;
 	int plugin_mod_class;
 	int topic_mod_class;
 	int mainchat_class;

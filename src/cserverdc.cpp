@@ -783,9 +783,10 @@ void cServerDC::DoUserLogin(cConnDC *conn)
 	conn->mpUser->mT.login.Get();
 }
 
+// /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:832: warning: control reaches end of non-void function
 bool cServerDC::BeginUserLogin(cConnDC *conn)
 {
-	// If user asks for nicklist, then the login will happen after the sending of nicklist ends
+	// If user asks for nicklist, then login will happen after the sending of nicklist ends
 	// otherwise it will happen now
 	int WantedMask;
 	if (mC.delayed_login)
@@ -793,35 +794,28 @@ bool cServerDC::BeginUserLogin(cConnDC *conn)
 	else
 		WantedMask = eLS_LOGIN_DONE;
 	
-	if(WantedMask == conn->GetLSFlag(WantedMask))
-	{
-		if(conn->Log(2)) conn->LogStream() << "Begin login" << endl;
-		if(VerifyUniqueNick(conn))
-		{
-			if (!mC.delayed_login) 
-			{
+	if(WantedMask == conn->GetLSFlag(WantedMask)) {
+		if(conn->Log(2))
+			conn->LogStream() << "Begin login" << endl;
+		// Check if nick is unique
+		if(VerifyUniqueNick(conn)) {
+			if (!mC.delayed_login)  {
 				DoUserLogin(conn);
-			}
-			else
-			{
+			} else {
 				mInProgresUsers.Add(conn->mpUser);
 			}
 			
-			if (conn->mSendNickList)
-			{
+			if (conn->mSendNickList) {
 				// this may won't send all data at once...
 				mP.NickList(conn);	// this will set mNickListInProgress
 				conn->mSendNickList = false;
 				return true;	// return here since we don't know that the list was sent or not
 						// OnFlushDone() will do the login after the NickList is flushed
 			}
-			if(!conn->mpUser->mInList)
-			{
+			if(!conn->mpUser->mInList) {
 				DoUserLogin(conn);
 			}
-		}
-		else
-		{
+		} else {
 			return false;
 		}
 	} else {
