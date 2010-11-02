@@ -70,7 +70,7 @@ using namespace nStringUtils;
 namespace nServer {
 
 char *cAsyncConn::msBuffer = new char[MAX_MESS_SIZE+1];
-unsigned long cAsyncConn::sSocketCounter = 0;	
+unsigned long cAsyncConn::sSocketCounter = 0;
 
 cAsyncConn::cAsyncConn(int desc, cAsyncSocketServer *s, tConnType ct):
 	cObj("cAsyncConn"),
@@ -99,22 +99,21 @@ cAsyncConn::cAsyncConn(int desc, cAsyncSocketServer *s, tConnType ct):
 	ClearLine();
 	mBufEnd = mBufReadPos = 0;
 	mRegFlag = 0;
-	if(mSockDesc)
-	{
-		if(0 > getpeername(mSockDesc, &saddr, &addr_size))
-		{
-			if(Log(2)) LogStream() << "Error getting peername, closing" << endl;
+	if(mSockDesc) {
+		if(0 > getpeername(mSockDesc, &saddr, &addr_size)) {
+			if(Log(2)) LogStream() << "Error getting peer name, closing" << endl;
 			CloseNow();
 		}
 		addr_in = (struct sockaddr_in *)&saddr;
-		// copy IP
+		// Copy IP
 		addr = mIp = addr_in->sin_addr.s_addr;
-		// asci ip addr
+		// IP address
 		mAddrIP = inet_ntoa(addr_in->sin_addr);
-		// host name
-		if( mxServer && mxServer->mUseDNS ) DNSLookup();
-		// port number
-		mAddrPort=addr_in->sin_port;
+		// Host name
+		if(mxServer && mxServer->mUseDNS)
+			DNSLookup();
+		// Port number
+		mAddrPort = addr_in->sin_port;
 	}
 	memset (&mCloseAfter,0, sizeof(mCloseAfter));
 }
@@ -146,9 +145,8 @@ cAsyncConn::cAsyncConn(const string &host , int port, bool udp):
 {
 	mMaxBuffer=MAX_SEND_SIZE;
 	ClearLine();
-	if(udp)
-	{
-		mType=eCT_SERVERUDP;
+	if(udp) {
+		mType = eCT_SERVERUDP;
 		SetupUDP(host, port);
 	}
 	else
@@ -162,7 +160,6 @@ cAsyncConn::~cAsyncConn()
 	this->Close();
 }
 
-/** close connection to peer */
 void cAsyncConn::Close()
 {
 	if(mSockDesc <= 0) return;
@@ -178,33 +175,32 @@ void cAsyncConn::Close()
 	mSockDesc=0;
 }
 
-/** flush as much from output buffer as possible to the iochannel */
 void cAsyncConn::Flush()
 {
-	int size=mBufSend.length();
 	string empty("");
-	if(size) Write(empty, true); // writes what is in the buffer already
+	// Write the content of the buffer
+	if(mBufSend.length())
+		Write(empty, true);
 }
 
 /** reads a line from the msBuffer previously filled by ReadAll into private members */
 int cAsyncConn::ReadLineLocal()
 {
-	if(!mxLine) throw "ReadLine with null line pointer";
+	if(!mxLine)
+		throw "ReadLine with null line pointer";
 	char *pos,*buf;
 	buf = msBuffer + mBufReadPos;
 	int len;
 	len = mBufEnd - mBufReadPos;
 
-	if(NULL == (pos = (char*)memchr(buf, mSeparator,len)))
-	{
-		if(mxLine->size()+len > mLineSizeMax)
-		{
+	if(NULL == (pos = (char*)memchr(buf, mSeparator,len))) {
+		if(mxLine->size()+len > mLineSizeMax) {
 			CloseNow();
 			return 0;
 		}
 		mxLine->append((char*)buf,len);
 		mBufEnd = 0;
-		mBufReadPos = 0;	
+		mBufReadPos = 0;
 		return len;
 	}
 	len = pos - buf;
@@ -218,8 +214,10 @@ int cAsyncConn::ReadLineLocal()
 
 void cAsyncConn::SetLineToRead(string *strp,char delim, int max)
 {
-	if(LineStatus() != AC_LS_NO_LINE) throw "cAsyncConn::SetLineToRead - precondition not ok";
-	if(!strp) throw "cAsyncConn::SetLineToRead - precondition not ok - null string pointer";
+	if(LineStatus() != AC_LS_NO_LINE)
+		throw "cAsyncConn::SetLineToRead - precondition not ok";
+	if(!strp)
+		throw "cAsyncConn::SetLineToRead - precondition not ok - null string pointer";
 	meLineStatus = AC_LS_PARTLY;
 	mLineSize = 0;
 	mLineSizeMax = max;
@@ -227,7 +225,6 @@ void cAsyncConn::SetLineToRead(string *strp,char delim, int max)
 	mSeparator = delim;
 }
 
-/** clears the line status */
 void cAsyncConn::ClearLine()
 {
 	meLineStatus = AC_LS_NO_LINE;
@@ -238,35 +235,34 @@ void cAsyncConn::ClearLine()
 }
 
 
-/** return the line's pointer and keep it */
 string * cAsyncConn::GetLine()
 {
 	return mxLine;
 }
 
-/** No descriptions */
 void cAsyncConn::CloseNice(int msec)
 {
 	OnCloseNice();
 	mWritable = false;
-	if(msec <= 0) { CloseNow(); return;}
-	if(!mBufSend.size()) { CloseNow(); return;}
+	if(msec <= 0 || !mBufSend.size()) {
+		CloseNow();
+		return;
+	}
 	
 	mCloseAfter.Get();
 	mCloseAfter += int(msec);
 }
 
-/** immediately close the connection */
 void cAsyncConn::CloseNow()
 {
 	mWritable = false;
 	ok = false;
-	if(mxServer) mxServer->mConnChooser.cConnChoose::OptOut((cConnBase*)this, cConnChoose::eCC_ALL);
-	if(mxServer) mxServer->mConnChooser.cConnChoose::OptIn((cConnBase*)this, cConnChoose::eCC_CLOSE);
+	if(mxServer)
+		mxServer->mConnChooser.cConnChoose::OptOut((cConnBase*)this, cConnChoose::eCC_ALL);
+	if(mxServer)
+		mxServer->mConnChooser.cConnChoose::OptIn((cConnBase*)this, cConnChoose::eCC_CLOSE);
 }
 
-
-/** reads all available data from the socket and stores it into a static member buffer */
 int cAsyncConn::ReadAll()
 {
 	int buf_len = 0 , i=0, addr_len = sizeof(struct sockaddr);
@@ -274,10 +270,10 @@ int cAsyncConn::ReadAll()
 	mBufEnd = 0;
 	bool udp = (this->GetType() == eCT_CLIENTUDP);
 	
-	if(!ok || !mWritable) return -1;
+	if(!ok || !mWritable)
+		return -1;
 
-	if(!udp)
-	{
+	if(!udp) {
 		while(
 			((buf_len = recv(mSockDesc, msBuffer, MAX_MESS_SIZE, 0)) == -1) &&
 			((errno == EAGAIN) || (errno == EINTR))
@@ -300,19 +296,14 @@ int cAsyncConn::ReadAll()
 		}
 	}
 
-	if(buf_len <= 0)
-	{
-		if(!udp)
-		{
-			if(buf_len == 0)
-			{
+	if(buf_len <= 0) {
+		if(!udp) {
+			if(buf_len == 0) {
 				/* Connection closed - hung up*/
 				if(Log(2)) LogStream() << "User hung up.." << endl;
 				CloseNow();
 				return -1;
-			}
-			else
-			{
+			} else {
 				if(Log(2)) LogStream() << "Read IO Error: " << errno << " : " << strerror(errno) << endl;
 				switch(errno)
 				{
@@ -325,21 +316,16 @@ int cAsyncConn::ReadAll()
 			CloseNow();
 			return -1;
 		}
-	}
-	else
-	{
+	} else {
 		// received data
 		mBufEnd = buf_len;
 		mBufReadPos = 0;
-		msBuffer[mBufEnd]='\0'; // end the string
+		msBuffer[mBufEnd] = '\0'; // end the string
 		mTimeLastIOAction.Get();
 	}
 	return buf_len;
 }
 
-/* Sends as many packets as it takes. */
-/* This was taken from Beej's guide to network programming: */
-/* http://www.ecst.csuchico.edu/~beej/guide/net/html/ */
 int cAsyncConn::SendAll(const char *buf, size_t &len)
 {
 	size_t total = 0;        /* how many bytes we've sent */
@@ -410,16 +396,14 @@ int cAsyncConn::SetupUDP(const string &host, int port)
 {
 	mSockDesc = CreateSock(true);
 
-	if(mSockDesc == INVALID_SOCKET)
-	{
+	if(mSockDesc == INVALID_SOCKET) {
 		cout << "Error getting socket.\n" << endl;
 		ok = false;
 		return -1;
 	}
 
 	struct hostent *he = gethostbyname(host.c_str());
-	if(he != NULL)
-	{
+	if(he != NULL) {
 		memset(&mAddrIN, 0, sizeof(struct sockaddr_in));
 		mAddrIN.sin_family = AF_INET;
 		mAddrIN.sin_port = htons(port);
@@ -427,9 +411,7 @@ int cAsyncConn::SetupUDP(const string &host, int port)
 		memset(&(mAddrIN.sin_zero), '\0', 8);
 		ok = true;
 		return 0;
-	}
-	else
-	{
+	} else {
 		cout << "Error resolving host " << host << endl;
 		ok=false;
 		return -1;

@@ -82,7 +82,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		
 	string MsgToUser;
 	
-	if(!mServer->mC.tag_allow_uknown && !client) {
+	if(!mServer->mC.tag_allow_unknown && !client) {
 		
 		os << _("Unknown clients are not allowed in this hub");
 		code = eTC_UNKNOWN;

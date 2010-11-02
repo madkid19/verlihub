@@ -81,7 +81,7 @@ using namespace nUtils;
 class cMessageParser;
 
 /**
- * Network connection class for asynchronous (aka non-blocking) connection
+ * Network connection class for asynchronous (aka non-blocking) connection.
  * @author Daniel Muller
  * @author Janos Horvath (UDP support)
  */
@@ -145,7 +145,7 @@ class cAsyncConn : public cConnBase, public cObj
 	
 	/**
 	* Return the pointer to the line.
-	* @return Pointer string 
+	* @return Pointer string
 	*/
 	string * GetLine();
 	
@@ -164,7 +164,10 @@ class cAsyncConn : public cConnBase, public cObj
 	void SetLineToRead(string *,char , int max=-1);
 	
 
-	/** reads a line from the msBuffer preaviously filled by ReadAll into private members */
+	/**
+	 * Read a line and store it to internal buffer. Use GetLine() to return the content of the buffer.
+	 * @return Number of read bytes
+	 */
 	int ReadLineLocal();
 	
 	// Connection iterator
@@ -206,8 +209,16 @@ protected: // Protected methods
 	unsigned long mIp;
 	/** connestion type */
 	tConnType mType;
-	/** send *len bytes from the msBufSend */
+	
+	/**
+	 * Send len bytes in the buffer.
+	 * See http://www.ecst.csuchico.edu/~beej/guide/net/html/.
+	 * @param buf Buffer to send
+	 * @param len Number of bytes to send
+	 * @return Number of sent bytes
+	 */
 	int SendAll(const char *buf, size_t &len);
+	
 	/** create a tcp or udp socket (default tcp) */
 	tSocket CreateSock(bool udp=false);
 	/** binds given socket to a port */
@@ -234,8 +245,12 @@ public:
 	const int AddrPort(){return mAddrPort;}
 	const unsigned long GetSockAddress() { return mAddrIN.sin_addr.s_addr; }
 	
-	/** reads all available data from the socket and stores it into a static member buffer */
+	/**
+	 * Read all available data from the socket and store it into a static member buffer
+	 * @return Number of read bytes
+	 */
 	int ReadAll();
+	
 	/** tells if msBuffer has some more data available or not
 	return value: true if not */
 	int BufferEmpty(){ return mBufEnd == mBufReadPos;};
@@ -249,7 +264,10 @@ public:
 	virtual int OnTimer(cTime &now);
 	/** this function is going to be executed periodicaly every N seconds by the  function of the same name in server */
 	int OnTimerBase(cTime &now);
-	/** immediately close the connection */
+	
+	/**
+	 * Immediatly close the connection. Use CloseNice(int msec) not to close it immediately.
+	 */
 	void CloseNow();
 	/** this is called when write buffer gets empty */
 	virtual void OnFlushDone();
@@ -263,7 +281,13 @@ public:
 	tConnType GetType(){return mType;};
 	/** connect to given host (ip) on port */
 	int Connect(const string &, int);
-	/** setup an udp destionation address */
+	
+	/**
+	 * Setup UDP socket.
+	 * @param host The hostname
+	 * @param port The port
+	 * @return Zero on success or -1 on failure
+	 */
 	int SetupUDP(const string &, int);
 	bool DNSLookup();
 	bool DNSResolveReverse(const string &ip, string &host);
