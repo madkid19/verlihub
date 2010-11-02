@@ -22,9 +22,18 @@ MESSAGE(STATUS "Environment link flags: ${VERLIHUB_COMPILE_FLAGS_ENV}")
 # ----------------------------------------------------------------------------------------------------
 # Find dependences
 Find_Package(OpenSSL)
-IF(NOT OPENSSL_FOUND)
-	MESSAGE(STATUS "OpenSSL not found. Passwords will not be encrypt and stored in plain-text.")
-ENDIF(NOT OPENSSL_FOUND)
+Find_Package(Crypt)
+IF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
+	MESSAGE(STATUS "OpenSSL and Crypt not found. Password will be stored in plaintext.")
+ENDIF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
+
+IF(OPENSSL_FOUND)
+	CHECK_INCLUDE_FILES(openssl/md5.h HAVE_OPENSSL_MD5_H)
+ENDIF(OPENSSL_FOUND)
+
+IF(CRYPT_FOUND)
+	SET(HAVE_LIBCRYPT 1)
+ENDIF(CRYPT_FOUND)
 
 Find_Package(MySQL)
 IF(NOT MYSQL_FOUND)
@@ -43,7 +52,6 @@ CHECK_INCLUDE_FILES(string.h HAVE_STRING_H)
 CHECK_INCLUDE_FILES(errno.h HAVE_ERRNO_H)
 CHECK_INCLUDE_FILES(sys/poll.h HAVE_SYS_POLL_H)
 #TODO: Fix creguserinfo.cpp for HAVE_LIBSSL and crypto stuff
-CHECK_INCLUDE_FILES(openssl/md5.h HAVE_OPENSSL_MD5_H)
 
 # SET _WIN32 definition
 IF(WIN32)
