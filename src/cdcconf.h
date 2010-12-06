@@ -73,6 +73,7 @@ public:
 	int max_extra_ops;
 	int max_extra_cheefs;
 	int max_extra_admins;
+	int max_attempts_threshold;
 	double max_upload_kbps;
 	unsigned long min_share;
 	unsigned long min_share_reg;
