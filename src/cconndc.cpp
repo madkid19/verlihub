@@ -99,7 +99,7 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 	if(IsComplete) data.append("|");
 	
 	string dataToSend = data;
-	if(!Server()->mC.disable_zlib && mFeatures & eSF_ZLIB) {
+	if(!Server()->mC.disable_zlib && (mFeatures & eSF_ZLIB)) {
 		// If data should be buffered append content to zlib buffer
 		if(!Flush) {
 			Server()->mZLib->AppendData(dataToSend.c_str(), dataToSend.size());
