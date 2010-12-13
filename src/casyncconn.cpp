@@ -747,8 +747,11 @@ int cAsyncConn::Write(const string &data, bool Flush)
 	size_t size_sent = send_size;
 	// Send the data as much as possible
 	if(SendAll(send_buffer,size_sent) == -1) {
-	  ((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "[" << AddrIP() << "]" << "Error sending data " << send_buffer << "(size:" << send_size << "; sent: " << size_sent << "; buffsent size:" << mBufSend.size() << ")" << endl;
-	  ((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Error: " << strerror(errno) << " (code: " << errno << endl;
+		if(Log(6)) {
+			nDirectConnect::cServerDC *server = (nDirectConnect::cServerDC *) mxServer;
+			server->mNetOutLog << "[" << AddrIP() << "]" << "Error sending data " << send_buffer << "(size:" << send_size << "; sent: " << size_sent << "; buffsent size:" << mBufSend.size() << ")" << endl;
+			server->mNetOutLog << "Error: " << strerror(errno) << " (code: " << errno << endl;
+		}
 		// Analyze the error
 		if((errno != EAGAIN) && (errno != EINTR)) {
 			// Error during writing, remove the user

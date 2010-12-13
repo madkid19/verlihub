@@ -218,6 +218,9 @@ cServerDC::~cServerDC()
 	mKickList = NULL;
 	if (mCo) delete mCo;
 	mCo = NULL;
+	if(mZLib)
+		delete mZLib;
+	mZLib = NULL;
 }
 
 int cServerDC::StartListening(int OverrideDefaultPort)
@@ -650,13 +653,14 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 					old_usr->mxConn->Send(omsg,true);
 					old_usr->mxConn->CloseNow();
 				} else {
-					if(ErrLog(1)) LogStream() << "Closing, user " << old_usr->mNick << " , but there's no connection :(" << endl;
+					if(ErrLog(1))
+					    LogStream() << "[CRITICAL] Found user '" << old_usr->mNick << "' without a valid conneciton pointer" << endl;
 				}
 				RemoveNick(old_usr);
-			}
-			else
-			{
-				if(ErrLog(0)) LogStream() << "Classical example of what never happens " << old_usr->mNick << "'" << endl;
+			} else {
+				// This else block is not usefull since old_user pointer is used to access CUser class property above
+				//if(ErrLog(0))
+				//	LogStream() << "[CRITICAL] Found user '" << old_usr->mNick << "' without a valid conneciton pointer" << endl;
 				conn->CloseNow();
 				return false;
 			}
