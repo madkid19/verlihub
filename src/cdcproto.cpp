@@ -394,7 +394,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 
 	bool TagValid = true;
 	int tag_result = 0;
-	if (!mS->mC.tag_allow_none && conn->mpUser->mClass < mS->mC.tag_min_class_ignore && conn->mpUser->mClass != eUC_PINGER) {
+	if (conn->mpUser->mClass < mS->mC.tag_min_class_ignore && conn->mpUser->mClass != eUC_PINGER) {
 		TagValid = tag->ValidateTag(os, conn->mConnType, tag_result);
 	}
 	#ifndef WITHOUT_PLUGINS
