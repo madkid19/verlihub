@@ -37,13 +37,13 @@ namespace nDirectConnect {
 		
 		ostream &operator << (ostream &os, cDCClient &tr)
 		{
-			os << "\r" << tr.mName << " - " << tr.mTagID;
+			os << "\r" << tr.mName << " ID: " << tr.mTagID;
  			if(tr.mMinVersion < 0 && tr.mMaxVersion < 0)
- 				os << " all version";
+ 				os << " All version";
  			else if(tr.mMinVersion >= 0 && tr.mMaxVersion < 0)
- 				os << ">=" << tr.mMinVersion;
+ 				os << " Min version: " << tr.mMinVersion;
  			else if(tr.mMinVersion < 0 && tr.mMaxVersion >= 0)
- 				os << "<=" << tr.mMaxVersion;
+ 				os << " Max version: " << tr.mMaxVersion;
  			else
  				os << tr.mMinVersion << "-" << tr.mMaxVersion;
  			os << " (";

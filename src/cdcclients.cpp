@@ -244,19 +244,19 @@ namespace nDirectConnect {
 		switch(cmd)
 		{
 			case eLC_LST: 
-				help_str = "!lsttag\r\nGive the list of tags"; 
+				help_str = "!lstclient\r\nGive the list of clients"; 
 				break;
 			case eLC_ADD: 
 			case eLC_MOD:
-				help_str = "!(add|mod)tag <name>"
-						" -t <tag_id>"
+				help_str = "!(add|mod)client <name>"
+						" -t <client_id>"
 						"[ -b <\"yes/no\">]"
 						"[ -v <\"min_version\">]"
 						"[ -V <\"max_version\">]"
 						"[ -e <enable/disable>]";
 				break;
 			case eLC_DEL:
-				help_str = "!deltag <name>"; break;
+				help_str = "!delclient <name>"; break;
 				default: break;
 		}
 		cDCProto::EscapeChars(help_str,help_str);
@@ -266,15 +266,13 @@ namespace nDirectConnect {
 	void cDCClientConsole::GetHelp(ostream &os)
 	{
 		string help;
-		help = "Available redirect flags are:\r\n";
-		help += "0  \tFor any other reason\r\n";
-		help += "1  \tBan and kick\r\n";
-		help += "2  \tHub full\r\n";
-		help += "4  \tUser does not enforce share rules\r\n";
-		help += "8  \tWrong or unknown tag\r\n";
-		help += "16\tWrong password\r\n";
+		help = "Available options are:\r\n";
+		help += "-t \tClient identification (for ex. <++ V:0.75,M:A,H:1/0/0,S:2> client ID is '++')\r\n";
+		help += "-b \tBan client matching this rule (possible values are 0 or 1)\r\n";
+		help += "-v \tMinimum version number\r\n";
+		help += "-V \tMaximum version number\r\n";
+		help += "-e \tEnable or disable this rule (possible values are 0 or 1)\r\n";
 		
-		help += "\r\nRemember to make the sum of the selected flags above\r\n";
 		cDCProto::EscapeChars(help,help);
 		os << help;
 	}
@@ -331,7 +329,7 @@ namespace nDirectConnect {
 
 	void cDCClientConsole::ListHead(ostream *os)
 	{
-		*os << "Existing tags are:\r\n";
+		*os << "Existing clients are:\r\n";
 	}
 		
 	bool cDCClientConsole::IsConnAllowed(cConnDC *conn,int cmd)

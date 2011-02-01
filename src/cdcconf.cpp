@@ -164,7 +164,7 @@ void cDCConf::AddVars()
 	Add("min_class_bc_vips", min_class_bc_vips, 4);
 	Add("bc_reply",mS.LastBCNick,mEmpty);
 	Add("plugin_mod_class",plugin_mod_class,5);
-	Add("topic_mod_class",topic_mod_class,5);	
+	Add("topic_mod_class",topic_mod_class,5);
 	Add("cmd_start_op",cmd_start_op,string("!"));
 	Add("cmd_start_user",cmd_start_user,string("+"));
 	Add("dest_report_chat", dest_report_chat, false);
