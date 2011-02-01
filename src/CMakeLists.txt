@@ -183,16 +183,20 @@ LIST(APPEND ${VERLIHUB_HDRS} make_time.h)
 
 SET(VERLIHUB_LIBS ${OPENSSL_LIBRARIES} ${CRYPT_LIBRARIES} ${MYSQL_LIBRARIES} ${GEOIP_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${GEOIP_INCLUDE_DIR} ${PCRE_INCLUDE_DIR})
-IF(${CMAKE_BUILD_TYPE} EQUAL "Debug")
+
+# Use cmake -DDEFINE_DEBUG=ON to enable debug
+OPTION(DEFINE_DEBUG "Build the project using debugging code" OFF)
+IF(DEFINE_DEBUG)
+	MESSAGE("Adding debug flag...")
 	SET(CMAKE_CXX_FLAGS "-Wall -O3")
-ENDIF(${CMAKE_BUILD_TYPE} EQUAL "Debug")
+	SET(CMAKE_BUILD_TYPE Debug)
+	MESSAGE("Build type is " ${CMAKE_BUILD_TYPE})
+ENDIF(DEFINE_DEBUG)
+
 # ----------------------------------------------------------------------------------------------------
 
 # TODO: Do not compile *.cpp files twice for verlihub anb libverlihub.
 # See: http://www.paraview.org/Wiki/CMake_FAQ#Does_that_mean_I_have_to_build_all_my_library_objects_twice.2C_once_for_shared_and_once_for_static.3F.21_I_don.27t_like_that.21
-ADD_EXECUTABLE(verlihub ${VERLIHUB_SRCS} verlihub.cpp)
-target_link_libraries(verlihub ${VERLIHUB_LIBS})
-
 ADD_LIBRARY(libverlihub SHARED ${VERLIHUB_SRCS})
 SET_TARGET_PROPERTIES(libverlihub PROPERTIES OUTPUT_NAME "verlihub")
 SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION 1.0.0 SOVERSION ${VERLIHUB_SOVERSION})
@@ -202,6 +206,9 @@ target_link_libraries(libverlihub ${VERLIHUB_LIBS})
 ADD_LIBRARY(vhapi SHARED "script_api.cpp")
 SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION 1.0.0 SOVERSION ${VERLIHUB_SOVERSION})
 #target_link_libraries(vhapi "-module -shared -dy")
+
+ADD_EXECUTABLE(verlihub verlihub.cpp)
+target_link_libraries(verlihub libverlihub)
 
 # ----------------------------------------------------------------------------------------------------
 # Generate verlihub_config
