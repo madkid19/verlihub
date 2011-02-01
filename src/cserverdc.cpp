@@ -426,7 +426,6 @@ bool cServerDC::RemoveNick(cUser *User)
 {
 	tUserHash Hash = mUserList.Nick2Hash(User->mNick);
 
-	//cout << "Leave: " << User->mNick << " count = " << this->mUserList.size() << " then ";
 	if(mUserList.ContainsHash(Hash)) {
 		#ifndef WITHOUT_PLUGINS
 		if(User->mxConn && User->mxConn->GetLSFlag(eLS_LOGIN_DONE)) mCallBacks.mOnUserLogout.CallAll(User);
@@ -586,7 +585,14 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	}
 	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
 	if (mC.host_header == 1) {
-		os << "This hub is running version " << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << " of " HUB_VERSION_NAME <<  " (RunTime: "<< runtime.AsPeriod()<<" / User count: "<< mUserCountTot <<")|";
+		if(mC.extended_welcome_message) {
+			os << HUB_VERSION_NAME "-"<< HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << "|";
+			os << "<" << mC.hub_security << ">" << " RunTime: " << runtime.AsPeriod()<<"|";
+			os << "<" << mC.hub_security << ">" << " User Count: " << mUserCountTot <<"|";
+			os << "<" << mC.hub_security << ">" << " System Status: " << mStatus << "|";    
+		} else {
+			os << "This hub is running version " << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << " of " HUB_VERSION_NAME <<  " (RunTime: "<< runtime.AsPeriod()<<" / User count: "<< mUserCountTot <<")|";
+		}
 		cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
 	}
 	conn->Send(omsg, false);
@@ -823,7 +829,6 @@ bool cServerDC::BeginUserLogin(cConnDC *conn)
 			return false;
 		}
 	} else {
-		cout << conn->GetLSFlag(eLS_LOGIN_DONE) << " " << eLS_LOGIN_DONE << endl;
 		conn->CloseNow();
 		return false;
 	}
@@ -1384,7 +1389,6 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 		//mClass >= eUC_OPERATOR) &&
 	    (OP->mNick != Nick))
 	{
-		cout << "Checking if he is protected" << endl;
 		if (user->mProtectFrom < OP->mClass) {
 			if(flags & eKCK_Reason) {
 				user->mToBan = false;
@@ -1412,10 +1416,8 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					if ( mC.msg_replace_ban.size())
 						mP.mKickBanPattern.Replace(0, NewReason, mC.msg_replace_ban);
 				}
-				cout << "mKickList->AddKick DB stuff" << endl;
 				mKickList->AddKick(user->mxConn, OP->mNick, &Reason, OldKick);
 
-				cout << "Sending msg" << endl;
 				if(Reason.size()) {
 					string omsg;
 					ostr << "<" << OP->mNick << "> is kicking " << Nick << " because: " << NewReason;
@@ -1432,8 +1434,6 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 			}
 
 			if(flags & eKCK_Drop) {
-				cout << "Dropping" << endl;
-				
 				// Send the message to the kicker
 				ostr.str(mEmpty);
 				ostr << ((flags & eKCK_TBAN) ? "Kicked user " : "Droping user ") << Nick << " IP: " << user->mxConn->AddrIP();
@@ -1457,7 +1457,6 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					Disconnect = mCallBacks.mOnOperatorDrops.CallAll(OP, user);
 					#endif
 				}
-				cout << "Closing user connection" << endl;
 				if (Disconnect) {
 					user->mxConn->CloseNice(1000, eCR_KICKED);
 					if (!(flags &eKCK_TBAN))
@@ -1468,7 +1467,6 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 
 				// temp ban kicked user
 				if (flags & eKCK_TBAN) {
-				  cout << "Temp ban" << endl;
 					cBan Ban(this);
 					cKick Kick;
 

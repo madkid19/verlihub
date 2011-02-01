@@ -183,6 +183,7 @@ void cDCConf::AddVars()
 	Add("send_user_ip",send_user_ip,false);
 	Add("send_user_info", send_user_info, true);
 // 	advanced hub configuration and tweaks
+	Add("extended_welcome_message", extended_welcome_message, 0);
 	Add("host_header", host_header, 1);
 	Add("int_myinfo",int_myinfo,60);
 	Add("int_nicklist",int_nicklist,60);
