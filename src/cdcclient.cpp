@@ -46,6 +46,7 @@ namespace nDirectConnect {
  				os << " Max version: " << tr.mMaxVersion;
  			else
  				os << tr.mMinVersion << "-" << tr.mMaxVersion;
+			os << " Ban: " << tr.mBan;
  			os << " (";
  			if(tr.mEnable) os << "Enable";
  			else os << "Disable";

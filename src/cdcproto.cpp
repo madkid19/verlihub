@@ -392,17 +392,14 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		return -1;
 	}
 
-	// test for all but kick only  non-ops
 	bool TagValid = true;
 	int tag_result = 0;
-	if (!mS->mC.tag_allow_none &&  conn->mpUser->mClass < mS->mC.tag_min_class_ignore ) {
-		//TODO: Validate Tag
+	if (!mS->mC.tag_allow_none && conn->mpUser->mClass < mS->mC.tag_min_class_ignore && conn->mpUser->mClass != eUC_PINGER) {
 		TagValid = tag->ValidateTag(os, conn->mConnType, tag_result);
-		#ifndef WITHOUT_PLUGINS
-		if (TagValid)
-			TagValid = mS->mCallBacks.mOnValidateTag.CallAll(conn, tag);
-		#endif
 	}
+	#ifndef WITHOUT_PLUGINS
+		TagValid = TagValid && mS->mCallBacks.mOnValidateTag.CallAll(conn, tag);
+	#endif
 
 	if(!TagValid)
 	{
