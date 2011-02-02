@@ -249,8 +249,7 @@ int cDCProto::DC_Key(cMessageDC * msg, cConnDC * conn)
 	if(key != msg->ChunkString(1)) {
 		if(conn->Log(1)) conn->LogStream() << "Invalid key" << endl;
 		if(mS->mC.drop_invalid_key) {
-			string omsg = _("Your client provided an invalid key");
-			mS->ConnCloseMsg(conn,omsg,1000, eCR_INVALID_KEY);
+			mS->ConnCloseMsg(conn, _("Your client provided an invalid key"),1000, eCR_INVALID_KEY);
 			return -1;
 		}
 	}
@@ -649,10 +648,8 @@ int cDCProto::DC_GetINFO(cMessageDC * msg, cConnDC * conn)
 	cUser *other = mS->mUserList.GetUserByNick ( str );
 
 	// check if user found
-	if(!other )
-	{
-		if(str != mS->mC.hub_security && str != mS->mC.opchat_name)
-		{
+	if(!other) {
+		if(str != mS->mC.hub_security && str != mS->mC.opchat_name) {
 			cDCProto::Create_Quit(buf, str);
 			conn->Send(buf, true);
 		}
@@ -660,21 +657,15 @@ int cDCProto::DC_GetINFO(cMessageDC * msg, cConnDC * conn)
 	}
 
 	// if user just logged in ignore it, conn is dcgui, and already one myinfo sent
-	if(
-		conn->mpUser->mT.login < other->mT.login &&
-		cTime() < (other->mT.login + 60)
-	)
+	if(conn->mpUser->mT.login < other->mT.login && cTime() < (other->mT.login + 60))
 		return 0;
 
-	if(mS->mC.optimize_userlist == eULO_GETINFO)
-	{
+	if(mS->mC.optimize_userlist == eULO_GETINFO) {
 		conn->mpUser->mQueueUL.append(str);
 		conn->mpUser->mQueueUL.append("|");
-	}
-	else
-	{
+	} else {
 		// send it
-		if(!(conn->mFeatures & eSF_NOGETINFO)){
+		if(!(conn->mFeatures & eSF_NOGETINFO)) {
 			buf = GetMyInfo(other, conn->mpUser->mClass );
 			conn->Send(buf, true, false);
 		}
@@ -693,11 +684,7 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 	if(!conn->mpUser->Can(eUR_PM, mS->mTime.Sec(), 0)) return -4;
 
 	// verify sender's nick
-	if(
-			msg->ChunkString(eCH_PM_FROM) != conn->mpUser->mNick||
-			msg->ChunkString(eCH_PM_NICK) != conn->mpUser->mNick
-		)
-	{
+	if(msg->ChunkString(eCH_PM_FROM) != conn->mpUser->mNick || msg->ChunkString(eCH_PM_NICK) != conn->mpUser->mNick) {
 		if(conn->Log(2))
 			conn->LogStream() << "Pretend to be someone else in PM (" << msg->ChunkString(eCH_PM_FROM) << ")." <<endl;
 		conn->CloseNow();
@@ -808,9 +795,9 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	conn->mpUser->mFloodHashes[eFH_CHAT] = Hash;
 
 	stringstream omsg;
-	bool send=false;
+	bool send = false;
 	// Set minimum chat delay
-	long delay=mS->mC.int_chat_ms; 
+	long delay = mS->mC.int_chat_ms; 
 	if(conn->mpUser->mClass >=  eUC_VIPUSER) delay=0;
 
 	// Check if nick is ok
@@ -827,7 +814,8 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	if(!mS->MinDelayMS(conn->mpUser->mT.chat,delay)) {
 		cTime now;
 		cTime diff=now-conn->mpUser->mT.chat;
-		omsg << "Not sent: " <<  text << endl << "Minimum delay for chat is: " << delay << "ms. And you made: " << diff.AsPeriod() << " " << diff.MiliSec();
+		omsg << autosprintf(_("Not sent: %s"), text.c_str()) << endl;
+		omsg << autosprintf(_("Minimum delay for chat is %lu ms but you made %s"), delay, diff.AsPeriod().AsString().c_str());
 		mS->DCPublicHS(omsg.str(),conn);
 		return 0;
 	}
