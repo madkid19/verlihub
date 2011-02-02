@@ -96,6 +96,7 @@ SET(VERLIHUB_HDRS
 	ccustomredirects.h
 	ccustomredirect.h
 	czlib.h
+	i18n.h
 )
 SET(VERLIHUB_SRCS
 	cantiflood.cpp
