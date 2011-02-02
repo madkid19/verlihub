@@ -36,6 +36,8 @@
 #include <signal.h>
 #include <dirent.h>
 #include "script_api.h"
+#include "i18n.h"
+#include "dirsettings.h"
 
 using namespace std;
 using nDirectConnect::cServerDC;
@@ -87,51 +89,55 @@ bool DirExists(const char *dirname)
 int main(int argc, char *argv[])
 {
 	int result = 0;
-		string ConfigBase;
-		#ifdef _WIN32
-		TCHAR Buffer[BUFSIZE];
-		if(!GetCurrentDirectory(BUFSIZE, Buffer)) {
-				cout << "Cannot get current directory because: " << GetLastError() << endl;
-				return 1;
-		}
-		ConfigBase = Buffer;
-		#else
-		const char *DirName = NULL;
-		char *HomeDir = getenv("HOME");
-		string tmp;
-		if (HomeDir)
-		{
-			tmp = HomeDir;
-			tmp +=  "/.verlihub";
-			DirName = tmp.c_str();
-			if ((DirName != NULL) && DirExists(DirName)) ConfigBase = DirName;
-		}
-		DirName = "./.verlihub";
+	string ConfigBase;
+	
+	setlocale(LC_ALL, "");
+	bindtextdomain("verlihub", LOCALEDIR);
+	textdomain("verlihub");
+	cout << gettext("Your IP: %s") << std::endl;
+	
+	#ifdef _WIN32
+	TCHAR Buffer[BUFSIZE];
+	if(!GetCurrentDirectory(BUFSIZE, Buffer)) {
+			cout << "Cannot get current directory because: " << GetLastError() << endl;
+			return 1;
+	}
+	ConfigBase = Buffer;
+	#else
+	const char *DirName = NULL;
+	char *HomeDir = getenv("HOME");
+	string tmp;
+	if (HomeDir) {
+		tmp = HomeDir;
+		tmp +=  "/.verlihub";
+		DirName = tmp.c_str();
 		if ((DirName != NULL) && DirExists(DirName)) ConfigBase = DirName;
-		DirName = getenv("VERLIHUB_CFG");
-		if ((DirName != NULL) && DirExists(DirName)) ConfigBase = DirName;
+	}
+	DirName = "./.verlihub";
+	if ((DirName != NULL) && DirExists(DirName))
+		ConfigBase = DirName;
+	DirName = getenv("VERLIHUB_CFG");
+	if ((DirName != NULL) && DirExists(DirName))
+		ConfigBase = DirName;
+	if (!ConfigBase.size()) {
+		ConfigBase = "/etc/verlihub";
+	}
+	#endif
+	cout << "Config dir " << ConfigBase << endl;
+	cServerDC server(ConfigBase, argv[0]);
+	int port=0;
+	
+	if(argc > 1) {
+		stringstream arg(argv[1]);
+		arg >> port;
+	}
+	#ifndef _WIN32
+	signal(SIGPIPE,mySigPipeHandler);
+	signal(SIGIO  ,mySigIOHandler  );
+	signal(SIGQUIT,mySigQuitHandler);
+	#endif
 
-		if (!ConfigBase.size())
-		{
-			ConfigBase = "/etc/verlihub";
-		}
-		#endif
-		cout << "Config dir " << ConfigBase << endl;
-		cServerDC server(ConfigBase, argv[0]);
-		int port=0;
-
-		if(argc > 1)
-		{
-			stringstream arg(argv[1]);
-			arg >> port;
-		}
-		#ifndef _WIN32
-		signal(SIGPIPE,mySigPipeHandler);
-		signal(SIGIO  ,mySigIOHandler  );
-		signal(SIGQUIT,mySigQuitHandler);
-		#endif
-
-		server.StartListening(port);
-		result = server.run(); // run the main loop until it stops itself
+	server.StartListening(port);
+	result = server.run(); // run the main loop until it stops itself
 	return result;
 }
