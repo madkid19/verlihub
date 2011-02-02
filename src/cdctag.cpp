@@ -27,7 +27,7 @@ using namespace std;
 #include <string>
 #include <iostream>
 #include "cdcconf.h"
-#include "gettext.h"
+#include "i18n.h"
 
 using std::string;
 using namespace std;
@@ -129,35 +129,25 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		//Well, DCGUI bug!
 		//if (tag->mClientType == eCT_DCGUI) limit *= slot;
 		if( (conn_type->mTagMinLimit) > mLimit ) {
-			ReplaceVarInString(mServer->mL.tag_min_limit, "conn_type", MsgToUser, conn_type->mIdentifier);
-			ReplaceVarInString(MsgToUser, "tag_max_hs_ratio", MsgToUser, conn_type->mTagMinLimit);
-			os << MsgToUser;
+			os << autosprintf(_("Too low upload limit for your connection type (%s), max ratio is %s"), conn_type->mIdentifier, conn_type->mTagMinLimit);
 			code = eTC_MIN_LIMIT;
 			return false;
 		}
 		if( (conn_type->mTagMinLSRatio *mSlots) > mLimit ) {
-			ReplaceVarInString(mServer->mL.tag_min_ls_ratio, "conn_type", MsgToUser,	conn_type->mIdentifier);
-			ReplaceVarInString(MsgToUser, "tag_min_ls_ratio", MsgToUser, conn_type->mTagMinLSRatio);
-			os << MsgToUser;
+			os << autosprintf(_("Too upload limit for your connection type (%s), min upload limit is %s per every slot"), conn_type->mIdentifier, conn_type->mTagMinLSRatio);
 			code = eTC_MIN_LS_RATIO;
 			return false;
 		}
 	}
 	//TODO: Disable version checking if ver is -1
 	if (client && client->mMinVersion > -1 && mClientVersion < client->mMinVersion ) {
-		ReplaceVarInString(mServer->mL.msg_upgrade, "msg_upgrade", MsgToUser, mServer->mC.msg_upgrade);
-		ReplaceVarInString(MsgToUser, "client_type", MsgToUser, client->mName);
-		ReplaceVarInString(MsgToUser, "tag_min_version", MsgToUser, client->mMinVersion);
-		os << MsgToUser << endl;
+		os << autosprintf(_("Your client version is too old, please upgrade it. Allowed minimum version number for %s client is: %s"), client->mName, client->mMinVersion) << endl;
 		code = eTC_MIN_VERSION;
 		return false;
 	}
 
 	if (client && client->mMaxVersion > -1 && mClientVersion > client->mMaxVersion) {
-		ReplaceVarInString(mServer->mL.msg_downgrade, "msg_downgrade", MsgToUser, mServer->mC.msg_downgrade);
-		ReplaceVarInString(MsgToUser, "client_type", MsgToUser, client->mName);
-		ReplaceVarInString(MsgToUser, "tag_max_version", MsgToUser, client->mMaxVersion);
-		os << MsgToUser << endl;
+		os << autosprintf(_("Your client version is too recent. Allowed maximum version number for %s client is %s"), client->mName, client->mMaxVersion) << endl;
 		code = eTC_MAX_VERSION;
 		return false;
 	}

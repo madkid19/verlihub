@@ -912,7 +912,7 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0)) {
 		unsigned long use_hub_share= 0;
 		if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
-			use_hub_share = mS->mC.min_share_use_hub;	
+			use_hub_share = mS->mC.min_share_use_hub;
 		} else if(mS->mC.min_share_use_hub_reg && conn->GetTheoricalClass() == eUC_REGUSER) {
 			use_hub_share = mS->mC.min_share_use_hub_reg;
 		} else if(mS->mC.min_share_use_hub_vip && conn->GetTheoricalClass() == eUC_VIPUSER) {
@@ -920,9 +920,10 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 		}
 		use_hub_share = use_hub_share*1024*1024;
 		if(conn->mpUser->mShare < use_hub_share) {
-			ReplaceVarInString(mS->mC.ctm_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
+			os << autosprintf(_("You can't download on this hub unless you share %s."), convertByte(use_hub_share, false).c_str());
+			ostr = os.str();
 		} else {
-			ostr = "You are not allowed to download filelists";
+			ostr = _("You are not allowed to download filelists");
 		}
 		mS->DCPrivateHS(ostr, conn);
 		return -4;
@@ -932,12 +933,14 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	
 	string ctm = msg->mStr;
 
-	cUser *other = mS->mUserList.GetUserByNick ( nick );
+	cUser *other = mS->mUserList.GetUserByNick(nick);
 	// Check nick and connection
-	if(!other || !other->mxConn) return -1;
+	if(!other || !other->mxConn)
+		return -1;
 	
 	// Check if the user can download and also if the other user hides the share
-	if((conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) || other->mHideShare) return -4;
+	if((conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) || other->mHideShare)
+		return -4;
 
 	if(!CheckIP(conn,msg->ChunkString(eCH_CM_IP))) {
 		string ip;
@@ -948,7 +951,7 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 		else ip = conn->mAddrIP;
 		
 		if(ip.empty()) {
-			os << "You cannot connect to an external IP because you are in a LAN";	
+			os << _("You cannot connect to an external IP because you are in a LAN");
 			string toSend = os.str();
 			conn->Send(toSend);
 			return -1;
@@ -956,7 +959,8 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 		
 		os << "$ConnectToMe" << " " << nick << " " <<  ip << ":" << msg->ChunkString(eCH_CM_PORT);
 		ctm = os.str();
-		if(conn->Log(3)) LogStream() << "Fixed wrong IP in $ConnectToMe from " <<  msg->ChunkString(eCH_CM_IP) << " to " << ip << endl;
+		if(conn->Log(3))
+			LogStream() << "Fixed wrong IP in $ConnectToMe from " <<  msg->ChunkString(eCH_CM_IP) << " to " << ip << endl;
 	}
 	
 	#ifndef WITHOUT_PLUGINS
@@ -982,36 +986,37 @@ int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn )
 	if(msg->SplitChunks()) return -1;
 	if(!conn->mpUser) return -1;
 	if(!conn->mpUser->mInList) return -2;
-	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0)) return -4;
+	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0))
+		return -4;
 	ostringstream ostr;
 
 	// check nick
-	if(msg->ChunkString(eCH_RC_NICK) != conn->mpUser->mNick)
-	{
-		ostr << "Your nick isn't: " << msg->ChunkString(eCH_RC_NICK) << " but " << conn->mpUser->mNick;
+	if(msg->ChunkString(eCH_RC_NICK) != conn->mpUser->mNick) {
+		ostr << autosprintf(_("Your nick isn't %s but %s"), msg->ChunkString(eCH_RC_NICK).c_str(), conn->mpUser->mNick.c_str());
 		mS->ConnCloseMsg(conn, ostr.str(), 1500, eCR_SYNTAX);
 		return -1;
 	}
 
-	// find and check the other
+	// Find and check the other nickname
 	string &str = msg->ChunkString(eCH_RC_OTHER);
-	cUser *other = mS->mUserList.GetUserByNick ( str );
-	if(!other)
-	{
-		ostr << "User " << str << " not found.";
+	cUser *other = mS->mUserList.GetUserByNick(str);
+	if(!other) {
+		ostr << autosprintf(_("User %s not found."), str.c_str());
 		return -2;
 	}
 
-	if(conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) return -4;
+	if(conn->mpUser->mClass + mS->mC.classdif_download < other->mClass)
+		return -4;
 
-	// do it
 	#ifndef WITHOUT_PLUGINS
 	if (!mS->mCallBacks.mOnParsedMsgRevConnectToMe.CallAll(conn, msg))
 		return -2;
 	#endif
 
-	if(other->mxConn) other->mxConn->Send( msg->mStr );
-	else mS->DCPrivateHS("Robots don't share.",conn);
+	if(other->mxConn)
+		other->mxConn->Send( msg->mStr );
+	else
+		mS->DCPrivateHS(_("Robots do not share."),conn);
 	return 0;
 }
 
@@ -1023,11 +1028,13 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 
 	// Check if user is logged in
 	if(!conn->mpUser) {
-		if(conn->Log(1)) conn->LogStream() << "Can't search without user" << endl;
+		if(conn->Log(1))
+			conn->LogStream() << "Can't search without user" << endl;
 		conn->CloseNow();
 		return -1;
 	}
-	if(!conn->mpUser->mInList) return -2;
+	if(!conn->mpUser->mInList)
+		return -2;
 	if(!conn->mpUser->Can(eUR_SEARCH, mS->mTime.Sec(), 0)) {
 		unsigned long use_hub_share= 0;
 		if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
@@ -1039,8 +1046,8 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 		}
 		use_hub_share = use_hub_share*1024*1024;
 		if(conn->mpUser->mShare < use_hub_share) {
-			ReplaceVarInString(mS->mC.search_share_min, "min_share_use_hub", ostr, convertByte(use_hub_share, false));
-			mS->DCPrivateHS(ostr, conn);
+			os << autosprintf(_("You can't search on this hub unless you share %s."), convertByte(use_hub_share, false).c_str());
+			mS->DCPrivateHS(os.str(), conn);
 		}
 		return -4;
 	}
@@ -1050,7 +1057,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 			case eDC_MSEARCH:
 			case eDC_SEARCH:
 				if(msg->ChunkString(eCH_AS_SEARCHPATTERN).size() < mS->mC.min_search_chars) {
-					os << "Minimum search characters is: " << mS->mC.min_search_chars;
+					os << autosprintf(_("Minimum search characters is %d"), mS->mC.min_search_chars);
 					mS->DCPublicHS(os.str(),conn);
 					return -1;
 				}
@@ -1058,7 +1065,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 			case eDC_MSEARCH_PAS:
 			case eDC_SEARCH_PAS:
 				if(msg->ChunkString(eCH_PS_SEARCHPATTERN).size() < mS->mC.min_search_chars) {
-					os << "Minimum search characters is: " << mS->mC.min_search_chars;
+					os << autosprintf(_("Minimum search characters is %d"), mS->mC.min_search_chars);
 					mS->DCPublicHS(os.str(),conn);
 					return -1;
 				}
@@ -1068,8 +1075,9 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	}
 
 	if (mS->mSysLoad >= (eSL_CAPACITY + conn->mpUser->mClass)) {
-		if(mS->Log(3)) mS->LogStream() << "Skipping search, system is: " << mS->mSysLoad << endl;
-		os << "Sorry hub is busy now, no search, try later..";
+		if(mS->Log(3))
+			mS->LogStream() << "Skipping search, system is: " << mS->mSysLoad << endl;
+		os << _("Sorry hub is busy now, no search, try later..");
 		mS->DCPublicHS(os.str(),conn);
 		return -2;
 	}
@@ -1090,22 +1098,22 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 			if(conn->mpUser->mClass ==  eUC_VIPUSER) delay=mS->mC.int_search_vip;
 			if(conn->mpUser->mClass ==  eUC_OPERATOR) delay=mS->mC.int_search_op;
 			if(!CheckIP(conn,msg->ChunkString(eCH_AS_IP))) {
-				os << "Active Search: Your ip is not " << msg->ChunkString(eCH_AS_IP) << " it is " << conn->mAddrIP << " bye bye.";
+				os << autosprintf(_("Active Search: Your ip is not %s but %s. Disconnecting"), msg->ChunkString(eCH_AS_IP).c_str(), conn->mAddrIP.c_str());
 			mS->ConnCloseMsg(conn, os.str(), 4000, eCR_SYNTAX);
 			return -1;
 			}
-			break;
+		break;
 		case eDC_MSEARCH_PAS:
 		case eDC_SEARCH_PAS:
 			delay=mS->mC.int_search_pas;
 			if(conn->mpUser->mClass ==  eUC_REGUSER) delay = mS->mC.int_search_reg_pass;
 			else if(conn->mpUser->mClass >  eUC_REGUSER) delay=int(1.5 * mS->mC.int_search_reg);
 			if(conn->mpUser->mNick != msg->ChunkString(eCH_PS_NICK)) {
-				os << "Your nick isn't " << msg->ChunkString(eCH_PS_NICK) << " but " << conn->mpUser->mNick << " bye!";
+				os << autosprintf(_("Your nick is not %s but %s. Disconnecting."), msg->ChunkString(eCH_PS_NICK).c_str(), conn->mpUser->mNick.c_str());
 				mS->ConnCloseMsg(conn, os.str(),4000, eCR_SYNTAX);
 				return -1;
 			}
-			break;
+		break;
 		default: return -5; break;
 	}
 
@@ -1114,7 +1122,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	// verify the delay and the number of search
 	if(!mS->MinDelay(conn->mpUser->mT.search,delay)) {
 		if(conn->mpUser->mSearchNumber >= mS->mC.search_number) {
-			os << "You can do " << mS->mC.search_number << " search in " << delay << " seconds";
+			os << autosprintf(_("You can do %d searches in %d seconds."), mS->mC.search_number, delay);
 			mS->DCPublicHS(os.str(),conn);
 			return -1;
 		}
@@ -1125,10 +1133,10 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	// Translate MultiSearch to Search
 	string omsg(msg->mStr);
 	if(msg->mType == eDC_MSEARCH) {
-		omsg="$Search ";
-		omsg+=msg->ChunkString(eCH_AS_ADDR);
-		omsg+=' ';
-		omsg+=msg->ChunkString(eCH_AS_QUERY);
+		omsg = "$Search ";
+		omsg += msg->ChunkString(eCH_AS_ADDR);
+		omsg += ' ';
+		omsg += msg->ChunkString(eCH_AS_QUERY);
 	}
 
  	#ifndef WITHOUT_PLUGINS
@@ -1154,10 +1162,10 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	ostringstream os;
 	// Check nickname
 	if(conn->mpUser->mNick != msg->ChunkString(eCH_SR_FROM)) {
-		if(conn->Log(1)) conn->LogStream() << "Claims to be someone else in search response. Dropping connection." << endl;
+		if(conn->Log(1))
+			conn->LogStream() << "Claims to be someone else in search response. Dropping connection." << endl;
 		if(conn->mpUser)
-			os << "Your nick isn't " << msg->ChunkString(eCH_SR_FROM)
-				 << " but " << conn->mpUser->mNick << " bye bye.";
+			os << autosprintf(_("Your nick is not %s but %s. Disconnecting."), msg->ChunkString(eCH_SR_FROM).c_str(), conn->mpUser->mNick.c_str());
 		mS->ConnCloseMsg(conn, os.str(),4000, eCR_SYNTAX);
 		return -1;
 	}
@@ -1195,35 +1203,35 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 //$ForceMove <newIp>
 //$To: <victimNick> From: <senderNick> $<<senderNick>> You are being re-directed to <newHub> because: <reasonMsg>
 {
-	if(msg->SplitChunks()) return -1;
-	if(!conn->mpUser || !conn->mpUser->mInList) return -2;
+	if(msg->SplitChunks())
+		return -1;
+	if(!conn->mpUser || !conn->mpUser->mInList)
+		return -2;
 	ostringstream ostr;
 
 	string &str = msg->ChunkString(eCH_FM_NICK);
 
 	// check rights
-	if(!conn->mpUser || conn->mpUser->mClass < mS->mC.min_class_redir)
-	{
-		if(conn->Log(1)) conn->LogStream() << "Tried to redirect " << str  << endl;
-		ostr << "You do not have sufficient rights to use redirects.";
+	if(!conn->mpUser || conn->mpUser->mClass < mS->mC.min_class_redir) {
+		if(conn->Log(1))
+			conn->LogStream() << "Tried to redirect " << str  << endl;
+		ostr << _("You have not rights to use redirects.");
 		mS->ConnCloseMsg(conn,ostr.str(),2000, eCR_SYNTAX);
 		return -1;
 	}
 
 	cUser *other = mS->mUserList.GetUserByNick ( str );
 
-	// check the nick
-	if(!other)
-	{
-		ostr << "User " << str << " not found.";
+	// Check other nick
+	if(!other) {
+		ostr << autosprintf(_("User %s not found"), str.c_str());
 		mS->DCPublicHS(ostr.str(),conn);
 		return -2;
 	}
 
-	// check the priviledges
-	if(other->mClass >= conn->mpUser->mClass || other->mProtectFrom >= conn->mpUser->mClass)
-	{
-		ostr << "User " << str << " is too high for redirect (or protected).";
+	// check privileges
+	if(other->mClass >= conn->mpUser->mClass || other->mProtectFrom >= conn->mpUser->mClass) {
+		ostr << autosprintf(_("User %s is protected or you have no rights on him"), str.c_str());
 		mS->DCPublicHS(ostr.str(),conn);
 		return -3;
 	}
@@ -1233,12 +1241,10 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 	omsg += msg->ChunkString(eCH_FM_DEST);
 	omsg += "|";
 
-	string redReason("You are being redirected to: ");
-	redReason += msg->ChunkString(eCH_FM_DEST);
-	redReason += " because: ";
-	redReason += msg->ChunkString(eCH_FM_REASON);
-
-	Create_PM(omsg,conn->mpUser->mNick, msg->ChunkString(eCH_FM_NICK), conn->mpUser->mNick, redReason);
+	
+	ostringstream redirectReason;
+	redirectReason << autosprintf(_("You are being redirected to %s because: %s"), msg->ChunkString(eCH_FM_DEST).c_str(), msg->ChunkString(eCH_FM_REASON).c_str());
+	Create_PM(omsg,conn->mpUser->mNick, msg->ChunkString(eCH_FM_NICK), conn->mpUser->mNick, redirectReason.str());
 
 	if(other->mxConn) {
 		// Send $ForceMove and PM
@@ -1248,7 +1254,7 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 		if(conn->Log(2))
 			conn->LogStream() << "ForceMove " << str  << " to: " << msg->ChunkString(eCH_FM_DEST)<< " because : " << msg->ChunkString(eCH_FM_REASON) << endl;
 	} else {
-		mS->DCPrivateHS("User is not online or you tried to move a bot.",conn);
+		mS->DCPrivateHS(_("User is not online or you tried to redirect a robot."),conn);
 	}
 	return 0;
 }
@@ -1295,56 +1301,51 @@ int cDCProto::DCM_NetInfo(cMessageDC * msg, cConnDC * )
 /** operator ban */
 int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 {
-	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR) return -1;
-	if(msg->SplitChunks()) return -1;
+	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
+		return -1;
+	if(msg->SplitChunks())
+		return -1;
 
 	ostringstream os;
 	long period = 0;
 	// calculate time
-	if(msg->ChunkString(eCH_NB_TIME).size())
-	{
-		mS->Str2Period(msg->ChunkString(eCH_NB_TIME),os);
-		if(!period)
-		{
+	if(msg->ChunkString(eCH_NB_TIME).size()) {
+		mS->Str2Period(msg->ChunkString(eCH_NB_TIME),os); 
+		if(!period) {
 			mS->DCPublicHS(os.str(),conn);
 			return -1;
 		}
 	}
 
 	cUser *other = mS->mUserList.GetUserByNick(msg->ChunkString(eCH_NB_NICK));
-	if(!other)
-	{
-		os << "User " << msg->ChunkString(eCH_NB_NICK) << " not found.";
+	if(!other) {
+		os << autosprintf(_("User %s not found"), msg->ChunkString(eCH_NB_NICK).c_str());
 		mS->DCPublicHS(os.str(),conn);
 		return -1;
 	}
 
-	if(msg->mType == eDCO_TBAN  && !msg->ChunkString(eCH_NB_REASON).size())
-	{
-		os << "You must append a reason to the ban.";
+	if(msg->mType == eDCO_TBAN  && !msg->ChunkString(eCH_NB_REASON).size()) {
+		os << _("Please provide a valid reason");
 		mS->DCPublicHS(os.str(),conn);
 		return -1;
 	}
 
-	if(other->mClass >= conn->mpUser->mClass || other->mProtectFrom >= conn->mpUser->mClass)
-	{
-		os << "You can't ban your a protected user";
+	if(other->mClass >= conn->mpUser->mClass || other->mProtectFrom >= conn->mpUser->mClass) {
+		os << _("You cannot ban a protected user or with higher privilegies");
 		mS->DCPublicHS(os.str(),conn);
 		return -1;
 	}
 
-	if(!other->mxConn)
-	{
-		os << "You can't ban a special user: " << msg->ChunkString(eCH_NB_NICK);
+	if(!other->mxConn) {
+		os << _("You cannot ban a robot");
 		mS->DCPublicHS(os.str(),conn);
 		return -1;
 	}
 
 	if(period)
-		os << "You are being temporarily banned for: " << msg->ChunkString(eCH_NB_TIME);
+		os << autosprintf(_("You are being temporarily banned for %s because %s"), msg->ChunkString(eCH_NB_TIME).c_str(), msg->ChunkString(eCH_NB_REASON).c_str());
 	else
-		os << "You are banned";
-	os << " because: " << msg->ChunkString(eCH_NB_REASON);
+		os << autosprintf(_("You are banned because %s"), msg->ChunkString(eCH_NB_REASON).c_str());
 
 	mS->DCPrivateHS(os.str(), other->mxConn, &conn->mpUser->mNick);
 	os.str(mS->mEmpty);
@@ -1365,37 +1366,37 @@ int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 /** Send Userlist and Oplist */
 int cDCProto::NickList(cConnDC *conn)
 {
-	try
-	{
+	try {
 		bool complete_infolist = false;
 		// 2 = show to all
-		if( mS->mC.show_tags >= 2) complete_infolist= true;
-		if (conn->mpUser && (conn->mpUser->mClass >= eUC_OPERATOR)) complete_infolist= true;
+		if(mS->mC.show_tags >= 2)
+			complete_infolist= true;
+		if(conn->mpUser && (conn->mpUser->mClass >= eUC_OPERATOR))
+			complete_infolist= true;
 		// 0 = hide to all
-		if( mS->mC.show_tags == 0) complete_infolist= false;
+		if(mS->mC.show_tags == 0)
+			complete_infolist= false;
 
 		if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE)
 			conn->mNickListInProgress = true;
-		if(conn->mFeatures & eSF_NOHELLO)
-		{
-			if(conn->Log(3)) conn->LogStream() << "Sending MyINFO list" << endl;
+		if(conn->mFeatures & eSF_NOHELLO) {
+			if(conn->Log(3))
+				conn->LogStream() << "Sending MyINFO list" << endl;
 			conn->Send(mS->mUserList.GetInfoList(complete_infolist),true);
-		}
-		else if(conn->mFeatures & eSF_NOGETINFO)
-		{
-			if(conn->Log(3)) conn->LogStream() << "Sending MyINFO list" << endl;
+		} else if(conn->mFeatures & eSF_NOGETINFO) {
+			if(conn->Log(3))
+				conn->LogStream() << "Sending MyINFO list" << endl;
 			conn->Send(mS->mUserList.GetNickList(),true);
 			conn->Send(mS->mUserList.GetInfoList(complete_infolist),true);
-		}
-		else
-		{
-			if(conn->Log(3)) conn->LogStream() << "Sending Nicklist" << endl;
+		} else {
+			if(conn->Log(3))
+				conn->LogStream() << "Sending Nicklist" << endl;
 			conn->Send(mS->mUserList.GetNickList(),true);
 		}
 		conn->Send(mS->mOpList.GetNickList(),true);
-	}catch(...)
-	{
-		if(conn->ErrLog(2)) conn->LogStream() << "exception in DC_GetNickList" << endl;
+	} catch(...) {
+		if(conn->ErrLog(2))
+			conn->LogStream() << "exception in DC_GetNickList" << endl;
 		conn->CloseNow();
 		return -1;
 	}
@@ -1408,15 +1409,13 @@ int cDCProto::ParseForCommands(const string &text, cConnDC *conn)
 {
 	ostringstream omsg;
 	// test op's commands
-	if(conn->mpUser->mClass >=  eUC_OPERATOR && mS->mC.cmd_start_op.find_first_of(text[0]) != string::npos)
-	{
+	if(conn->mpUser->mClass >=  eUC_OPERATOR && mS->mC.cmd_start_op.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
 		if(mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string *)&text))
 		#endif
 		{
-			if(!mS->mCo->OpCommand(text,conn))
-			{
-				omsg << "Unknown command '" << text << "'. Try !help";
+			if(!mS->mCo->OpCommand(text,conn)) {
+				omsg << autosprintf(_("Unknown command '%s'. Try !help"), text.c_str());
 				mS->DCPublicHS(omsg.str(),conn);
 			}
 		}
@@ -1425,15 +1424,13 @@ int cDCProto::ParseForCommands(const string &text, cConnDC *conn)
 
 
 	// check user commands
-	if(mS->mC.cmd_start_user.find_first_of(text[0]) != string::npos)
-	{
+	if(mS->mC.cmd_start_user.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
 		if (mS->mCallBacks.mOnUserCommand.CallAll(conn, (string *)&text))
 		#endif
 		{
-			if(!mS->mCo->UsrCommand(text,conn))
-			{
-				omsg << "Unknown command '" << text << "'" << " try +help";
+			if(!mS->mCo->UsrCommand(text,conn)) {
+				omsg << autosprintf(_("Unknown command '%s'. Try +help"), text.c_str());
 				mS->DCPublicHS(omsg.str(),conn);
 			}
 		}
@@ -1445,22 +1442,24 @@ int cDCProto::ParseForCommands(const string &text, cConnDC *conn)
 /** operator unban */
 int cDCProto::DCO_UnBan(cMessageDC * msg, cConnDC * conn)
 {
-	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR) return -1;
-	if(msg->SplitChunks()) return -1;
+	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
+		return -1;
+	if(msg->SplitChunks())
+		return -1;
 
 	string ip, nick, host;
 	ostringstream os;
-	if(msg->mType == eDCO_UNBAN     ) ip   = msg->ChunkString(eCH_1_PARAM);
+	if(msg->mType == eDCO_UNBAN)
+		ip = msg->ChunkString(eCH_1_PARAM);
 
 	int n = mS->mBanList->DeleteAllBansBy(ip, nick , cBan::eBF_NICKIP);
 
-	if(n <= 0)
-	{
-		os << "Not found " << msg->ChunkString(eCH_1_PARAM) << " in banlist.";
+	if(n <= 0) {
+		os << autosprintf(_("No banned user found with ip %s."), msg->ChunkString(eCH_1_PARAM).c_str());
 		mS->DCPublicHS(os.str().c_str(),conn);
 		return -1;
 	}
-	os << "Removed " << msg->ChunkString(eCH_1_PARAM) << endl;
+	os << autosprintf(_("Removed %d bans."), n) << endl;
 	mS->DCPublicHS(os.str().c_str(),conn);
 	return 1;
 
@@ -1470,23 +1469,32 @@ int cDCProto::DCO_UnBan(cMessageDC * msg, cConnDC * conn)
 /** operator getbanlist */
 int cDCProto::DCO_GetBanList(cMessageDC * msg, cConnDC * conn)
 {
-	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR) return -1;
+	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
+		return -1;
 	//@todo mS->mBanList->GetBanList(conn);
 	return 0;
 }
 
 int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 {
-	if(msg->SplitChunks()) return -1;
+	if(msg->SplitChunks())
+		return -1;
+	ostringstream os;
 	if(!(conn->mFeatures & eSF_BOTINFO)) {
-		if(conn->Log(2)) conn->LogStream() << "User " << conn->mpUser->mNick << " sent $BotINFO but BotINFO extension is not set in $Supports" << endl;
-		string msg = "You cannot send $BotINFO because BotINFO extension is not set in $Supports";
-		mS->DCPublicHS(msg, conn);
+		if(conn->Log(2))
+			conn->LogStream() << "User " << conn->mpUser->mNick << " sent $BotINFO but BotINFO extension is not set in $Supports" << endl;
+		os << _("You cannot send $BotINFO because BotINFO extension is not set in $Supports");
+		mS->DCPublicHS(os.str(), conn);
 		return 0;
 	}
-	if(conn->Log(2)) conn->LogStream() << "Bot visit: " << msg->ChunkString(eCH_1_PARAM) << endl;
-	ostringstream os;
-	if(mS->mC.botinfo_report) mS->ReportUserToOpchat(conn,"The following BOT has just entered the hub :"+msg->ChunkString(eCH_1_PARAM));
+	if(conn->Log(2))
+		conn->LogStream() << "Bot visit: " << msg->ChunkString(eCH_1_PARAM) << endl;
+
+	if(mS->mC.botinfo_report) {
+		os << autosprintf(_("Bot %s BOT has just entered the hub."), msg->ChunkString(eCH_1_PARAM).c_str());
+		mS->ReportUserToOpchat(conn, os.str());
+		os.str("");
+	}
 	char S='$';
 	cConnType *ConnType = mS->mConnTypes->FindConnType("default");
 	__int64 hl_minshare = mS->mC.min_share;
@@ -1540,19 +1548,20 @@ int cDCProto::DCO_GetTopic(cMessageDC *, cConnDC * conn)
 /** Change the hub's topic by sending $HubTopic; if the user has no rights it returns an error */
 int cDCProto::DCO_SetTopic(cMessageDC * msg, cConnDC * conn)
 {
-	if(msg->SplitChunks()) return -1;
-	if(!conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR) return -2;
+	if(msg->SplitChunks())
+		return -1;
+	if(!conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
+		return -2;
 	// check rights
-	if(conn->mpUser->mClass < mS->mC.topic_mod_class)
-	{
-		mS->DCPublicHS("You do not have permissions to change the hub topic.",conn);
+	if(conn->mpUser->mClass < mS->mC.topic_mod_class) {
+		mS->DCPublicHS(_("You do not have permissions to change the hub topic."),conn);
 		return 0;
 	}
 	string &str = msg->ChunkString(eCH_1_PARAM);
 	mS->mC.hub_desc = str;
 
 	ostringstream os;
-	os << "Topis is set to: " << str;
+	os << autosprintf(_("Topis is set to: %s"), str.c_str());
 	mS->DCPublicHS(os.str(), conn);
 	return 0;
 }
@@ -1599,7 +1608,6 @@ void cDCProto::Append_MyInfoList(string &dest, const string &MyINFO, const strin
 		dest.append(MyINFO);
 }
 
-
 /*!
     \fn nDirectConnect::nProtocol::cDCProto::Create_PM(string &dest,const string &from, const string &to, const string &sign, const string &text)
  */
@@ -1636,11 +1644,10 @@ void cDCProto::Create_PMForBroadcast(string &start,string &end, const string &fr
 void cDCProto::Create_HubName(string &dest, string &name, string &topic)
 {
 	dest ="$HubName " + name;
-	if(topic.length()) 
-	{
+	if(topic.length()) {
 		dest += " - ";
 		dest += topic;
-	}					
+	}
 }
 
 void cDCProto::Create_Quit(string &dest, const string &nick)
@@ -1660,7 +1667,7 @@ cConnType *cDCProto::ParseSpeed(const string &uspeed)
 
 const string &cDCProto::GetMyInfo(cUserBase * User, int ForClass)
 {
-	if ( (mS->mC.show_tags + int (ForClass >= eUC_OPERATOR) >= 2) )
+	if((mS->mC.show_tags + int (ForClass >= eUC_OPERATOR) >= 2))
 		return User->mMyINFO;
 	else
 		return User->mMyINFO_basic;
@@ -1678,15 +1685,13 @@ void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, strin
 	size_t pos;
 	dst = src;
 	pos = dst.find("&#36;");
-	while (pos != dst.npos)
-	{
+	while (pos != dst.npos) {
 		dst.replace(pos,5, "$");
 		pos = dst.find("&#36;", pos);
 	}
 
 	pos = dst.find("&#124;");
-	while (pos != dst.npos)
-	{
+	while (pos != dst.npos) {
 		dst.replace(pos,6, "|");
 		pos = dst.find("&#124;", pos);
 	}
@@ -1699,7 +1704,7 @@ void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, char 
 	unsigned char c;
 	int i = 0;
 	
-	if (!WithDCN) {
+	if(!WithDCN) {
 		start = "$#";
 		end =";";
 	} else {
@@ -1708,15 +1713,13 @@ void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, char 
 	}
 	
 	pos = src.find(start);
-	while ((pos != src.npos) && (i < src.size()))
-	{
+	while ((pos != src.npos) && (i < src.size())) {
 		if (pos > pos2) {
 			memcpy(dst + i, src.c_str() + pos2, pos - pos2);
 			i += pos - pos2;
 		}
 		pos2 = src.find(end, pos);
-		if ((pos2 != src.npos) && 
-			((pos2 - pos) <= (start.size()+3))) {
+		if ((pos2 != src.npos) && ((pos2 - pos) <= (start.size()+3))) {
 				c = atoi(src.substr(pos + start.size(), 3).c_str());
 				dst[i++] = c;
 				pos2 += end.size();
@@ -1739,8 +1742,7 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const string &src, string 
 	size_t pos;
 	ostringstream os;
 	pos = dst.find_first_of("\x05\x24\x60\x7C\x7E\x00"); // 0, 5, 36, 96, 124, 126
-	while (pos != dst.npos)
-	{
+	while (pos != dst.npos) {
 		os.str("");
 		if (! WithDCN) os << "&#" << unsigned(dst[pos]) << ";";
 		else os << "/%DCN" << unsigned(dst[pos]) << "%/";
@@ -1755,15 +1757,14 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const char *buf, int len, 
 	unsigned char c;
 	unsigned int olen = 0;
 	ostringstream os;
-	while(len-- > 0)
-	{
+	while(len-- > 0) {
 		c = *(buf++);
 		olen = 0;
-		switch(c)
-		{
+		switch(c) {
 			case 0: case 5: case 36: case 96: case 124: case 126:
 				os.str("");
-				if (! WithDCN) os << "&#" << unsigned(c) << ";";
+				if(!WithDCN)
+					os << "&#" << unsigned(c) << ";";
 				else {
 					if(c < 10) olen = 7;
 					else if(c > 10 && c < 100) olen = 6; 
@@ -1774,7 +1775,7 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const char *buf, int len, 
 					os << "%/";
 				}
 				dest += os.str();
-				break;
+			break;
 			default: dest += c; break;
 		};
 	}
@@ -1790,7 +1791,8 @@ void nDirectConnect::nProtocol::cDCProto::Lock2Key(const string &Lock, string &f
 	key = new char[len+1];
 	
 	key[0] = lock[0] ^ lock[len - 1] ^ lock[len - 2] ^ 5;
-	while(++count < len) key[count] = lock[count] ^ lock[count - 1];
+	while(++count < len)
+		key[count] = lock[count] ^ lock[count - 1];
 	key[len]=0;
 	
 	count = 0;

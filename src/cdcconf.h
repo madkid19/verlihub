@@ -212,12 +212,11 @@ public:
 	string msg_nick_prefix;
 	string msg_chat_onoff;
 	string msg_change_pwd;
-	string msg_downgrade;
 	string msg_upgrade;
 	string msg_replace_ban;
 	string msg_welcome[11];
-	string search_share_min;
-	string ctm_share_min;
+	//string search_share_min;
+	//string ctm_share_min;
 	string autoreg_min_share;
 	//string login_share_min;
 	//string login_share_max;
@@ -272,8 +271,6 @@ public:
 	string tag_max_slots;
 	string tag_min_slots;
 	string tag_max_hs_ratio;
-	string tag_min_limit;
-	string tag_min_ls_ratio;
 	string tag_no_sock;
 	string tag_no_passive;
 	
