@@ -66,7 +66,7 @@ class cTime : public timeval
 	cTime   operator/ (int i) const {long sec=tv_sec/i; long usec=tv_usec+1000000*(tv_sec % i); usec/=i; return cTime(sec,usec).Normalize();};
 	cTime   operator* (int i) const {long sec=tv_sec*i; long usec=tv_usec*i; return cTime(sec,usec).Normalize();};
 	operator double(){ return double(tv_sec)+double(tv_usec)/1000000.;};
-	//operator long() const { return long(tv_sec)*1000000+long(tv_usec);};
+	operator long() const { return long(tv_sec)*1000000+long(tv_usec);};
 	operator bool() const { return !(!tv_sec && !tv_usec);}
 	int operator! () { return !tv_sec && !tv_usec;}
 	long Sec(){return tv_sec;}

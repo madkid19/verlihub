@@ -399,7 +399,7 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 		mOwner->LastBCNick = conn->mpUser->mNick;
 	int count = mOwner->SendToAllWithNickCC(start,end, cl_min, cl_max, cc_zone);
 	TimeAfter.Get();
-	ostr << autosprintf(_("Message delivered to %d users in zone %s in : %f"), count,  cc_zone.c_str(), (float) (TimeAfter-TimeBefore).AsPeriod());
+	ostr << autosprintf(_("Message delivered to %d users in zone %s in : %s"), count,  cc_zone.c_str(), (TimeAfter-TimeBefore).AsPeriod().AsString().c_str());
 	mOwner->DCPublicHS(ostr.str(), conn);
 	return 1;
 }
@@ -2032,7 +2032,7 @@ bool cDCConsole::cfBc::operator()()
 		mS->LastBCNick = mConn->mpUser->mNick;
 	int count = mS->SendToAllWithNick(start,end, MinClass, MaxClass);
 	TimeAfter.Get();
-	*mOS << autosprintf(_("Message delivered to %d users in %f") , count, (float) (TimeAfter-TimeBefore).AsPeriod());
+	*mOS << autosprintf(_("Message delivered to %d users in %s") , count, (TimeAfter-TimeBefore).AsPeriod().AsString().c_str());
 	return true;
 }
 

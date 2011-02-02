@@ -83,7 +83,7 @@ void nDirectConnect::nTables::cBan::DisplayUser(ostream &os)
 	os << autosprintf(_("Reason: %s"), mReason.c_str()) << "\r\n";
 	if(mDateEnd) {
 		cTime HowLong(mDateEnd - cTime().Sec());
-		os << autosprintf(_("Remaining: %f"), (float) HowLong.AsPeriod()) << "\r\n";
+		os << autosprintf(_("Remaining: %s"), HowLong.AsPeriod().AsString().c_str()) << "\r\n";
 	} else
 		os << _("Permanently.") << "\r\n";
 	if(mIP.size() && mIP[0] != '_')
@@ -103,7 +103,7 @@ void nDirectConnect::nTables::cBan::DisplayUser(ostream &os)
 void nDirectConnect::nTables::cUnBan::DisplayUser(ostream &os)
 {
 	this->cBan::DisplayUser(os);
-	os << autosprintf(_("Removed: %f by %s because %s"), (float) cTime(mDateUnban,0).AsDate(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
+	os << autosprintf(_("Removed: %s by %s because %s"), cTime(mDateUnban,0).AsDate().AsString().c_str(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
 }
 
 /*!
@@ -125,7 +125,7 @@ const char *nDirectConnect::nTables::cBan::GetBanType()
 void nDirectConnect::nTables::cUnBan::DisplayComplete(ostream &os)
 {
 	this->cBan::DisplayComplete(os);
-	os << autosprintf(_("Removed: %f by %s because %s"), (float) cTime(mDateUnban,0).AsDate(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
+	os << autosprintf(_("Removed: %s by %s because %s"), cTime(mDateUnban,0).AsDate().AsString().c_str(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
 }
 
 /*!
@@ -137,9 +137,9 @@ void nDirectConnect::nTables::cBan::DisplayKick(ostream &os)
 	if(mDateEnd) {
 		cTime HowLong(mDateEnd-cTime().Sec(),0);
 		if(HowLong.Sec() < 0) {
-			os << autosprintf(_("Ended on: %f"), (float) HowLong.AsPeriod());
+			os << autosprintf(_("Ended on: %s"), HowLong.AsPeriod().AsString().c_str());
 		} else {
-			os << autosprintf(_("For: %f"), (float) HowLong.AsPeriod());
+			os << autosprintf(_("For: %s"), HowLong.AsPeriod().AsString().c_str());
 		}
 	} else {
 		os << _("Permanently.");

@@ -94,10 +94,10 @@ std::ostream & operator<< (std::ostream &os, const cTime &t)
 		if(++i <= 2) os << n << "sec ";
 
 		if(++i <= 2) os << t.tv_usec/1000 << "ms ";
-		if(++i <= 2) os << t.tv_usec%1000 << "Âµs ";
+		if(++i <= 2) os << t.tv_usec%1000 << "µs ";
 		break;
 	default :
-		os << t.tv_sec << "s " << t.tv_usec << "Âµs";
+		os << t.tv_sec << "s " << t.tv_usec << "µs";
 		break;
 	}
 	return os;
