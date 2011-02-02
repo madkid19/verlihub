@@ -1072,19 +1072,19 @@ bool cDCConsole::cfClean::operator()()
 	switch (CleanType) {
 		case CLEAN_BAN:
 			mS->mBanList->TruncateTable();
-			(*mOS) << endl << autosprintf(_("All %s have been deleted."), "bans");
+			(*mOS) << endl << _("All bans have been deleted.");
 		break;
 		case CLEAN_UNBAN:
 			mS->mUnBanList->TruncateTable();
-			(*mOS) << endl << autosprintf(_("All %s have been deleted."), "unbans");
+			(*mOS) << endl << _("All unbans have been deleted.");
 		break;
 		case CLEAN_KICK:
 		  	mS->mKickList->TruncateTable();
-			(*mOS) << endl << autosprintf(_("All %s have been deleted."), "kicks");
+			(*mOS) << endl << _("All kicks have been deleted.");
 		break;
 		case CLEAN_TRIGHTS:
 			mS->mPenList->TruncateTable();
-			(*mOS) << endl << autosprintf(_("All %s have been deleted."), "temporary rights");
+			(*mOS) << endl << _("All temporary rights have been deleted.");
 		break;
 		default:
 			(*mOS) << _("This command is not implemented.") << "\r\n" << _("Available command are: ") << endl;
@@ -1576,12 +1576,12 @@ bool cDCConsole::cfWho::operator()()
 			ip_min = cBanList::Ip2Num(tmp);
 			ip_max = ip_min;
 			cnt = mS->WhoIP(ip_min, ip_max, userlist, separator, true);
-			actionName = "IP";
+			actionName = _("IP");
 		break;
 		case eAC_RANGE:
 			if(! cDCConsole::GetIPRange(tmp, ip_min, ip_max) ) return false;
 			cnt = mS->WhoIP(ip_min, ip_max, userlist, separator, false);
-			actionName = "range";
+			actionName = _("range");
 		break;
 		case eAC_CC:
 			if(tmp.size() != 2) {
@@ -1591,7 +1591,7 @@ bool cDCConsole::cfWho::operator()()
 			
 			tmp = toUpper(tmp);
 			cnt = mS->WhoCC(tmp, userlist, separator);
-			actionName = "country code";
+			actionName = _("country code");
 		break;
 		default: return false;
 	}

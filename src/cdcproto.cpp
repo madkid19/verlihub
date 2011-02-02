@@ -165,7 +165,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		  (mS->mUserCountTot >= limit) ||   (mS->mUserCount[conn->mGeoZone] >= limit_cc)
 		)
 	) {
-		os << _("<<User limit exceeded, hub is full.>>") << "\r\n" << autosprintf(_("Online users =%d"),  mS->mUserCountTot);
+		os << _("<<User limit exceeded, hub is full.>>") << "\r\n" << autosprintf(_("Online users: %d"),  mS->mUserCountTot);
 		if(conn->Log(2)) {
 			conn->LogStream()
 				<< "Hub is full (" << mS->mUserCountTot
@@ -473,7 +473,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 			if(share < min_share)
 				message << autosprintf(_("You share %lld MB, but the min share is %lld MB. (active:%lld MB / passive:%lld MB)"), share, min_share, min_share_a, min_share_p);
 			else
-				message << autosprintf(_("You share %lldMB, but the max share is %lldMB."), share, max_share);
+				message << autosprintf(_("You share %lld MB, but the max share is %lld MB."), share, max_share);
 			if(conn->Log(2))
 				conn->LogStream() << "Share limit."<< endl;
 			mS->ConnCloseMsg(conn, message.str(), 4000, eCR_SHARE_LIMIT);
