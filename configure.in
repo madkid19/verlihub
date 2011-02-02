@@ -162,8 +162,9 @@ if test "$ac_cxx_have_old_str_string" = yes; then
 	AC_DEFINE(OLD_STD_STRING,,[define if the std::sting::compare with two integers and one string are string first])
 fi
 
-#AM_GNU_GETTEXT_VERSION([0.16])
-#AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.17])
+AC_LIB_LINKFLAGS([asprintf])
 
 AM_MAINTAINER_MODE
 
@@ -182,7 +183,7 @@ echo "checking for bash"
 BASH_PATH=`which bash` || BASH_PATH=`whereis -b bash|cut -f2 -d\ `
 AC_SUBST(BASH_PATH)
 
-VERLIHUB_LIBS="$PCRE_LIBS $MYSQL_LIBS $DLOPEN_LIBS $CRYPT_LIBS $GEOIP_LIBS $PTHREAD_LIBS $PTHREAD_CFLAGS $ZLIB_LIBS"
+VERLIHUB_LIBS="$PCRE_LIBS $MYSQL_LIBS $DLOPEN_LIBS $CRYPT_LIBS $GEOIP_LIBS $PTHREAD_LIBS $PTHREAD_CFLAGS $ZLIB_LIBS asprintf"
 AC_SUBST(VERLIHUB_LIBS)
 
 AC_SUBST(SUB_PLUGINS)
