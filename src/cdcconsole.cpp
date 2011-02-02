@@ -36,7 +36,7 @@
 #include "ctriggers.h"
 #include "ccustomredirects.h"
 #include "cdcclients.h"
-#define BAN_EREASON "Please provide a valid reason"
+#include "i18n.h"
 
 using nUtils::cTime;
 
@@ -201,7 +201,7 @@ int cDCConsole::UsrCommand(const string & str, cConnDC * conn)
 	ostringstream os;
 	string cmd;
 	if (mOwner->mC.disable_usr_cmds) {
-		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
+		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
 		return 1;
 	}
 	cmd_line >> cmd;
@@ -263,7 +263,7 @@ int cDCConsole::CmdCmds(istringstream &cmd_line , cConnDC *conn)
 {
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] Full list of commands: \r\n";
+	os << "\r\n[::] " << _("Full list of commands:") << "\r\n";
 	mCmdr.List(& os);
 	mOwner->mP.EscapeChars(os.str(), omsg);
 	mOwner->DCPublicHS(omsg.c_str(),conn);
@@ -322,7 +322,7 @@ int cDCConsole::CmdQuit(istringstream &, cConnDC * conn, int code)
 {
 	ostringstream os;
 	if(conn->Log(1)) conn->LogStream() << "Stopping hub with code " << code << " .";
-	os << "[::] Stopping Hub...";
+	os << "[::] " << _("Stopping Hub...");
 	mOwner->DCPublicHS(os.str(),conn);
 	if (code >= 0) {
 		mOwner->stop(code);
@@ -337,7 +337,7 @@ bool cDCConsole::cfGetConfig::operator()()
 	ostringstream os;
 
 	if (mConn->mpUser->mClass < eUC_ADMIN) {
-		*mOS << "No rights ";
+		*mOS << _("No rights");
 		return false;
 	}
 	string file;
@@ -390,7 +390,7 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 	}
 	
 	if(! str.size()) {
-		ostr << "Usage example: !ccbc :US:GB: <message>. Please type !help for more info" << endl;
+		ostr << _("Usage example: !ccbc :US:GB: <message>.") << " " << _("Please type !help for more info") << endl;
                 mOwner->DCPublicHS(ostr.str(), conn);
 		return 1;
 	}
@@ -402,7 +402,7 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 		mOwner->LastBCNick = conn->mpUser->mNick;
 	int count = mOwner->SendToAllWithNickCC(start,end, cl_min, cl_max, cc_zone);
 	TimeAfter.Get();
-	ostr << "Message delivered to " << count << " users in zone " << cc_zone << " in : " << (TimeAfter-TimeBefore).AsPeriod();
+	ostr << autosprintf(_("Message delivered to %d users in zone %s in : %f"), count,  cc_zone.c_str(), (float) (TimeAfter-TimeBefore).AsPeriod());
 	mOwner->DCPublicHS(ostr.str(), conn);
 	return 1;
 }
@@ -411,7 +411,7 @@ int cDCConsole::CmdMyInfo(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] Your info: \r\n";
+	os << "\r\n[::] " << _("Your info") << ": \r\n";
 	conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
@@ -422,7 +422,7 @@ int cDCConsole::CmdMyIp(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] Your IP: " << conn->AddrIP();
+	os << "\r\n[::] " << autosprintf(_("Your IP: %s"), conn->AddrIP().c_str());
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;
@@ -436,7 +436,7 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 	
 	getline(cmd_line,text);
 	if ((mOwner->mC.disable_me_cmd) || (mOwner->mC.mainchat_class > 0 && conn->mpUser->mClass < eUC_REGUSER)) {
-		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
+		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
 		return 1;
 	}
 	while(cmd_line.good()) {
@@ -472,7 +472,7 @@ int cDCConsole::CmdChat (istringstream & cmd_line, cConnDC * conn, bool switchon
 int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 {
 	if (mOwner->mC.disable_usr_cmds) {
-		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
+		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
 		return 1;
 	}
 	if(!conn->mpUser) {
@@ -500,50 +500,50 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	int sInt;
 
 	if (mOwner->mC.disable_usr_cmds) {
-		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
+		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
 		return 1;
 	}
 	if(!conn->mpUser) {
 		return 0;
 	}
 	if (conn->GetTheoricalClass() == eUC_NORMUSER) {
-		uType = "Unregistered"; sInt = mOwner->mC.int_search;
+		uType = _("Unregistered"); sInt = mOwner->mC.int_search;
 	}
 	if (conn->GetTheoricalClass() == eUC_REGUSER) {
-		uType = "Registered"; sInt = mOwner->mC.int_search_reg;
+		uType = _("Registered"); sInt = mOwner->mC.int_search_reg;
 	}
 	if (conn->GetTheoricalClass() == eUC_VIPUSER) {
-		uType = "VIP"; sInt = mOwner->mC.int_search_vip;
+		uType = _("VIP"); sInt = mOwner->mC.int_search_vip;
 	} 
 	if (conn->GetTheoricalClass() == eUC_OPERATOR) {
-		uType = "Operator"; sInt = mOwner->mC.int_search_op;
+		uType = _("Operator"); sInt = mOwner->mC.int_search_op;
 	}
 	if (conn->GetTheoricalClass() == eUC_CHEEF) {
-		uType = "Super OP"; sInt = mOwner->mC.int_search_op;
+		uType = _("Super OP"); sInt = mOwner->mC.int_search_op;
 	}
 	if (conn->GetTheoricalClass() == eUC_ADMIN) {
-		uType = "Admin"; sInt = mOwner->mC.int_search_op;
+		uType = _("Admin"); sInt = mOwner->mC.int_search_op;
 	} 
 	if (conn->GetTheoricalClass() == eUC_MASTER) {
-		uType = "God"; sInt = mOwner->mC.int_search_op;
+		uType = _("God"); sInt = mOwner->mC.int_search_op;
 	}
 	if (!conn->mpUser->IsPassive == true) {
-		cType = "Active";
+		cType = _("Active");
 	} else {
-		cType = "Passive";  sInt = mOwner->mC.int_search_pas;
+		cType = _("Passive");  sInt = mOwner->mC.int_search_pas;
 	}
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] Hub Owner: "<< mOwner->mC.hub_owner <<endl;
-	os << "[::] Address: "<< mOwner->mC.hub_host <<endl;
-	os << "[::] Total users: "<< mServer->mUserCountTot <<endl;
-	os << "[::] Total bots: "<< mServer->mRobotList.size() <<endl;
-	os << "[::] Total share: "<< convertByte(mServer->mTotalShare, false) << endl;
-	os << "[::] Hub health: " << mServer->mStatus <<endl;
-	os << "[::] Your status: "<< uType <<endl;
-	os << "[::] Your can search every: "<< sInt <<" seconds" << endl;
-	os << "[::] Your connection type is: "<< cType <<endl;
-	os << "[::] You are sharing: " << convertByte(conn->mpUser->mShare, false) << endl;
+	os << "\r\n[::] " << _("Hub Owner") << ": " << mOwner->mC.hub_owner <<endl;
+	os << "[::] " << _("Address") << ": "<< mOwner->mC.hub_host <<endl;
+	os << "[::] " << _("Total users") << ": "<< mServer->mUserCountTot <<endl;
+	os << "[::] " << _("Total bots") << ": "<< mServer->mRobotList.size() <<endl;
+	os << "[::] " << _("Total share") << ": "<< convertByte(mServer->mTotalShare, false) << endl;
+	os << "[::] " << _("Hub health") << ": " << mServer->mStatus <<endl;
+	os << "[::] " << _("Your status") << ": "<< uType <<endl;
+	os << "[::] " << _("Your can search every") << ": "<< autosprintf(_("%d seconds"), sInt) << endl;
+	os << "[::] " << _("Your connection type is") << ": "<< cType <<endl;
+	os << "[::] " << _("You are sharing") << ": " << convertByte(conn->mpUser->mShare, false) << endl;
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;
@@ -554,11 +554,11 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 	ostringstream os;
 	string omsg, regnick, prefix;
 	if (mOwner->mC.disable_regme_cmd) {
-		mOwner->DCPublicHS("This functionality is currently disabled.",conn);
+		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
 		return 1;
 	}
 	if(mOwner->mC.autoreg_class > 3) {
-		mOwner->DCPublicHS("Registration failed; please contact an operator for more help.",conn);
+		mOwner->DCPublicHS(_("Registration failed; please contact an operator for more help."),conn);
 		return 1;
 	}
 	__int64 user_share, min_share;	
@@ -616,7 +616,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			text = text.substr(1);
 			if ( mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text.c_str()) ) {
 				// sent the report to the opchat
-				os << "A new user has been registered with class " << mOwner->mC.autoreg_class;
+				os << autosprintf(_("A new user has been registered with class %d"), mOwner->mC.autoreg_class);
 				mOwner->ReportUserToOpchat(conn, os.str(), false);
 				os.str(mOwner->mEmpty);
 				// sent the message to the user
@@ -649,7 +649,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		mOwner->ReportUserToOpchat(conn, os.str(), mOwner->mC.dest_regme_chat);
 		//-- to user
 		os.str(mOwner->mEmpty);
-		os << "Thank you, your request has been sent to operators.";
+		os << _("Thank you, your request has been sent to operators.");
 		omsg = os.str();
 		mOwner->DCPublicHS(omsg,conn);
 		return 1;
@@ -664,16 +664,14 @@ int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 	getline(cmd_line,topic);
 	if (conn->mpUser->mClass < mOwner->mC.topic_mod_class)
 	{
-		mOwner->DCPublicHS("You do not have permissions to change the topic.",conn);
+		mOwner->DCPublicHS(_("You do not have permissions to change the topic."),conn);
 		return 1;
 	}	
 	if(topic[0] == ' ')
 		topic = topic.substr(1);
 	if (topic.length() > 255)
 	{
-		os << "Topic must be max 255 characters long. Your topic was "
-		   << topic.length() 
-		   <<" characters long.";
+		os << autosprintf(_("Topic must be max 255 characters long. Your topic was %d characters long."), (int) topic.length());
 		mOwner->DCPublicHS(os.str().data(),conn);
 		return 1;
 	}
@@ -710,7 +708,7 @@ int cDCConsole::CmdKick(istringstream & cmd_line, cConnDC * conn)
 				cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
 		}
 	} else {
-		os << "You cannot kick anyone!!" ;
+		os << _("You cannot kick anyone!!");
 	}
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
@@ -762,13 +760,13 @@ int cDCConsole::CmdHideMe(istringstream & cmd_line, cConnDC * conn)
 	cmd_line >> cls;
 	ostringstream omsg;
 	if(cls < 0) {
-		omsg << "Please use: !hideme <class>\r\n where <class> is the maximum class of users, that may not see your cmd actions." << endl;
+		omsg << _("Please use: !hideme <class>\r\n where <class> is the maximum class of users, that may not see your cmd actions.") << endl;
 		mOwner->DCPublicHS(omsg.str(),conn);
 		return 1;
 	}
 	if(cls > conn->mpUser->mClass) cls = conn->mpUser->mClass;
 	conn->mpUser->mHideKicksForClass = cls;
-	omsg << "Your command actions are now hidden from users with class below" << cls << ".";
+	omsg << autosprintf(_("Your command actions are now hidden from users with class below %d."),  cls);
 	mOwner->DCPublicHS(omsg.str(),conn);
 	return 1;
 }
@@ -782,7 +780,7 @@ int cDCConsole::CmdUserLimit(istringstream & cmd_line, cConnDC * conn)
 
 	if( maximum < 0 )
 	{
-		ostr << "Type !help for more information: (usage !userlimit <max_users> [<minutes>=60])";
+		ostr << _("Type !help for more information: (usage !userlimit <max_users> [<minutes>=60])");
 		mOwner->DCPublicHS(ostr.str(), conn);
 		return 1;
 	}
@@ -813,8 +811,8 @@ int cDCConsole::CmdClass(istringstream &cmd_line, cConnDC *conn)
 
 	if(!s.size() || nclass < 0 || nclass > 5 || nclass >= mclass)
 	{
-		os << "Use !class <nick> [<class>=3]. Please type !help for more info." << endl
-			<< "Max class is " << mclass << endl;
+		os << _("Use !class <nick> [<class>=3].") << " " << _("Please type !help for more info.") << endl
+			<< autosprintf(_("Max class is %d"), mclass) << endl;
 		mOwner->DCPublicHS(os.str().c_str(),conn);
 		return 1;
 	}
@@ -827,7 +825,7 @@ int cDCConsole::CmdClass(istringstream &cmd_line, cConnDC *conn)
 		oclass = user->mClass;
 		if( oclass < mclass )
 		{
-			os << mOwner->mL.user << ": " << s << " temp changing class to " << nclass << endl;
+		    	os << autosprintf(_("Temporarily changing class to %d for user %s"), nclass, s.c_str()) << endl;
 			user->mClass = (tUserCl) nclass;
 			if ((oclass < eUC_OPERATOR) && (nclass >= eUC_OPERATOR))
 			{
@@ -847,7 +845,7 @@ int cDCConsole::CmdClass(istringstream &cmd_line, cConnDC *conn)
 		}
 		else
 		{
-			os << "You haven't rights to change class of " << s << "." << endl;
+			os << autosprintf(_("You haven't rights to change class of %s."), s.c_str()) << endl;
 		}
 	}
 	else
@@ -865,19 +863,19 @@ int cDCConsole::CmdHideKick(istringstream &cmd_line, cConnDC *conn)
 	string s;
 	cUser * user;
 
-	while(cmd_line.good())
-	{
+	while(cmd_line.good()) {
 		cmd_line >> s;
 		if(cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
-		if(user && user-> mxConn && user->mClass < conn->mpUser->mClass)
-		{
-			os << mOwner->mL.user << ": " << s << " kicks are now hidden." << endl;
-			user->mHideKick = true;
-		}
-		else
-		{
-			os << mOwner->mL.user << ": " << s << mOwner->mL.not_in_userlist << endl;
+		if(user) {
+			if(user-> mxConn && user->mClass < conn->mpUser->mClass) {
+				os << autosprintf(_("Kicks of user %s are now hidden."), s.c_str()) << endl;
+				user->mHideKick = true;
+			} else {
+				os << autosprintf(_("You have no rights to do this.")) << endl;
+			}  
+		} else {
+			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 		}
 	}
 	mOwner->DCPublicHS(os.str().c_str(),conn);
@@ -895,13 +893,15 @@ int cDCConsole::CmdUnHideKick(istringstream &cmd_line, cConnDC *conn)
 		cmd_line >> s;
 		if(cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
-		if(user && user-> mxConn && user->mClass < conn->mpUser->mClass)
-		{
-			os << mOwner->mL.user << ": " << s << " will show kick messages to chat" << endl;
-			user->mHideKick = false;
-		}
-		else
-			os << mOwner->mL.user << ": " << s << " not found in nicklist (or no rights)." << endl;
+		if(user) {
+			if(user-> mxConn && user->mClass < conn->mpUser->mClass) {
+				os << autosprintf(_("Kicks of user %s are now visible."), s.c_str()) << endl;
+				user->mHideKick = false;
+			} else {
+				os << autosprintf(_("You have no rights to do this.")) << endl;
+			}
+		} else
+			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 	}
 	mOwner->DCPublicHS(os.str().c_str(),conn);
 	return 1;
@@ -922,8 +922,8 @@ int cDCConsole::CmdProtect(istringstream &cmd_line, cConnDC *conn)
 
 	if(!s.size() || nclass < 0 || nclass > 5 || nclass >= mclass)
 	{
-		os << "Use !protect <nick> [<againstclass>=your_class-1]. Please type !help for more info." << endl
-			<< "Max class is " << mclass-1 << endl;
+		os << _("Use !protect <nick> [<againstclass>=your_class-1].") << " " << _("Please type !help for more info.") << endl
+			<< autosprintf(_("Max class is %d"), mclass-1) << endl;
 		mOwner->DCPublicHS(os.str().c_str(),conn);
 		return 1;
 	}
@@ -1190,7 +1190,7 @@ bool cDCConsole::cfBan::operator()()
 		case BAN_INFO:
 			if (unban) {
 				if( !GetParStr(BAN_REASON,tmp)) {
-					(*mOS) << BAN_EREASON;
+					(*mOS) << _("Please provide a valid reason");
 					return false;
 				}
 				#ifndef WITHOUT_PLUGINS
@@ -1247,7 +1247,7 @@ bool cDCConsole::cfBan::operator()()
 				}
 			} else {
 				if ( !mParRex->PartFound(BAN_REASON) ) {
-					(*mOS) << BAN_EREASON;
+					(*mOS) << _("Please provide a valid reason");
 					return false;
 				}
 				if (BanType == cBan::eBF_NICKIP) BanType = cBan::eBF_IP;
@@ -1270,7 +1270,7 @@ bool cDCConsole::cfBan::operator()()
 		case cBan::eBF_HOSTR1:
 			if ( !mParRex->PartFound(BAN_REASON) )
 			{
-				(*mOS) << BAN_EREASON;
+				(*mOS) << _("Please provide a valid reason");
 				return false;
 			}
 			if ( MyClass < (eUC_ADMIN - (BanType - cBan::eBF_HOST1) ) ) //@todo rights
@@ -1292,7 +1292,7 @@ bool cDCConsole::cfBan::operator()()
 		case cBan::eBF_PREFIX:
 			if ( !mParRex->PartFound(BAN_REASON) )
 			{
-				(*mOS) << BAN_EREASON;
+				(*mOS) << _("Please provide a valid reason");
 				return false;
 			}
 			Ban.mNick = Who;
@@ -1301,7 +1301,7 @@ bool cDCConsole::cfBan::operator()()
 		{
 			if ( !mParRex->PartFound(BAN_REASON) )
 			{
-				(*mOS) << BAN_EREASON;
+				(*mOS) << _("Please provide a valid reason");
 				return false;
 			}
 			istringstream is(Who);
