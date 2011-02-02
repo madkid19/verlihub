@@ -820,37 +820,27 @@ int cDCConsole::CmdClass(istringstream &cmd_line, cConnDC *conn)
 
 	user = mOwner->mUserList.GetUserByNick(s);
 
-	if( user && user->mxConn )
-	{
+	if(user && user->mxConn) {
 		oclass = user->mClass;
-		if( oclass < mclass )
-		{
+		if(oclass < mclass) {
 		    	os << autosprintf(_("Temporarily changing class to %d for user %s"), nclass, s.c_str()) << endl;
 			user->mClass = (tUserCl) nclass;
-			if ((oclass < eUC_OPERATOR) && (nclass >= eUC_OPERATOR))
-			{
+			if ((oclass < eUC_OPERATOR) && (nclass >= eUC_OPERATOR)) {
 				mOwner->mOpchatList.Add(user);
-				if (!(user->mxConn && user->mxConn->mRegInfo && user->mxConn->mRegInfo->mHideKeys))
-				{
+				if (!(user->mxConn && user->mxConn->mRegInfo && user->mxConn->mRegInfo->mHideKeys)) {
 					mOwner->mOpList.Add(user);
 					mOwner->mUserList.SendToAll(mOwner->mOpList.GetNickList(), false);
 				}
-			}
-			else if ((oclass >= eUC_OPERATOR) && (nclass < eUC_OPERATOR))
-			{
+			} else if ((oclass >= eUC_OPERATOR) && (nclass < eUC_OPERATOR)) {
 				mOwner->mOpchatList.Remove(user);
 				mOwner->mOpList.Remove(user);
 				mOwner->mUserList.SendToAll(mOwner->mOpList.GetNickList(), false);
 			}
+		} else {
+			os << autosprintf(_("You have no rights to change class of %s."), s.c_str()) << endl;
 		}
-		else
-		{
-			os << autosprintf(_("You haven't rights to change class of %s."), s.c_str()) << endl;
-		}
-	}
-	else
-	{
-		os <<  mOwner->mL.user << ": " << s << mOwner->mL.not_in_userlist << endl;
+	} else {
+		os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 	}
 	mOwner->DCPublicHS(os.str().c_str(),conn);
 	return 1;
@@ -898,7 +888,7 @@ int cDCConsole::CmdUnHideKick(istringstream &cmd_line, cConnDC *conn)
 				os << autosprintf(_("Kicks of user %s are now visible."), s.c_str()) << endl;
 				user->mHideKick = false;
 			} else {
-				os << autosprintf(_("You have no rights to do this.")) << endl;
+				os << _("You have no rights to do this.") << endl;
 			}
 		} else
 			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
@@ -916,12 +906,12 @@ int cDCConsole::CmdProtect(istringstream &cmd_line, cConnDC *conn)
 	string s;
 	cUser * user;
 	int oclass, mclass = conn->mpUser->mClass, nclass = mclass -1;
-	if(nclass > 5) nclass = 5;
+	if(nclass > 5)
+		nclass = 5;
 
 	cmd_line >> s >> nclass;
 
-	if(!s.size() || nclass < 0 || nclass > 5 || nclass >= mclass)
-	{
+	if(!s.size() || nclass < 0 || nclass > 5 || nclass >= mclass) {
 		os << _("Use !protect <nick> [<againstclass>=your_class-1].") << " " << _("Please type !help for more info.") << endl
 			<< autosprintf(_("Max class is %d"), mclass-1) << endl;
 		mOwner->DCPublicHS(os.str().c_str(),conn);
@@ -931,20 +921,15 @@ int cDCConsole::CmdProtect(istringstream &cmd_line, cConnDC *conn)
 
 	user = mOwner->mUserList.GetUserByNick(s);
 
-	if( user && user->mxConn )
-	{
+	if(user && user->mxConn) {
 		oclass = user->mClass;
-		if( oclass < mclass )
-		{
-			os << mOwner->mL.user << ": " << s << " temporarily changing protection to " << nclass << endl;
+		if(oclass < mclass) {
+			os << autosprintf(_("Temporarily protecting user %s from class %d"), s.c_str(), nclass) << endl;
 			user->mProtectFrom = nclass;
-		}
-		else
-			os << "You don't have enough privileges to protect " << s << "." << endl;
-	}
-	else
-	{
-		os << mOwner->mL.user << ": " << s << " not found in nicklist." << endl;
+		} else
+			os << _("You have no rights to do this.") << endl;
+	} else {
+		os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 	}
 	mOwner->DCPublicHS(os.str().c_str(),conn);
 	return 1;
@@ -954,20 +939,20 @@ int cDCConsole::CmdReload(istringstream &cmd_line, cConnDC *conn)
 {
 	ostringstream os;
 
-	os << "Reloading triggers, custom redirects, configuration and reglist cache..." << endl;
+	os << _("Reloading triggers, custom redirects, configuration and reglist cache...") << endl;
 	mTriggers->ReloadAll();
 	mRedirects->ReloadAll();
 	mOwner->mC.Load();
 	mOwner->DCPublicHS(os.str().c_str(),conn);
-	if (mOwner->mC.use_reglist_cache) mOwner->mR->UpdateCache();
-	//mOwner->mConnTypes->ReloadAll();
+	if (mOwner->mC.use_reglist_cache)
+		mOwner->mR->UpdateCache();
 	return 1;
 }
 
 bool cDCConsole::cfReport::operator()()
 {
 	if(mS->mC.disable_report_cmd) {
-		*mOS << "Report command is currently disabled.";
+		*mOS << _("Report command is currently disabled.");
 		return false;
 	}
 	ostringstream os;
@@ -980,14 +965,14 @@ bool cDCConsole::cfReport::operator()()
 
 	//-- to opchat
 	os << "REPORT: user '" << nick <<"' ";
-	if (user && user->mxConn)
-	{
+	if (user && user->mxConn) {
 		os << "IP= '" << user->mxConn->AddrIP() << "' HOST='" << user->mxConn->AddrHost() << "' ";
-	} else os << "which is offline ";
-	os << "Reason='" << reason  << "'. reporter";
+	} else
+		os << _("which is offline ");
+	os << autosprintf(_("Reason='%s'. Reporter "), reason.c_str());
 	mS->ReportUserToOpchat(mConn, os.str(), mS->mC.dest_report_chat);
 	//-- to sender
-	*mOS << "Thanx, your report has been accepted. ";
+	*mOS << _("Thank you, your report has been accepted.");
 	return true;
 }
 
@@ -1006,11 +991,13 @@ bool cDCConsole::cfRaw::operator()()
 
 	string tmp;
 
-   //@todo eventualy use cUser::Can
-	if (this->mConn->mpUser->mClass < eUC_ADMIN) return false;
+  
+	if (this->mConn->mpUser->mClass < eUC_ADMIN)
+		return false;
 	mIdRex->Extract(1,mIdStr,tmp);
 	Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
-	if (Action <0) return false;
+	if (Action < 0)
+		return false;
 
 	mIdRex->Extract(2,mIdStr,tmp);
 	CmdID  = this->StringToIntFromList(tmp, cmdnames, cmdids, sizeof(cmdnames)/sizeof(char*));
@@ -1021,8 +1008,7 @@ bool cDCConsole::cfRaw::operator()()
 	GetParStr(1,param);
 	bool WithNick = false;
 
-	switch (CmdID)
-	{
+	switch (CmdID) {
 		case eRC_HUBNAME: theCommand = "$HubName "; break;
 		case eRC_HELLO: theCommand = "$Hello "; break;
 		case eRC_QUIT: cDCProto::Create_Quit(theCommand , ""); break;
@@ -1040,15 +1026,13 @@ bool cDCConsole::cfRaw::operator()()
 		default : return false; break;
 	}
 
-	if (!WithNick)
-	{
+	if(!WithNick) {
 		theCommand += param;
 		theCommand += "|";
 	}
 
 	cUser *target_usr = NULL;
-	switch (Action)
-	{
+	switch (Action) {
 		case eRW_ALL: if(!WithNick) mS->mUserList.SendToAll(theCommand);
 			else mS->mUserList.SendToAllWithNick(theCommand, endOfCommand); break;
 		case eRW_HELLO: if(!WithNick) mS->mHelloUsers.SendToAll(theCommand);
@@ -1057,10 +1041,8 @@ bool cDCConsole::cfRaw::operator()()
 			else mS->mActiveUsers.SendToAllWithNick(theCommand, endOfCommand); break;
 		case eRW_USR:
 			target_usr = mS->mUserList.GetUserByNick(nick);
-			if (target_usr && target_usr->mxConn)
-			{
-				if( WithNick)
-				{
+			if (target_usr && target_usr->mxConn) {
+				if(WithNick) {
 					theCommand += nick;
 					theCommand += endOfCommand;
 				}
@@ -1092,23 +1074,23 @@ bool cDCConsole::cfClean::operator()()
 	}
 	switch (CleanType) {
 		case CLEAN_BAN:
-		  	mS->mBanList->TruncateTable();
-			(*mOS) << endl << "All bans have been deleted.";
+			mS->mBanList->TruncateTable();
+			(*mOS) << endl << autosprintf(_("All %s have been deleted."), "bans");
 		break;
 		case CLEAN_UNBAN:
-		  	mS->mUnBanList->TruncateTable();
-			(*mOS) << endl << "All unbans have been deleted.";
+			mS->mUnBanList->TruncateTable();
+			(*mOS) << endl << autosprintf(_("All %s have been deleted."), "unbans");
 		break;
 		case CLEAN_KICK:
 		  	mS->mKickList->TruncateTable();
-			(*mOS) << endl << "All kicks have been deleted.";
+			(*mOS) << endl << autosprintf(_("All %s have been deleted."), "kicks");
 		break;
 		case CLEAN_TRIGHTS:
-		  	mS->mPenList->TruncateTable();
-			(*mOS) << endl << "All temp rights have been deleted.";
+			mS->mPenList->TruncateTable();
+			(*mOS) << endl << autosprintf(_("All %s have been deleted."), "temporary rights");
 		break;
 		default:
-			(*mOS) << "This command has not implemented yet.\r\nAvailable command are: " << endl;
+			(*mOS) << _("This command has not implemented yet.\r\nAvailable command are: ") << endl;
 			return false; 
 		break;
 	}
@@ -1174,7 +1156,7 @@ bool cDCConsole::cfBan::operator()()
 			BanTime = mS->Str2Period(tmp, *mOS);
 			if(BanTime < 0)
 			{
-				(*mOS) << "Please provide a valid ban time";
+				(*mOS) << _("Please provide a valid ban time");
 				return false;
 			}
 		} else IsPerm = true;
@@ -1195,11 +1177,11 @@ bool cDCConsole::cfBan::operator()()
 				}
 				#ifndef WITHOUT_PLUGINS
 				if(!mS->mCallBacks.mOnUnBan.CallAll(Who, mConn->mpUser->mNick, tmp)) {
-					(*mOS) << "Action has been discarded by plugin";
-					return false;	
+					(*mOS) << _("Action has been discarded by plugin");
+					return false;
 				}
 				#endif
-				(*mOS) << "Unbanning...\r\n";
+				(*mOS) << _("Unbanning...") << "\r\n";
 			}
 
 			if(BanType == cBan::eBF_NICKIP) {
@@ -1221,7 +1203,7 @@ bool cDCConsole::cfBan::operator()()
 			} else {
 				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, BanType, unban);
 			}
-			(*mOS) << endl << "Total : " << Count << " bans.";
+			(*mOS) << endl << autosprintf(_("Total: %d bans."), Count);
 		break;
 	case BAN_BAN:
 		Ban.mNickOp = mConn->mpUser->mNick;
@@ -1233,12 +1215,11 @@ bool cDCConsole::cfBan::operator()()
 			Ban.mDateEnd = 0;
 		Ban.SetType(BanType);
 
-		switch (BanType)
-		{
+		switch (BanType) {
 			case cBan::eBF_NICKIP:
 			case cBan::eBF_NICK:
 			case cBan::eBF_IP:
-			if( mS->mKickList->FindKick(Kick, Who, mConn->mpUser->mNick, 3000, true, true, IsNick) ) {
+			if(mS->mKickList->FindKick(Kick, Who, mConn->mpUser->mNick, 3000, true, true, IsNick)) {
 				mS->mBanList->NewBan(Ban, Kick, BanTime, BanType );
 				if( mParRex->PartFound(BAN_REASON) ) {
 					mParRex->Extract(BAN_REASON, mParStr,tmp);
@@ -1275,7 +1256,7 @@ bool cDCConsole::cfBan::operator()()
 			}
 			if ( MyClass < (eUC_ADMIN - (BanType - cBan::eBF_HOST1) ) ) //@todo rights
 			{
-				(*mOS) << "You have no rights for this ban";
+				(*mOS) << _("You have no rights to do this");
 				return false;
 			}
 			Ban.mHost = Who;
@@ -1284,7 +1265,7 @@ bool cDCConsole::cfBan::operator()()
 		case cBan::eBF_RANGE:
 			if(! cDCConsole::GetIPRange(Who, Ban.mRangeMin, Ban.mRangeMax) )
 			{
-				(*mOS) << "Unknown range format '" << Who << "'";
+				(*mOS) << autosprintf(_("Unknown range format '%s'"), Who.c_str());
 				return false;
 			}
 			Ban.mIP=Who;
@@ -1317,7 +1298,7 @@ bool cDCConsole::cfBan::operator()()
 		}
 		#ifndef WITHOUT_PLUGINS
 		if(!mS->mCallBacks.mOnNewBan.CallAll(&Ban)) {
-			(*mOS) << "Action has been discarded by plugin";
+			(*mOS) << _("Action has been discarded by plugin");
 			return false;	
 		}
 		#endif
@@ -1328,14 +1309,14 @@ bool cDCConsole::cfBan::operator()()
 		}
 
 		mS->mBanList->AddBan(Ban);
-		(*mOS) << "Adding ban: ";
+		(*mOS) << _("Added ban: ");
 		Ban.DisplayComplete(*mOS);
 		break;
 	case BAN_LIST:
 		GetParInt(BAN_WHO,BanCount);
 		mS->mBanList->List(*mOS,BanCount);
 	break;
-	default:(*mOS) << "This command has not implemented yet.\r\nAvailable command are: " << endl;
+	default:(*mOS) << _("This command has not implemented yet.\r\nAvailable command are: ") << endl;
 		return false; 
 		break;
 	}
@@ -1361,7 +1342,7 @@ bool cDCConsole::cfInfo::operator()()
 	{
 		case eINFO_SERVER: mInfoServer.SystemInfo(*mOS); break;
 		case eINFO_HUB: mInfoServer.Output(*mOS, MyClass); break;
-		default : (*mOS) << "This command has not implemented yet.\r\nAvailable command is: !hubinfo or  !serverinfo)" << endl;
+		default : (*mOS) << _("This command has not implemented yet.\r\nAvailable command are: ") << "!hubinfo and !serverinfo" << endl;
 			return false;
 	}
 
@@ -1424,7 +1405,7 @@ bool cDCConsole::cfTrigger::operator()()
 		}
 
 		break;
-	default: (*mOS) << "Not implemented" << endl;
+	default: (*mOS) << _("This command is not implemented") << endl;
 		break;
 	};
 		return result;
@@ -1449,9 +1430,9 @@ bool cDCConsole::cfSetVar::operator()()
 	{
 		ci = mS->mC[var];
 
-		if( !ci )
+		if(!ci)
 		{
-			(*mOS) << "Undefined variable: " << var;
+			(*mOS) << autosprintf(_("Undefined variable: %s"), var.c_str());
 			return false;
 		}
 	} else {
@@ -1462,11 +1443,16 @@ bool cDCConsole::cfSetVar::operator()()
 
 	if (ci)
 	{
-		(*mOS) << "Changing [" << file << "] " << var << " from: '" << *ci << "'";
+		
+		ostringstream oldValue;
+		oldValue << *ci;
 		ci->ConvertFrom(val);
-		(*mOS) << " => '" << *ci << "'";
+		ostringstream newValue;
+		newValue << *ci;
+		(*mOS) << autosprintf(_("Updated [%s]%s from '%s' to '%s'"), file.c_str(), var.c_str(), oldValue.str().c_str(), newValue.str().c_str());
 		mS->mSetupList.SaveItem(file.c_str(), ci);
-		if(DeleteItem) delete ci;
+		if(DeleteItem)
+			delete ci;
 		ci = NULL;
 	}
 
@@ -1482,15 +1468,14 @@ bool cDCConsole::cfGag::operator()()
 
 	bool isUn = false;
 
-   //@todo use cUser::Can
-	if(mConn->mpUser->mClass < eUC_OPERATOR) return false;
+	if(mConn->mpUser->mClass < eUC_OPERATOR)
+		return false;
 
 	isUn = mIdRex->PartFound(1);
 	mIdRex->Extract(2, mIdStr, cmd);
 
 	mParRex->Extract(1, mParStr, nick);
-	if (mParRex->PartFound(3))
-	{
+	if(mParRex->PartFound(3)) {
 		mParRex->Extract(3, mParStr, howlong);
 		period = mS->Str2Period(howlong, *mOS);
 		if (!period) return false;
@@ -1507,8 +1492,7 @@ bool cDCConsole::cfGag::operator()()
 	int Action = this->StringToIntFromList(cmd, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
 	if (Action < 0) return false;
 
-	switch(Action)
-	{
+	switch(Action) {
 		case eAC_GAG: penalty.mStartChat = Now; break;
 		case eAC_NOPM: penalty.mStartPM = Now; break;
 		case eAC_NODL: penalty.mStartCTM = Now; break;
@@ -1525,10 +1509,8 @@ bool cDCConsole::cfGag::operator()()
 	else ret = mS->mPenList->RemPenalty(penalty);
 
 	cUser *usr = mS->mUserList.GetUserByNick(nick);
-	if (usr != NULL)
-	{
-		switch(Action)
-		{
+	if(usr != NULL) {
+		switch(Action) {
 			case eAC_GAG: usr->SetRight(eUR_CHAT, penalty.mStartChat, isUn); break;
 			case eAC_NOPM: usr->SetRight(eUR_PM, penalty.mStartPM, isUn); break;
 			case eAC_NODL: usr->SetRight(eUR_CTM, penalty.mStartCTM, isUn); break;
@@ -1541,9 +1523,12 @@ bool cDCConsole::cfGag::operator()()
 		};
 	}
 
-	(*mOS) << penalty ;
-	if (ret) (*mOS) << " saved ";
-	else (*mOS) << " save error ";
+	ostringstream description;
+	description << penalty;
+	if (ret)
+		(*mOS) << autosprintf(_(" %s saved"), description.str().c_str());
+	else
+		(*mOS) << autosprintf(_("Error saving %s"), description.str().c_str());
 	return true;
 }
 
@@ -1556,11 +1541,11 @@ bool cDCConsole::cfCmd::operator()()
 	string tmp;
 	mIdRex->Extract(1,mIdStr,tmp);
 	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
-	if (Action < 0) return false;
+	if(Action < 0)
+		return false;
 
 	
-	switch(Action)
-	{
+	switch(Action) {
 //		case eAC_LIST: this->mS->mCo.mCmdr.List(mOS); break;
 		default: return false;
 	}
@@ -1573,13 +1558,14 @@ bool cDCConsole::cfWho::operator()()
 	static const char * actionnames [] = { "ip" , "range", "subnet", "cc" };
 	static const int actionids [] = { eAC_IP, eAC_RANGE, eAC_RANGE, eAC_CC};
 
-   //@todo use cUser::Can 
-	if (this->mConn->mpUser->mClass < eUC_OPERATOR) return false;
+	if(this->mConn->mpUser->mClass < eUC_OPERATOR)
+		return false;
 
-   string tmp;
+	string tmp;
 	mIdRex->Extract(2,mIdStr,tmp);
 	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
-	if (Action < 0) return false;
+	if(Action < 0)
+		return false;
 
 	string separator("\r\n\t");
 	string userlist, actionName;
@@ -1588,8 +1574,7 @@ bool cDCConsole::cfWho::operator()()
 	unsigned long ip_min, ip_max;
 	int cnt = 0;
 
-	switch(Action)
-	{
+	switch(Action) {
 		case eAC_IP:
 			ip_min = cBanList::Ip2Num(tmp);
 			ip_max = ip_min;
@@ -1603,7 +1588,7 @@ bool cDCConsole::cfWho::operator()()
 		break;
 		case eAC_CC:
 			if(tmp.size() != 2) {
-				(*mOS) << "Country Code must be 2 characters long (for ex. US)";
+				(*mOS) << _("Country Code must be 2 characters long (for ex. US)");
 				return false;
 			}
 			
@@ -1615,8 +1600,10 @@ bool cDCConsole::cfWho::operator()()
 	}
 
 	
-	if(!cnt) (*mOS) << "No user with " << tmp;
-	else (*mOS) << "Users with " << actionName << " " << tmp << ":\r\n\t" << userlist << "Total: " << cnt;
+	if(!cnt)
+		(*mOS) << autosprintf(_("No user found with %s %s"), actionName.c_str(), tmp.c_str());
+	else
+		(*mOS) << autosprintf(_("Found %d users with %s %s:\r\n\t"), cnt, actionName.c_str(), tmp.c_str(), userlist.c_str());
 	return true;
 }
 
@@ -1639,12 +1626,10 @@ bool cDCConsole::cfKick::operator()()
 	ostringstream os;
 	string CoolNick, ostr;
 
-	switch(Action)
-	{
+	switch(Action) {
 		case eAC_KICK:
-			if (!mParRex->PartFound(2))
-			{
-				(*mOS) << "What about the reason ??" << endl;
+			if(!mParRex->PartFound(2)) {
+				(*mOS) << _("Please provide a valid reason") << endl;
 				return false;
 			}
 			mParRex->Extract(2,mParStr,text);
@@ -1654,7 +1639,7 @@ bool cDCConsole::cfKick::operator()()
 				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN) :
 				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason));
 		break;
-		default: (*mOS) << "Not implemented" << endl;
+		default: (*mOS) << _("This command is not implemented") << endl;
 		return false;
 	};
 	return true;
@@ -1668,7 +1653,7 @@ bool cDCConsole::cfPlug::operator()()
 
 	if (this->mConn->mpUser->mClass < mS->mC.plugin_mod_class)
 	{
-		(*mOS) << "No rights to use plugins";
+		(*mOS) << _("You have no rights to do this");
 		return false;
 	}
 
@@ -1679,43 +1664,39 @@ bool cDCConsole::cfPlug::operator()()
 
 	switch (Action)
 	{
-	case eAC_LIST:
-		(*mOS) << "Loaded plugins: \r\n";
-		mS->mPluginManager.List(*mOS);
-		break;
-	case eAC_REG:
-		(*mOS) << "Available callbacks: \r\n";
-		mS->mPluginManager.ListAll(*mOS);
-		break;
-	case eAC_OUT:
-		if (mParRex->PartFound(1))
-		{
-			mParRex->Extract(1, mParStr, tmp);
-			if(!mS->mPluginManager.UnloadPlugin(tmp)) return false;
-		}
-		break;
-	case eAC_IN:
-		if (mParRex->PartFound(1))
-		{
-			mParRex->Extract(1, mParStr, tmp);
-			if(!mS->mPluginManager.LoadPlugin(tmp))
-			{
-				(*mOS) << mS->mPluginManager.GetError() << "\r\n";
-				return false;
+		case eAC_LIST:
+			(*mOS) << _("Loaded plugins:") << " \r\n";
+			mS->mPluginManager.List(*mOS);
+			break;
+		case eAC_REG:
+			(*mOS) << _("Available callbacks:") << " \r\n";
+			mS->mPluginManager.ListAll(*mOS);
+			break;
+		case eAC_OUT:
+			if(mParRex->PartFound(1)) {
+				mParRex->Extract(1, mParStr, tmp);
+				if(!mS->mPluginManager.UnloadPlugin(tmp))
+					return false;
 			}
-		}
-		break;
-	case eAC_RELAOD:
-		if (GetParStr(1, tmp))
-		{
-			if(!mS->mPluginManager.ReloadPlugin(tmp))
-			{
-				(*mOS) << mS->mPluginManager.GetError() << "\r\n";
-				return false;
+			break;
+		case eAC_IN:
+			if(mParRex->PartFound(1)) {
+				mParRex->Extract(1, mParStr, tmp);
+				if(!mS->mPluginManager.LoadPlugin(tmp)) {
+					(*mOS) << mS->mPluginManager.GetError() << "\r\n";
+					return false;
+				}
 			}
-		}
-		break;
-	default: break;
+			break;
+		case eAC_RELAOD:
+			if(GetParStr(1, tmp)) {
+				if(!mS->mPluginManager.ReloadPlugin(tmp)) {
+					(*mOS) << mS->mPluginManager.GetError() << "\r\n";
+					return false;
+				}
+			}
+			break;
+		default: break;
 	}
 	return true;
 }
@@ -1736,7 +1717,7 @@ bool cDCConsole::cfRegUsr::operator()()
 	if (Action < 0) return false;
 	//static cPCRE mParmSearch("^(\\d+\\.\\d+\\.\\d+\\.\\d+)((\\/(\\d+))|(\\.\\.|-)(\\d+\\.\\d+\\.\\d+\\.\\d+))?$",0);
 	if(Action == eAC_LIST) {
-		(*mOS) << "Found nicks:\n" << mParStr;
+		(*mOS) << _("Found nicks:") << "\n" << mParStr;
 		return true;
 		int offset, page, nClass = 0;
 		this->GetParInt(2, page);
@@ -1761,21 +1742,20 @@ bool cDCConsole::cfRegUsr::operator()()
 	mParRex->Extract(1,mParStr,nick);
 	bool WithPar = false;
 
- 	WithPar=mParRex->PartFound(3);
-	if( Action != eAC_SET && WithPar)	mParRex->Extract(3,mParStr,par);
+	WithPar=mParRex->PartFound(3);
+	if(Action != eAC_SET && WithPar)
+		mParRex->Extract(3,mParStr,par);
 
-	if( Action == eAC_SET )
-	{
+	if(Action == eAC_SET) {
 		WithPar = WithPar && mParRex->PartFound(5);
-		if( !WithPar )
-		{
-			(*mOS) << "Missing parameter(s)";
+		if(!WithPar) {
+			(*mOS) << _("Missing parameter(s)");
 			return false;
-  		}
+		}
 		mParRex->Extract(5,mParStr,field);
-		if(WithPar) mParRex->Extract(6,mParStr,par);
- 	}
-
+		if(WithPar)
+			mParRex->Extract(6,mParStr,par);
+	}
 
 	cUser *user = mS->mUserList.GetUserByNick(nick);
 	cRegUserInfo ui;
@@ -1784,12 +1764,11 @@ bool cDCConsole::cfRegUsr::operator()()
 	bool authorized = false;
 
 	if (mS->mC.classdif_reg > 10) {
-		(*mOS) << "Invalid classdif_reg value. Must be between 1 and 5. Please correct this first!";
+		(*mOS) << _("Invalid classdif_reg value. Must be between 1 and 5. Please correct this first!");
 		return false;
 	}
 	// check rights
-	if (RegFound)
-	{
+	if(RegFound) {
 		
 		if ((MyClass < eUC_MASTER) && !(
 			(MyClass >= (int) (ui.mClass+mS->mC.classdif_reg) &&
@@ -1797,21 +1776,19 @@ bool cDCConsole::cfRegUsr::operator()()
 			((Action == eAC_INFO) &&(MyClass >= (ui.mClass - 1)))
 		 ))
 		{
-			(*mOS) << "Insufficient rights!";
+			(*mOS) << _("You have no rights to do this");
 			return false;
 		}
 	}
 
-	switch(Action)
-	{
+	switch(Action) {
 		case eAC_CLASS: case eAC_PROTECT: case eAC_HIDEKICK: case eAC_NEW:
-		 	std::istringstream lStringIS(par);
+			std::istringstream lStringIS(par);
 			lStringIS >> ParClass;
 		break;
 	};
 
-	switch(Action)
-	{
+	switch(Action) {
 		case eAC_SET: authorized = RegFound && (( MyClass >= eUC_ADMIN ) && (MyClass > ui.mClass) && (field != "class")); break;
 		case eAC_NEW:
 			authorized = !RegFound  && (MyClass >= (ParClass + mS->mC.classdif_reg));
@@ -1828,144 +1805,144 @@ bool cDCConsole::cfRegUsr::operator()()
 		case eAC_INFO : authorized = RegFound && (MyClass >= eUC_OPERATOR); break;
 	};
 
-	if (MyClass == eUC_MASTER) authorized = RegFound || (!RegFound && (Action == eAC_NEW));
+	if(MyClass == eUC_MASTER)
+		authorized = RegFound || (!RegFound && (Action == eAC_NEW));
 
-	if (!authorized)
-	{
-		if (!RegFound) *mOS << " No user '" << nick << "' is registered in database..";
-		else if (Action == eAC_NEW) *mOS << "User '" << nick << "' already exists";
-		else *mOS << "Insufficient rights!";
+	if(!authorized) {
+		if(!RegFound)
+			*mOS << autosprintf(_("No registered user found with nick '%s'"), nick.c_str());
+		else if(Action == eAC_NEW)
+			*mOS << autosprintf(_("User '%s' already exists"), nick.c_str());
+		else
+			*mOS << _("You have no rights to do this");
 		return false;
 	}
 
- 	if( Action >= eAC_CLASS && Action <= eAC_SET && !WithPar)
- 	{
- 		(*mOS) << "Missing Parameter";
+ 	if(Action >= eAC_CLASS && Action <= eAC_SET && !WithPar) {
+ 		(*mOS) << _("Missing Parameter");
  		return false;
-  }
+	}
 
-	switch (Action)
-	{
-	case eAC_NEW: // new
-		if (RegFound)
-		{
-			(*mOS) << "The user is already registered in the database";
-			return false;
-		}
-		#ifndef WITHOUT_PLUGINS
-		if(!mS->mCallBacks.mOnNewReg.CallAll(nick,ParClass)) {
-			(*mOS) << "Action has been discarded by plugin";
-			return false;	
-		}
-		#endif
-		
-		if (mS->mR->AddRegUser(nick, mConn, ParClass))
-		{
-			if(user && user->mxConn)
-			{
-				ostr.str(mS->mEmpty);
-				ostr << mS->mL.pwd_setup;
-				mS->DCPrivateHS(ostr.str(), user->mxConn);
-			}
-			(*mOS) << "User has been added; please tell him to change his password";
-		}
-		else
-		{
-			(*mOS) << "Error adding a new user";
-			return false;
-		}
-		break;
-	case eAC_DEL: // delete
-		#ifndef WITHOUT_PLUGINS
-		if(!mS->mCallBacks.mOnDelReg.CallAll(nick,ui.mClass)) {
-			(*mOS) << "Action has been discarded by plugin";
-			return false;	
-		}
-		#endif
-		if (mS->mR->DelReg(nick))
-		{
-			(*mOS) << "Deleted user '" << nick << "' from database\r\n"
-				<< "User's info: " << ui <<"\r\n";
-		}
-		else
-		{
-			(*mOS) << "Error deleting user '" << nick << "'\r\n"
-				<< "User's info: " << ui <<"\r\n";
-			return false;
-		}
-		break;
-	case eAC_PASS: // pass
-		if (WithPar)
-		{
-			#if ! defined _WIN32
-			if ( mS->mR->ChangePwd(nick, par, 1) )
-			#else
-			if ( mS->mR->ChangePwd(nick, par, 0) )
-			#endif
-				(*mOS) << "Success";
-			else
-			{
-				(*mOS) << "Error";
+	switch (Action) {
+		case eAC_NEW: // new
+			if(RegFound) {
+				*mOS << autosprintf(_("User '%s' already exists"), nick.c_str());
 				return false;
 			}
-		} else {
-			field="pwd_change";
-			par="1";
-			ostr << mS->mL.pwd_can;
-		}
+			#ifndef WITHOUT_PLUGINS
+			if(!mS->mCallBacks.mOnNewReg.CallAll(nick,ParClass)) {
+				(*mOS) << _("Action has been discarded by plugin");
+				return false;
+			}
+			#endif
+			
+			if (mS->mR->AddRegUser(nick, mConn, ParClass)) {
+				if(user && user->mxConn) {
+					ostr.str(mS->mEmpty);
+					ostr << mS->mL.pwd_setup;
+					mS->DCPrivateHS(ostr.str(), user->mxConn);
+				}
+				(*mOS) << _("User has been added; please tell him to change his password");
+			}
+			else
+			{
+				(*mOS) << _("Error adding a new user");
+				return false;
+			}
 		break;
-	case eAC_CLASS: // class
-		#ifndef WITHOUT_PLUGINS
-		if(!mS->mCallBacks.mOnUpdateClass.CallAll(nick,ui.mClass, ParClass)) {
-			(*mOS) << "Action has been discarded by plugin";
-			return false;	
-		}
-		#endif
-		field="class";
-		ostr << "Your class has been changed to :" << par << "; changes will take effect on next login.";
+		case eAC_DEL: // delete
+			#ifndef WITHOUT_PLUGINS
+			if(!mS->mCallBacks.mOnDelReg.CallAll(nick,ui.mClass)) {
+				(*mOS) << _("Action has been discarded by plugin");
+				return false;
+			}
+			#endif
+			if(mS->mR->DelReg(nick)) {
+				ostringstream userInfo;
+				userInfo << ui;
+				(*mOS) << autosprintf(_("Deleted user '%s' from database"), nick.c_str()) << "\r\n";
+				(*mOS) << autosprintf(_("User information: %s"), userInfo.str().c_str()) <<"\r\n";
+			} else {
+				ostringstream userInfo;
+				userInfo << ui;
+				(*mOS) << autosprintf(_("Error deleting user '%s'"), nick.c_str()) << "'\r\n";
+				(*mOS) << autosprintf(_("User information: %s"), userInfo.str().c_str()) <<"\r\n";
+				return false;
+			}
 		break;
-	case eAC_ENABLE: //enable
-		field="enabled";
-		par="1";
-		WithPar= true;
-		ostr << "Your registration has been enabled";
+		case eAC_PASS: // pass
+			if(WithPar) {
+				#if ! defined _WIN32
+				if( mS->mR->ChangePwd(nick, par, 1))
+				#else
+				if(mS->mR->ChangePwd(nick, par, 0))
+				#endif
+					(*mOS) << _("Password updated");
+				else
+				{
+					(*mOS) << _("Error updating password");
+					return false;
+				}
+			} else {
+				field = "pwd_change";
+				par = "1";
+				ostr << mS->mL.pwd_can;
+			}
 		break;
-	case eAC_DISABLE: // disable
-		field="enabled";
-		par="0";
-		WithPar= true;
-		ostr << "Your registration has been disabled";
+		case eAC_CLASS: // class
+			#ifndef WITHOUT_PLUGINS
+			if(!mS->mCallBacks.mOnUpdateClass.CallAll(nick,ui.mClass, ParClass)) {
+				(*mOS) << _("Action has been discarded by plugin");
+				return false;
+			}
+			#endif
+			field="class";
+			ostr << autosprintf(_("Your class has been changed to %s. Changes will take effect on next login."), par.c_str());
 		break;
-	case eAC_PROTECT: // protect
-		field="class_protect";
-		ostr << "You are now on protected by level: " << par;
-		if (user) user->mProtectFrom = ParClass;
+		case eAC_ENABLE: //enable
+			field = "enabled";
+			par = "1";
+			WithPar= true;
+			ostr << _("Your registration has been enabled");
+			break;
+		case eAC_DISABLE: // disable
+			field = "enabled";
+			par = "0";
+			WithPar= true;
+			ostr << _("Your registration has been disabled");
+			break;
+		case eAC_PROTECT: // protect
+			field = "class_protect";
+			ostr << autosprintf(_("You are protected by classes greater than %s"), par.c_str());
+			if(user)
+				user->mProtectFrom = ParClass;
+			break;
+		case eAC_HIDEKICK: // hidekick
+			field = "class_hidekick";
+			ostr << autosprintf(_("You kicks are hidden by classes greater than %s"), par.c_str());
+			break;
+		case eAC_SET:
+		break; // set
+		case eAC_INFO:
+			(*mOS) << ui << endl;
 		break;
-	case eAC_HIDEKICK: // hidekick
-		field="class_hidekick";
-		ostr << "You are now (in DB) on the hidekick level: " << par;
-		break;
-	case eAC_SET: break; // set
-	case eAC_INFO: (*mOS) << ui << endl; break;
-	default:
-		mIdRex->Extract(1,mIdStr,par);
-		(*mOS) << "The command '" << par << "' hasn't implemented yet";
-		return false;
-		break;
+		default:
+			mIdRex->Extract(1,mIdStr,par);
+			(*mOS) << _("This command is not implemented");
+			return false;
+			break;
 	}
 
 	if( (WithPar && (Action >=eAC_ENABLE) && (Action <=eAC_SET)) || ( (Action==eAC_PASS) && !WithPar ))
 	{
-		if (mS->mR->SetVar(nick, field, par))
-  	{
-  		(*mOS) << "Updated variable '" << field << "' to value " << par << " for user " << nick;
-			if(user && user->mxConn && ostr.str().size()) mS->DCPrivateHS(ostr.str(), user->mxConn);
-    }
-    else
-    {
-			(*mOS) << "Error setting variable '" << field << "' to value " << par << " for user " << nick;
-     		return false;
-  	}
+		if (mS->mR->SetVar(nick, field, par)) 	{
+			(*mOS) << autosprintf(_("Updated variable '%s' to value %s for user %s"), field.c_str(), par.c_str(), nick.c_str());
+			if(user && user->mxConn && ostr.str().size())
+				mS->DCPrivateHS(ostr.str(), user->mxConn);
+		} else {
+			(*mOS) << autosprintf(_("Error setting variable '%s' to value %s for user %s"), field.c_str(), par.c_str(), nick.c_str());
+			return false;
+		}
 	}
 	(*mOS) << "";
 	return true;
@@ -1973,7 +1950,8 @@ bool cDCConsole::cfRegUsr::operator()()
 
 bool cDCConsole::cfRedirToConsole::operator()()
 {
-	if (this->mConn->mpUser->mClass < eUC_OPERATOR) return false;
+	if (this->mConn->mpUser->mClass < eUC_OPERATOR)
+		return false;
 	if(this->mConsole != NULL)
 		return mConsole->OpCommand(mIdStr + mParStr, mConn);
 	else return false;
@@ -2046,17 +2024,18 @@ bool cDCConsole::cfBc::operator()()
 	
 	if (MyClass < AllowedClass)
 	{
-		*mOS << "You do not have permissions to broadcast to this class.";
+		*mOS << _("You have no rights to do this.");
 		return false;
 	}
 	
 	string start, end;
 	mS->mP.Create_PMForBroadcast(start,end,mS->mC.hub_security, this->mConn->mpUser->mNick ,message);
 	cTime TimeBefore, TimeAfter;
-	if ( mS->LastBCNick != "disable") mS->LastBCNick = mConn->mpUser->mNick;
+	if(mS->LastBCNick != "disable")
+		mS->LastBCNick = mConn->mpUser->mNick;
 	int count = mS->SendToAllWithNick(start,end, MinClass, MaxClass);
 	TimeAfter.Get();
-	*mOS << "Message delivered to " << count << " users in : " << (TimeAfter-TimeBefore).AsPeriod();
+	*mOS << autosprintf(_("Message delivered to %d users in %f") , count, (float) (TimeAfter-TimeBefore).AsPeriod());
 	return true;
 }
 
@@ -2070,22 +2049,19 @@ bool nDirectConnect::cDCConsole::GetIPRange(const string &range, unsigned long &
 {
 	//"^(\\d+\\.\\d+\\.\\d+\\.\\d+)((\\/(\\d+))|(\\.\\.|-)(\\d+\\.\\d+\\.\\d+\\.\\d+))?$"
 	enum {R_IP1 = 1, R_RANGE = 2, R_BITS=4, R_DOTS = 5, R_IP2 = 6};
-	if (!mIPRangeRex.Exec(range)) return false;
+	if(!mIPRangeRex.Exec(range))
+		return false;
 	string tmp;
 	// easy : from..to
-	if (mIPRangeRex.PartFound(R_RANGE))
-	{
-		if (mIPRangeRex.PartFound(R_DOTS))
-		{
+	if(mIPRangeRex.PartFound(R_RANGE)) {
+		if(mIPRangeRex.PartFound(R_DOTS)) {
 			mIPRangeRex.Extract(R_IP1, range, tmp);
 			from = cBanList::Ip2Num(tmp);
 			mIPRangeRex.Extract(R_IP2, range, tmp);
 			to = cBanList::Ip2Num(tmp);
 			return true;
-		}
 		// the more complicated 1.2.3.4/16 style mask
-		else
-		{
+		} else {
 			unsigned long mask = 0;
 			unsigned long addr1 = 0;
 			unsigned long addr2 = 0xFFFFFFFF;
@@ -2102,8 +2078,7 @@ bool nDirectConnect::cDCConsole::GetIPRange(const string &range, unsigned long &
 			to   = addr2;
 			return true;
 		}
-	} else
-	{
+	} else {
 		mIPRangeRex.Extract(R_IP1, range, tmp);
 		from = cBanList::Ip2Num(tmp);
 		to = from;
@@ -2111,5 +2086,3 @@ bool nDirectConnect::cDCConsole::GetIPRange(const string &range, unsigned long &
 	}
 	return false;
 }
-
-
