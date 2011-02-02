@@ -252,14 +252,14 @@ void cDCConf::AddVars()
 	Add("msg_chat_onoff", msg_chat_onoff,string("<< To turn your chat on, use command +chat turn it off with +nochat >>"));
 	Add("msg_change_pwd",msg_change_pwd, string("<< Please change your password NOW using command +passwd new_passwd!!! See +help>>"));
 	Add("msg_banned",msg_banned,string("<<You are banned and this is a default extra message>>"));
-	Add("msg_hub_full",msg_hub_full,string("<<User limit exceeded, hub is full.>>"));
+	//Add("msg_hub_full",msg_hub_full,string("<<User limit exceeded, hub is full.>>"));
 	Add("msg_nick_prefix",msg_nick_prefix, string("<<Invalid nick prefix>>"));
 	Add("msg_downgrade", msg_downgrade, string("<<Your client version is too recent.>>"));
 	Add("msg_banned_client", msg_banned_client, string("<<Your client is banned.>>"));
 	Add("msg_upgrade",msg_upgrade, string("<<Your client version is too old, please upgrade!>>"));
 	Add("msg_replace_ban",msg_replace_ban, string(""));
-	Add("login_share_min",login_share_min,string("You share %[share]MB, but the min share is %[min_share]MB. (active:%[min_share_active]MB / passive:%[min_share_passive])"));
-	Add("login_share_max",login_share_max,string("You share %[share]MB, but the max share is %[max_share]MB."));
+	//Add("login_share_min",login_share_min,string("You share %[share]MB, but the min share is %[min_share]MB. (active:%[min_share_active]MB / passive:%[min_share_passive])"));
+// 	Add("login_share_max",login_share_max,string("You share %[share]MB, but the max share is %[max_share]MB."));
 	Add("autoreg_min_share", autoreg_min_share, string("You need to share at least %[min_share] MB"));
 	Add("search_share_min",search_share_min,string("You can't search on this hub unless you share %[min_share_use_hub]."));
 	Add("ctm_share_min",ctm_share_min,string("You can't download on this hub unless you share %[min_share_use_hub]."));
@@ -276,16 +276,16 @@ void cDCConf::AddVars()
 
 void cDCLang::AddVars()
 {
-	Add("ban_by", ban_by, string(" BY: "));
-	Add("ban_reason", ban_reason, string("Reason: "));
-	Add("ban_permanently", ban_permanently, string("Permanently."));
-	Add("ban_remaining", ban_remaining, string("Remaining: "));
-	Add("ban_expired", ban_expired, string("Ended on: "));
-	Add("ban_for", ban_for, string("For: "));
-	Add("ban_removed", ban_removed, string("Removed: "));
-	Add("ban_type", ban_type, string("Ban Type"));
-	Add("chat_msg_long",chat_msg_long,string("Too long chat message (%[COUNT]/%[LIMIT]) : %[MSG]"));
-	Add("chat_msg_lines",chat_msg_lines,string("Too many chat lines (>%[LIMIT]): %[MSG]"));
+//	Add("ban_by", ban_by, string(" BY: "));
+	//Add("ban_reason", ban_reason, string("Reason: "));
+	//Add("ban_permanently", ban_permanently, string("Permanently."));
+	//Add("ban_remaining", ban_remaining, string("Remaining: "));
+	//Add("ban_expired", ban_expired, string("Ended on: "));
+	//Add("ban_for", ban_for, string("For: "));
+	//Add("ban_removed", ban_removed, string("Removed: "));
+	//Add("ban_type", ban_type, string("Ban Type"));
+	//Add("chat_msg_long",chat_msg_long,string("Too long chat message (%[COUNT]/%[LIMIT]) : %[MSG]"));
+	//Add("chat_msg_lines",chat_msg_lines,string("Too many chat lines (>%[LIMIT]): %[MSG]"));
 	Add("pwd_cannot", pwd_cannot, string("You are not allowed to change your password now. Ask an OP."));
 	Add("pwd_can", pwd_can, string("You can change your password now, use command +passwd followed by your new password"));
 	Add("pwd_min", pwd_min, string("Minimum password length is %[length] characters, retry.."));
@@ -317,37 +317,11 @@ void cDCLang::AddVars()
 	Add("autoreg_success", autoreg_success, string("You are registered now! Please reconnect and login with your password. Don't forget your password! It is '%[password]'."));
 	Add("autoreg_error", autoreg_error, string("Some strange error occured while registering. Maybe illegeal chars in nick or pass?"));
 	
-	Add("because", because, string("Because: "));
-	Add("ip", ip, string("IP"));
-	Add("nick", nick, string("Nick"));
-	Add("user", user, string("User"));
-	Add("host", host, string("Host"));
-	Add("ip_range", ip_range, string("IP Range :"));
-	Add("op", op, string("OP"));
-	Add("not_in_userlist", not_in_userlist, string(" not in userlist"));
+ 	int  i;
+ 	string varname;
 
-	static const char *types[]={"Nick+IP","IP","Nick","IP Range","Host Level 1", "Host Level 2", "Host Level 3", "Share Size", "E-mail", "Nick Prefix", "Reverse-Host 1"};
-	static const char *names[]={"nickip","ip","nick","iprange","host1", "host2", "host3", "share", "email", "prefix", "rhost1"};
-	int  i;
-	string varname;
-	for (i = 0; i < 11 ; i++)
-	{
-		varname = "ban_type_";
-		varname += names[i];
-		Add(varname, ban_types[i], string(types[i]));
-	}
-
-	Add("operation_timeout", operation_timeout, string("Operation timeout"));
-	Add("general_timeout", timeout_any, string("General timeout"));
-
-	static const char *to_texts [] = { "Key", "ValidateNick", "Login", "MyINFO", "Flush", "Set Password"};
-	static const  char *to_names [] = { "key", "nick", "login", "myinfo", "flush", "setpass"};
-	for (i = 0; i < 6; i ++)
-	{
-		varname = "timeout_";
-		varname += to_names[i];
-		Add(varname, timeout_text[i], string(to_texts[i]));
-	}
+	//Add("operation_timeout", operation_timeout, string("Operation timeout"));
+	//Add("general_timeout", timeout_any, string("General timeout"));
 }
 
 

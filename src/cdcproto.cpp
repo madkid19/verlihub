@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include "stringutils.h"
 #include "cdcconsole.h"
+#include "i18n.h"
 
 using std::string;
 using namespace nStringUtils;
@@ -144,11 +145,16 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	int limit_extra = 0;
 
 	// Calculate user limits
-	if(conn->GetTheoricalClass() == eUC_REGUSER ) limit_extra+=mS->mC.max_extra_regs;
-	if(conn->GetTheoricalClass() == eUC_VIPUSER ) limit_extra+=mS->mC.max_extra_vips;
-	if(conn->GetTheoricalClass() == eUC_OPERATOR) limit_extra+=mS->mC.max_extra_ops;
-	if(conn->GetTheoricalClass() == eUC_CHEEF) limit_extra+=mS->mC.max_extra_cheefs;
-	if(conn->GetTheoricalClass() == eUC_ADMIN   ) limit_extra+=mS->mC.max_extra_admins;
+	if(conn->GetTheoricalClass() == eUC_REGUSER)
+		limit_extra+=mS->mC.max_extra_regs;
+	if(conn->GetTheoricalClass() == eUC_VIPUSER)
+		limit_extra+=mS->mC.max_extra_vips;
+	if(conn->GetTheoricalClass() == eUC_OPERATOR)
+		limit_extra+=mS->mC.max_extra_ops;
+	if(conn->GetTheoricalClass() == eUC_CHEEF)
+		limit_extra+=mS->mC.max_extra_cheefs;
+	if(conn->GetTheoricalClass() == eUC_ADMIN)
+		limit_extra+=mS->mC.max_extra_admins;
 
 	limit += limit_extra;
 	limit_cc += limit_extra;
@@ -159,7 +165,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		  (mS->mUserCountTot >= limit) ||   (mS->mUserCount[conn->mGeoZone] >= limit_cc)
 		)
 	) {
-		os << mS->mC.msg_hub_full << "\r\nOnline users =" << mS->mUserCountTot;
+		os << _("<<User limit exceeded, hub is full.>>") << "\r\n" << autosprintf(_("Online users =%d"),  mS->mUserCountTot);
 		if(conn->Log(2)) {
 			conn->LogStream()
 				<< "Hub is full (" << mS->mUserCountTot
@@ -233,7 +239,7 @@ int cDCProto::DC_Key(cMessageDC * msg, cConnDC * conn)
 	if(msg->SplitChunks()) return -1;
 	// Key already sent
 	if(conn->GetLSFlag(eLS_KEYOK)) {
-		string omsg = "Invalid login sequence. Key already sent!";
+		string omsg = _("Invalid login sequence. Key already sent");
 		if(conn->Log(1)) conn->LogStream() << omsg << endl;
 		mS->ConnCloseMsg(conn,omsg,1000, eCR_LOGIN_ERR);
 		return -1;
@@ -243,7 +249,7 @@ int cDCProto::DC_Key(cMessageDC * msg, cConnDC * conn)
 	if(key != msg->ChunkString(1)) {
 		if(conn->Log(1)) conn->LogStream() << "Invalid key" << endl;
 		if(mS->mC.drop_invalid_key) {
-			string omsg = "Your client provided an invalid key";
+			string omsg = _("Your client provided an invalid key");
 			mS->ConnCloseMsg(conn,omsg,1000, eCR_INVALID_KEY);
 			return -1;
 		}
@@ -263,7 +269,7 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 	string omsg;
 	
 	if(!conn->mpUser) {
-		omsg = "Bad login sequence; you must provide a valid nick first.";
+		omsg = _("Bad login sequence; you must provide a valid nick first.");
 		if(conn->Log(1))
 			conn->LogStream() << "Mypass before validatenick" << endl;
 		mS->ConnCloseMsg(conn,omsg,1000, eCR_LOGIN_ERR);
@@ -287,16 +293,19 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 		if(conn->mRegInfo && conn->mRegInfo->getClass() > 0) {
 			omsg = "$BadPass";
 			conn->Send(omsg);
-		 	if(mS->mC.wrongpassword_report) mS->ReportUserToOpchat(conn,"Wrong password");
-			omsg = "You provided an incorrect password and have been temporarily banned.";
+		 	if(mS->mC.wrongpassword_report)
+				mS->ReportUserToOpchat(conn,_("Wrong password"));
+			omsg = _("You provided an incorrect password and have been temporarily banned.");
 			mS->mBanList->AddNickTempBan(conn->mpUser->mNick, mS->mTime.Sec() + mS->mC.pwd_tmpban, omsg);
 		
 			mS->mR->LoginError(conn, conn->mpUser->mNick);
-			if(conn->Log(2)) conn->LogStream() << "Wrong password, banned for " << mS->mC.pwd_tmpban <<" seconds" << endl;
+			if(conn->Log(2))
+				conn->LogStream() << "Wrong password, banned for " << mS->mC.pwd_tmpban <<" seconds" << endl;
 			mS->ConnCloseMsg(conn, omsg, 2000, eCR_PASSWORD);
 			return -1;
 		} else {
-			if(conn->Log(3)) conn->LogStream() << "User sent password but he isn't regged" << endl;
+			if(conn->Log(3))
+				conn->LogStream() << "User sent password but he isn't regged" << endl;
 			return -1;
 		}
 		
@@ -346,8 +355,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	string cmsg;
 	ostringstream os;
 	// server gets this once on login, and then yet many times
-	if(msg->SplitChunks())
-	{
+	if(msg->SplitChunks()) {
 		if(conn->Log(2)) conn->LogStream() << "MyINFO syntax error, closing" << endl;
 		mS->ConnCloseMsg(conn, cmsg, 4000, eCR_SYNTAX);
 		return -1;
@@ -355,22 +363,23 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	string &nick=msg->ChunkString(eCH_MI_NICK);
 
 	// this can't happen without having created user object
-	if(!conn->mpUser)
-	{
-		cmsg = "Bad login sequence";
-		if(conn->Log(2)) conn->LogStream() << "Myinfo without nick " << nick << endl;
+	if(!conn->mpUser) {
+		cmsg = _("Bad login sequence");
+		if(conn->Log(2))
+			conn->LogStream() << "Myinfo without nick " << nick << endl;
 		mS->ConnCloseMsg(conn, cmsg,1000, eCR_LOGIN_ERR);
-		if(mS->ErrLog(0)) mS->LogStream() << "Myinfo without nick " << nick << endl;
+		if(mS->ErrLog(0))
+			mS->LogStream() << "Myinfo without nick " << nick << endl;
 		return -1;
 	}
 
 	// check syntax a bit
 
 	// check nick
-	if(nick != conn->mpUser->mNick)
-	{
-		cmsg = "Wrong MyINFO";
-		if(conn->Log(1)) conn->LogStream() << "Claims to be someone else in MyINFO" << endl;
+	if(nick != conn->mpUser->mNick) {
+		cmsg = _("Wrong MyINFO");
+		if(conn->Log(1))
+			conn->LogStream() << "Claims to be someone else in MyINFO" << endl;
 		mS->ConnCloseMsg(conn, cmsg, 1500, eCR_SYNTAX);
 		return -1;
 	}
@@ -385,8 +394,9 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	cDCTag *tag = mS->mCo->mDCClients->ParseTag(msg->ChunkString(eCH_MI_DESC));
 	if (!mS->mC.tag_allow_none && mS->mCo->mDCClients->mPositionInDesc < 0 && conn->mpUser->mClass < eUC_OPERATOR && conn->mpUser->mClass != eUC_PINGER)
 	{
-		cmsg = "Turn on your tag!!";
-		if(conn->Log(2)) conn->LogStream() << "No tag " << endl;
+		cmsg = _("Turn on your tag");
+		if(conn->Log(2))
+			conn->LogStream() << "No tag " << endl;
 		mS->ConnCloseMsg(conn, cmsg, 1000, eCR_TAG_NONE);
 		delete tag;
 		return -1;
@@ -401,9 +411,9 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		TagValid = TagValid && mS->mCallBacks.mOnValidateTag.CallAll(conn, tag);
 	#endif
 
-	if(!TagValid)
-	{
-		if(conn->Log(2)) conn->LogStream() << "Invalid tag: (" << tag_result << ")\n Tag info " << tag << endl;
+	if(!TagValid) {
+		if(conn->Log(2))
+			conn->LogStream() << "Invalid tag: (" << tag_result << ")\n Tag info " << tag << endl;
 		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_TAG_INVALID);
 		return -1;
 	}
@@ -459,15 +469,14 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 			min_share = 0;
 		*/
 		if((share < min_share) || (max_share && (share > max_share))) {
-			if (share < min_share) cmsg = mS->mC.login_share_min;
-			else cmsg = mS->mC.login_share_max;
-			ReplaceVarInString(cmsg,"share",cmsg,share);
-			ReplaceVarInString(cmsg,"min_share",cmsg,min_share);
-			ReplaceVarInString(cmsg,"min_share_active",cmsg,min_share_a);
-			ReplaceVarInString(cmsg,"min_share_passive",cmsg,min_share_p);
-			ReplaceVarInString(cmsg,"max_share",cmsg,max_share);
-			if(conn->Log(2)) conn->LogStream() << "Share limit."<< endl;
-			mS->ConnCloseMsg(conn, cmsg, 4000, eCR_SHARE_LIMIT);
+			ostringstream message;
+			if(share < min_share)
+				message << autosprintf(_("You share %lld MB, but the min share is %lld MB. (active:%lld MB / passive:%lld MB)"), share, min_share, min_share_a, min_share_p);
+			else
+				message << autosprintf(_("You share %lldMB, but the max share is %lldMB."), share, max_share);
+			if(conn->Log(2))
+				conn->LogStream() << "Share limit."<< endl;
+			mS->ConnCloseMsg(conn, message.str(), 4000, eCR_SHARE_LIMIT);
 			return -1;
 		}
 
@@ -518,9 +527,9 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		cBan Ban(mS);
 		bool banned = false;
 		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, cBan::eBF_SHARE | cBan::eBF_EMAIL);
-		if( banned && conn->GetTheoricalClass() <= eUC_REGUSER ) {
+		if(banned && conn->GetTheoricalClass() <= eUC_REGUSER) {
 			stringstream msg;
-			msg << "Banned." << endl;
+			msg << _("Banned.") << endl;
 			Ban.DisplayUser(msg);
 			mS->DCPublicHS(msg.str(),conn);
 			conn->LogStream() << "Kicked user for share" << endl;
@@ -701,8 +710,10 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 	if((conn->mpUser->mClass < eUC_OPERATOR) && fl) {
 		if(conn->Log(1)) conn->LogStream() << "Floods PM (" << msg->ChunkString(eCH_PM_FROM) << ")." <<endl;
 		if(fl >= 3) {
-			mS->DCPrivateHS("Flooding PM", conn);
-			mS->ReportUserToOpchat(conn,string("*** PM Flood detected: ")+msg->ChunkString(eCH_PM_MSG));
+			mS->DCPrivateHS(_("Flooding PM"), conn);
+			ostringstream reportMessage;
+			reportMessage << autosprintf(_("*** PM Flood: %s"), msg->ChunkString(eCH_PM_MSG).c_str());
+			mS->ReportUserToOpchat(conn, reportMessage.str());
 			conn->CloseNow();
 		}
 		return -1;
@@ -713,8 +724,10 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR)) {
 		if(Hash == conn->mpUser->mFloodHashes[eFH_PM]) {
 			if( conn->mpUser->mFloodCounters[eFC_PM]++ > mS->mC.max_flood_counter_pm) {
-					mS->DCPrivateHS("Flooding PM", conn);
-					mS->ReportUserToOpchat(conn,string("*** PM Same Message Flood detected: ")+msg->ChunkString(eCH_PM_MSG));
+					mS->DCPrivateHS(_("Flooding PM"), conn);
+					ostringstream reportMessage;
+					reportMessage << autosprintf(_("*** PM Same Message Flood detected: %s"), msg->ChunkString(eCH_PM_MSG).c_str());
+					mS->ReportUserToOpchat(conn, reportMessage.str());
 					conn->CloseNow();
 					return -5;
 			}
@@ -730,8 +743,8 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 		return -2;
 	//NOTE: It seems to be there a crash on Windows when using Lua plugin and a Lua script calls DelRobot
 	if(conn->mpUser->mClass + mS->mC.classdif_pm < other->mClass) {
-		mS->DCPrivateHS("You cannot talk to this user.", conn);
-		mS->DCPublicHS("You cannot talk to this user.", conn);
+		mS->DCPrivateHS(_("You cannot talk to this user."), conn);
+		mS->DCPublicHS(_("You cannot talk to this user."), conn);
 		return -4;
 	}
 
@@ -754,32 +767,27 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 
 bool cDCProto::CheckChatMsg(const string &text, cConnDC *conn)
 {
-	int count = 0, limit = 0;
-	string err_message;
+	if(!conn || !conn->mxServer)
+		return true;
+	
+	cServerDC *Server = conn->Server();
+	int count = text.size(), limit = Server->mC.max_chat_msg;
 	bool IsWrong = false;
-	cServerDC *Server;
 	
-	if(!conn || !conn->mxServer) return true;
-	Server = conn->Server(); 
 	
-	count = text.size();
-	limit = Server->mC.max_chat_msg;
-	err_message = Server->mL.chat_msg_long;
-	
-	if(count > limit) IsWrong = true;
-	else if(!LimitLines(text,Server->mC.max_chat_lines)) {
+	ostringstream errorMessage;
+	if(count > limit) {
+		IsWrong = true;
+		errorMessage << autosprintf(_("Too long chat message (%d/%d) : %s"), count, limit, text.c_str());
+	} else if(!LimitLines(text,Server->mC.max_chat_lines)) {
 		limit = Server->mC.max_chat_lines;
-		count = 0;
-		err_message = Server->mL.chat_msg_lines;
+		errorMessage << autosprintf(_("Too many chat lines (>%d): %s"), limit, text.c_str());
 		IsWrong = true;
 	} else
 		return true;
 	
 	if(IsWrong) {
-		ReplaceVarInString(err_message,"LIMIT",err_message, limit);
-		ReplaceVarInString(err_message,"COUNT",err_message, count);
-		ReplaceVarInString(err_message,"MSG",err_message, text);
-		Server->DCPublicHS(err_message,conn);
+		Server->DCPublicHS(errorMessage.str(),conn);
 		return false;
 	}
 	return false;
