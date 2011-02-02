@@ -252,17 +252,12 @@ void cDCConf::AddVars()
 	Add("msg_chat_onoff", msg_chat_onoff,string("<< To turn your chat on, use command +chat turn it off with +nochat >>"));
 	Add("msg_change_pwd",msg_change_pwd, string("<< Please change your password NOW using command +passwd new_passwd!!! See +help>>"));
 	Add("msg_banned",msg_banned,string("<<You are banned and this is a default extra message>>"));
-	//Add("msg_hub_full",msg_hub_full,string("<<User limit exceeded, hub is full.>>"));
+
 	Add("msg_nick_prefix",msg_nick_prefix, string("<<Invalid nick prefix>>"));
-	Add("msg_downgrade", msg_downgrade, string("<<Your client version is too recent.>>"));
 	Add("msg_banned_client", msg_banned_client, string("<<Your client is banned.>>"));
 	Add("msg_upgrade",msg_upgrade, string("<<Your client version is too old, please upgrade!>>"));
 	Add("msg_replace_ban",msg_replace_ban, string(""));
-	//Add("login_share_min",login_share_min,string("You share %[share]MB, but the min share is %[min_share]MB. (active:%[min_share_active]MB / passive:%[min_share_passive])"));
-// 	Add("login_share_max",login_share_max,string("You share %[share]MB, but the max share is %[max_share]MB."));
 	Add("autoreg_min_share", autoreg_min_share, string("You need to share at least %[min_share] MB"));
-	Add("search_share_min",search_share_min,string("You can't search on this hub unless you share %[min_share_use_hub]."));
-	Add("ctm_share_min",ctm_share_min,string("You can't download on this hub unless you share %[min_share_use_hub]."));
 	Add("msg_welcome_guest",msg_welcome[0]);
 	Add("msg_welcome_reg",msg_welcome[1]);
 	Add("msg_welcome_vip",msg_welcome[2]);
@@ -276,16 +271,6 @@ void cDCConf::AddVars()
 
 void cDCLang::AddVars()
 {
-//	Add("ban_by", ban_by, string(" BY: "));
-	//Add("ban_reason", ban_reason, string("Reason: "));
-	//Add("ban_permanently", ban_permanently, string("Permanently."));
-	//Add("ban_remaining", ban_remaining, string("Remaining: "));
-	//Add("ban_expired", ban_expired, string("Ended on: "));
-	//Add("ban_for", ban_for, string("For: "));
-	//Add("ban_removed", ban_removed, string("Removed: "));
-	//Add("ban_type", ban_type, string("Ban Type"));
-	//Add("chat_msg_long",chat_msg_long,string("Too long chat message (%[COUNT]/%[LIMIT]) : %[MSG]"));
-	//Add("chat_msg_lines",chat_msg_lines,string("Too many chat lines (>%[LIMIT]): %[MSG]"));
 	Add("pwd_cannot", pwd_cannot, string("You are not allowed to change your password now. Ask an OP."));
 	Add("pwd_can", pwd_can, string("You can change your password now, use command +passwd followed by your new password"));
 	Add("pwd_min", pwd_min, string("Minimum password length is %[length] characters, retry.."));
@@ -300,15 +285,9 @@ void cDCLang::AddVars()
 	Add("tag_max_slots",tag_max_slots, string("Too many open slots for your connection type (%[conn_type]), max is %[tag_max_slots]"));
 	Add("tag_min_slots",tag_min_slots, string("Too little open slots for your connection type (%[conn_type]), min is %[tag_min_slots]"));
 	Add("tag_max_hs_ratio",tag_max_hs_ratio, string("Too little slots for the number of hubs (hubs/slots ratio), max ratio is %[tag_max_hs_ratio]: %[hubs] hubs require %[min_slots]"));
-	Add("tag_min_limit",tag_min_limit, string("Too low upload limit for your connection type (%[conn_type]), max ratio is %[tag_max_hs_ratio]"));
-	Add("tag_min_ls_ratio",tag_min_ls_ratio, string("Too upload limit for your connection type (%[conn_type]), min upload limit is %[tag_min_ls_ratio] per every slot"));
 	Add("tag_no_sock",tag_no_sock,string("Sock5 is not allowed here."));
 	Add("tag_no_passive",tag_no_passive,string("Passive connections are restricted. Consider changing to active."));
-	
-	
-	
-	Add("msg_downgrade",msg_downgrade, string("%[msg_downgrade] Allowed maximum version number for %[client_type] client is: %[tag_max_version]"));
-	Add("msg_upgrade",msg_upgrade, string("%[msg_upgrade] Allowed minimum version number for %[client_type] client is: %[tag_min_version]"));
+
 	Add("msg_topic_set",msg_topic_set, string("%[user] sets the topic to : %[topic]"));
 	Add("msg_topic_reset",msg_topic_reset, string("%[user] reset the topic"));
 	
@@ -316,12 +295,6 @@ void cDCLang::AddVars()
 	Add("autoreg_already_reg", autoreg_already_reg, string("You are already registered"));
 	Add("autoreg_success", autoreg_success, string("You are registered now! Please reconnect and login with your password. Don't forget your password! It is '%[password]'."));
 	Add("autoreg_error", autoreg_error, string("Some strange error occured while registering. Maybe illegeal chars in nick or pass?"));
-	
- 	int  i;
- 	string varname;
-
-	//Add("operation_timeout", operation_timeout, string("Operation timeout"));
-	//Add("general_timeout", timeout_any, string("General timeout"));
 }
 
 

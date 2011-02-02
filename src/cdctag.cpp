@@ -124,7 +124,6 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 	
-		
 	if ( mLimit >= 0 ) {
 		//Well, DCGUI bug!
 		//if (tag->mClientType == eCT_DCGUI) limit *= slot;

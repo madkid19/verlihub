@@ -531,16 +531,16 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	}
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] " << _("Hub Owner") << ": " << mOwner->mC.hub_owner <<endl;
-	os << "[::] " << _("Address") << ": "<< mOwner->mC.hub_host <<endl;
-	os << "[::] " << _("Total users") << ": "<< mServer->mUserCountTot <<endl;
-	os << "[::] " << _("Total bots") << ": "<< mServer->mRobotList.size() <<endl;
-	os << "[::] " << _("Total share") << ": "<< convertByte(mServer->mTotalShare, false) << endl;
-	os << "[::] " << _("Hub health") << ": " << mServer->mStatus <<endl;
-	os << "[::] " << _("Your status") << ": "<< uType <<endl;
-	os << "[::] " << _("Your can search every") << ": "<< autosprintf(_("%d seconds"), sInt) << endl;
-	os << "[::] " << _("Your connection type is") << ": "<< cType <<endl;
-	os << "[::] " << _("You are sharing") << ": " << convertByte(conn->mpUser->mShare, false) << endl;
+	os << "\r\n[::] " << autosprintf(_("Hub Owner: %s"), mOwner->mC.hub_owner.c_str()) <<endl;
+	os << "[::] " << autosprintf(_("Address: %s"), mOwner->mC.hub_host.c_str()) <<endl;
+	os << "[::] " << autosprintf(_("Total users: %d"), mServer->mUserCountTot) <<endl;
+	os << "[::] " << autosprintf(_("Total bots: %d"), mServer->mRobotList.size()) <<endl;
+	os << "[::] " << autosprintf(_("Total share: %s"),convertByte(mServer->mTotalShare, false).c_str()) << endl;
+	os << "[::] " << autosprintf(_("Hub health: %s"), mServer->mStatus.c_str()) <<endl;
+	os << "[::] " << autosprintf(_("Your status: %s"), uType.c_str()) << endl;
+	os << "[::] " << autosprintf(_("Your can search every %d seconds"), sInt) << endl;
+	os << "[::] " << autosprintf(_("Your connection type is: %s"), cType.c_str()) <<endl;
+	os << "[::] " << autosprintf(_("You are sharing: %s"), convertByte(conn->mpUser->mShare, false).c_str()) << endl;
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;
