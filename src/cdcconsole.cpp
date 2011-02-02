@@ -757,7 +757,7 @@ int cDCConsole::CmdHideMe(istringstream & cmd_line, cConnDC * conn)
 	cmd_line >> cls;
 	ostringstream omsg;
 	if(cls < 0) {
-		omsg << _("Please use: !hideme <class>\r\n where <class> is the maximum class of users, that may not see your cmd actions.") << endl;
+		omsg << _("Please use: !hideme <class> where <class> is the maximum class of users that may not see your actions.") << endl;
 		mOwner->DCPublicHS(omsg.str(),conn);
 		return 1;
 	}
@@ -1087,7 +1087,7 @@ bool cDCConsole::cfClean::operator()()
 			(*mOS) << endl << autosprintf(_("All %s have been deleted."), "temporary rights");
 		break;
 		default:
-			(*mOS) << _("This command has not implemented yet.\r\nAvailable command are: ") << endl;
+			(*mOS) << _("This command is not implemented.") << "\r\n" << _("Available command are: ") << endl;
 			return false; 
 		break;
 	}
@@ -1313,7 +1313,7 @@ bool cDCConsole::cfBan::operator()()
 		GetParInt(BAN_WHO,BanCount);
 		mS->mBanList->List(*mOS,BanCount);
 	break;
-	default:(*mOS) << _("This command has not implemented yet.\r\nAvailable command are: ") << endl;
+	default:(*mOS) << _("This command is not implemented.") << "\r\n" << _("Available command are: ") << endl;
 		return false; 
 		break;
 	}
@@ -1339,7 +1339,7 @@ bool cDCConsole::cfInfo::operator()()
 	{
 		case eINFO_SERVER: mInfoServer.SystemInfo(*mOS); break;
 		case eINFO_HUB: mInfoServer.Output(*mOS, MyClass); break;
-		default : (*mOS) << _("This command has not implemented yet.\r\nAvailable command are: ") << "!hubinfo and !serverinfo" << endl;
+		default : (*mOS) << _("This command is not implemented.") << "\r\n" << _("Available command are: ") << "!hubinfo and !serverinfo" << endl;
 			return false;
 	}
 
@@ -1600,7 +1600,7 @@ bool cDCConsole::cfWho::operator()()
 	if(!cnt)
 		(*mOS) << autosprintf(_("No user found with %s %s"), actionName.c_str(), tmp.c_str());
 	else
-		(*mOS) << autosprintf(_("Found %d users with %s %s:\r\n\t"), cnt, actionName.c_str(), tmp.c_str(), userlist.c_str());
+		(*mOS) << autosprintf(_("Found %d users with %s %s:"), cnt, actionName.c_str(), tmp.c_str(), userlist.c_str()) << "\r\n\t";
 	return true;
 }
 
