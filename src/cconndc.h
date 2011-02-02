@@ -154,6 +154,13 @@ class cConnDC : public cAsyncConn
 	unsigned int GetLSFlag(unsigned int st);
 	
 	/**
+	* Return a string describing the timeout.
+	* @param t tTimeOut Timeout type.
+	* @return A translated string describing the timeout.
+	*/
+	const char *GetTimeOutType(tTimeOut t);
+	
+	/**
 	* Try to guess the class of the user. Remember a valid class is returned only when the user is validated
 	* @param ostr The message of the event
 	* @param level The log level of the event.

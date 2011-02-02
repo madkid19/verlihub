@@ -45,6 +45,7 @@ public:
 	virtual void DisplayUser(ostream &);
 	virtual void DisplayComplete(ostream &os);
 	virtual void DisplayKick(ostream &os);
+	const char *GetBanType();
 
 	// banned ip address
 	string mIP;

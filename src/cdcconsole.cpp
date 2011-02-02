@@ -250,9 +250,9 @@ int cDCConsole:: CmdGetip(istringstream &cmd_line, cConnDC *conn)
 			break;
 		user = mOwner->mUserList.GetUserByNick(s);
 		if(user && user-> mxConn )
-			os << mOwner->mL.user << ": " << s << mOwner->mL.ip << ": " << user->mxConn->AddrIP() << endl;
+			os << autosprintf(_("IP of user %s: %s"), s.c_str(), user->mxConn->AddrIP().c_str()) << endl;
 		else
-			os << mOwner->mL.user << ": " << s << mOwner->mL.not_in_userlist << endl;
+		    	os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 	}
 	mOwner->DCPublicHS(os.str().c_str(),conn);
 	return 1;
@@ -282,9 +282,9 @@ int cDCConsole::CmdGethost(istringstream &cmd_line , cConnDC *conn)
 		if(user && user->mxConn) {
 			if(!mOwner->mUseDNS)
 				user->mxConn->DNSLookup();
-			os << mOwner->mL.user << ": " << s << " " << mOwner->mL.host << ": " << user->mxConn->AddrHost() << endl;
+			os << autosprintf(_("Host of user %s: %s"), s.c_str(), user->mxConn->AddrHost().c_str()) << endl;
 		} else {
-		  os << mOwner->mL.user << ": " << s << mOwner->mL.not_in_userlist << endl;
+			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 		}
 	}
 	mOwner->DCPublicHS(os.str().c_str(),conn);
@@ -305,12 +305,9 @@ int cDCConsole::CmdGetinfo(istringstream &cmd_line , cConnDC *conn )
 		if(user && user->mxConn) {
 			if(!mOwner->mUseDNS)
 				user->mxConn->DNSLookup();
-			os << mOwner->mL.user << ": " << s
-				 << " " << mOwner->mL.ip << ": " << user->mxConn->AddrIP()
-				 << " " << mOwner->mL.host << ": " << user->mxConn->AddrHost()
-				 << " " << "CC: " << user->mxConn->mCC << endl;
+			os << autosprintf(_("User: %s IP: %s Host: %s CC:"), s.c_str(), user->mxConn->AddrIP().c_str(), user->mxConn->AddrHost().c_str(), user->mxConn->mCC.c_str()) << endl;
 		} else {
-			os << mOwner->mL.user << ": " << s << mOwner->mL.not_in_userlist << endl;
+			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 		}
 	}
 	mOwner->DCPublicHS(os.str().c_str(),conn);

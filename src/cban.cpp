@@ -23,6 +23,7 @@
 #include "cban.h"
 #include "ctime.h"
 #include "cbanlist.h"
+#include "i18n.h"
 
 using namespace nUtils;
 namespace nDirectConnect {
@@ -69,7 +70,7 @@ ostream & operator << (ostream &os, nDirectConnect::nTables::cBan &ban)
 		case 0: ban.DisplayComplete(os); break;
 		case 1: ban.DisplayUser(os); break;
 		case 2: ban.DisplayKick(os); break;
-		default: os << "Unknown ban display" << "\r\n";
+		default: os << _("Unknown ban display") << "\r\n";
 	}
 	return os;
 }
@@ -79,30 +80,30 @@ ostream & operator << (ostream &os, nDirectConnect::nTables::cBan &ban)
  */
 void nDirectConnect::nTables::cBan::DisplayUser(ostream &os)
 {
-	os << mS->mL.ban_reason << mReason << "\r\n";
-	if(mDateEnd)
-	{
+	os << autosprintf(_("Reason: %s"), mReason.c_str()) << "\r\n";
+	if(mDateEnd) {
 		cTime HowLong(mDateEnd - cTime().Sec());
-		os << mS->mL.ban_remaining << HowLong.AsPeriod() << "\r\n";
+		os << autosprintf(_("Remaining: %f"), (float) HowLong.AsPeriod()) << "\r\n";
+	} else
+		os << _("Permanently.") << "\r\n";
+	if(mIP.size() && mIP[0] != '_')
+		os << autosprintf(_("IP: %s"), mIP.c_str()) << "\r\n";
+	if(mNick.size())
+		os << autosprintf(_("Nick: %s"), mNick.c_str()) << "\r\n";
+	string initialRange, endRange;
+	if(mRangeMin) {
+		cBanList::Num2Ip(mRangeMin, initialRange);
+		cBanList::Num2Ip(mRangeMax, endRange);
+		os <<  autosprintf(_("IP range: %s-%s"), initialRange.c_str(), endRange.c_str()) << "\r\n";
 	}
-	else os << mS->mL.ban_permanently << "\r\n";
-	if(mIP.size() && mIP[0] != '_') os << mS->mL.ip << ": " << mIP << "\r\n" ;
-	if(mNick.size()) os << mS->mL.nick << ": " << mNick << "\r\n";
-	string tmp;
-	if(mRangeMin)
-	{
-		cBanList::Num2Ip(mRangeMin, tmp);
-		os << mS->mL.ip_range << tmp << "-";
-		cBanList::Num2Ip(mRangeMax, tmp);
-		os << tmp << "\r\n";
-	}
-	if(mShare) os << "Share: " << mShare << "\r\n";
+	if(mShare)
+		os << autosprintf(_("Share: %lld"), mShare) << "\r\n";
 }
 
 void nDirectConnect::nTables::cUnBan::DisplayUser(ostream &os)
 {
 	this->cBan::DisplayUser(os);
-	os << mS->mL.ban_removed << cTime(mDateUnban,0).AsDate() << mS->mL.ban_by << mUnNickOp << mS->mL.because << mUnReason << "\r\n";
+	os << autosprintf(_("Removed: %f by %s because %s"), (float) cTime(mDateUnban,0).AsDate(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
 }
 
 /*!
@@ -111,14 +112,20 @@ void nDirectConnect::nTables::cUnBan::DisplayUser(ostream &os)
 void nDirectConnect::nTables::cBan::DisplayComplete(ostream &os)
 {
 	DisplayUser(os);
-	os << mS->mL.op << ": " << mNickOp << "\r\n";
-	os << mS->mL.ban_type << ": " << mS->mL.ban_types[mType];
+	os << autosprintf(_("OP: %s"), mNickOp.c_str()) << "\r\n";
+	os << autosprintf(_("Ban type: %s"), this->GetBanType());
+}
+
+const char *nDirectConnect::nTables::cBan::GetBanType()
+{
+	static const char *banTypes[] = {_("Nick+IP"), _("IP"), _("Nick"),_("IP Range"), _("Host Level 1"),_("Host Level 2"), _("Host Level 3"), _("Share Size"), _("E-mail"), _("Nick Prefix"), _("Reverse-Host 1")};
+	return banTypes[mType];
 }
 
 void nDirectConnect::nTables::cUnBan::DisplayComplete(ostream &os)
 {
 	this->cBan::DisplayComplete(os);
-	os << mS->mL.ban_removed << cTime(mDateUnban,0).AsDate() <<  mS->mL.ban_by << mUnNickOp << mS->mL.because  << mUnReason << "\r\n";
+	os << autosprintf(_("Removed: %f by %s because %s"), (float) cTime(mDateUnban,0).AsDate(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
 }
 
 /*!
@@ -127,21 +134,15 @@ void nDirectConnect::nTables::cUnBan::DisplayComplete(ostream &os)
  */
 void nDirectConnect::nTables::cBan::DisplayKick(ostream &os)
 {
-	if (mDateEnd)
-	{
+	if(mDateEnd) {
 		cTime HowLong(mDateEnd-cTime().Sec(),0);
-		if (HowLong.Sec() < 0)
-		{
-			os << mS->mL.ban_expired << HowLong.AsPeriod();
+		if(HowLong.Sec() < 0) {
+			os << autosprintf(_("Ended on: %f"), (float) HowLong.AsPeriod());
+		} else {
+			os << autosprintf(_("For: %f"), (float) HowLong.AsPeriod());
 		}
-		else
-		{
-			os << mS->mL.ban_for << HowLong.AsPeriod();
-		}
-	}
-	else
-	{
-		os << mS->mL.ban_permanently;
+	} else {
+		os << _("Permanently.");
 	}
 }
 

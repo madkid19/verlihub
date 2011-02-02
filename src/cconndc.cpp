@@ -28,6 +28,7 @@
 #include "cbanlist.h"
 #include "cserverdc.h"
 #include "ccustomredirects.h"
+#include "i18n.h"
 
 using namespace ::nDirectConnect::nTables;
 namespace nDirectConnect
@@ -156,25 +157,31 @@ unsigned int cConnDC::GetLSFlag(unsigned int st)
 	return mLogStatus & st;
 }
 
+const char *cConnDC::GetTimeOutType(tTimeOut t)
+{
+	static const char *timeoutType [] = { _("Key"), _("ValidateNick"), _("Login"), _("MyINFO"), _("Flush"), _("Set Password")};
+	return timeoutType[t];
+}
+
 int cConnDC::OnTimer(cTime &now)
 {
 	ostringstream os;
 	string omsg;
 	// check the timeouts
 	int i;
-	for(i=0; i < eTO_MAXTO; i++)
-	{
-		if(!CheckTimeOut(tTimeOut(i), now))
-		{
-			os << Server()->mL.operation_timeout << " (" << Server()->mL.timeout_text[tTimeOut(i)] << ")";
-			if(Log(2)) LogStream() << "Operation timeout (" << tTimeOut(i) << ")" << endl;
+	for(i=0; i < eTO_MAXTO; i++) {
+		if(!CheckTimeOut(tTimeOut(i), now)) {
+			os << _("Operation timeout") << " (" << this->GetTimeOutType(tTimeOut(i)) << ")";
+			if(Log(2))
+				LogStream() << "Operation timeout (" << tTimeOut(i) << ")" << endl;
 			Server()->ConnCloseMsg(this,os.str(),6000, eCR_TIMEOUT);
 			break;
 		}
 	}
 	if (mTimeLastIOAction.Sec() < (mTimeLastAttempt.Sec() - 270)) {
-		os << Server()->mL.timeout_any;
-		if(Log(2)) LogStream() << "Any action timeout.." << endl;
+		os << _("General timeout");
+		if(Log(2))
+			LogStream() << "Any action timeout.." << endl;
 		Server()->ConnCloseMsg(this,os.str(),6000, eCR_TO_ANYACTION);
 	}
 
