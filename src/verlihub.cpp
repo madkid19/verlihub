@@ -94,7 +94,6 @@ int main(int argc, char *argv[])
 	setlocale(LC_ALL, "");
 	bindtextdomain("verlihub", LOCALEDIR);
 	textdomain("verlihub");
-	cout << gettext("Your IP: %s") << std::endl;
 	
 	#ifdef _WIN32
 	TCHAR Buffer[BUFSIZE];
