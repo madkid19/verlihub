@@ -1600,7 +1600,7 @@ bool cDCConsole::cfWho::operator()()
 	if(!cnt)
 		(*mOS) << autosprintf(_("No user found with %s %s"), actionName.c_str(), tmp.c_str());
 	else
-		(*mOS) << autosprintf(_("Found %d users with %s %s:"), cnt, actionName.c_str(), tmp.c_str(), userlist.c_str()) << "\r\n\t";
+		(*mOS) << autosprintf(_("Found %d users with %s %s: %s"), cnt, actionName.c_str(), tmp.c_str(), userlist.c_str()) << "\r\n\t";
 	return true;
 }
 
