@@ -45,6 +45,10 @@ Find_Package(GeoIP REQUIRED)
 Find_Package(DL REQUIRED)
 Find_Package(Pcre REQUIRED)
 Find_Package(Threads REQUIRED)
+Find_Package(Gettext REQUIRED)
+IF(NOT GETTEXT_FOUND)
+	MESSAGE(FATAL_ERROR "Gettext not found. Please install Gettext devel package.")
+ENDIF(NOT GETTEXT_FOUND)
 # ----------------------------------------------------------------------------------------------------
 
 
@@ -86,6 +90,7 @@ ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(plugins)
 ADD_SUBDIRECTORY(share)
 ADD_SUBDIRECTORY(scripts)
+ADD_SUBDIRECTORY(po)
 
 # ----------------------------------------------------------------------------------------------------
 # Build a CPack driven installer package

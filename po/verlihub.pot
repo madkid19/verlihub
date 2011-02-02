@@ -1,0 +1,236 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: VerliHub\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-02-02 11:58+0100\n"
+"PO-Revision-Date: 2011-02-02 11:59+0100\n"
+"Last-Translator: NetCelli <netcelli.tux@gmail.com>\n"
+"Language-Team: VerliHub team\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-Country: UNITED KINGDOM\n"
+"X-Poedit-SearchPath-0: /home/netcelli/Verliproject/git_repos/verlihub/src\n"
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:209
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:444
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:480
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:508
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:562
+msgid "This functionality is currently disabled."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:271
+msgid "Full list of commands:"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:330
+msgid "Stopping Hub..."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:345
+msgid "No rights"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:398
+msgid "Usage example: !ccbc :US:GB: <message>."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:398
+msgid "Please type !help for more info"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:410
+#, c-format
+msgid "Message delivered to %d users in zone %s in : %f"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:419
+msgid "Your info"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:430
+#, c-format
+msgid "Your IP: %s"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:515
+msgid "Unregistered"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:518
+msgid "Registered"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:521
+msgid "VIP"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:524
+msgid "Operator"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:527
+msgid "Super OP"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:530
+msgid "Admin"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:533
+msgid "God"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:536
+msgid "Active"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:538
+msgid "Passive"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:542
+msgid "Hub Owner"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:543
+msgid "Address"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:544
+msgid "Total users"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:545
+msgid "Total bots"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:546
+msgid "Total share"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:547
+msgid "Hub health"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:548
+msgid "Your status"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:549
+msgid "Your can search every"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:549
+#, c-format
+msgid "%d seconds"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:550
+msgid "Your connection type is"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:551
+msgid "You are sharing"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:566
+msgid "Registration failed; please contact an operator for more help."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:624
+#, c-format
+msgid "A new user has been registered with class %d"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:657
+msgid "Thank you, your request has been sent to operators."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:672
+msgid "You do not have permissions to change the topic."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:679
+#, c-format
+msgid "Topic must be max 255 characters long. Your topic was %d characters long."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:716
+msgid "You cannot kick anyone!!"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:768
+msgid ""
+"Please use: !hideme <class>\r\n"
+" where <class> is the maximum class of users, that may not see your cmd actions."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:774
+#, c-format
+msgid "Your command actions are now hidden from users with class below %d."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:788
+msgid "Type !help for more information: (usage !userlimit <max_users> [<minutes>=60])"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:819
+msgid "Use !class <nick> [<class>=3]."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:819
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:930
+msgid "Please type !help for more info."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:820
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:931
+#, c-format
+msgid "Max class is %d"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:833
+#, c-format
+msgid "Temporarily changing class to %d for user %s"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:853
+#, c-format
+msgid "You haven't rights to change class of %s."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:877
+#, c-format
+msgid "Kicks of user %s are now hidden."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:880
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:906
+msgid "You have no rights to do this."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:883
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:909
+#, c-format
+msgid "User %s not found."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:903
+#, c-format
+msgid "Kicks of user %s are now visible."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:930
+msgid "Use !protect <nick> [<againstclass>=your_class-1]."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdctag.cpp:87
+msgid "Unknown clients are not allowed in this hub"
+msgstr ""
+
