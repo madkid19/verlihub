@@ -185,7 +185,6 @@ void cUserCollection::SendToAllWithClass(string &Data, int min_class, int max_cl
 
 void cUserCollection::SendToAllWithNick(string &Start, string &End)
 {
-  cout << "cUserCollection::SendToAllWithNick(" << Start << ", "<< End <<")" << endl;
 	for_each(this->begin(),this->end(),ufSendWithNick(Start,End));
 }
 
