@@ -65,12 +65,11 @@ cUnBan::~cUnBan(){}
 
 ostream & operator << (ostream &os, nDirectConnect::nTables::cBan &ban)
 {
-	switch(ban.mDisplayType)
-	{
+	switch(ban.mDisplayType) {
 		case 0: ban.DisplayComplete(os); break;
 		case 1: ban.DisplayUser(os); break;
 		case 2: ban.DisplayKick(os); break;
-		default: os << _("Unknown ban display") << "\r\n";
+		default: os << _("Unknown ban") << "\r\n";
 	}
 	return os;
 }
@@ -118,7 +117,7 @@ void nDirectConnect::nTables::cBan::DisplayComplete(ostream &os)
 
 const char *nDirectConnect::nTables::cBan::GetBanType()
 {
-	static const char *banTypes[] = {_("Nick+IP"), _("IP"), _("Nick"),_("IP Range"), _("Host Level 1"),_("Host Level 2"), _("Host Level 3"), _("Share Size"), _("E-mail"), _("Nick Prefix"), _("Reverse-Host 1")};
+	static const char *banTypes[] = {_("Nick+IP"), _("IP"), _("Nick"),_("IP Range"), _("Host Level 1"),_("Host Level 2"), _("Host Level 3"), _("Share Size"), _("E-mail"), _("Nick Prefix"), _("Reverse Host")};
 	return banTypes[mType];
 }
 

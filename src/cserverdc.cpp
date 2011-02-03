@@ -582,11 +582,12 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	if (mC.host_header == 1) {
 		if(mC.extended_welcome_message) {
 			os << HUB_VERSION_NAME "-"<< HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << "|";
-			os << "<" << mC.hub_security << ">" << " RunTime: " << runtime.AsPeriod()<<"|";
-			os << "<" << mC.hub_security << ">" << " User Count: " << mUserCountTot <<"|";
-			os << "<" << mC.hub_security << ">" << " System Status: " << mStatus << "|";    
+			os << "<" << mC.hub_security << ">" << " " << _("RunTime") << ": " << runtime.AsPeriod()<<"|";
+			os << "<" << mC.hub_security << ">" << " " << _("User Count") << ": " << mUserCountTot <<"|";
+			os << "<" << mC.hub_security << ">" << " " << _("System Status") << ": " << mStatus << "|";    
 		} else {
-			os << "This hub is running version " << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << " of " HUB_VERSION_NAME <<  " (RunTime: "<< runtime.AsPeriod()<<" / User count: "<< mUserCountTot <<")|";
+			os << autosprintf(_("This hub is running version %s%s %s of %s (RunTime: %s / User count: %d)"),
+			HUB_VERSION_STRING, mC.hub_version_special.c_str(), HUB_VERSION_CLASS, HUB_VERSION_NAME, runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
 		}
 		cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
 	}
@@ -594,7 +595,7 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	os.str(mEmpty);
 
 	if (mSysLoad >= eSL_RECOVERY) {
-		os << "The hub is currently unable to service your request. Please try again in a few minutes.";
+		os << _("The hub is currently unable to service your request. Please try again in a few minutes.");
 		DCPublicHS(os.str(), conn);
 		conn->CloseNice(500, eCR_HUB_LOAD);
 		return -1;
@@ -619,7 +620,8 @@ string * cServerDC::FactoryString(cAsyncConn *conn)
 /** treat message for given connection */
 void cServerDC::OnNewMessage(cAsyncConn *conn, string *str)
 {
-	if(conn->Log(4)) conn->LogStream() << "IN: " << (*str) << "|" << endl;
+	if(conn->Log(4))
+		conn->LogStream() << "IN: " << (*str) << "|" << endl;
 	conn->mpMsgParser->Parse();
 	conn->mxProtocol->TreatMsg(conn->mpMsgParser, conn);
 }
@@ -630,8 +632,7 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 	string UsrKey, omsg;
 	mUserList.Nick2Key(conn->mpUser->mNick,UsrKey);
 	/// add user to the list or fail
-	if( mUserList.ContainsKey(UsrKey) )
-	{
+	if(mUserList.ContainsKey(UsrKey)) {
 		bool CloseOld = false;
 		cUser *old_usr = mUserList.GetUserByKey(UsrKey);
 
@@ -643,14 +644,12 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 			(conn->mpUser->mMyINFO_basic == old_usr->mMyINFO_basic)
 		) CloseOld = true;
 
-		if (CloseOld)
-		{
-			if(old_usr)
-			{
-				if(old_usr->mxConn)
-				{
-					if(old_usr->mxConn->Log(2)) old_usr->mxConn->LogStream() << "Closing because of a new connection" << endl;
-					omsg = "Another instance of yourself is connecting. Bye and Hi.";
+		if (CloseOld) {
+			if(old_usr) {
+				if(old_usr->mxConn) {
+					if(old_usr->mxConn->Log(2))
+						old_usr->mxConn->LogStream() << "Closing because of a new connection" << endl;
+					omsg = _("Another instance of yourself is connecting. Bye and Hi.");
 					old_usr->mxConn->Send(omsg,true);
 					old_usr->mxConn->CloseNow();
 				} else {
@@ -668,7 +667,7 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 		}
 		else
 		{
-			omsg = "You are already in the hub.";
+			omsg = _("You are already in the hub.");
 			DCPublicHS(omsg, conn);
 			conn->CloseNow();
 			return false;
@@ -687,7 +686,7 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	// The user has to change password
 	if(conn->mRegInfo && conn->mRegInfo->mPwdChange) {
 		
-		os << ("<< Please change your password NOW using command +passwd <new_passwd>! See +help >>");
+		os << _("<< Please change your password NOW using command +passwd <new_passwd>! See +help >>");
 		DCPrivateHS(os.str(), conn);
 		DCPublicHS(os.str(), conn);
 		conn->SetTimeOut(eTO_SETPASS, mC.timeout_length[eTO_SETPASS], this->mTime);
@@ -1163,7 +1162,7 @@ unsigned cServerDC::Str2Period(const string &s, ostream &err)
 			case 's':
 			case 'S': break;
 			default:
-				err << _("Error: available units are: "
+				err << _("Error. Available units are: "
 					 "s(econd), m(inute), h(our), d(ay), w(eek), M(onth), Y(ear).\n"
 					 "Default is 'd'.") << endl;
 				return 0;
@@ -1194,13 +1193,13 @@ int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 	size_t pos_space;
 	cAsyncConn *pHubList;
 
-	os2 << _("Hublist Register results: \n");
+	os2 << _("Hublist registration results:") << "\n";
 	while (CurHost = "", is >> CurHost, CurHost.size() > 0) {
-		os2 << autosprintf(_("Sending to %s:%d"), CurHost.c_str(), port);
+		os2 << autosprintf(_("Sending to %s:%d..."), CurHost.c_str(), port);
 		pHubList = new cAsyncConn(CurHost,port);
 
 		if(!pHubList->ok) {
-			os2 << " " << _("...connection failed\n");
+			os2 << " " << _("connection failed") << "\n";
 			pHubList->Close();
 			delete pHubList;
 			pHubList = 0;
@@ -1239,11 +1238,11 @@ int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 			LogStream() << os.str() << endl;
 		pHubList->Write(os.str(), true);
 		if(!pHubList->ok)
-			os2 << " " << _("..Error sending info\n") << endl;
+			os2 << " " << _("error sending info") << endl;
 		pHubList->Close();
 		delete pHubList;
 		pHubList = NULL;
-		os2 << " " << _(".. OK\n");
+		os2 << " " << _(".. OK") << "\n";
 	}
 
 	os2 << _("Done");
@@ -1331,7 +1330,7 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 		if(!mUseDNS && mC.report_dns_lookup) conn->DNSLookup();
 		os << "IP=' " << conn->AddrIP() <<" ' Host=' " << conn->AddrHost() <<" ' ";
 		if (conn->mpUser)
-			os << _("User") << "=' " << conn->mpUser->mNick << " ' ";
+			os << _("User") << "='" << conn->mpUser->mNick << "' ";
 		if (!ToMain && this->mOpChat) {
 			this->mOpChat->SendPMToAll(os.str(), NULL);
 		} else {
@@ -1406,7 +1405,7 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 
 				if(Reason.size()) {
 					string omsg;
-					ostr << autosprintf(_("<%s> is kicking %s because: %s"), OP->mNick.c_str(), Nick.c_str(), NewReason.c_str());
+					ostr << OP->mNick << " is kicking " << Nick << " because: " << NewReason;
 					omsg = ostr.str();
 					if(!mC.hide_all_kicks && !OP->mHideKick )
 						SendToAll(omsg, OP->mHideKicksForClass ,int(eUC_MASTER));
@@ -1456,7 +1455,7 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 						ReportUserToOpchat(user->mxConn,msg, mC.dest_drop_chat);
 					}
 				} else
-					ostr << _("\nSorry, user cannot be kicked");
+					ostr << "\n" << _("Sorry, user cannot be kicked");
 
 				// temp ban kicked user
 				if (flags & eKCK_TBAN) {
@@ -1467,11 +1466,11 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 
 					if(user->mToBan) {
 						mBanList->NewBan(Ban, Kick, user->mBanTime, cBan::eBF_NICKIP);
-						ostr << _("\nand he is being banned") << " ";
+						ostr << "\n" << _("and he is being banned") << " ";
 						Ban.DisplayKick(ostr);
 					} else {
 						mBanList->NewBan(Ban, Kick, mC.tban_kick, cBan::eBF_NICKIP);
-						ostr << _("\nand he is being banned") << " ";
+						ostr << "\n" << _("and he is being banned") << " ";
 						Ban.DisplayKick(ostr);
 					}
 					mBanList->AddBan(Ban);

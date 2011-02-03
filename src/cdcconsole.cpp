@@ -305,7 +305,7 @@ int cDCConsole::CmdGetinfo(istringstream &cmd_line , cConnDC *conn )
 		if(user && user->mxConn) {
 			if(!mOwner->mUseDNS)
 				user->mxConn->DNSLookup();
-			os << autosprintf(_("User: %s IP: %s Host: %s CC:"), s.c_str(), user->mxConn->AddrIP().c_str(), user->mxConn->AddrHost().c_str(), user->mxConn->mCC.c_str()) << endl;
+			os << autosprintf(_("User: %s IP: %s Host: %s CC: %s"), s.c_str(), user->mxConn->AddrIP().c_str(), user->mxConn->AddrHost().c_str(), user->mxConn->mCC.c_str()) << endl;
 		} else {
 			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 		}
@@ -399,7 +399,7 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 		mOwner->LastBCNick = conn->mpUser->mNick;
 	int count = mOwner->SendToAllWithNickCC(start,end, cl_min, cl_max, cc_zone);
 	TimeAfter.Get();
-	ostr << autosprintf(_("Message delivered to %d users in zone %s in : %s"), count,  cc_zone.c_str(), (TimeAfter-TimeBefore).AsPeriod().AsString().c_str());
+	ostr << autosprintf(_("Message delivered to %d users in zone %s in %s"), count,  cc_zone.c_str(), (TimeAfter-TimeBefore).AsPeriod().AsString().c_str());
 	mOwner->DCPublicHS(ostr.str(), conn);
 	return 1;
 }
@@ -419,7 +419,7 @@ int cDCConsole::CmdMyIp(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] " << autosprintf(_("Your IP: %s"), conn->AddrIP().c_str());
+	os << autosprintf(_("Your IP is %s"), conn->AddrIP().c_str());
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;
@@ -479,13 +479,13 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	string omsg;
 	//This is here as manual values for true release info available to all
 	os << "\r\n[::] Release: Verlihub-0.9.9a (Monday April 26 2010)" << endl;
-	os << "[::] Authors: Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
-	os << "[::] Authors: chaosuk (chaos@dchublist.com)" << endl;
-	os << "[::] Contributors: Stefano, Intruder, Rolex, Frog" << endl;
-	os << "[::] Credits: We would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << endl;
-	os << "[::] Website: http://www.verlihub-project.org" << endl;
-	os << "[::] Forums: http://forums.verlihub-project.org" << endl;
-	os << "[::] Website/Forums design: Stefano Simoncelli (netcelli@verlihub-project.org)" << endl;
+	os << "[::] " << _("Authors") << ": Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
+	os << "[::] " << _("Authors") << ": chaosuk (chaos@dchublist.com)" << endl;
+	os << "[::] " << _("Contributors") << ": Stefano, Intruder, Rolex, Frog" << endl;
+	os << "[::] " << _("Credits") << ": We would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << endl;
+	os << "[::] " << _("Website") << ": http://www.verlihub-project.org" << endl;
+	os << "[::] " << _("Forums") << ": http://forums.verlihub-project.org" << endl;
+	os << "[::] " << _("Website/Forums design") << ": Stefano Simoncelli (netcelli@verlihub-project.org)" << endl;
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;
@@ -912,7 +912,7 @@ int cDCConsole::CmdProtect(istringstream &cmd_line, cConnDC *conn)
 	if(user && user->mxConn) {
 		oclass = user->mClass;
 		if(oclass < mclass) {
-			os << autosprintf(_("Temporarily protecting user %s from class %d"), s.c_str(), nclass) << endl;
+			os << autosprintf(_("User %s is temporarily protected from class %d"), s.c_str(), nclass) << endl;
 			user->mProtectFrom = nclass;
 		} else
 			os << _("You have no rights to do this.") << endl;
@@ -1244,7 +1244,7 @@ bool cDCConsole::cfBan::operator()()
 			}
 			if ( MyClass < (eUC_ADMIN - (BanType - cBan::eBF_HOST1) ) ) //@todo rights
 			{
-				(*mOS) << _("You have no rights to do this");
+				(*mOS) << _("You have no rights to do this.");
 				return false;
 			}
 			Ban.mHost = Who;
@@ -1393,7 +1393,7 @@ bool cDCConsole::cfTrigger::operator()()
 		}
 
 		break;
-	default: (*mOS) << _("This command is not implemented") << endl;
+	default: (*mOS) << _("This command is not implemented.") << endl;
 		break;
 	};
 		return result;
@@ -1420,7 +1420,7 @@ bool cDCConsole::cfSetVar::operator()()
 
 		if(!ci)
 		{
-			(*mOS) << autosprintf(_("Undefined variable: %s"), var.c_str());
+			(*mOS) << autosprintf(_("Undefined variable %s"), var.c_str());
 			return false;
 		}
 	} else {
@@ -1627,7 +1627,7 @@ bool cDCConsole::cfKick::operator()()
 				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN) :
 				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason));
 		break;
-		default: (*mOS) << _("This command is not implemented") << endl;
+		default: (*mOS) << _("This command is not implemented.") << endl;
 		return false;
 	};
 	return true;
@@ -1641,7 +1641,7 @@ bool cDCConsole::cfPlug::operator()()
 
 	if (this->mConn->mpUser->mClass < mS->mC.plugin_mod_class)
 	{
-		(*mOS) << _("You have no rights to do this");
+		(*mOS) << _("You have no rights to do this.");
 		return false;
 	}
 
@@ -1737,7 +1737,7 @@ bool cDCConsole::cfRegUsr::operator()()
 	if(Action == eAC_SET) {
 		WithPar = WithPar && mParRex->PartFound(5);
 		if(!WithPar) {
-			(*mOS) << _("Missing parameter(s)");
+			(*mOS) << _("Missing parameters.");
 			return false;
 		}
 		mParRex->Extract(5,mParStr,field);
@@ -1764,7 +1764,7 @@ bool cDCConsole::cfRegUsr::operator()()
 			((Action == eAC_INFO) &&(MyClass >= (ui.mClass - 1)))
 		 ))
 		{
-			(*mOS) << _("You have no rights to do this");
+			(*mOS) << _("You have no rights to do this.");
 			return false;
 		}
 	}
@@ -1802,12 +1802,12 @@ bool cDCConsole::cfRegUsr::operator()()
 		else if(Action == eAC_NEW)
 			*mOS << autosprintf(_("User '%s' already exists"), nick.c_str());
 		else
-			*mOS << _("You have no rights to do this");
+			*mOS << _("You have no rights to do this.");
 		return false;
 	}
 
  	if(Action >= eAC_CLASS && Action <= eAC_SET && !WithPar) {
- 		(*mOS) << _("Missing Parameter");
+ 		(*mOS) << _("Missing parameters.");
  		return false;
 	}
 
@@ -1836,7 +1836,7 @@ bool cDCConsole::cfRegUsr::operator()()
 			}
 			else
 			{
-				(*mOS) << _("Error adding a new user");
+				(*mOS) << _("Error adding the new user");
 				return false;
 			}
 		break;
@@ -1918,7 +1918,7 @@ bool cDCConsole::cfRegUsr::operator()()
 		break;
 		default:
 			mIdRex->Extract(1,mIdStr,par);
-			(*mOS) << _("This command is not implemented");
+			(*mOS) << _("This command is not implemented.");
 			return false;
 			break;
 	}

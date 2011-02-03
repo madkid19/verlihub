@@ -470,9 +470,9 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		if((share < min_share) || (max_share && (share > max_share))) {
 			ostringstream message;
 			if(share < min_share)
-				message << autosprintf(_("You share %lld MB, but the min share is %lld MB. (active:%lld MB / passive:%lld MB)"), share, min_share, min_share_a, min_share_p);
+				message << autosprintf(_("You share %s, but the min share is %s. (active:%s / passive:%s)"), convertByte(share,false).c_str(), convertByte(min_share,false).c_str(), convertByte(min_share_a,false).c_str(), convertByte(min_share_p,false).c_str());
 			else
-				message << autosprintf(_("You share %lld MB, but the max share is %lld MB."), share, max_share);
+				message << autosprintf(_("You share %s, but the max share is %s."), convertByte(share,false).c_str(), convertByte(max_share,false).c_str());
 			if(conn->Log(2))
 				conn->LogStream() << "Share limit."<< endl;
 			mS->ConnCloseMsg(conn, message.str(), 4000, eCR_SHARE_LIMIT);
@@ -920,7 +920,7 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 		}
 		use_hub_share = use_hub_share*1024*1024;
 		if(conn->mpUser->mShare < use_hub_share) {
-			os << autosprintf(_("You can't download on this hub unless you share %s."), convertByte(use_hub_share, false).c_str());
+			os << autosprintf(_("You cannot download on this hub unless you share %s."), convertByte(use_hub_share, false).c_str());
 			ostr = os.str();
 		} else {
 			ostr = _("You are not allowed to download filelists");
@@ -992,7 +992,7 @@ int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn )
 
 	// check nick
 	if(msg->ChunkString(eCH_RC_NICK) != conn->mpUser->mNick) {
-		ostr << autosprintf(_("Your nick isn't %s but %s"), msg->ChunkString(eCH_RC_NICK).c_str(), conn->mpUser->mNick.c_str());
+		ostr << autosprintf(_("Your nick is not %s but %s."), msg->ChunkString(eCH_RC_NICK).c_str(), conn->mpUser->mNick.c_str());
 		mS->ConnCloseMsg(conn, ostr.str(), 1500, eCR_SYNTAX);
 		return -1;
 	}
@@ -1224,7 +1224,7 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 
 	// Check other nick
 	if(!other) {
-		ostr << autosprintf(_("User %s not found"), str.c_str());
+		ostr << autosprintf(_("User %s not found."), str.c_str());
 		mS->DCPublicHS(ostr.str(),conn);
 		return -2;
 	}
@@ -1319,25 +1319,25 @@ int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 
 	cUser *other = mS->mUserList.GetUserByNick(msg->ChunkString(eCH_NB_NICK));
 	if(!other) {
-		os << autosprintf(_("User %s not found"), msg->ChunkString(eCH_NB_NICK).c_str());
+		os << autosprintf(_("User %s not found."), msg->ChunkString(eCH_NB_NICK).c_str());
 		mS->DCPublicHS(os.str(),conn);
 		return -1;
 	}
 
 	if(msg->mType == eDCO_TBAN  && !msg->ChunkString(eCH_NB_REASON).size()) {
-		os << _("Please provide a valid reason");
+		os << _("Please provide a valid reason.");
 		mS->DCPublicHS(os.str(),conn);
 		return -1;
 	}
 
 	if(other->mClass >= conn->mpUser->mClass || other->mProtectFrom >= conn->mpUser->mClass) {
-		os << _("You cannot ban a protected user or with higher privilegies");
+		os << _("You cannot ban a protected user or with higher privilegies.");
 		mS->DCPublicHS(os.str(),conn);
 		return -1;
 	}
 
 	if(!other->mxConn) {
-		os << _("You cannot ban a robot");
+		os << _("You cannot ban a robot.");
 		mS->DCPublicHS(os.str(),conn);
 		return -1;
 	}
@@ -1491,7 +1491,7 @@ int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 		conn->LogStream() << "Bot visit: " << msg->ChunkString(eCH_1_PARAM) << endl;
 
 	if(mS->mC.botinfo_report) {
-		os << autosprintf(_("Bot %s BOT has just entered the hub."), msg->ChunkString(eCH_1_PARAM).c_str());
+		os << autosprintf(_("Bot %s has just entered the hub."), msg->ChunkString(eCH_1_PARAM).c_str());
 		mS->ReportUserToOpchat(conn, os.str());
 		os.str("");
 	}
