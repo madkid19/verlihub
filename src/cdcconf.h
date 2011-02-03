@@ -205,16 +205,8 @@ public:
 	int wrongpassword_report;
 	int botinfo_report;
 	double timeout_length[6];
-
-	string msg_banned;
-	string msg_banned_client;
-	//string msg_hub_full;
-	string msg_nick_prefix;
-	string msg_chat_onoff;
-	string msg_change_pwd;
 	string msg_replace_ban;
 	string msg_welcome[11];
-
 	bool desc_insert_mode;
 public: // Public attributes
 	cServerDC & mS;

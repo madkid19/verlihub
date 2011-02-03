@@ -59,7 +59,7 @@ cDCConf::~cDCConf()
 
 void cDCConf::AddVars()
 {
-// 	hub info and basic settings
+	// Hub info and basic settings
 	Add("hub_name",hub_name,string("VerliHub"));
 	Add("hub_desc",hub_desc,string("No Description"));
 	Add("hub_category",hub_category,string(""));
@@ -78,19 +78,22 @@ void cDCConf::AddVars()
 	Add("listen_port",mS.mPort,411);
 	#endif
 	Add("extra_listen_ports", extra_listen_ports,string(""));
-// 	hublist configuration
+	// End hub info and basic settings
+	
+	// Hublist configuration
 	Add("hublist_host",hublist_host,string(""));
 	Add("hublist_port",hublist_port,2501);
 	Add("hublist_send_minshare",hublist_send_minshare,true);
 	Add("timer_hublist_period", mS.mHublistTimer.mMinDelay.tv_sec,(__typeof__( mS.mHublistTimer.mMinDelay.tv_sec)) 0); //@todo 3*3600
-// 	//user counts
+	// End hublist configuration
+
+	// Max users configuration
 	Add("max_users",max_users_total,6000);
 	Add("max_extra_regs",max_extra_regs,25);
 	Add("max_extra_vips",max_extra_vips,50);
 	Add("max_extra_ops",max_extra_ops,100);
 	Add("max_extra_cheefs",max_extra_cheefs,100);
 	Add("max_extra_admins",max_extra_admins,200);
-// 	cc & ip zone user counts
 	Add("max_users0",max_users[0],600);
 	Add("max_users1",max_users[1],5400);
 	Add("max_users2",max_users[2],1000);
@@ -98,7 +101,9 @@ void cDCConf::AddVars()
 	Add("max_users4",max_users[4],1000);
 	Add("max_users5",max_users[5],1000);
 	Add("max_users6",max_users[6],1000);
-// 	share configuration
+	// End max users configuration
+	
+	// Share configuration
 	Add("min_share",min_share,(unsigned long)1*1024);
 	Add("min_share_reg",min_share_reg,(unsigned long)1*1024);
 	Add("min_share_vip",min_share_vip,(unsigned long)1*1024);
@@ -111,7 +116,9 @@ void cDCConf::AddVars()
 	Add("max_share_reg",max_share_reg,(unsigned long)10*1024*1024);
 	Add("max_share_vip",max_share_vip,(unsigned long)10*1024*1024);
 	Add("max_share_ops",max_share_ops,(unsigned long)10*1024*1024);
-// 	search configurations
+	// End share configuration
+	
+	// Search configuration
 	Add("search_number", search_number, 1);
 	Add("int_search",int_search,32);
 	Add("int_search_pas",int_search_pas,48);
@@ -122,7 +129,9 @@ void cDCConf::AddVars()
 	Add("min_search_chars", min_search_chars, 5);
 	Add("max_passive_sr",max_passive_sr,25);
 	Add("delayed_search",delayed_search, 1);
-// 	nicklist configurations
+	// End search configuration
+	
+	// Nicklist configuration
 	Add("max_nick",max_nick,64u);
 	Add("min_nick",min_nick,3u);
 	Add("nick_chars",nick_chars, string(""));
@@ -133,7 +142,9 @@ void cDCConf::AddVars()
 	Add("nicklist_on_login",nicklist_on_login, 1);
 	Add("optimize_userlist",optimize_userlist,0);
 	Add("ul_portion",ul_portion,50);
-// 	mainchat a global message configurations
+	// End nicklist configuration
+	
+	// Mainchat messages configuration
 	Add("max_message_size",mS.mMaxLineLength, (unsigned long)10240);
 	Add("max_chat_msg",max_chat_msg,256u);
 	Add("max_chat_lines",max_chat_lines,5);
@@ -141,16 +152,20 @@ void cDCConf::AddVars()
 	Add("int_chat_ms",int_chat_ms,1000);
 	Add("chat_default_on",chat_default_on, true);
 	Add("mainchat_class",mainchat_class,0);
-// 	private message configurations
+	// End mainchat messages configuration
+	
+	// Private message configuration
 	Add("max_flood_counter_pm",max_flood_counter_pm,5);
 	Add("int_flood_pm_period", int_flood_pm_period, 5);
 	Add("int_flood_pm_limit", int_flood_pm_limit, 5);
-// 	classdif & min class settings and user control
+	// End private message configuration
+	
+	// User control configuration
 	Add("classdif_reg", classdif_reg, 2);
 	Add("classdif_kick", classdif_kick, 0);
 	Add("classdif_pm",classdif_pm,10);
 	//Add("classdif_search",classdif_search,10);
-	Add("classdif_download",classdif_download,10);	
+	Add("classdif_download",classdif_download,10);
 	Add("min_class_use_hub",min_class_use_hub,0);
 	Add("min_class_use_hub_passive",min_class_use_hub_passive,0);
 	Add("min_class_register" , min_class_register , 4);
@@ -179,7 +194,9 @@ void cDCConf::AddVars()
 	Add("botinfo_report", botinfo_report, 0);
 	Add("send_user_ip",send_user_ip,false);
 	Add("send_user_info", send_user_info, true);
-// 	advanced hub configuration and tweaks
+	// End user control configuration
+	
+	// Advanced hub configuration and tweaks
 	Add("extended_welcome_message", extended_welcome_message, 0);
 	Add("host_header", host_header, 1);
 	Add("int_myinfo",int_myinfo,60);
@@ -207,21 +224,17 @@ void cDCConf::AddVars()
 	Add("delayed_ping",delayed_ping,60);
 	Add("disable_zlib", disable_zlib, 0);
 
-	static const char *to_names [] = { "key", "nick", "login", "myinfo", "flush", "setpass"};
-	double to_default [] = { 60. , 30., 600., 40., 30., 300. };
+	static const char *to_names[] = { "key", "nick", "login", "myinfo", "flush", "setpass"};
+	double to_default[] = { 60. , 30., 600., 40., 30., 300. };
 	string s_varname;
-	int i;
-	for (i = 0; i < 6; i ++)
-	{
+	for(int i = 0; i < 6; i ++) {
 		s_varname = "timeout_";
 		s_varname += to_names[i];
 		Add(s_varname, timeout_length[i], to_default[i]);
 	}
+	// End advanced hub configuration and tweaks
 	
-
-	ostringstream varname;
-	string empty;
-// 	tag configurations
+	 // Tag configuration
 	Add("show_tags",show_tags,2);
 	Add("tag_allow_none",tag_allow_none, true);
 	Add("tag_allow_unknown",tag_allow_unknown,1);
@@ -235,7 +248,9 @@ void cDCConf::AddVars()
 	Add("show_speed",show_speed,1);
 	Add("tag_max_hs_ratio",tag_max_hs_ratio,100.0);
 	Add("tag_max_hubs",tag_max_hubs,100);
-
+	// End tag configuration
+	
+	// IP and zone configuration
 	Add("cc_zone1",cc_zone[0],string(""));
 	Add("cc_zone2",cc_zone[1],string(""));
 	Add("cc_zone3",cc_zone[2],string(""));
@@ -245,13 +260,9 @@ void cDCConf::AddVars()
 	Add("ip_zone5_max",ip_zone5_max,string(""));
 	Add("ip_zone6_min",ip_zone6_min,string(""));
 	Add("ip_zone6_max",ip_zone6_max,string(""));
-// 	custom message configuration
-	Add("msg_chat_onoff", msg_chat_onoff,string("<< To turn your chat on, use command +chat turn it off with +nochat >>"));
-	Add("msg_change_pwd",msg_change_pwd, string("<< Please change your password NOW using command +passwd new_passwd!!! See +help>>"));
-	Add("msg_banned",msg_banned,string("<<You are banned and this is a default extra message>>"));
-
-	Add("msg_nick_prefix",msg_nick_prefix, string("<<Invalid nick prefix>>"));
-	Add("msg_banned_client", msg_banned_client, string("<<Your client is banned.>>"));
+	// End IP and zone configuration
+	
+	// Custom messages
 	Add("msg_replace_ban",msg_replace_ban, string(""));
 	Add("msg_welcome_guest",msg_welcome[0]);
 	Add("msg_welcome_reg",msg_welcome[1]);
@@ -260,8 +271,8 @@ void cDCConf::AddVars()
 	Add("msg_welcome_cheef",msg_welcome[4]);
 	Add("msg_welcome_admin",msg_welcome[5]);
 	Add("msg_welcome_master",msg_welcome[10]);
+	// End cstom messages
 }
-
 
 
 /*!

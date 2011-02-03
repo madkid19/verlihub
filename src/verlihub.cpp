@@ -94,8 +94,8 @@ int main(int argc, char *argv[])
 	#ifdef _WIN32
 	TCHAR Buffer[BUFSIZE];
 	if(!GetCurrentDirectory(BUFSIZE, Buffer)) {
-			cout << "Cannot get current directory because: " << GetLastError() << endl;
-			return 1;
+		cout << "Cannot get current directory because: " << GetLastError() << endl;
+		return 1;
 	}
 	ConfigBase = Buffer;
 	#else
@@ -106,10 +106,11 @@ int main(int argc, char *argv[])
 		tmp = HomeDir;
 		tmp +=  "/.verlihub";
 		DirName = tmp.c_str();
-		if ((DirName != NULL) && DirExists(DirName)) ConfigBase = DirName;
+		if (DirExists(DirName))
+			ConfigBase = DirName;
 	}
 	DirName = "./.verlihub";
-	if ((DirName != NULL) && DirExists(DirName))
+	if (DirExists(DirName))
 		ConfigBase = DirName;
 	DirName = getenv("VERLIHUB_CFG");
 	if ((DirName != NULL) && DirExists(DirName))

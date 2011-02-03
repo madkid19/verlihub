@@ -43,6 +43,7 @@
 #include "cconntypes.h"
 #include "cdcconsole.h"
 #include "ctriggers.h"
+#include "i18n.h"
 
 #define HUB_VERSION_CLASS "(" __CURR_DATE_TIME__ ")"
 #define HUB_VERSION_STRING VERSION
@@ -406,7 +407,7 @@ bool cServerDC::AddToList(cUser *usr)
 	if( (usr->mClass >= eUC_OPERATOR) || mC.chat_default_on )
 		mChatUsers.AddWithHash(usr, Hash);
 	else
-		DCPublicHS(mC.msg_chat_onoff, usr->mxConn);
+		DCPublicHS(_("<< To turn your chat on use command +chat; turn it off with +nochat >>"), usr->mxConn);
 
 	if(usr->mxConn && usr->mxConn->Log(3)) usr->mxConn->LogStream() << "Adding at the end of Nicklist" << endl;
 
@@ -678,35 +679,35 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 
 void cServerDC::AfterUserLogin(cConnDC *conn)
 {
-	string omsg;
-
-	if(conn->Log(3)) conn->LogStream() << "Entered the hub." << endl;
+	ostringstream os;
+	if(conn->Log(3))
+		conn->LogStream() << "Entered the hub." << endl;
 	mCo->mTriggers->TriggerAll(cTrigger::eTF_MOTD, conn);
 
-	// user has to change password
-	if(conn->mRegInfo && conn->mRegInfo->mPwdChange)
-	{
-		omsg = mC.msg_change_pwd;
-		DCPrivateHS(omsg, conn);
-		DCPublicHS(omsg, conn);
+	// The user has to change password
+	if(conn->mRegInfo && conn->mRegInfo->mPwdChange) {
+		
+		os << ("<< Please change your password NOW using command +passwd <new_passwd>! See +help >>");
+		DCPrivateHS(os.str(), conn);
+		DCPublicHS(os.str(), conn);
 		conn->SetTimeOut(eTO_SETPASS, mC.timeout_length[eTO_SETPASS], this->mTime);
+		os.str("");
 	}
 
-	// send the hub topic
+	// Send the hub topic
 	string topic("$HubTopic ");
 	topic += mC.hub_desc + "|";
 	conn->Send(topic, false);
 
-	if (mC.send_user_info)
-	{
-		ostringstream os;
-		os << "\r\n[::] Your info: \r\n";
+	if(mC.send_user_info) {
+		
+		os << "\r\n[::] " << _("Your info") << ": \r\n";
 		conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
-		omsg = os.str();
-		DCPublicHS(omsg,conn);
+		DCPublicHS(os.str(),conn);
 	}
 
-	if( mUserList.size() > mUsersPeak ) mUsersPeak = mUserList.size();
+	if(mUserList.size() > mUsersPeak)
+		mUsersPeak = mUserList.size();
 	#ifndef WITHOUT_PLUGINS
 	mCallBacks.mOnUserLogin.CallAll(conn->mpUser);
 	#endif
@@ -725,38 +726,36 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 void cServerDC::DoUserLogin(cConnDC *conn)
 {
 	// verify we didn't get here by chance
-	if(eLS_LOGIN_DONE != conn->GetLSFlag(eLS_LOGIN_DONE))
-	{
-		if(conn->ErrLog(2)) conn->LogStream() << "User Login when not all done"<<endl;
+	if(eLS_LOGIN_DONE != conn->GetLSFlag(eLS_LOGIN_DONE)) {
+		if(conn->ErrLog(2))
+			conn->LogStream() << "User Login when not all done"<<endl;
 		conn->CloseNow();
 		return;
 	}
 
 	// check if same nick already exists
-	if (! VerifyUniqueNick(conn)) return;
+	if (!VerifyUniqueNick(conn))
+		return;
 
 	// he is not anymore in progress
-	if (mInProgresUsers.ContainsNick(conn->mpUser->mNick))
-	{
+	if (mInProgresUsers.ContainsNick(conn->mpUser->mNick)) {
 		mInProgresUsers.FlushForUser(conn->mpUser);
 		mInProgresUsers.Remove(conn->mpUser);
 	}
 	
 	// anti login flood temp bans
-	if (conn->GetTheoricalClass() <= mC.max_class_int_login){
+	if (conn->GetTheoricalClass() <= mC.max_class_int_login) {
 		mBanList->AddNickTempBan(conn->mpUser->mNick, mTime.Sec() + mC.int_login, "login later");
 		mBanList->AddIPTempBan(conn->GetSockAddress(), mTime.Sec() + mC.int_login, "login later");
 	}
 
 	// users special rights and restrictions
 	cPenaltyList::sPenalty pen;
-	if (mPenList->LoadTo(pen, conn->mpUser->mNick) && 
-			(conn->mpUser->mClass != eUC_PINGER))
+	if (mPenList->LoadTo(pen, conn->mpUser->mNick) && (conn->mpUser->mClass != eUC_PINGER))
 		conn->mpUser->ApplyRights(pen);
 
 	// insert user to userlist
-	if(!AddToList(conn->mpUser))
-	{
+	if(!AddToList(conn->mpUser)) {
 		conn->CloseNow();
 		return;
 	}
@@ -764,14 +763,10 @@ void cServerDC::DoUserLogin(cConnDC *conn)
 	// display user to others
 	ShowUserToAll(conn->mpUser);
 	
-	if( mC.send_user_ip )
-	{
-		if( conn->mpUser->mClass >= eUC_OPERATOR )
-		{
+	if(mC.send_user_ip) {
+		if(conn->mpUser->mClass >= eUC_OPERATOR) {
  			conn->Send(mUserList.GetIPList(),true);
-		}
-		else
-		{
+		} else {
 			string UserIP;
 			cCompositeUserCollection::ufDoIpList DoUserIP(UserIP);
 			DoUserIP.Clear();
@@ -787,7 +782,6 @@ void cServerDC::DoUserLogin(cConnDC *conn)
 	conn->mpUser->mT.login.Get();
 }
 
-// /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:832: warning: control reaches end of non-void function
 bool cServerDC::BeginUserLogin(cConnDC *conn)
 {
 	// If user asks for nicklist, then login will happen after the sending of nicklist ends
@@ -908,8 +902,7 @@ bool cServerDC::MinDelayMS(cTime &what, long min)
 {
 	cTime now;
 	cTime diff=now-what;
-	if(diff.MiliSec() >= min)
-	{
+	if(diff.MiliSec() >= min) {
 		what = now;
 		return true;
 	}
@@ -926,7 +919,8 @@ int cServerDC::SaveFile(const string &file, const string &text)
 	string filename;
 	ReplaceVarInString(file, "CFG", filename, mConfigBaseDir);
 	ofstream os(file.c_str());
-	if(!os.is_open()) return 0;
+	if(!os.is_open())
+		return 0;
 	os << text << endl;
 	os.close();
 	return 1;
@@ -949,31 +943,25 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 	// then we're done
 
 	static cRegUserInfo *sRegInfo = new cRegUserInfo;
-	if ((nick.size() < mC.max_nick * 2 ) &&
-		mR->FindRegInfo(*sRegInfo,nick) &&
-		!conn->mRegInfo )
-	{
+	if ((nick.size() < mC.max_nick * 2 ) && mR->FindRegInfo(*sRegInfo,nick) && !conn->mRegInfo ) {
 		conn->mRegInfo = sRegInfo;
 		sRegInfo = new cRegUserInfo;
 	}
 
-	// validate nick
-	
-	tVAL_NICK vn=ValidateNick(nick, (conn->GetTheoricalClass() >= eUC_REGUSER ));
-	if(vn != eVN_OK)
-	{
+	// Validate nick
+	tVAL_NICK vn = ValidateNick(nick, (conn->GetTheoricalClass() >= eUC_REGUSER ));
+	if(vn != eVN_OK) {
 		close=true;
 		errmsg << "Bad nickname: ";
 		if (conn->Log(2)) conn->LogStream() << "Bad nick: '" << nick << "' (" << vn << ")" << endl;
 	}
-	switch(vn)
-	{
+	switch(vn) {
 		case eVN_OK: break;
 		case eVN_CHARS: errmsg << "unallowed characters in your nick; use these: " << mC.nick_chars; break;
 		case eVN_SHORT: errmsg << "your nick is too short"; break;
 		case eVN_LONG: errmsg << "your nick is too long"; break;
 		case eVN_USED: errmsg << "your nick is already in use"; break;
-		case eVN_PREFIX: errmsg << mC.msg_nick_prefix << mC.nick_prefix; break;
+		case eVN_PREFIX: errmsg << autosprintf(_("Invalid nick prefix '%s'. Use: %s"), mC.nick_prefix.c_str()); break;
 		case eVN_NOT_REGED_OP: errmsg << "not registered operator"; break;
 		//case eVN_RESERVED: errmsg << "reserved"; break;
 		case eVN_BANNED:
@@ -1004,32 +992,27 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 	}
 
 	if(banned) {
-		ReplaceVarInString(mC.msg_banned, "IP", omsg, conn->AddrIP());
-		ReplaceVarInString(omsg, "nick", omsg, Ban.mNick);
-		errmsg << "Banned." << endl << omsg << endl;
+		errmsg << _("<<You are banned>>")<< endl;
 		Ban.DisplayUser(errmsg);
 		DCPublicHS(errmsg.str(),conn);
-		if(conn->Log(1)) conn->LogStream() << "Unallowed user (" << Ban.mType << "), closing" << endl;
+		if(conn->Log(1))
+			conn->LogStream() << "Unallowed user (" << Ban.mType << "), closing" << endl;
 		return 0;
 	}
 
-	if(mC.nick_prefix_cc)
-	{
-		if(conn->mCC.size() && conn->mCC != "--")
-		{
+	if(mC.nick_prefix_cc) {
+		if(conn->mCC.size() && conn->mCC != "--") {
 			string Prefix("[");
-			Prefix+=conn->mCC;
-			Prefix+="]";
-			if( 0 != StrCompare(nick,0,4,Prefix))
-			{
-				errmsg << "Please add " << Prefix << " in front of your nick" << endl;
+			Prefix += conn->mCC;
+			Prefix += "]";
+			if(StrCompare(nick,0,4,Prefix) != 0) 	{
+				errmsg << autosprintf(_("Please add %s in front of your nick"), Prefix.c_str()) << endl;
 				close = conn->GetTheoricalClass() < eUC_REGUSER;
 			}
 		}
 	}
 
-	if(close)
-	{
+	if(close) {
 		DCPublicHS(errmsg.str(),conn);
 		return 0;
 	}
@@ -1046,8 +1029,7 @@ tVAL_NICK cServerDC::ValidateNick(const string &nick, bool registered)
 	string ProhibitedChars("$| ");
 	//ProhibitedChars.append("\0",1);
 	
-	if (!registered)
-	{
+	if (!registered) {
 		if(nick.size() > mC.max_nick ) return eVN_LONG;
 		if(nick.size() < mC.min_nick ) return eVN_SHORT;
 		if(nick.npos != nick.find_first_of(ProhibitedChars)) return eVN_CHARS;
@@ -1114,8 +1096,10 @@ int cServerDC::OnTimer(cTime &now)
 	if (bool(mReloadcfgTimer.mMinDelay) && mReloadcfgTimer.Check(mTime , 1) == 0) {
 		mC.Load();
 		mCo->mTriggers->ReloadAll();
-		if (mC.use_reglist_cache) mR->UpdateCache();
-		if (Log(2)) LogStream() << "Socket counter : " << cAsyncConn::sSocketCounter << endl;
+		if (mC.use_reglist_cache)
+			mR->UpdateCache();
+		if (Log(2))
+			LogStream() << "Socket counter : " << cAsyncConn::sSocketCounter << endl;
 	}
 	mUserList.AutoResize();
 	mHelloUsers.AutoResize();
@@ -1145,12 +1129,11 @@ unsigned cServerDC::Str2Period(const string &s, ostream &err)
 	int m,n=0;
 	char c=' ';
 	is >> n >> c;
-	if(n >= 0)
-	{
+	if(n >= 0) {
 		m = 1; // multiplicator
-		if(c==' ') c = 'd';
-		switch(c)
-		{
+		if(c==' ')
+			c = 'd';
+		switch(c) {
 			case 'y':
 			case 'Y': m*= 12; // year = 12* month
 			case 'M': m*=  4; // month = 4 * week
@@ -1164,16 +1147,16 @@ unsigned cServerDC::Str2Period(const string &s, ostream &err)
 			case 's':
 			case 'S': break;
 			default:
-				err << "Error: available units are: "
-					 << "s'econd, d'ay, m'inute, h'our, d'ay, w'eek, M'onth, Y'ear." << endl
-					 << "Default is 'd'." << endl;
+				err << _("Error: available units are: "
+					 "s(econd), m(inute), h(our), d(ay), w(eek), M(onth), Y(ear).\n"
+					 "Default is 'd'.") << endl;
 				return 0;
 				m=1;
 			break;
 		}
 		u= n*m;
-	}
-	else err << "Please provide a positive number." << endl;
+	} else
+		err << _("Please provide a positive number.") << endl;
 	return u;
 }
 
@@ -1195,15 +1178,13 @@ int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 	size_t pos_space;
 	cAsyncConn *pHubList;
 
-	os2 << "Hublist Register results: \r\n";
-	while (CurHost = "", is >> CurHost, CurHost.size() > 0)
-	{
-		os2 << "Sending to " << CurHost << ":" << port;
+	os2 << _("Hublist Register results: \n");
+	while (CurHost = "", is >> CurHost, CurHost.size() > 0) {
+		os2 << autosprintf(_("Sending to %s:%d"), CurHost.c_str(), port);
 		pHubList = new cAsyncConn(CurHost,port);
 
-		if(!pHubList->ok)
-		{
-			os2 << " ..connection not established\r\n";
+		if(!pHubList->ok) {
+			os2 << " " << _("...connection failed\n");
 			pHubList->Close();
 			delete pHubList;
 			pHubList = 0;
@@ -1227,8 +1208,10 @@ int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 			<< pipe << mC.hub_host
 			<< pipe;
 		__int64 hl_minshare = mC.min_share;
-		if (mC.min_share_use_hub > hl_minshare) hl_minshare = mC.min_share_use_hub;
-		if (mC.hublist_send_minshare) os << "[MINSHARE:" << StringFrom(hl_minshare) << "MB] ";
+		if (mC.min_share_use_hub > hl_minshare)
+			hl_minshare = mC.min_share_use_hub;
+		if (mC.hublist_send_minshare)
+			os << "[MINSHARE:" << StringFrom(hl_minshare) << "MB] ";
 		os << mC.hub_desc
 			<< pipe << mUserList.size()
 			<< pipe << buf
@@ -1236,20 +1219,23 @@ int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 
 
 		// send it
-		if(Log(2)) LogStream() << os.str() << endl;
+		if(Log(2))
+			LogStream() << os.str() << endl;
 		pHubList->Write(os.str(), true);
-		if(!pHubList->ok) os2 << " ..Error sending info\r\n" << endl;
+		if(!pHubList->ok)
+			os2 << " " << _("..Error sending info\n") << endl;
 		pHubList->Close();
 		delete pHubList;
 		pHubList = NULL;
-		os2 << " .. ok\r\n";
+		os2 << " " << _(".. OK\n");
 	}
 
-	os2 << "Done";
+	os2 << _("Done");
 	CurHost = os2.str();
 	if (NickForReply.size() > 0) {
 		cUser * user = mUserList.GetUserByNick(NickForReply);
-		if (user && user->mxConn) DCPublicHS(CurHost, user->mxConn);
+		if(user && user->mxConn)
+			DCPublicHS(CurHost, user->mxConn);
 	}
 	return 1;
 }
@@ -1257,15 +1243,12 @@ int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 int cServerDC::RegisterInHublist(string host, int port, cConnDC *conn)
 {
 	string NickForReply;
-	DCPublicHS("Registering the hub in hublists. This may take a while, please wait...", conn);
+	DCPublicHS(_("Registering the hub in hublists. This may take a while, please wait..."), conn);
 	if(conn && conn->mpUser) NickForReply = conn->mpUser->mNick;
 	cThreadWork *work = new tThreadWork3T<cServerDC, string, int, string>( host, port, NickForReply, this, &cServerDC::DoRegisterInHublist);
-	if ( mHublistReg.AddWork(work) )
-	{
+	if(mHublistReg.AddWork(work)) {
 		return 1;
-	}
-	else 
-	{
+	} else  {
 		delete work;
 		return 0;
 	}
@@ -1302,20 +1285,15 @@ int cServerDC::WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, c
 	cUserCollection::iterator i;
 	int cnt=0;
 	cConnDC *conn;
-	for(i=mUserList.begin(); i!= mUserList.end(); ++i)
-	{
+	for(i=mUserList.begin(); i!= mUserList.end(); ++i) {
 		conn = ((cUser*)(*i))->mxConn;
-		if(conn)
-		{
+		if(conn) {
 			unsigned long num = cBanList::Ip2Num(conn->AddrIP());
-			if(exact && (ip_min == num))
-			{
+			if(exact && (ip_min == num)) {
 				dest += (*i)->mNick;
 				dest += separator;
 				cnt++;
-			}
-			else if ((ip_min <= num) && (ip_max >= num))
-			{
+			} else if ((ip_min <= num) && (ip_max >= num)) {
 				dest += (*i)->mNick;
 				dest += " (";
 				dest += conn->AddrIP();
@@ -1333,14 +1311,12 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 	ostringstream os;
 
 	os << Msg << " -- ";
-	if (conn)
-	{
+	if (conn) {
 		if(!mUseDNS && mC.report_dns_lookup) conn->DNSLookup();
 		os << "IP=' " << conn->AddrIP() <<" ' Host=' " << conn->AddrHost() <<" ' ";
 		if (conn->mpUser)
-			os << "User=' " << conn->mpUser->mNick << " ' ";
-		if (!ToMain && this->mOpChat)
-		{
+			os << _("User") << "=' " << conn->mpUser->mNick << " ' ";
+		if (!ToMain && this->mOpChat) {
 			this->mOpChat->SendPMToAll(os.str(), NULL);
 		} else {
 			static string ChatMsg;
@@ -1414,14 +1390,14 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 
 				if(Reason.size()) {
 					string omsg;
-					ostr << "<" << OP->mNick << "> is kicking " << Nick << " because: " << NewReason;
+					ostr << autosprintf(_("<%s> is kicking %s because: %s"), OP->mNick.c_str(), Nick.c_str(), NewReason.c_str());
 					omsg = ostr.str();
 					if(!mC.hide_all_kicks && !OP->mHideKick )
 						SendToAll(omsg, OP->mHideKicksForClass ,int(eUC_MASTER));
 
 					if(flags & eKCK_PM) {
 						ostr.str(mEmpty);
-						ostr << "You are being kicked because: " << NewReason;
+						ostr << autosprintf(_("You are being kicked because: %s"), NewReason.c_str());
 						DCPrivateHS(ostr.str(), user->mxConn, &OP->mNick);
 					}
 				}
@@ -1430,7 +1406,11 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 			if(flags & eKCK_Drop) {
 				// Send the message to the kicker
 				ostr.str(mEmpty);
-				ostr << ((flags & eKCK_TBAN) ? "Kicked user " : "Droping user ") << Nick << " IP: " << user->mxConn->AddrIP();
+				if(flags & eKCK_TBAN)
+					ostr << autosprintf(_("Kicked user %s"), Nick.c_str());
+				else
+					ostr << autosprintf(_("Dropped user %s"), Nick.c_str());
+				ostr << " IP: " << user->mxConn->AddrIP();
 				if(user->mxConn->AddrHost().length())
 					ostr << " Host: " << user->mxConn->AddrHost();
 				ostr << " .. ;)";
@@ -1453,10 +1433,13 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 				}
 				if (Disconnect) {
 					user->mxConn->CloseNice(1000, eCR_KICKED);
-					if (!(flags &eKCK_TBAN))
-						ReportUserToOpchat(user->mxConn,OP->mNick + " dropped ", mC.dest_drop_chat);
-				}
-				else
+					if (!(flags & eKCK_TBAN)) {
+						string msg(OP->mNick);
+						msg += " ";
+						msg += _(" dropped ");
+						ReportUserToOpchat(user->mxConn,msg, mC.dest_drop_chat);
+					}
+				} else
 					ostr << "\r\nsorry, I don't wanna kick him";
 
 				// temp ban kicked user
