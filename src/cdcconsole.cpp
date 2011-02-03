@@ -549,7 +549,7 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
-	string omsg, regnick, prefix;
+	string regnick, prefix;
 	if (mOwner->mC.disable_regme_cmd) {
 		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
 		return 1;
@@ -571,20 +571,21 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		ReplaceVarInString(prefix,"CC",prefix, conn->mCC);
 		
 		if( prefix.size() && StrCompare(regnick,0,prefix.size(),prefix) !=0 ) {
-			ReplaceVarInString(mOwner->mL.autoreg_nick_prefix, "prefix", omsg, prefix);
-			ReplaceVarInString(omsg, "nick", omsg, conn->mpUser->mNick);
-			mOwner->DCPublicHS(omsg,conn);
+			os << autosprintf(_("Your nick must start with %s"), prefix.c_str());
+			mOwner->DCPublicHS(os.str(),conn);
 			return 1;
 		}
 		
 		user_share = conn->mpUser->mShare / (1024*1024);
 		min_share = mOwner->mC.min_share_reg;
-		if( mOwner->mC.autoreg_class == 2) min_share = mOwner->mC.min_share_vip;
-		if( mOwner->mC.autoreg_class >= 3) min_share = mOwner->mC.min_share_ops;
+		if(mOwner->mC.autoreg_class == 2)
+			min_share = mOwner->mC.min_share_vip;
+		if(mOwner->mC.autoreg_class >= 3)
+			min_share = mOwner->mC.min_share_ops;
 		
-		if( user_share < min_share ) {
-			ReplaceVarInString(mOwner->mC.autoreg_min_share, "min_share", omsg, min_share);
-			mOwner->DCPublicHS(omsg,conn);
+		if(user_share < min_share) {
+			os << autosprintf(_("You need to share at least %s"), convertByte(min_share*1024, false).c_str());
+			mOwner->DCPublicHS(os.str(),conn);
 			return 0;
 		}
 		
@@ -593,62 +594,53 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		bool RegFound = mOwner->mR->FindRegInfo(ui, regnick);
 		
 		if (RegFound) {
-			omsg = mOwner->mL.autoreg_already_reg;
-			mOwner->DCPublicHS(omsg,conn);
+			os << _("You are already registered");
+			mOwner->DCPublicHS(os.str(),conn);
 			return 0;
 		}
 		
-		if(user && user->mxConn)
-		{
+		if(user && user->mxConn) {
 			string text;
 			getline(cmd_line,text);
 		
 			if(text.size() < (unsigned int) mOwner->mC.password_min_len) {
-				omsg = mOwner->mL.pwd_min;
-				mOwner->DCPublicHS(omsg,conn);
+				os << autosprintf(_("Minimum password length is %d characters, please retry."), mOwner->mC.password_min_len);
+				mOwner->DCPublicHS(os.str(),conn);
 				return 0;
 			}
 			
-			// @dReiska: lets strip space from beginning
+			// Strip space
 			text = text.substr(1);
-			if ( mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text.c_str()) ) {
+			if (mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text.c_str()) ) {
 				// sent the report to the opchat
 				os << autosprintf(_("A new user has been registered with class %d"), mOwner->mC.autoreg_class);
 				mOwner->ReportUserToOpchat(conn, os.str(), false);
 				os.str(mOwner->mEmpty);
 				// sent the message to the user
-				ReplaceVarInString(mOwner->mL.autoreg_success, "password", omsg, text);
-				ReplaceVarInString(omsg, "regnick", omsg, regnick);
+				os << autosprintf(_("You are now registered with nick '%s'! Please reconnect and login with your password. Don't forget your password! It is '%s'."), regnick.c_str(), text.c_str());
 			} else {
-				omsg = mOwner->mL.autoreg_error;
-				mOwner->DCPublicHS(omsg,conn);
+				os << _("An error occured while registering. Maybe illegeal characters in nick or password?");
+				mOwner->DCPublicHS(os.str(),conn);
 				return false;
 			}
 		}
 		
-		mOwner->DCPublicHS(omsg,conn);
+		mOwner->DCPublicHS(os.str(),conn);
 		return 1;
 		
 	} else {
-		
-		//-- to opchat
 		string text, tmpline;
-		
 		getline(cmd_line,text);
-		while(cmd_line.good())
-		{
+		while(cmd_line.good()) {
 			tmpline="";
 			getline(cmd_line,tmpline);
 			text += "\r\n" + tmpline;
 		}
-		
+		// Send message to opchat
 		os << "REGME: '" << text <<"'.";
 		mOwner->ReportUserToOpchat(conn, os.str(), mOwner->mC.dest_regme_chat);
-		//-- to user
-		os.str(mOwner->mEmpty);
-		os << _("Thank you, your request has been sent to operators.");
-		omsg = os.str();
-		mOwner->DCPublicHS(omsg,conn);
+		// Send message to user
+		mOwner->DCPublicHS(_("Thank you, your request has been sent to operators."),conn);
 		return 1;
 	}
 	
@@ -677,11 +669,11 @@ int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 
 	cDCProto::Create_HubName(omsg, mOwner->mC.hub_name, topic);
 	mOwner->SendToAll(omsg, eUC_NORMUSER, eUC_MASTER);
-	if (topic.length())	omsg = mOwner->mL.msg_topic_set;
-	else omsg = mOwner->mL.msg_topic_reset;
-	ReplaceVarInString(omsg,"user", omsg, conn->mpUser->mNick);
-	ReplaceVarInString(omsg,"topic", omsg, topic);
-	mOwner->DCPublicHSToAll(omsg);
+	if (topic.length())
+		os << autosprintf(_("%s has set the topic to : %s"), conn->mpUser->mNick.c_str(), topic.c_str());
+	else
+		os << autosprintf(_("%s resetted the topic"), conn->mpUser->mNick.c_str());
+	mOwner->DCPublicHSToAll(os.str());
 	return 1;
 } 
 
@@ -723,7 +715,7 @@ int cDCConsole::CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn)
 		return 0;
 
 	if(!ui.mPwdChange) {
-		ostr << mOwner->mL.pwd_cannot;
+		ostr << _("You are not allowed to change your password now. Ask an OP.");
 		mOwner->DCPrivateHS(ostr.str(),conn);
 		mOwner->DCPublicHS(ostr.str(),conn);
 		return 1;
@@ -731,20 +723,19 @@ int cDCConsole::CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn)
 
 	cmd_line >> str >> crypt;
 	if(str.size() < (unsigned int) mOwner->mC.password_min_len) {
-		string str;
-		ReplaceVarInString(mOwner->mL.pwd_min,"length",str, mOwner->mC.password_min_len);
-		mOwner->DCPrivateHS(str,conn);
-		mOwner->DCPublicHS(str,conn);
+		ostr << autosprintf(_("Minimum password length is %d characters, please retry."), mOwner->mC.password_min_len);
+		mOwner->DCPrivateHS(ostr.str(),conn);
+		mOwner->DCPublicHS(ostr.str(),conn);
 		return 1;
 	}
 	if(!mOwner->mR->ChangePwd(conn->mpUser->mNick, str,crypt)) {
-		ostr << mOwner->mL.pwd_set_error;
+		ostr << _("Error updating password.");
 		mOwner->DCPrivateHS(ostr.str(),conn);
 		mOwner->DCPublicHS(ostr.str(),conn);
 		return 1;
 	}
 
-	ostr << mOwner->mL.pwd_success;
+	ostr << _("Password updated successfully.");
 	mOwner->DCPrivateHS(ostr.str(),conn);
 	mOwner->DCPublicHS(ostr.str(),conn);
 	conn->ClearTimeOut(eTO_SETPASS);
@@ -1836,7 +1827,9 @@ bool cDCConsole::cfRegUsr::operator()()
 			if (mS->mR->AddRegUser(nick, mConn, ParClass)) {
 				if(user && user->mxConn) {
 					ostr.str(mS->mEmpty);
-					ostr << mS->mL.pwd_setup;
+					ostr << _("You have been registered, please set up your password NOW \n"
+						"using command +passwd <your_new_passwd>\n"
+						"replace <your_new_passwd> by your password of choice  chars at least.");
 					mS->DCPrivateHS(ostr.str(), user->mxConn);
 				}
 				(*mOS) << _("User has been added; please tell him to change his password");
@@ -1883,7 +1876,7 @@ bool cDCConsole::cfRegUsr::operator()()
 			} else {
 				field = "pwd_change";
 				par = "1";
-				ostr << mS->mL.pwd_can;
+				ostr << _("You can change your password now, use command +passwd followed by your new password");
 			}
 		break;
 		case eAC_CLASS: // class
