@@ -72,7 +72,6 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 		mDBConf.db_pass,
 		mDBConf.db_data), // connect to mysql
 	mC(*this), // create the config object
-	mL(*this),
 	mSetupList(mMySQL),
 	mP(this),
 	mCo(NULL), //  create console and it's tables
@@ -100,9 +99,6 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	mC.AddVars();
 	mC.Save();
 	mC.Load();
-	mL.AddVars();
-	if( mC.save_lang ) mL.Save();
-	mL.Load();
 	mConnTypes = new cConnTypes(this);
 	mCo = new cDCConsole(this,mMySQL);
 	mR = new cRegList(mMySQL,this);
@@ -116,8 +112,6 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	for ( i = 0; i <= USER_ZONES; i++ ) mUploadZone[i].SetPeriod(60.);
 
 	SetClassName("cServerDC");
-
-	//struct hostent *he = gethostbyname(mC.hublist_host.c_str());
 	
 	mR->CreateTable();
 	if(mC.use_reglist_cache) mR->ReloadCache();

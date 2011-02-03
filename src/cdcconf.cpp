@@ -57,9 +57,6 @@ cDCConf::~cDCConf()
 {
 }
 
-cDCLang::cDCLang( cServerDC &serv ): mS(serv){}
-cDCLang::~cDCLang(){}
-
 void cDCConf::AddVars()
 {
 // 	hub info and basic settings
@@ -255,9 +252,7 @@ void cDCConf::AddVars()
 
 	Add("msg_nick_prefix",msg_nick_prefix, string("<<Invalid nick prefix>>"));
 	Add("msg_banned_client", msg_banned_client, string("<<Your client is banned.>>"));
-	Add("msg_upgrade",msg_upgrade, string("<<Your client version is too old, please upgrade!>>"));
 	Add("msg_replace_ban",msg_replace_ban, string(""));
-	Add("autoreg_min_share", autoreg_min_share, string("You need to share at least %[min_share] MB"));
 	Add("msg_welcome_guest",msg_welcome[0]);
 	Add("msg_welcome_reg",msg_welcome[1]);
 	Add("msg_welcome_vip",msg_welcome[2]);
@@ -265,37 +260,8 @@ void cDCConf::AddVars()
 	Add("msg_welcome_cheef",msg_welcome[4]);
 	Add("msg_welcome_admin",msg_welcome[5]);
 	Add("msg_welcome_master",msg_welcome[10]);
-	
-	Add("save_lang", save_lang, false);
 }
 
-void cDCLang::AddVars()
-{
-	Add("pwd_cannot", pwd_cannot, string("You are not allowed to change your password now. Ask an OP."));
-	Add("pwd_can", pwd_can, string("You can change your password now, use command +passwd followed by your new password"));
-	Add("pwd_min", pwd_min, string("Minimum password length is %[length] characters, retry.."));
-	Add("pwd_success", pwd_success, string("Password updated successfully."));
-	Add("pwd_set_error", pwd_set_error, string("Password not changed :(."));
-	Add("pwd_setup", pwd_setup, string("You have been registered, please set up your password NOW \r\n"
-		"using command +passwd <your_new_passwd>\r\n"
-		"replace <your_new_passwd> by your password of choice  chars at least."));
-	
-	Add("wrong_dc_tag",wrong_dc_tag, string("Error: Your DC++ tag is reporting less then 0 hubs or slots!"));
-	Add("tag_max_hubs",tag_max_hubs, string("Too many open hubs, max is %[tag_max_hubs]"));
-	Add("tag_max_slots",tag_max_slots, string("Too many open slots for your connection type (%[conn_type]), max is %[tag_max_slots]"));
-	Add("tag_min_slots",tag_min_slots, string("Too little open slots for your connection type (%[conn_type]), min is %[tag_min_slots]"));
-	Add("tag_max_hs_ratio",tag_max_hs_ratio, string("Too little slots for the number of hubs (hubs/slots ratio), max ratio is %[tag_max_hs_ratio]: %[hubs] hubs require %[min_slots]"));
-	Add("tag_no_sock",tag_no_sock,string("Sock5 is not allowed here."));
-	Add("tag_no_passive",tag_no_passive,string("Passive connections are restricted. Consider changing to active."));
-
-	Add("msg_topic_set",msg_topic_set, string("%[user] sets the topic to : %[topic]"));
-	Add("msg_topic_reset",msg_topic_reset, string("%[user] reset the topic"));
-	
-	Add("autoreg_nick_prefix", autoreg_nick_prefix, string("You need a nick starting with %[prefix]"));
-	Add("autoreg_already_reg", autoreg_already_reg, string("You are already registered"));
-	Add("autoreg_success", autoreg_success, string("You are registered now! Please reconnect and login with your password. Don't forget your password! It is '%[password]'."));
-	Add("autoreg_error", autoreg_error, string("Some strange error occured while registering. Maybe illegeal chars in nick or pass?"));
-}
 
 
 /*!
@@ -308,13 +274,6 @@ int cDCConf::Load()
 	return 0;
 }
 
-int cDCLang::Load()
-{
-	mS.mSetupList.LoadFileTo(this,mS.mDBConf.lang_name.c_str());
-	return 0;
-}
-
-
 /*!
     \fn nDirectConnect::nTables::cDCConf::Save()
  */
@@ -324,13 +283,6 @@ int cDCConf::Save()
 	mS.mSetupList.SaveFileTo(this,mS.mDBConf.config_name.c_str());
 	return 0;
 }
-
-int cDCLang::Save()
-{
-	mS.mSetupList.SaveFileTo(this,mS.mDBConf.lang_name.c_str());
-	return 0;
-}
-
 
 };
 };

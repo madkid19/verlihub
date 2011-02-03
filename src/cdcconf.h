@@ -212,83 +212,12 @@ public:
 	string msg_nick_prefix;
 	string msg_chat_onoff;
 	string msg_change_pwd;
-	string msg_upgrade;
 	string msg_replace_ban;
 	string msg_welcome[11];
-	//string search_share_min;
-	//string ctm_share_min;
-	string autoreg_min_share;
-	//string login_share_min;
-	//string login_share_max;
 
-	bool save_lang;
 	bool desc_insert_mode;
 public: // Public attributes
 	cServerDC & mS;
-};
-
-class cDCLang : public cConfigBase //<sBasicItemCreator>
-{
-public:
-	cDCLang( cServerDC &);
-	~cDCLang();
-	virtual int Load();
-	virtual int Save();
-	void AddVars();
-	cServerDC &mS;
-
-	//string ban_reason;
-	//string ban_remaining;
-	//string ban_expired;
-	//string ban_for;
-	//string ban_permanently;
-// 	string ban_types[15];
-// 	string ban_type;
-// 	string ban_removed;
-	//string ban_by;
-
-	//string chat_msg_long;
-	//string chat_msg_lines;
-	string pwd_cannot;
-	string pwd_can;
-	string pwd_min;
-	string pwd_success;
-	string pwd_set_error;
-	string pwd_setup;
-// 	string ip;
-// 	string nick;
-// 	string user;
-// 	string host;
-// 	string ip_range;
-// 	string because;
-// 	string op;
-// 	string type;
-// 	string not_in_userlist;
-	string error;
-	string success;
-	string wrong_dc_tag;
-	string tag_max_hubs;
-	string tag_max_slots;
-	string tag_min_slots;
-	string tag_max_hs_ratio;
-	string tag_no_sock;
-	string tag_no_passive;
-	
-	
-	
-	string msg_downgrade;
-	string msg_upgrade;
-	string msg_topic_set;
-	string msg_topic_reset;
-	
-	string autoreg_nick_prefix;
-	string autoreg_already_reg;
-	string autoreg_success;
-	string autoreg_error;
-
-// 	string timeout_any;
-// 	string operation_timeout;
-// 	string timeout_text[6];
 };
 };
 };

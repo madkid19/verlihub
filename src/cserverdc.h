@@ -186,7 +186,6 @@ public:
 	// mysql database connection
 	cMySQL mMySQL;
 	cDCConf mC; // configuration
-	cDCLang mL; // language
 	cSetupList mSetupList; // setup loader
 	cDCProto mP; // protocol
 	class cDCConsole *mCo; // console
