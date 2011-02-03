@@ -91,10 +91,6 @@ int main(int argc, char *argv[])
 	int result = 0;
 	string ConfigBase;
 	
-	setlocale(LC_ALL, "");
-	bindtextdomain("verlihub", LOCALEDIR);
-	textdomain("verlihub");
-	
 	#ifdef _WIN32
 	TCHAR Buffer[BUFSIZE];
 	if(!GetCurrentDirectory(BUFSIZE, Buffer)) {
@@ -124,6 +120,10 @@ int main(int argc, char *argv[])
 	#endif
 	cout << "Config dir " << ConfigBase << endl;
 	cServerDC server(ConfigBase, argv[0]);
+	setlocale(LC_ALL, server.mDBConf.locale.c_str());
+	bindtextdomain("verlihub", LOCALEDIR);
+	textdomain("verlihub");
+	
 	int port=0;
 	
 	if(argc > 1) {

@@ -43,7 +43,7 @@ public:
 	string db_pass;
 	string db_data;
 	string config_name;
-	string lang_name;
+	string locale;
 	bool allow_exec;
 	bool allow_exec_mod;
 	
