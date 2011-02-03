@@ -343,7 +343,7 @@ int nDirectConnect::nTables::cBanList::Unban(ostream &os, const string &What, co
 			unban = new cUnBan(mModel, mS);
 			unban->mUnReason = reason;
 			unban->mUnNickOp = NickOp;
-         unban->mDateUnban = cTime().Sec();
+         		unban->mDateUnban = cTime().Sec();
 			mUnBanList->SetBaseTo(unban);
 			mUnBanList->SavePK();
 			delete unban;
