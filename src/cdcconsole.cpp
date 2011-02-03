@@ -1191,7 +1191,7 @@ bool cDCConsole::cfBan::operator()()
 			} else {
 				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, BanType, unban);
 			}
-			(*mOS) << endl << autosprintf(_("Total: %d bans."), Count);
+			(*mOS) << endl << autosprintf(_("Total %d bans."), Count);
 		break;
 	case BAN_BAN:
 		Ban.mNickOp = mConn->mpUser->mNick;

@@ -934,7 +934,7 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 	stringstream errmsg,os;
 	if(!conn) return 0;
 	string omsg;
-	time_t n;
+	//time_t n;
 	bool close=false;
 
 	// phase 1: test nick validity
@@ -974,14 +974,13 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 			errmsg << _("your nick is already in use");
 		break;
 		case eVN_PREFIX:
-			errmsg << autosprintf(_("Invalid nick prefix '%s'. Use: %s"), mC.nick_prefix.c_str());
+			errmsg << autosprintf(_("Invalid nick prefix. Use: %s"), mC.nick_prefix.c_str());
 		break;
 		case eVN_NOT_REGED_OP:
 			errmsg << _("operator not registered");
 		break;
 		case eVN_BANNED:
-			n = mBanList->IsNickTempBanned(nick) - cTime().Sec();
-			errmsg << autosprintf(_("Wait %d sec before reconnecting!!"), n);
+			errmsg << autosprintf(_("Wait %s before reconnecting!!"), cTime(mBanList->IsNickTempBanned(nick) - cTime().Sec()).AsPeriod().AsString().c_str());
 		break;
 		default:
 			errmsg << _("unknown error");

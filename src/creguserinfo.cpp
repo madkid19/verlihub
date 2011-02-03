@@ -34,6 +34,7 @@ using namespace std;
 #endif
 #include "creguserinfo.h"
 #include "ctime.h"
+#include "i18n.h"
 
 using namespace ::nUtils;
 
@@ -102,22 +103,22 @@ istream & operator >> (istream &is, cRegUserInfo &ui)
 
 ostream & operator << (ostream &os, cRegUserInfo &ui)
 {
-	os << "[::] Nick: " << ui.mNick << "\r\n";
-	os << "[::] Class: " << ui.mClass << "\r\n";
-	os << "[::] Password set:" << ((ui.mPasswd.size() != 0)?"Yes":"No") << "\r\n";
-	os << "[::] Last login: " << cTime(ui.mLoginLast,0).AsDate() << "\r\n";
-	os << "[::] Last IP: " << ui.mLoginIP << "\r\n";
-	os << "[::] Last error: " << cTime(ui.mErrorLast).AsDate() << "\r\n"; 
-	os << "[::] Error IP: " << ui.mErrorIP << "\r\n";
-	os << "[::] Login count: " << ui.mLoginCount << "\r\n";
-	os << "[::] Login errors: " << ui.mErrorCount << "\r\n";
-	os << "[::] Protected: " << ((ui.mClassProtect != 0)?"Yes":"No") << "\r\n";
-	os << "[::] Hidden kicks: " << ((ui.mHideKick != 0)?"Yes":"No") << "\r\n";
-	os << "[::] Hidden keys: " << ((ui.mHideKeys != 0)?"Yes":"No") << "\r\n";
-	os << "[::] Hidden share: " << ((ui.mHideShare != 0)?"Yes":"No") << "\r\n";
-	os << "[::] Registered since: " << cTime(ui.mRegDate,0).AsDate() << "\r\n";
-	os << "[::] Registered by: " << ui.mRegOp << "\r\n";
-	os << "[::] Alternate IP: " << ui.mAlternateIP;
+	os << "[::] " << _("Nick") << ": " << ui.mNick << "\r\n";
+	os << "[::] " << _("Class") << ": " << ui.mClass << "\r\n";
+	os << "[::] " << _("Password set") << ":" << ((ui.mPasswd.size() != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[::] " << _("Last login") << ": " << cTime(ui.mLoginLast,0).AsDate() << "\r\n";
+	os << "[::] " << _("Last IP") << ": " << ui.mLoginIP << "\r\n";
+	os << "[::] " << _("Last error") << ": " << cTime(ui.mErrorLast).AsDate() << "\r\n"; 
+	os << "[::] " << _("Error IP") << ": " << ui.mErrorIP << "\r\n";
+	os << "[::] " << _("Login count") << ": " << ui.mLoginCount << "\r\n";
+	os << "[::] " << _("Login errors") << ": " << ui.mErrorCount << "\r\n";
+	os << "[::] " << _("Protected") << ": " << ((ui.mClassProtect != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[::] " << _("Hidden kicks") << ": " << ((ui.mHideKick != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[::] " << _("Hidden keys") << ": " << ((ui.mHideKeys != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[::] " << _("Hidden share") << ": " << ((ui.mHideShare != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[::] " << _("Registered since") << ": " << cTime(ui.mRegDate,0).AsDate() << "\r\n";
+	os << "[::] " << _("Registered by") << ": " << ui.mRegOp << "\r\n";
+	os << "[::] " << _("Alternate IP") << ": " << ui.mAlternateIP;
 	return os;
 }
 
