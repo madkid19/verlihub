@@ -51,7 +51,6 @@ namespace nDirectConnect
 	}
 	namespace nTables {
 		class cDCConf;
-		class cDCLang;
 		class cConnType;
 	};
 	using namespace nDirectConnect::nTables;

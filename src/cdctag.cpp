@@ -63,19 +63,19 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
   
 	//not parsed tag, unknown tag
 	if ((mClientMode == eCM_SOCK5) && !mServer->mC.tag_allow_sock5) {
-		os << mServer->mL.tag_no_sock;
+		os << _("Connections through proxy server are not allowed in this hub.");
 		code = eTC_SOCK5;
 		return false;
 	}
 		
 	if ((mClientMode == eCM_PASSIVE) && !mServer->mC.tag_allow_passive) {
-		os << mServer->mL.tag_no_passive;
+		os << _("Passive connections are restricted. Consider changing to active.");
 		code = eTC_PASSIVE;
 		return false;
 	}
 		
 	if((mTotHubs < 0) || (mSlots < 0)) {
-		os << mServer->mL.wrong_dc_tag;
+		os << _("Error: your client tag is reporting less then 0 hubs or slots!");
 		code = eTC_PARSE;
 		return false;
 	}
@@ -89,37 +89,28 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 	if(mTotHubs > mServer->mC.tag_max_hubs) {
-		ReplaceVarInString(mServer->mL.tag_max_hubs, "tag_max_hubs", MsgToUser,mServer->mC.tag_max_hubs);
-		os << MsgToUser;
+		os << autosprintf(_("Too many open hubs, max is %d"), mServer->mC.tag_max_hubs);
 		code = eTC_MAX_HUB;
 		return false;
 	}
 	
 	if(mSlots < conn_type->mTagMinSlots) {
-		ReplaceVarInString(mServer->mL.tag_min_slots, "conn_type", MsgToUser, conn_type->mIdentifier);
-		ReplaceVarInString(MsgToUser, "tag_min_slots", MsgToUser, conn_type->mTagMinSlots);
-		os << MsgToUser;
+		os << autosprintf(_("Too little open slots for your connection type (%s), min is %d"), conn_type->mIdentifier.c_str(), conn_type->mTagMinSlots);
 		code = eTC_MIN_SLOTS;
 		return false;
 	}
 	
 	if(mSlots > conn_type->mTagMaxSlots) {
-		ReplaceVarInString(mServer->mL.tag_max_slots, "conn_type", MsgToUser, conn_type->mIdentifier);
-		ReplaceVarInString(MsgToUser, "tag_max_slots", MsgToUser,  conn_type->mTagMaxSlots);
-		os << MsgToUser;
+		os << autosprintf(_("Too many open slots for your connection type (%s), max is %d"), conn_type->mIdentifier.c_str(), conn_type->mTagMaxSlots);
 		code = eTC_MAX_SLOTS;
 		return false;
 	}
 	
 	if( (mServer->mC.tag_max_hs_ratio * mSlots) < mTotHubs ) {
-		ReplaceVarInString(mServer->mL.tag_max_hs_ratio, "tag_max_hs_ratio", MsgToUser, mServer->mC.tag_max_hs_ratio);
-		ReplaceVarInString(MsgToUser, "hubs", MsgToUser, mTotHubs); 
-		ReplaceVarInString(MsgToUser, "max_hubs", MsgToUser, mSlots * mServer->mC.tag_max_hs_ratio); 
-		if (mServer->mC.tag_max_hs_ratio != 0)
-			ReplaceVarInString(MsgToUser, "min_slots", MsgToUser, mTotHubs / mServer->mC.tag_max_hs_ratio); 
-		if(mServer->mC.tag_max_hs_ratio != 0)
-			ReplaceVarInString(MsgToUser, "tag_min_sh_ratio", MsgToUser, 1/ mServer->mC.tag_max_hs_ratio);
-		os << MsgToUser;
+		os << autosprintf(_("Your hubs/slots ratio %.2f is too high (max is %.2f)."), (double) mTotHubs/mSlots, mServer->mC.tag_max_hs_ratio);
+		int slotToOpen = (mTotHubs / mServer->mC.tag_max_hs_ratio);
+		if(slotToOpen > 0)
+			os << " " << autosprintf(_("Open %d slots for %d hubs."), (int) (mTotHubs / mServer->mC.tag_max_hs_ratio), mTotHubs);
 		code = eTC_MAX_HS_RATIO;
 		return false;
 	}
@@ -128,25 +119,25 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		//Well, DCGUI bug!
 		//if (tag->mClientType == eCT_DCGUI) limit *= slot;
 		if( (conn_type->mTagMinLimit) > mLimit ) {
-			os << autosprintf(_("Too low upload limit for your connection type (%s), max ratio is %s"), conn_type->mIdentifier, conn_type->mTagMinLimit);
+			os << autosprintf(_("Too low upload limit for your connection type (%s), max ratio is %f"), conn_type->mIdentifier.c_str(), conn_type->mTagMinLimit);
 			code = eTC_MIN_LIMIT;
 			return false;
 		}
 		if( (conn_type->mTagMinLSRatio *mSlots) > mLimit ) {
-			os << autosprintf(_("Too upload limit for your connection type (%s), min upload limit is %s per every slot"), conn_type->mIdentifier, conn_type->mTagMinLSRatio);
+			os << autosprintf(_("Too upload limit for your connection type (%s), min upload limit is %f per every slot"), conn_type->mIdentifier.c_str(), conn_type->mTagMinLSRatio);
 			code = eTC_MIN_LS_RATIO;
 			return false;
 		}
 	}
 	//TODO: Disable version checking if ver is -1
 	if (client && client->mMinVersion > -1 && mClientVersion < client->mMinVersion ) {
-		os << autosprintf(_("Your client version is too old, please upgrade it. Allowed minimum version number for %s client is: %s"), client->mName, client->mMinVersion) << endl;
+		os << autosprintf(_("Your client version is too old, please upgrade it. Allowed minimum version number for %s client is: %f"), client->mName.c_str(), client->mMinVersion) << endl;
 		code = eTC_MIN_VERSION;
 		return false;
 	}
 
 	if (client && client->mMaxVersion > -1 && mClientVersion > client->mMaxVersion) {
-		os << autosprintf(_("Your client version is too recent. Allowed maximum version number for %s client is %s"), client->mName, client->mMaxVersion) << endl;
+		os << autosprintf(_("Your client version is too recent. Allowed maximum version number for %s client is %f"), client->mName.c_str(), client->mMaxVersion) << endl;
 		code = eTC_MAX_VERSION;
 		return false;
 	}

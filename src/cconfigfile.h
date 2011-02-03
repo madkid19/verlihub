@@ -33,7 +33,7 @@ namespace nConfig
   *@author Daniel Muller
   */
 
-class cConfigFile : public cConfigBase //<sBasicItemCreator>
+class cConfigFile : public cConfigBase
 {
 public:
 	cConfigFile(const string &file, bool load=true);
@@ -47,15 +47,6 @@ protected: // Protected attributes
 	/** filename */
 	string mFile;
 
-public:
-/*	class cConfigItemFile : public cConfigItemBase
-	{
-	public:
-		cConfigItemFile(void *a=NULL, tItemType t=eIT_VOID, int s=0): cConfigItem(a,t,s){};
-		cConfigItemFile(const cConfigItem &ci):cConfigItem(ci){}
-		friend istream & operator >> (istream &, cConfigItem &);
-		friend ostream & operator << (ostream &, cConfigItem &);
-	};*/
 };
 };
 #endif
