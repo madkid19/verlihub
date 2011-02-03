@@ -952,30 +952,47 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 	tVAL_NICK vn = ValidateNick(nick, (conn->GetTheoricalClass() >= eUC_REGUSER ));
 	if(vn != eVN_OK) {
 		close=true;
-		errmsg << "Bad nickname: ";
-		if (conn->Log(2)) conn->LogStream() << "Bad nick: '" << nick << "' (" << vn << ")" << endl;
+		errmsg << _("Bad nickname") << ": ";
+		if (conn->Log(2))
+			conn->LogStream() << "Bad nick: '" << nick << "' (" << vn << ")" << endl;
 	}
 	switch(vn) {
-		case eVN_OK: break;
-		case eVN_CHARS: errmsg << "unallowed characters in your nick; use these: " << mC.nick_chars; break;
-		case eVN_SHORT: errmsg << "your nick is too short"; break;
-		case eVN_LONG: errmsg << "your nick is too long"; break;
-		case eVN_USED: errmsg << "your nick is already in use"; break;
-		case eVN_PREFIX: errmsg << autosprintf(_("Invalid nick prefix '%s'. Use: %s"), mC.nick_prefix.c_str()); break;
-		case eVN_NOT_REGED_OP: errmsg << "not registered operator"; break;
-		//case eVN_RESERVED: errmsg << "reserved"; break;
+		case eVN_OK:
+		break;
+		case eVN_CHARS:
+			errmsg << _("unallowed characters in your nick.");
+			if(mC.nick_chars.size())
+				 errmsg << autosprintf(_("use these: %s"), mC.nick_chars.c_str());
+		break;
+		case eVN_SHORT:
+			errmsg << _("your nick is too short");
+		break;
+		case eVN_LONG:
+			errmsg << _("your nick is too long");
+		break;
+		case eVN_USED:
+			errmsg << _("your nick is already in use");
+		break;
+		case eVN_PREFIX:
+			errmsg << autosprintf(_("Invalid nick prefix '%s'. Use: %s"), mC.nick_prefix.c_str());
+		break;
+		case eVN_NOT_REGED_OP:
+			errmsg << _("operator not registered");
+		break;
 		case eVN_BANNED:
 			n = mBanList->IsNickTempBanned(nick) - cTime().Sec();
-			errmsg << "Wait " << n << "sec before reconnecting!!";
-			break;
-		default: errmsg << " unknown error"; break;
+			errmsg << autosprintf(_("Wait %d sec before reconnecting!!"), n);
+		break;
+		default:
+			errmsg << _("unknown error");
+		break;
 	}
 
 
-	if(close)
-	{
+	if(close) {
 		DCPublicHS(errmsg.str(),conn);
-		if (conn->Log(3)) conn->LogStream() << "Bad Nick: " << errmsg.str() << endl;
+		if (conn->Log(3))
+			conn->LogStream() << "Bad Nick: " << errmsg.str() << endl;
 		return 0;
 	}
 
@@ -1436,11 +1453,11 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					if (!(flags & eKCK_TBAN)) {
 						string msg(OP->mNick);
 						msg += " ";
-						msg += _(" dropped ");
+						msg += _("dropped");
 						ReportUserToOpchat(user->mxConn,msg, mC.dest_drop_chat);
 					}
 				} else
-					ostr << "\r\nsorry, I don't wanna kick him";
+					ostr << _("\nSorry, user cannot be kicked");
 
 				// temp ban kicked user
 				if (flags & eKCK_TBAN) {
@@ -1450,12 +1467,12 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					mKickList->FindKick(Kick, user->mNick, OP->mNick, 30, true, true);
 
 					if(user->mToBan) {
-						mBanList->NewBan(Ban, Kick, user->mBanTime, cBan::eBF_NICKIP );
-						ostr << "\r\nand he is being banned " ;
+						mBanList->NewBan(Ban, Kick, user->mBanTime, cBan::eBF_NICKIP);
+						ostr << _("\nand he is being banned") << " ";
 						Ban.DisplayKick(ostr);
 					} else {
-						mBanList->NewBan(Ban, Kick, mC.tban_kick, cBan::eBF_NICKIP );
-						ostr << "\r\nand he is being banned ";
+						mBanList->NewBan(Ban, Kick, mC.tban_kick, cBan::eBF_NICKIP);
+						ostr << _("\nand he is being banned") << " ";
 						Ban.DisplayKick(ostr);
 					}
 					mBanList->AddBan(Ban);
@@ -1467,7 +1484,7 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 			}
 		} else if(flags & eKCK_Drop) {
 			ostr.str(mEmpty);
-			ostr << "Error kicking user " << Nick << " because he's protected against all classes below (" << user->mProtectFrom << ")";
+			ostr << autosprintf(_("Error kicking user %s because he is protected against all classes below %d"), Nick.c_str(), user->mProtectFrom);
 			DCPublicHS(ostr.str(),OP->mxConn);
 		}
 	}

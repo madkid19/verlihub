@@ -25,7 +25,7 @@ using namespace std;
 #include <config.h>
 #endif
 //for the crypt
-#define _XOPEN_SOURCE 
+#define _XOPEN_SOURCE
 #include <unistd.h>
 #include <string.h>
 
@@ -142,7 +142,7 @@ void nDirectConnect::nTables::cRegUserInfo::SetPass(string str, int crypt_method
 #if ! HAVE_LIBCRYPT && ! HAVE_LIBCRYPTO
 		if (crypt_method == eCRYPT_ENCRYPT) crypt_method = eCRYPT_MD5;
 #endif
-#	if ! HAVE_LIBSSL || ! HAVE_OPENSSL_MD5_H
+#if ! HAVE_LIBSSL || ! HAVE_OPENSSL_MD5_H
 		if (crypt_method == eCRYPT_MD5) crypt_method = eCRYPT_ENCRYPT;
 #endif
 #if ! HAVE_LIBCRYPT && ! HAVE_LIBCRYPTO
