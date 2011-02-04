@@ -9,6 +9,7 @@ SET(SCRIPT_FILES
 	vh_trigger
 	vh_install_gui
 	vh_install
+	migration_0.9.8eto0.9.9a
 )
 
 # Autotool variables that will be replaced

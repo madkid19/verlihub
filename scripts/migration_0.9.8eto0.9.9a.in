@@ -1,0 +1,66 @@
+#!@BASH_PATH@
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+confdir=`$bindir/vh_getcfg`
+dbconf="$confdir/dbconfig"
+
+function DeleteConfigVariable
+{
+	vh_getdb --query "DELETE FROM SetupList WHERE var='$1' and file='config'"
+}
+
+function DeleteLangVariable
+{
+	vh_getdb --query "DELETE FROM SetupList WHERE var='$1' and file!='config'"
+}
+
+function YesNo # (question)
+{
+	read -p "$1"" (y/N)" rep
+	if [ "$rep" == "Y" ] || [ "$rep" == "y" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+echo "VerliHub migration script to version 0.9.9a"
+echo
+
+if [ ! -f $dbconf ]; then
+	echo "Verlihub config folder '$dbconf' does not exist. Please provide it by running the following command:"
+	echo "'export VERLIHUB_CFG=/path/to/config/folder'"
+	exit 1;
+fi;
+
+echo "You verlihub config folder is '$dbconf'."
+YesNo "Do you want to continue with migration?" || exit 1
+
+echo "-- Deleting ban message variables"
+ban_messages=(ban_reason ban_remaining ban_expired ban_for ban_permanently ban_type ban_removed ban_by ban_types_nickip ban_types_ip ban_types_nick ban_types_iprange ban_types_host1 ban_types_host2 ban_types_host3 ban_types_share ban_types_email ban_types_prefix ban_types_rhost1)
+for variable in ${ban_messages[@]}; do
+	DeleteLangVariable $variable
+done
+
+echo "-- Deleting timeout message variables"
+timeout_messages=(timeout_key timeout_nick timeout_login timeout_myinfo timeout_flush timeout_setpass)
+for variable in ${timeout_messages[@]}; do
+	DeleteLangVariable $variable
+done
+
+echo "-- Deleting tag_min_version and tag_max_version variables"
+clients=(plusplus dcgui odc dc dcpro strongdc idc zdc apexdc zion)
+for variable in ${other_messages[@]}; do
+	DeleteConfigVariable "tag_min_version_$variable"
+	DeleteConfigVariable "tag_max_version_$variable"
+done
+
+echo "-- Deleting other variables"
+other_messages=(save_lang chat_msg_long chat_msg_lines pwd_cannot pwd_can pwd_min pwd_success pwd_set_error pwd_setup ip nick user host ip_range because op type not_in_userlist error success wrong_dc_tag tag_max_hubs tag_max_slots tag_min_slots tag_max_hs_ratio tag_min_limit tag_min_ls_ratio tag_no_sock msg_downgrade msg_upgrade msg_topic_set msg_topic_reset autoreg_nick_prefix autoreg_already_reg autoreg_success autoreg_error timeout_any operation_timeout msg_chat_onoff msg_change_pwd msg_banned msg_hub_full msg_nick_prefix msg_downgrade msg_upgrade msg_replace_ban login_share_min login_share_max autoreg_min_share search_share_min ctm_share_min)
+for variable in ${other_messages[@]}; do
+	DeleteLangVariable $variable
+done
+
+echo "Done!"
