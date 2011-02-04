@@ -67,7 +67,7 @@ namespace nDirectConnect {
 				// Name of the client
 				string mName;
 				
-				// Unique string to identufy the client
+				// Unique string to identify the client
 				string mTagID;
 				
 				// Min version allowed
