@@ -63,4 +63,7 @@ for variable in ${other_messages[@]}; do
 	DeleteLangVariable $variable
 done
 
+echo "-- Renaming variable 'lang_name' to 'locale' in dbconfig file"
+sed -i 's/lang_name/locale/g' $dbconf
+
 echo "Done!"

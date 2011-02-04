@@ -5,7 +5,7 @@ exec_prefix=@exec_prefix@
 bindir=@bindir@
 
 if [ "$1" == "" ]; then
-				echo Usage $0 var -f file -v value --get --like
+	echo Usage $0 var -f file -v value --get --like
 	exit 1
 fi;
 
@@ -17,27 +17,33 @@ shift
 
 while [ "$1" ]; do
 	case "$1" in
-		-f)	shift
+		-f)
+			shift
 			file=$1;;
-		-v)	shift
+		-v)
+			shift
 			val=$1;;
-		-g) get=1;;
-		--get) get=1;;
-		-l) like=1;;
-		--like) like=1;;
+		-g)
+			get=1;;
+		--get)
+			get=1;;
+		-l)
+			like=1;;
+		--like)
+			like=1;;
 		*)	echo unknown parameter $1 ;;
 	esac;
 	shift;
 done;
 
 if [ "$var" == "" ]; then
-	echo var is empty
+	echo "Please provide a variable"
 fi;
 
 where="1"
 
 if [ "$file" != "" ]; then
-				where="$where and file='$file'"
+	where="$where and file='$file'"
 fi;
 
 if [ "$var" != "" ]; then
