@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VerliHub\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-03 16:48+0100\n"
-"PO-Revision-Date: 2011-02-03 16:48+0100\n"
+"POT-Creation-Date: 2011-02-04 14:18+0100\n"
+"PO-Revision-Date: 2011-02-04 14:19+0100\n"
 "Last-Translator: NetCelli <netcelli.tux@gmail.com>\n"
 "Language-Team: VerliHub team\n"
 "Language: \n"
@@ -16,111 +16,111 @@ msgstr ""
 "X-Poedit-Country: UNITED KINGDOM\n"
 "X-Poedit-SearchPath-0: /home/netcelli/Verliproject/git_repos/verlihub/src\n"
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:73
-msgid "Unknown ban display"
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:72
+msgid "Unknown ban"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:83
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:82
 #, c-format
 msgid "Reason: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:86
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:85
 #, c-format
 msgid "Remaining: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:88
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:145
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:87
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:144
 msgid "Permanently."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:90
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:89
 #, c-format
 msgid "IP: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:92
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:91
 #, c-format
 msgid "Nick: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:97
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:96
 #, c-format
 msgid "IP range: %s-%s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:100
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:99
 #, c-format
 msgid "Share: %lld"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:106
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:128
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:105
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:127
 #, c-format
 msgid "Removed: %s by %s because %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:115
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:114
 #, c-format
 msgid "OP: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:116
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:115
 #, c-format
 msgid "Ban type: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "Nick+IP"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "IP"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "Nick"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "IP Range"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "Host Level 1"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "Host Level 2"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "Host Level 3"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "Share Size"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "E-mail"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
 msgid "Nick Prefix"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:121
-msgid "Reverse-Host 1"
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:120
+msgid "Reverse Host"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:140
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:139
 #, c-format
 msgid "Ended on: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:142
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cban.cpp:141
 #, c-format
 msgid "For: %s"
 msgstr ""
@@ -195,7 +195,7 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:308
 #, c-format
-msgid "User: %s IP: %s Host: %s CC:"
+msgid "User: %s IP: %s Host: %s CC: %s"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:322
@@ -216,7 +216,7 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:402
 #, c-format
-msgid "Message delivered to %d users in zone %s in : %s"
+msgid "Message delivered to %d users in zone %s in %s"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:411
@@ -225,7 +225,32 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:422
 #, c-format
-msgid "Your IP: %s"
+msgid "Your IP is %s"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:482
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:483
+msgid "Authors"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:484
+msgid "Contributors"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:485
+msgid "Credits"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:486
+msgid "Website"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:487
+msgid "Forums"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:488
+msgid "Website/Forums design"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:507
@@ -456,7 +481,7 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:915
 #, c-format
-msgid "Temporarily protecting user %s from class %d"
+msgid "User %s is temporarily protected from class %d"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:930
@@ -552,7 +577,7 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1423
 #, c-format
-msgid "Undefined variable: %s"
+msgid "Undefined variable %s"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1440
@@ -605,7 +630,8 @@ msgid "Found nicks:"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1740
-msgid "Missing parameter(s)"
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1810
+msgid "Missing parameters."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1755
@@ -623,10 +649,6 @@ msgstr ""
 msgid "User '%s' already exists"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1810
-msgid "Missing Parameter"
-msgstr ""
-
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1830
 msgid ""
 "You have been registered, please set up your password NOW \n"
@@ -639,7 +661,7 @@ msgid "User has been added; please tell him to change his password"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1839
-msgid "Error adding a new user"
+msgid "Error adding the new user"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1853
@@ -751,12 +773,12 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcproto.cpp:473
 #, c-format
-msgid "You share %lld MB, but the min share is %lld MB. (active:%lld MB / passive:%lld MB)"
+msgid "You share %s, but the min share is %s. (active:%s / passive:%s)"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcproto.cpp:475
 #, c-format
-msgid "You share %lld MB, but the max share is %lld MB."
+msgid "You share %s, but the max share is %s."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcproto.cpp:531
@@ -1112,135 +1134,134 @@ msgstr ""
 msgid "<< Please change your password NOW using command +passwd <new_passwd>! See +help >>"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:954
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:955
+msgid "Do not reconnect too fast."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:957
 msgid "Bad nickname"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:962
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:965
 msgid "unallowed characters in your nick."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:964
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:967
 #, c-format
 msgid "use these: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:967
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:970
 msgid "your nick is too short"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:970
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:973
 msgid "your nick is too long"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:973
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:976
 msgid "your nick is already in use"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:976
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:979
 #, c-format
 msgid "Invalid nick prefix. Use: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:979
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:982
 msgid "operator not registered"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:982
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:985
 #, c-format
 msgid "Wait %s before reconnecting!!"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:985
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:988
 msgid "unknown error"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1010
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1013
 msgid "<<You are banned>>"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1024
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1027
 #, c-format
 msgid "Please add %s in front of your nick"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1165
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1168
 msgid ""
 "Error. Available units are: s(econd), m(inute), h(our), d(ay), w(eek), M(onth), Y(ear).\n"
 "Default is 'd'."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1174
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1177
 msgid "Please provide a positive number."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1196
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1199
 msgid "Hublist registration results:"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1198
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1201
 #, c-format
 msgid "Sending to %s:%d..."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1202
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1205
 msgid "connection failed"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1241
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1244
 msgid "error sending info"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1245
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1248
 msgid ".. OK"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1248
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1251
 msgid "Done"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1261
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1264
 msgid "Registering the hub in hublists. This may take a while, please wait..."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1333
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1336
 msgid "User"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1408
-#, c-format
-msgid "<%s> is kicking %s because: %s"
-msgstr ""
-
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1415
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1418
 #, c-format
 msgid "You are being kicked because: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1425
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1428
 #, c-format
 msgid "Kicked user %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1427
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1430
 #, c-format
 msgid "Dropped user %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1454
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1457
 msgid "dropped"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1458
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1461
 msgid "Sorry, user cannot be kicked"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1469
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1473
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1472
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1476
 msgid "and he is being banned"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1485
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1488
 #, c-format
 msgid "Error kicking user %s because he is protected against all classes below %d"
 msgstr ""
