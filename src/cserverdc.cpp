@@ -951,7 +951,10 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 	tVAL_NICK vn = ValidateNick(nick, (conn->GetTheoricalClass() >= eUC_REGUSER ));
 	if(vn != eVN_OK) {
 		close=true;
-		errmsg << _("Bad nickname") << ": ";
+		if(vn == eVN_BANNED)
+			errmsg << _("Do not reconnect too fast.") << " ";
+		else
+			errmsg << _("Bad nickname") << ": ";
 		if (conn->Log(2))
 			conn->LogStream() << "Bad nick: '" << nick << "' (" << vn << ")" << endl;
 	}
