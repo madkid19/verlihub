@@ -248,6 +248,8 @@ void cDCConf::AddVars()
 	Add("show_speed",show_speed,1);
 	Add("tag_max_hs_ratio",tag_max_hs_ratio,100.0);
 	Add("tag_max_hubs",tag_max_hubs,100);
+	Add("tag_min_version",tag_min_version,-1);
+	Add("tag_max_version",tag_max_version,-1);
 	// End tag configuration
 	
 	// IP and zone configuration

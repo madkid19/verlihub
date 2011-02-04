@@ -111,7 +111,7 @@ namespace nDirectConnect {
 			if(client->mEnable && client->mTagID == tagID)
 				return client;
 		}
-		//Unknwon client
+		// Unknwon client
 		return NULL;
 	}
 

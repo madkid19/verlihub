@@ -391,8 +391,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 
 	// analyze check user's tag
 	cDCTag *tag = mS->mCo->mDCClients->ParseTag(msg->ChunkString(eCH_MI_DESC));
-	if (!mS->mC.tag_allow_none && mS->mCo->mDCClients->mPositionInDesc < 0 && conn->mpUser->mClass < eUC_OPERATOR && conn->mpUser->mClass != eUC_PINGER)
-	{
+	if (!mS->mC.tag_allow_none && mS->mCo->mDCClients->mPositionInDesc < 0 && conn->mpUser->mClass < eUC_OPERATOR && conn->mpUser->mClass != eUC_PINGER) {
 		cmsg = _("Turn on your tag");
 		if(conn->Log(2))
 			conn->LogStream() << "No tag " << endl;

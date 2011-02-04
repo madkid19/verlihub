@@ -88,6 +88,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		code = eTC_UNKNOWN;
 		return false;
 	}
+	
 	if(mTotHubs > mServer->mC.tag_max_hubs) {
 		os << autosprintf(_("Too many open hubs, max is %d"), mServer->mC.tag_max_hubs);
 		code = eTC_MAX_HUB;
@@ -115,7 +116,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 	
-	if ( mLimit >= 0 ) {
+	if (mLimit >= 0) {
 		//Well, DCGUI bug!
 		//if (tag->mClientType == eCT_DCGUI) limit *= slot;
 		if( (conn_type->mTagMinLimit) > mLimit ) {
@@ -129,18 +130,33 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 			return false;
 		}
 	}
-	//TODO: Disable version checking if ver is -1
-	if (client && client->mMinVersion > -1 && mClientVersion < client->mMinVersion ) {
-		os << autosprintf(_("Your client version is too old, please upgrade it. Allowed minimum version number for %s client is: %f"), client->mName.c_str(), client->mMinVersion) << endl;
+	
+	// Use tag_min_version and tag_max_version for unknown client or use the version number in the matching rule
+	double minVersion = mServer->mC.tag_min_version, maxVersion = mServer->mC.tag_max_version;
+	
+	if(client) {
+		minVersion = client->mMinVersion;
+		maxVersion = client->mMaxVersion;
+	}
+	if(minVersion != -1 && mClientVersion < minVersion) {
+		os << _("Your client version is too old, please upgrade it.") << " ";
+		if(client)
+			os << autosprintf(_("Allowed minimum version number for %s client is: %.2f"), client->mName.c_str(), minVersion) << endl;
+		else
+			os << autosprintf(_("Allowed minimum version number for your client is: %.2f"), minVersion) << endl;
 		code = eTC_MIN_VERSION;
 		return false;
 	}
-
-	if (client && client->mMaxVersion > -1 && mClientVersion > client->mMaxVersion) {
-		os << autosprintf(_("Your client version is too recent. Allowed maximum version number for %s client is %f"), client->mName.c_str(), client->mMaxVersion) << endl;
+	if(maxVersion != -1 && mClientVersion < maxVersion) {
+		os << _("Your client version is too recent") << " ";
+		if(client)
+				os << autosprintf(_("Your client version is too recent. Allowed maximum version number for %s client is %.2f"), client->mName.c_str(), maxVersion) << endl;
+		else
+			os << autosprintf(_("Your client version is too recent. Allowed maximum version number for your client is %.2f"), maxVersion) << endl;
 		code = eTC_MAX_VERSION;
 		return false;
 	}
+
 	return true;
 }
 

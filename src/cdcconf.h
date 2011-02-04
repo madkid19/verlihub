@@ -127,7 +127,7 @@ public:
 	string hub_version_special;
 	string hub_name;
 	string hub_version;
-	string hub_topic;	
+	string hub_topic;
 	string hub_desc;
 	string hub_host;
 	string hub_owner;
@@ -187,6 +187,8 @@ public:
 	bool tag_allow_passive;
 	int tag_min_class_ignore;
 	int tag_sum_hubs;
+	double tag_min_version;
+	double tag_max_version;
 	string cc_zone[3];
 	int show_tags; // 0 - no at all; 1 - only to ops, 2- only to everyone ;)
 	int show_desc_len; // cut first n bytes of description
