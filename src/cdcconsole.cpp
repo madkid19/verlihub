@@ -37,6 +37,7 @@
 #include "ccustomredirects.h"
 #include "cdcclients.h"
 #include "i18n.h"
+#include <sys/resource.h>
 
 using nUtils::cTime;
 
@@ -1404,22 +1405,18 @@ bool cDCConsole::cfSetVar::operator()()
 	string file(mS->mDBConf.config_name),var,val, fake_val;
 	bool DeleteItem = false;
 	
+	if(mConn->mpUser->mClass < eUC_ADMIN)
+		return false;
 
-	//@todo use cUser::Can
-	//@todo per-variable rights
-	if(mConn->mpUser->mClass < eUC_ADMIN) return false;
-
-	if (mParRex->PartFound(2)) mParRex->Extract(2,mParStr,file);
+	if (mParRex->PartFound(2))
+		mParRex->Extract(2,mParStr,file);
 	mParRex->Extract(3,mParStr,var);
 	mParRex->Extract(4,mParStr,val);
 
 	cConfigItemBase *ci = NULL;
-	if (file == mS->mDBConf.config_name)
-	{
+	if (file == mS->mDBConf.config_name) {
 		ci = mS->mC[var];
-
-		if(!ci)
-		{
+		if(!ci) {
 			(*mOS) << autosprintf(_("Undefined variable %s"), var.c_str());
 			return false;
 		}
@@ -1429,9 +1426,7 @@ bool cDCConsole::cfSetVar::operator()()
 		mS->mSetupList.LoadItem(file.c_str(), ci);
 	}
 
-	if (ci)
-	{
-		
+	if(ci) {
 		ostringstream oldValue;
 		oldValue << *ci;
 		ci->ConvertFrom(val);
@@ -1443,7 +1438,11 @@ bool cDCConsole::cfSetVar::operator()()
 			delete ci;
 		ci = NULL;
 	}
-
+	
+	struct rlimit userLimit;
+	// Get maximum file descriptor number
+	if(!getrlimit(RLIMIT_NOFILE, &userLimit) && userLimit.rlim_cur < mS->mC.max_users_total)
+		(*mOS) << "\n" << autosprintf(_("WARNING: VerliHub allows maximum %d users, but current resource limit is %d. Consider to run !ulimit -n <max_users>"), mS->mC.max_users_total, (int) userLimit.rlim_cur);
 	return true;
 }
 
