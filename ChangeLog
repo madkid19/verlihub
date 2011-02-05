@@ -1,3 +1,9 @@
+2011-02-05  gettextize  <bug-gnu-gettext@gnu.org>
+	* Makefile.am (ACLOCAL_AMFLAGS): New variable.
+	(EXTRA_DIST): Add config.rpath, m4/ChangeLog.
+	* configure.in (AC_CONFIG_FILES): Add po/Makefile.in.
+	(AM_GNU_GETTEXT_VERSION): Bump to 0.18.1.
+
 2010-04-18 chaos/netcelli (0.9.9a)
 	 * Fixed bug when host_header is set to 0
 	 * Fixed broken OnValidateTag callback
