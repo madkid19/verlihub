@@ -5,12 +5,15 @@ DISTCLEANFILES = dirsettings.h
 BUILT_SOURCES = dirsettings.h
 dirsettings.h: Makefile
 	echo '#define DATADIR "$(datadir)"' >$@
+	echo '#define LOCALEDIR "$(datadir)/locale"' >>$@
 	echo '#define SYSCONFDIR "$(sysconfdir)"' >>$@
 	echo '#define PREFIXDIR "${prefix}"' >> $@
 
-SUBDIRS = src plugins scripts share
-EXTRA_DIST = noapos_mysql noapos_pcre config_geoip verlihub.spec config.rpath ChangeLog  AUTHORS COPYING INSTALL LICENSE TODO config.h.in
+SUBDIRS = src plugins scripts share po
+EXTRA_DIST = config.rpath noapos_mysql noapos_pcre config_geoip verlihub.spec config.rpath ChangeLog  AUTHORS COPYING INSTALL LICENSE TODO config.h.in
 DIST_SUBDIRS = $(SUBDIRS)
 bin_SCRIPTS = verlihub_config
 
 
+
+ACLOCAL_AMFLAGS = -I m4

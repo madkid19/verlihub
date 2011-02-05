@@ -212,3 +212,7 @@
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
+
+/* Define to 1 if translation of program messages to the user's
+  native language is requested. */
+#undef ENABLE_NLS
