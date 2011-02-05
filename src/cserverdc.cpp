@@ -1330,7 +1330,8 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 
 	os << Msg << " -- ";
 	if (conn) {
-		if(!mUseDNS && mC.report_dns_lookup) conn->DNSLookup();
+		if(!mUseDNS && mC.report_dns_lookup)
+			conn->DNSLookup();
 		os << "IP=' " << conn->AddrIP() <<" ' Host=' " << conn->AddrHost() <<" ' ";
 		if (conn->mpUser)
 			os << _("User") << "='" << conn->mpUser->mNick << "' ";

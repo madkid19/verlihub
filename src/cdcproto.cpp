@@ -160,11 +160,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	limit_cc += limit_extra;
 		
 	// Check the max_users limit
-	if( (conn->GetTheoricalClass() < eUC_OPERATOR) &&
-		(
-		  (mS->mUserCountTot >= limit) ||   (mS->mUserCount[conn->mGeoZone] >= limit_cc)
-		)
-	) {
+	if((conn->GetTheoricalClass() < eUC_OPERATOR) && ((mS->mUserCountTot >= limit) || (mS->mUserCount[conn->mGeoZone] >= limit_cc))) {
 		os << _("<<User limit exceeded, hub is full.>>") << "\r\n" << autosprintf(_("Online users: %d"),  mS->mUserCountTot);
 		if(conn->Log(2)) {
 			conn->LogStream()
@@ -781,11 +777,20 @@ bool cDCProto::CheckChatMsg(const string &text, cConnDC *conn)
 
 int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 {
-	if(msg->SplitChunks()) return -1;
-	if(!conn->mpUser) return -2;
-	if(!conn->mpUser->mInList) return -3;
-	if(!conn->mpUser->Can(eUR_CHAT, mS->mTime.Sec(), 0)) return -4;
+	if(msg->SplitChunks())
+		return -1;
+	if(!conn->mpUser)
+		return -2;
+	if(!conn->mpUser->mInList)
+		return -3;
+	if(!conn->mpUser->Can(eUR_CHAT, mS->mTime.Sec(), 0))
+		return -4;
 	
+	if(conn->mpUser->mClass < mS->mC.mainchat_class) {
+		mS->DCPublicHS(_("Mainchat is currently disabled for non registered users."),conn);
+		return 0;
+	}
+
 	cUser::tFloodHashType Hash = 0;
 	Hash = tHashArray<void*>::HashString(msg->mStr);
 	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_CHAT])) {
@@ -823,10 +828,6 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 
 	if(ParseForCommands(text, conn)) return 0;
 	
-	if(conn->mpUser->mClass < mS->mC.mainchat_class) {
-		mS->DCPublicHS("Mainchat is currently disabled for non registered users.",conn);
-		return 0;
-	}
 	////////// here is the part that finally distributes messages
 	// check message length only for less than vip regs
 	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text, conn)) 

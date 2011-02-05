@@ -150,9 +150,9 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 	if(maxVersion != -1 && mClientVersion < maxVersion) {
 		os << _("Your client version is too recent") << " ";
 		if(client)
-				os << autosprintf(_("Your client version is too recent. Allowed maximum version number for %s client is %.2f"), client->mName.c_str(), maxVersion) << endl;
+				os << autosprintf(_("Allowed maximum version number for %s client is %.2f"), client->mName.c_str(), maxVersion) << endl;
 		else
-			os << autosprintf(_("Your client version is too recent. Allowed maximum version number for your client is %.2f"), maxVersion) << endl;
+			os << autosprintf(_("Allowed maximum version number for your client is %.2f"), maxVersion) << endl;
 		code = eTC_MAX_VERSION;
 		return false;
 	}
