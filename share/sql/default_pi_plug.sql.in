@@ -2,6 +2,7 @@ INSERT IGNORE INTO pi_plug (nick,autoload,path,detail) VALUES
 	("isp"    ,0,"@prefix@/lib/libisp_pi.so"   ,"Internet Service Provider settings, country codes, nick prefix, desc tag,..."),
 	("lua"    ,0,"@prefix@/lib/liblua_pi.so"   ,"Support for lua scripts"),
 	("perl"   ,0,"@prefix@/lib/libperl_pi.so"  ,"Support for perl scripts"),
+	("python"   ,0,"@prefix@/lib/libpython_pi.so"  ,"Support for python scripts"),
 	("msg"    ,0,"@prefix@/lib/libmessanger_pi.so","Offline messages system"),
 	("flood"  ,0,"@prefix@/lib/libfloodprot_pi.so","Advanced flood protection"),
 	("log"    ,0,"@prefix@/lib/libiplog_pi.so","Log ip's, nicks; history commands"),
