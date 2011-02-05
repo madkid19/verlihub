@@ -23,6 +23,7 @@
 #include "cconfigitembase.h"
 #include "cserverdc.h"
 #include "cpcre.h"
+#include "i18n.h"
 
 using nUtils::cPCRE;
 namespace nDirectConnect {
@@ -329,7 +330,7 @@ namespace nDirectConnect {
 
 	void cDCClientConsole::ListHead(ostream *os)
 	{
-		*os << "Existing clients are:\r\n";
+		*os << _("Existing clients are:") << "\r\n";
 	}
 		
 	bool cDCClientConsole::IsConnAllowed(cConnDC *conn,int cmd)

@@ -523,7 +523,7 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 		uType = _("Admin"); sInt = mOwner->mC.int_search_op;
 	} 
 	if (conn->GetTheoricalClass() == eUC_MASTER) {
-		uType = _("God"); sInt = mOwner->mC.int_search_op;
+		uType = _("Master"); sInt = mOwner->mC.int_search_op;
 	}
 	if (!conn->mpUser->IsPassive == true) {
 		cType = _("Active");
@@ -812,7 +812,7 @@ int cDCConsole::CmdClass(istringstream &cmd_line, cConnDC *conn)
 	if(user && user->mxConn) {
 		oclass = user->mClass;
 		if(oclass < mclass) {
-		    	os << autosprintf(_("Temporarily changing class to %d for user %s"), nclass, s.c_str()) << endl;
+			os << autosprintf(_("Temporarily changed class to %d for user %s"), nclass, s.c_str()) << endl;
 			user->mClass = (tUserCl) nclass;
 			if ((oclass < eUC_OPERATOR) && (nclass >= eUC_OPERATOR)) {
 				mOwner->mOpchatList.Add(user);
@@ -1145,7 +1145,7 @@ bool cDCConsole::cfBan::operator()()
 			BanTime = mS->Str2Period(tmp, *mOS);
 			if(BanTime < 0)
 			{
-				(*mOS) << _("Please provide a valid ban time");
+				(*mOS) << _("Please provide a valid ban time.");
 				return false;
 			}
 		} else IsPerm = true;
@@ -1161,7 +1161,7 @@ bool cDCConsole::cfBan::operator()()
 		case BAN_INFO:
 			if (unban) {
 				if( !GetParStr(BAN_REASON,tmp)) {
-					(*mOS) << _("Please provide a valid reason");
+					(*mOS) << _("Please provide a valid reason.");
 					return false;
 				}
 				#ifndef WITHOUT_PLUGINS
@@ -1217,7 +1217,7 @@ bool cDCConsole::cfBan::operator()()
 				}
 			} else {
 				if ( !mParRex->PartFound(BAN_REASON) ) {
-					(*mOS) << _("Please provide a valid reason");
+					(*mOS) << _("Please provide a valid reason.");
 					return false;
 				}
 				if (BanType == cBan::eBF_NICKIP) BanType = cBan::eBF_IP;
@@ -1240,7 +1240,7 @@ bool cDCConsole::cfBan::operator()()
 		case cBan::eBF_HOSTR1:
 			if ( !mParRex->PartFound(BAN_REASON) )
 			{
-				(*mOS) << _("Please provide a valid reason");
+				(*mOS) << _("Please provide a valid reason.");
 				return false;
 			}
 			if ( MyClass < (eUC_ADMIN - (BanType - cBan::eBF_HOST1) ) ) //@todo rights
@@ -1254,7 +1254,7 @@ bool cDCConsole::cfBan::operator()()
 		case cBan::eBF_RANGE:
 			if(! cDCConsole::GetIPRange(Who, Ban.mRangeMin, Ban.mRangeMax) )
 			{
-				(*mOS) << autosprintf(_("Unknown range format '%s'"), Who.c_str());
+				(*mOS) << autosprintf(_("Unknown range format '%s'."), Who.c_str());
 				return false;
 			}
 			Ban.mIP=Who;
@@ -1262,7 +1262,7 @@ bool cDCConsole::cfBan::operator()()
 		case cBan::eBF_PREFIX:
 			if ( !mParRex->PartFound(BAN_REASON) )
 			{
-				(*mOS) << _("Please provide a valid reason");
+				(*mOS) << _("Please provide a valid reason.");
 				return false;
 			}
 			Ban.mNick = Who;
@@ -1271,7 +1271,7 @@ bool cDCConsole::cfBan::operator()()
 		{
 			if ( !mParRex->PartFound(BAN_REASON) )
 			{
-				(*mOS) << _("Please provide a valid reason");
+				(*mOS) << _("Please provide a valid reason.");
 				return false;
 			}
 			istringstream is(Who);
@@ -1442,7 +1442,7 @@ bool cDCConsole::cfSetVar::operator()()
 	struct rlimit userLimit;
 	// Get maximum file descriptor number
 	if(!getrlimit(RLIMIT_NOFILE, &userLimit) && userLimit.rlim_cur < mS->mC.max_users_total)
-		(*mOS) << "\n" << autosprintf(_("WARNING: VerliHub allows maximum %d users, but current resource limit is %d. Consider to run !ulimit -n <max_users>"), mS->mC.max_users_total, (int) userLimit.rlim_cur);
+		(*mOS) << "\n" << autosprintf(_("WARNING: VerliHub allows maximum %d users, but current resource limit is %d. Consider to run ulimit -n <max_users>"), mS->mC.max_users_total, (int) userLimit.rlim_cur);
 	return true;
 }
 
@@ -1616,7 +1616,7 @@ bool cDCConsole::cfKick::operator()()
 	switch(Action) {
 		case eAC_KICK:
 			if(!mParRex->PartFound(2)) {
-				(*mOS) << _("Please provide a valid reason") << endl;
+				(*mOS) << _("Please provide a valid reason.") << endl;
 				return false;
 			}
 			mParRex->Extract(2,mParStr,text);

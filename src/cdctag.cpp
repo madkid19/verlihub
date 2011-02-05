@@ -120,12 +120,12 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		//Well, DCGUI bug!
 		//if (tag->mClientType == eCT_DCGUI) limit *= slot;
 		if( (conn_type->mTagMinLimit) > mLimit ) {
-			os << autosprintf(_("Too low upload limit for your connection type (%s), max ratio is %f"), conn_type->mIdentifier.c_str(), conn_type->mTagMinLimit);
+			os << autosprintf(_("Too low upload limit for your connection type (%s), minimum upload rate is %.2f"), conn_type->mIdentifier.c_str(), conn_type->mTagMinLimit);
 			code = eTC_MIN_LIMIT;
 			return false;
 		}
 		if( (conn_type->mTagMinLSRatio *mSlots) > mLimit ) {
-			os << autosprintf(_("Too upload limit for your connection type (%s), min upload limit is %f per every slot"), conn_type->mIdentifier.c_str(), conn_type->mTagMinLSRatio);
+			os << autosprintf(_("Too low upload limit per slot for your connection type (%s), minimum upload limit is %.2f per slot"), conn_type->mIdentifier.c_str(), conn_type->mTagMinLSRatio);
 			code = eTC_MIN_LS_RATIO;
 			return false;
 		}
@@ -148,7 +148,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 	if(maxVersion != -1 && mClientVersion < maxVersion) {
-		os << _("Your client version is too recent") << " ";
+		os << _("Your client version is too recent.") << " ";
 		if(client)
 				os << autosprintf(_("Allowed maximum version number for %s client is %.2f"), client->mName.c_str(), maxVersion) << endl;
 		else

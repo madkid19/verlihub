@@ -20,6 +20,7 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cdcclient.h"
+#include "i18n.h"
 
 namespace nDirectConnect {
 	namespace nTables {
@@ -39,18 +40,15 @@ namespace nDirectConnect {
 		{
 			os << "\r" << tr.mName << " ID: " << tr.mTagID;
  			if(tr.mMinVersion < 0 && tr.mMaxVersion < 0)
- 				os << " All version";
+ 				os << " " << _("All version");
  			else if(tr.mMinVersion >= 0 && tr.mMaxVersion < 0)
- 				os << " Min version: " << tr.mMinVersion;
+ 				os << " " << autosprintf(_("Min version: %.2f"), tr.mMinVersion);
  			else if(tr.mMinVersion < 0 && tr.mMaxVersion >= 0)
- 				os << " Max version: " << tr.mMaxVersion;
+				os << " " << autosprintf(_("Max version: %.2f"), tr.mMaxVersion);
  			else
- 				os << tr.mMinVersion << "-" << tr.mMaxVersion;
-			os << " Ban: " << tr.mBan;
- 			os << " (";
- 			if(tr.mEnable) os << "Enable";
- 			else os << "Disable";
- 			os << ")";
+ 				os << " " << tr.mMinVersion << "-" << tr.mMaxVersion;
+			os << " " << autosprintf(_("Banned: %s") , tr.mBan ? _("Yes") : _("No"));
+ 			os << " (" << (tr.mEnable ? _("Enable") : _("Disable")) << ")";
 			return os;
 		}
 	};

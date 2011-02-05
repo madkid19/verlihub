@@ -114,7 +114,7 @@ ostream & operator << (ostream &os, cRegUserInfo &ui)
 	os << "[::] " << _("Login errors") << ": " << ui.mErrorCount << "\r\n";
 	os << "[::] " << _("Protected") << ": " << ((ui.mClassProtect != 0) ? _("Yes") : _("No")) << "\r\n";
 	os << "[::] " << _("Hidden kicks") << ": " << ((ui.mHideKick != 0) ? _("Yes") : _("No")) << "\r\n";
-	os << "[::] " << _("Hidden keys") << ": " << ((ui.mHideKeys != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[::] " << _("Hidden key") << ": " << ((ui.mHideKeys != 0) ? _("Yes") : _("No")) << "\r\n";
 	os << "[::] " << _("Hidden share") << ": " << ((ui.mHideShare != 0) ? _("Yes") : _("No")) << "\r\n";
 	os << "[::] " << _("Registered since") << ": " << cTime(ui.mRegDate,0).AsDate() << "\r\n";
 	os << "[::] " << _("Registered by") << ": " << ui.mRegOp << "\r\n";

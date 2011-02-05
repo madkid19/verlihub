@@ -22,6 +22,7 @@
 #include "cchatconsole.h"
 #include "cserverdc.h"
 #include "cuser.h"
+#include "i18n.h"
 
 namespace nDirectConnect
 {
@@ -114,14 +115,12 @@ bool cChatConsole::cfOut::operator()()
 	cUser *user;
 
 	GetParOnlineUser(1, user,nick);
-	if(!user ||!user->mxConn || !GetTheList()->ContainsNick(nick))
-	{
-		*mOS << "User '" << nick << "' is not in this room.";
+	if(!user ||!user->mxConn || !GetTheList()->ContainsNick(nick)) {
+		*mOS << autosprintf(_("User '%s' is not in this room."), nick.c_str());
 		return false;
 	}
-	if (user->mClass > mConn->mpUser->mClass)
-	{
-		*mOS << "You are not higher than " << nick;
+	if (user->mClass > mConn->mpUser->mClass) {
+		*mOS << autosprintf(_("You cannot send %s out of the room because he has higher privilegies."), nick.c_str());
 		return false;
 	}
 
@@ -133,8 +132,7 @@ bool cChatConsole::cfOut::operator()()
 
 bool cChatConsole::cfLeave::operator()()
 {
-	if (mConn && mConn->mpUser)
-	{
+	if (mConn && mConn->mpUser) {
 		GetTheList()->Remove(mConn->mpUser);
 		return true;
 	} else return false;
@@ -143,10 +141,9 @@ bool cChatConsole::cfLeave::operator()()
 bool cChatConsole::cfMembers::operator()()
 {
 	string NickList;
-	if (mConn && mConn->mpUser)
-	{
+	if (mConn && mConn->mpUser) {
 		NickList = GetTheList()->GetNickList();
-		*mOS << "Members: \r\n" << NickList;
+		*mOS << autosprintf(_("Members: \n%s"), NickList.c_str());;
 		return true;
 	} else return false;
 }
@@ -159,7 +156,7 @@ bool cChatConsole::cfInvite::operator()()
 	GetParOnlineUser(1, user,nick);
 	if(!user ||!user->mxConn)
 	{
-		*mOS << "User '" << nick << "' is not online, so you cannot invite him.";
+		*mOS << autosprintf(_("User '%s' is not online, so you cannot invite him."), nick.c_str());
 		return false;
 	}
 	GetParStr(3, msg);

@@ -22,6 +22,7 @@
 #include "cconntypes.h"
 #include "cserverdc.h"
 #include "cdcconsole.h"
+#include "i18n.h"
 
 namespace nDirectConnect
 {
@@ -41,12 +42,9 @@ void cConnType::OnLoad(){}
 
 ostream &operator << (ostream &os, cConnType &ct)
 {
-	os.width(15);
 	os << ct.mIdentifier;
-       	os.width(0);
-	os << " : Slots: " << 
-		ct.mTagMinSlots << ".." << ct.mTagMaxSlots << " Min limiter: " <<
-		ct.mTagMinLimit << " , " << ct.mTagMinLSRatio << "/slot" << " - " << ct.mDescription ;
+	os << ": ";
+	os << autosprintf(_("Slots: %d..%d Min limiter: %.2f, %.2f/slot - %s"), ct.mTagMinSlots, ct.mTagMaxSlots, ct.mTagMinLimit, ct.mTagMinLSRatio, ct.mDescription.c_str());
 	return os;
 }
 
@@ -79,8 +77,7 @@ cConnType *cConnTypes::FindConnType(const string &identifier)
 {
 	iterator it;
 	cConnType *ConnType, *DefaultType = NULL;
-	for( it=begin(); it != end(); ++it)
-	{
+	for( it=begin(); it != end(); ++it) {
 		ConnType = *it;
 		if(ConnType->mIdentifier == identifier)
 			return ConnType;
@@ -175,7 +172,7 @@ const char *cConnTypeConsole::CmdPrefix(){ return "!";}
 
 void cConnTypeConsole::ListHead(ostream *os)
 {
-	*os << "Existing connection types are:\r\n";
+	*os << _("Existing connection types are:") << "\r\n";
 }
 
 bool cConnTypeConsole::IsConnAllowed(cConnDC *conn,int cmd)
