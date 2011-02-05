@@ -188,7 +188,8 @@ AC_SUBST(VERLIHUB_LIBS)
 
 AC_SUBST(SUB_PLUGINS)
 
-AC_CONFIG_FILES([Makefile po/Makefile.in
+AC_CONFIG_FILES([Makefile
+		 po/Makefile.in
 		 src/Makefile
 		 scripts/Makefile
 		 share/Makefile
