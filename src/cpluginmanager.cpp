@@ -51,11 +51,12 @@ cPluginManager::~cPluginManager(){}
  */
 bool nPlugin::cPluginManager::LoadAll()
 {
-	if(Log(0)) LogStream() << "Open dir: " << mPluginDir << endl;
+	if(Log(0))
+		LogStream() << "Open dir: " << mPluginDir << endl;
 	DIR *dir = opendir(mPluginDir.c_str());
-	if( dir == NULL)
-	{
-		if(Log(1)) LogStream() << "Open dir error" << endl;
+	if(dir == NULL) {
+		if(Log(1))
+			LogStream() << "Open dir error" << endl;
 		return false;
 	}
 	struct dirent * ent = NULL;
@@ -63,13 +64,12 @@ bool nPlugin::cPluginManager::LoadAll()
 	string filename;
 	string pathname;
 
-	while (NULL!= (ent=readdir(dir)))
-	{
+	while (NULL!= (ent=readdir(dir))) {
 		filename = ent->d_name;
-		if(Log(3)) LogStream() << "filename: " << filename << endl;
-		if((filename.size() > 3) && (0 == StrCompare(filename,filename.size()-3,3,".so")))
-		{
-			pathname=mPluginDir+filename;
+		if(Log(3))
+			LogStream() << "filename: " << filename << endl;
+		if((filename.size() > 3) && (0 == StrCompare(filename,filename.size()-3,3,".so"))) {
+			pathname = mPluginDir+filename;
 			LoadPlugin(pathname);
 		}
 	}
@@ -86,15 +86,12 @@ bool nPlugin::cPluginManager::LoadPlugin(const string &file)
 #if ! defined _WIN32
 	cPluginLoader *plugin;
 	mLastLoadError = "";
-	if(Log(3)) LogStream() << "Attempt loading plugin: " << file << endl;
+	if(Log(3))
+		LogStream() << "Attempt loading plugin: " << file << endl;
 	plugin = new cPluginLoader(file);
-	if(!plugin) return false;
-	if(
-		!plugin->Open() ||
-		!plugin->LoadSym() ||
-		!mPlugins.AddWithHash(plugin, mPlugins.Key2Hash(plugin->mPlugin->Name()))
-	)
-	{
+	if(!plugin)
+		return false;
+	if(!plugin->Open() || !plugin->LoadSym() || !mPlugins.AddWithHash(plugin, mPlugins.Key2Hash(plugin->mPlugin->Name()))) {
 		mLastLoadError = plugin->Error();
 		delete plugin;
 		return false;
@@ -105,11 +102,12 @@ bool nPlugin::cPluginManager::LoadPlugin(const string &file)
 		plugin->mPlugin->RegisterAll();
 
 		OnPluginLoad(plugin->mPlugin);
-	} catch (...)
-	{
-		if(ErrLog(1)) LogStream() << "Plugin " << file << " caused an exception" << endl;
+	} catch (...) {
+		if(ErrLog(1))
+			LogStream() << "Plugin " << file << " caused an exception" << endl;
 	}
-	if(Log(1)) LogStream() << "Succes loading plugin: " << file << endl;
+	if(Log(1))
+		LogStream() << "Succes loading plugin: " << file << endl;
 #endif
 	return true;
 }
@@ -121,10 +119,9 @@ bool nPlugin::cPluginManager::LoadPlugin(const string &file)
 bool nPlugin::cPluginManager::UnloadPlugin(const string &name)
 {
 	cPluginLoader *plugin = mPlugins.GetByHash(mPlugins.Key2Hash(name));
-	if(!plugin || !mPlugins.RemoveByHash(mPlugins.Key2Hash(name)))
-	{
-		if(ErrLog(2)) LogStream() << "Can't unload plugin name: '"
-			<< name << "'" << endl;
+	if(!plugin || !mPlugins.RemoveByHash(mPlugins.Key2Hash(name))) {
+		if(ErrLog(2))
+			LogStream() << "Can't unload plugin name: '" << name << "'" << endl;
 		return false;
 	}
 
@@ -141,11 +138,12 @@ bool nPlugin::cPluginManager::UnloadPlugin(const string &name)
 bool nPlugin::cPluginManager::ReloadPlugin(const string &name)
 {
 	cPluginLoader *plugin = mPlugins.GetByHash(mPlugins.Key2Hash(name));
-	if (plugin)
-	{
+	if (plugin) {
 		string filename = plugin->GetFilename();
-		if(!UnloadPlugin(name)) return false;
-		if(!LoadPlugin(filename)) return false;
+		if(!UnloadPlugin(name))
+			return false;
+		if(!LoadPlugin(filename))
+			return false;
 		return true;
 	}
 	return false;
@@ -156,8 +154,10 @@ bool nPlugin::cPluginManager::ReloadPlugin(const string &name)
 */
 bool nPlugin::cPluginManager::SetCallBack(string  id, cCallBackList *cb)
 {
-	if(!cb) return false;
-	if(id.size() == 0) return false;
+	if(!cb)
+		return false;
+	if(id.size() == 0)
+		return false;
 	return mCallBacks.AddWithHash(cb,mCallBacks.Key2Hash(id));
 }
 
@@ -168,8 +168,10 @@ bool nPlugin::cPluginManager::SetCallBack(string  id, cCallBackList *cb)
 bool nPlugin::cPluginManager::RegisterCallBack(string id, cPluginBase *pi)
 {
 	cCallBackList *cbl = mCallBacks.GetByHash(mCallBacks.Key2Hash(id));
-	if( !cbl ) return false;
-	if( !pi ) return false;
+	if(!cbl)
+		return false;
+	if(!pi)
+		return false;
 	return cbl->Register(pi);
 }
 
@@ -179,16 +181,17 @@ bool nPlugin::cPluginManager::RegisterCallBack(string id, cPluginBase *pi)
 bool nPlugin::cPluginManager::UnregisterCallBack(string id, cPluginBase *pi)
 {
 	cCallBackList *cbl = mCallBacks.GetByHash(mCallBacks.Key2Hash(id));
-	if( !cbl ) return false;
-	if( ! pi ) return false;
+	if(!cbl)
+		return false;
+	if(!pi)
+		return false;
 	return cbl->Unregister(pi);
 }
 
 void nPlugin::cPluginManager::List(ostream &os)
 {
 	tPlugins::iterator it;
-	for (it = mPlugins.begin(); it != mPlugins.end(); ++it)
-	{
+	for (it = mPlugins.begin(); it != mPlugins.end(); ++it) {
 		os << (*it)->mPlugin->Name() << " " << (*it)->mPlugin->Version() << "\r\n";
 	}
 }
@@ -196,8 +199,7 @@ void nPlugin::cPluginManager::List(ostream &os)
 void nPlugin::cPluginManager::ListAll(ostream &os)
 {
 	tCBList::iterator it;
-	for (it = mCallBacks.begin(); it != mCallBacks.end(); ++it)
-	{
+	for (it = mCallBacks.begin(); it != mCallBacks.end(); ++it) {
 		os << "CB: " << (*it)->Name() << "\r\n";
 		(*it)->ListRegs(os,"   ");
 	}
@@ -216,8 +218,7 @@ nPlugin::cPluginBase * nPlugin::cPluginManager::GetPlugin(const string &Name)
 nPlugin::cPluginBase * nPlugin::cPluginManager::GetPluginByLib(const string &lib)
 {
 	tPlugins::iterator it;
-	for (it = mPlugins.begin(); it != mPlugins.end(); ++it)
-	{
+	for (it = mPlugins.begin(); it != mPlugins.end(); ++it) {
 		if ((*it)->GetFilename() == lib) return (*it)->mPlugin;
 	}
 	return NULL;
