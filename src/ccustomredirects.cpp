@@ -22,6 +22,7 @@
 #include "ccustomredirects.h"
 #include "cconfigitembase.h"
 #include "cserverdc.h"
+#include "i18n.h"
 
 namespace nDirectConnect {
 	namespace nTables {
@@ -209,7 +210,7 @@ namespace nDirectConnect {
 
 	void cRedirectConsole::ListHead(ostream *os)
 	{
-		*os << "Existing redirects are:\r\n";
+		*os << _("Existing redirects are:") << "\r\n";
 	}
 		
 	bool cRedirectConsole::IsConnAllowed(cConnDC *conn,int cmd)

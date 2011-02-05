@@ -30,7 +30,8 @@ cVHPluginMgr::cVHPluginMgr(cServerDC *server,const string pluginDir):
 	cPluginManager(pluginDir), mServer(server)
 {
 	SetClassName("cVHPluginMgr");
-	if (Log(0)) LogStream() << "using plugins in: " << pluginDir << endl;
+	if (Log(0))
+		LogStream() << "using plugins in: " << pluginDir << endl;
 	cout << "------------------------" << endl;
 }
 
@@ -45,6 +46,7 @@ cVHPluginMgr::~cVHPluginMgr(){}
  */
 void nDirectConnect::nPlugin::cVHPluginMgr::OnPluginLoad(cPluginBase *pi)
 {
-	if (Log(0)) LogStream() << "OnPluginLoad: " << pi->Name() << endl;
+	if (Log(0))
+		LogStream() << "OnPluginLoad: " << pi->Name() << endl;
 	((cVHPlugin *)pi)->OnLoad(mServer);
 }

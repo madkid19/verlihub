@@ -21,6 +21,7 @@
 ***************************************************************************/
 
 #include "ccustomredirect.h"
+#include "i18n.h"
 
 namespace nDirectConnect {
 
@@ -50,8 +51,8 @@ namespace nDirectConnect {
 			if(buff.empty()) buff = "default";
 			else buff.erase(buff.end() -1);
 			os << buff << " (";
-			if(tr.mEnable) os << "Enable";
-			else os << "Disable";
+			if(tr.mEnable) os << _("Enable");
+			else os << _("Disable");
 			os << ")";
 			return os;
 		}

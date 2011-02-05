@@ -30,6 +30,8 @@
 #include <config.h>
 #endif
 
+#include "i18n.h"
+
 using namespace nStringUtils;
 namespace nDirectConnect {
 namespace nTables {
@@ -197,7 +199,7 @@ void cTrigger::OnLoad()
 
 ostream &operator << (ostream &os, cTrigger &tr)
 {
-	os << tr.mCommand << " " << tr.mDefinition.substr(0,64) << " Flags:" << tr.mFlags << " SendAs:" << tr.mSendAs << " Class: " << tr.mMinClass << "-" << tr.mMaxClass;
+    	os << autosprintf(_("%s %s Flags: %d  SendAs: %s  Class: %d-%d") , tr.mCommand.c_str(), tr.mDefinition.substr(0,64).c_str(), tr.mFlags, tr.mSendAs.c_str(), tr.mMinClass, tr.mMaxClass);
 	if(tr.mSeconds) {
 		cTime timeout = cTime(tr.mSeconds);
 		os << " Timeout: " <<  timeout.AsPeriod();

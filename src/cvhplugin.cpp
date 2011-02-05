@@ -22,6 +22,7 @@
 #include "cvhplugin.h"
 #include "cuser.h"
 #include "cserverdc.h"
+#include "i18n.h"
 
 namespace nDirectConnect {
 
@@ -83,13 +84,13 @@ bool cVHPlugin::DelRobot(cUserRobot *robot)
 
 bool cVHPlugin::AddScript(const string &filename, ostream &os)
 {
-	os << "Plugin " << mName << " " << mVersion << " cannot load extra script. ";
+	os << autosprintf(_("Plugin %s %s cannot load extra script."), mName.c_str(), mVersion.c_str());
 	return false;
 }
 
 bool cVHPlugin::LoadScript(const string &filename, ostream &os)
 {
-	os << "Plugin " << mName << " " << mVersion << " cannot load script '" << filename << ". ";
+	os << autosprintf(_("Plugin %s %s cannot load script '%s'."), mName.c_str(), mVersion.c_str(), filename.c_str());
 	return false;
 }
 

@@ -23,6 +23,7 @@
 #include "cconfigitembase.h"
 #include "cserverdc.h"
 #include <time.h>
+#include "i18n.h"
 
 namespace nDirectConnect {
 namespace nTables {
@@ -80,14 +81,13 @@ void cTriggers::OnTimer(long now)
 	 istringstream is;
 	 iterator it;
 	 cTrigger *trigger;
-	 for (it= begin(); it != end(); ++it)
-	 {
+	 for (it= begin(); it != end(); ++it)  {
 		trigger = *it;
 		if(!trigger->mSeconds) continue;
 		long next = trigger->mLastTrigger + trigger->mSeconds;
 		if (next < now) {
-		    trigger->mLastTrigger = now;
-		    trigger->DoIt(is, NULL, *mOwner, true);
+			trigger->mLastTrigger = now;
+			trigger->DoIt(is, NULL, *mOwner, true);
 		}
 	 }
 }
@@ -107,8 +107,7 @@ void cTriggers::TriggerAll(int FlagMask, cConnDC *conn)
 	istringstream is;
 	iterator it;
 	cTrigger *trigger;
-	for (it= begin(); it != end(); ++it)
-	{
+	for (it= begin(); it != end(); ++it) {
 		trigger = *it;
 		if (trigger->mFlags & FlagMask)
 			trigger->DoIt(is, conn, *mOwner);
@@ -142,15 +141,11 @@ bool cTriggers::CompareDataKey(const cTrigger &D1, const cTrigger &D2)
 bool cTriggers::DoCommand(cConnDC *conn, const string &cmd, istringstream &cmd_line, cServerDC &server)
 {
 	cTrigger * curTrigger;
-	for( int i = 0; i < Size(); ++i )
-	{
+	for(int i = 0; i < Size(); ++i) {
 		curTrigger = (*this)[i];
-		if(
-			curTrigger->mMinClass <= conn->mpUser->mClass &&
-			cmd == curTrigger->mCommand
-		)
-		{
-			if(Log(3)) LogStream() << "trigger found " << cmd << endl;
+		if(curTrigger->mMinClass <= conn->mpUser->mClass && cmd == curTrigger->mCommand) {
+			if(Log(3))
+				LogStream() << "trigger found " << cmd << endl;
 			return curTrigger->DoIt (cmd_line, conn, server);
 		}
 	}
@@ -272,15 +267,16 @@ const char * cTriggerConsole::GetParamsRegex(int cmd)
 bool cTriggerConsole::CheckData(cfBase *cmd, cTrigger &data)
 {
 	if(data.mDefinition.empty()) {
-		*cmd->mOS << "Definition is empty or not specified. Please define it with -d option";
+		*cmd->mOS << _("Definition is empty or not specified. Please define it with -d option.");
 		return false;
 	}
 	size_t pos = data.mDefinition.rfind("dbconfig");
 	if(pos != string::npos) {
-		*cmd->mOS << "It's not allowed to define dbconfig file as trigger\n";
+		*cmd->mOS << _("It's not allowed to define dbconfig file as trigger.") << "\n";
 		cConnDC *conn = (cConnDC *) cmd->mConn;
-		string Msg = "User " + conn->mpUser->mNick + " tried to define dbconfig as trigger";
-		mOwner->mServer->ReportUserToOpchat(conn, Msg);
+		ostringstream message;
+		message << autosprintf(_("User '%s' tried to define dbconfig as trigger"), conn->mpUser->mNick.c_str());
+		mOwner->mServer->ReportUserToOpchat(conn, message.str());
 		return false;
 	}
 	FilterPath(data.mDefinition);
@@ -290,7 +286,7 @@ bool cTriggerConsole::CheckData(cfBase *cmd, cTrigger &data)
 	ReplaceVarInString(triggerPath, "CFG", triggerPath, vPath);
 	ExpandPath(triggerPath);
 	if((triggerPath.substr(0,vPath.length()) != vPath)) {
-		*cmd->mOS << "The definition " << data.mDefinition << " of the trigger " << data.mCommand << " must be in VerliHub Config Folder (use %[CFG] variable; for ex %[CFG]/" << triggerName << ")";
+		*cmd->mOS << autosprintf(_("The definition %s of the trigger %s must be in VerliHub Config Folder (use %%[CFG] variable; for ex %%[CFG]/%s)"), data.mDefinition.c_str(), data.mCommand.c_str(), triggerName.c_str());
 		return false;
 	}
 	return true;
@@ -382,7 +378,7 @@ const char *cTriggerConsole::CmdSuffix(){ return "trigger";}
 
 void cTriggerConsole::ListHead(ostream *os)
 {
-	*os << "Existing triggers are:\r\n";
+	*os << _("Existing triggers are:") << "\r\n";
 }
 
   /**
