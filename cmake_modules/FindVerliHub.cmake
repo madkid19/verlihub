@@ -1,29 +1,37 @@
-# - Find VerliHub
-# Find the VerliHub includes and library
-# This module defines
-#  VERLIHUB_INCLUDE_DIR, where to find mysql.h
-#  VERLIHUB_LIBRARIES, the libraries needed to use GeoIP.
-#  VERLIHUB_FOUND, If false, do not try to use GeoIP.
+# - Try to find the VerliHub.
+#
+# Once done this will define
+#  VERLIHUB_FOUND - VerliHub was found
+#  VERLIHUB_LIBRARIES - VerliHub libraries
+#  VERLIHUB_DEFINITIONS - VerliHub definitions used when compiling
+#  VERLIHUB_INCLUDE_DIR - VerliHub include directory
 #
 	
+IF(VERLIHUB_LIBRARY AND VERLIHUB_INCLUDE_DIR)
+	SET(VERLIHUB_FOUND TRUE)
+ENDIF (VERLIHUB_LIBRARY AND VERLIHUB_INCLUDE_DIR)
+
+set(VERLIHUB_VERSION_MAJOR @VERLIHUB_VERSION_MAJOR@ CACHE STRING "VerliHub Major Version")
+set(VERLIHUB_VERSION_MINOR @VERLIHUB_VERSION_MINOR@ CACHE STRING "VerliHub Minor Version")
+set(VERLIHUB_VERSION_PATCH @VERLIHUB_VERSION_MINOR@ CACHE STRING "VerliHub Patch Version")
+set(VERLIHUB_VERSION_STRING "${VERLIHUB_VERSION_MAJOR}.${VERLIHUB_VERSION_MINOR}.${VERLIHUB_VERSION_PATCH}" CACHE STRING "VerliHub Version String")
+
+find_path(VERLIHUB_INCLUDE_DIR cserver.h
+	PATHS /usr/include /usr/local/include
+	PATH_SUFFIXES verlihub
+)
+
+find_library(VERLIHUB_LIBRARIES NAMES verlihub vhapi PATHS
+	/usr/lib
+	/usr/local/lib
+)
+
 IF(VERLIHUB_INCLUDE_DIR AND VERLIHUB_LIBRARIES)
 	SET(VERLIHUB_FOUND TRUE)
+	MESSAGE(STATUS "Found VerliHub: ${VERLIHUB_INCLUDE_DIR}, ${VERLIHUB_LIBRARIES}")
 ELSE(VERLIHUB_INCLUDE_DIR AND VERLIHUB_LIBRARIES)
-	find_path(VERLIHUB_INCLUDE_DIR cserver.h
-		PATHS /usr/include /usr/local/include
-		PATH_SUFFIXES verlihub
-	)
-	find_library(VERLIHUB_LIBRARIES NAMES verlihub vhapi PATHS
-		/usr/lib
-		/usr/local/lib
-	)
-	IF(VERLIHUB_INCLUDE_DIR AND VERLIHUB_LIBRARIES)
-		SET(VERLIHUB_FOUND TRUE)
-		MESSAGE(STATUS "Found VerliHub: ${VERLIHUB_INCLUDE_DIR}, ${VERLIHUB_LIBRARIES}")
-	ELSE(VERLIHUB_INCLUDE_DIR AND VERLIHUB_LIBRARIES)
-		SET(VERLIHUB_FOUND FALSE)
-		MESSAGE(STATUS "VerliHub not found. Please install VerliHub.")
-	ENDIF(VERLIHUB_INCLUDE_DIR AND VERLIHUB_LIBRARIES)
-	
-	mark_as_advanced(VERLIHUB_INCLUDE_DIR VERLIHUB_LIBRARIES)
+	SET(VERLIHUB_FOUND FALSE)
+	MESSAGE(STATUS "VerliHub not found. Please install VerliHub.")
 ENDIF(VERLIHUB_INCLUDE_DIR AND VERLIHUB_LIBRARIES)
+mark_as_advanced(VERLIHUB_INCLUDE_DIR VERLIHUB_LIBRARIES)
+
