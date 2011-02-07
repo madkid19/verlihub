@@ -1,30 +1,30 @@
 cmake_minimum_required (VERSION 2.6)
 PROJECT(VERLIHUB)
-SET(VERLIHUB_VERSION "0.9.9a")
+SET(VERLIHUB_VERSION "0.9.9")
 SET(VERLIHUB_VERSION_MAJOR 0)
 SET(VERLIHUB_VERSION_MINOR 9)
-
+SET(VERLIHUB_VERSION_PATCH 9)
 SET(VERLIHUB_SOVERSION "1")
 SET(PROJECT_NAME "verlihub")
-
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake_modules)
 INCLUDE (CheckIncludeFiles)
 
-# ----------------------------------------------------------------------------------------------------
-# CPPFLAGS, CXXFLAGS and LDFLAGS from the environment
-SET(VERLIHUB_COMPILE_FLAGS_ENV "$ENV{CPPFLAGS} ${VERLIHUB_CXXFLAGS} $ENV{CXXFLAGS}")
-MESSAGE(STATUS "Environment compile flags: ${VERLIHUB_COMPILE_FLAGS_ENV}")
 
-SET(VERLIHUB_COMPILE_FLAGS_ENV "$ENV{LDFLAGS}")
-MESSAGE(STATUS "Environment link flags: ${VERLIHUB_COMPILE_FLAGS_ENV}")
-# ----------------------------------------------------------------------------------------------------
+OPTION(WITH_GEOIP "Enable Geolocalization support" ON)
+OPTION(WITH_OPENSSL "Enable OpenSSL support" ON)
+OPTION(WITH_PLUGMAN "Enable Pluging Manager support" ON)
 
-# ----------------------------------------------------------------------------------------------------
+if(CMAKE_INSTALL_PREFIX STREQUAL "/usr")
+    option(INSTALL_CMAKE_FILES "Install the *.cmake files into the CMake root" ON)
+else()
+    option(INSTALL_CMAKE_FILES "Install the *.cmake files into the CMake root" OFF)
+endif()
+
 # Find dependences
 Find_Package(OpenSSL)
 Find_Package(Crypt)
 IF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
-	MESSAGE(STATUS "OpenSSL and Crypt not found. Password will be stored in plaintext.")
+	MESSAGE(STATUS "WARNING: OpenSSL and Crypt not found. Password will be stored in plaintext.")
 ENDIF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
 
 IF(OPENSSL_FOUND)
@@ -36,9 +36,6 @@ IF(CRYPT_FOUND)
 ENDIF(CRYPT_FOUND)
 
 Find_Package(MySQL)
-IF(NOT MYSQL_FOUND)
-	MESSAGE(FATAL_ERROR "MySQL not found. Please install MySQL devel package.")
-ENDIF(NOT MYSQL_FOUND)
 
 Find_Package(ZLIB REQUIRED)
 Find_Package(GeoIP REQUIRED)
@@ -51,16 +48,24 @@ IF(NOT GETTEXT_FOUND)
 ENDIF(NOT GETTEXT_FOUND)
 # ----------------------------------------------------------------------------------------------------
 
-
 CHECK_INCLUDE_FILES(string.h HAVE_STRING_H)
 CHECK_INCLUDE_FILES(errno.h HAVE_ERRNO_H)
 CHECK_INCLUDE_FILES(sys/poll.h HAVE_SYS_POLL_H)
 #TODO: Fix creguserinfo.cpp for HAVE_LIBSSL and crypto stuff
 
-# SET _WIN32 definition
-IF(WIN32)
-	ADD_DEFINITIONS(-D_WIN32 1)
-ENDIF(WIN32)
+# Detect Windows, FreeBSD or Linux
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+     ADD_DEFINITIONS(-D_WIN32 1)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+IF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+     ADD_DEFINITIONS(-DHAVE_FREEBSD)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+     ADD_DEFINITIONS(-DHAVE_APPLE)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 
 FIND_PROGRAM(BASH_PATH bash PATHS /usr/bin /usr/local/bin)
@@ -74,14 +79,21 @@ MESSAGE(STATUS "Generating config.h file")
 CONFIGURE_FILE(config.h.cm config.h)
 MESSAGE(STATUS "Generating dirsettings.h file")
 CONFIGURE_FILE(dirsettings.h.cm dirsettings.h)
+MESSAGE(STATUS "Generating FindVerliHub.cmake file")
+CONFIGURE_FILE(cmake_modules/FindVerliHub.cmake.cm cmake_modules/FindVerliHub.cmake)
 # ----------------------------------------------------------------------------------------------------
 
 
+if(INSTALL_CMAKE_FILES)
+ 	install(FILES cmake_modules/FindVerliHub.cmake DESTINATION ${CMAKE_ROOT}/Modules OPTIONAL )
+else()
+ 	install(FILES cmake_modules/FindVerliHub.cmake DESTINATION ${SHARE_INSTALL_DIR}/VerliHub/cmake OPTIONAL )
+endif()
 
-# ----------------------------------------------------------------------------------------------------
+
+
 # Create uninstall configuration file and uninstall target
 CONFIGURE_FILE("cmake_uninstall.cmake.in" "cmake_uninstall.cmake" IMMEDIATE @ONLY)
-
 ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake")
 # ----------------------------------------------------------------------------------------------------
 
@@ -99,9 +111,22 @@ SET(CPACK_RESOURCE_FILE_LICENSE
      "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 SET(CPACK_PACKAGE_VERSION_MAJOR "${VERLIHUB_VERSION_MAJOR}")
 SET(CPACK_PACKAGE_VERSION_MINOR "${VERLIHUB_VERSION_MINOR}")
+# Centos deps to compile: gcc-c++, mysql, mysql-devel, cmake, zlib, openssl, openssl-devel
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VerliHub Direct Connect Hub Server")
 SET(CPACK_PACKAGE_VENDOR "VerliHub Team")
 INCLUDE(CPack)
 # ----------------------------------------------------------------------------------------------------
 
-MESSAGE(STATUS "Installation path is: ${CMAKE_INSTALL_PREFIX} (overwrite with -DCMAKE_INSTALL_PREFIX=/your/path)")
+
+message(STATUS)
+message(STATUS "========== VerliHub Build Information ==========")
+message(STATUS "Build Version: 0.9.9")
+message(STATUS "Install Prefix (CMAKE_INSTALL_PREFIX): ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "Install the *.cmake files into CMake root (INSTALL_CMAKE_FILES): ${INSTALL_CMAKE_FILES}")
+message(STATUS "Enable Geolocalization support (WITH_GEOIP): ${WITH_GEOIP}")
+message(STATUS "Enable OpenSSL support (WITH_OPENSSL): ${WITH_OPENSSL}")
+message(STATUS "Enable Pluging Manager support (WITH_PLUGMAN): ${WITH_PLUGMAN}")
+message(STATUS)
+message(STATUS "To change any of these options, override them using -D{OPTION_NAME} on the command line.")
+message(STATUS "To build and install VerliHub, run \"make\" and \"make install\"")
+message(STATUS)
