@@ -84,9 +84,9 @@ CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake_modules/FindVerliHub.cmake.cm" "${CMAK
 
 
 if(INSTALL_CMAKE_FILES)
- 	install(FILES cmake_modules/FindVerliHub.cmake DESTINATION ${CMAKE_ROOT}/Modules OPTIONAL )
+ 	install(FILES "${CMAKE_BINARY_DIR}/cmake_modules/FindVerliHub.cmake" DESTINATION ${CMAKE_ROOT}/Modules)
 else()
- 	install(FILES cmake_modules/FindVerliHub.cmake DESTINATION ${SHARE_INSTALL_DIR}/VerliHub/cmake OPTIONAL )
+ 	install(FILES "${CMAKE_BINARY_DIR}/cmake_modules/FindVerliHub.cmake" DESTINATION ${SHARE_INSTALL_DIR}/VerliHub/cmake)
 endif()
 
 # Create uninstall configuration file and uninstall target
@@ -107,6 +107,7 @@ SET(CPACK_PACKAGE_NAME "verlihub")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 # Centos deps to compile: gcc-c++, mysql, mysql-devel, cmake, zlib, openssl, openssl-devel
 SET(CPACK_PACKAGE_DESCRIPTION "VerliHub Direct Connect Hub Server")
+SET(CPACK_PACKAGE_DESCRIPTION_FILE "VerliHub Direct Connect Hub Server")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VerliHub Direct Connect Hub Server")
 
 SET(CPACK_PACKAGE_CONTACT "bugs@verlihub-project.org")
@@ -116,10 +117,11 @@ SET(CPACK_PACKAGE_VERSION_MINOR "${VERLIHUB_VERSION_MINOR}")
 SET(CPACK_PACKAGE_VERSION_PATCH "${VERLIHUB_VERSION_PATCH}")
 SET(CPACK_PACKAGE_VERSION "${VERLIHUB_VERSION}")
 SET(CPACK_DEBIAN_PACKAGE_SECTION "net")
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "zlib, mysql-server-5.1, geoip-bin, gettext, openssl, libpcre3")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "zlib, mysql-server-5.1, mysql-client-5.1, geoip-bin, gettext, openssl, libpcre3")
 SET(CPACK_RPM_PACKAGE_LICENSE ${CPACK_RESOURCE_FILE_LICENSE})
+SET(CPACK_RPM_PACKAGE_URL "http://www.verlihub-project.org")
 SET(CPACK_RPM_PACKAGE_GROUP "Application/Internet")
-set(CPACK_RPM_PACKAGE_REQUIRES "zlib openssl, mysql-server GeoIP gettext pcre")
+set(CPACK_RPM_PACKAGE_REQUIRES "zlib, openssl, mysql-server >= 5.0, mysql >= 5.0, GeoIP, gettext, pcre")
 SET(CPACK_GENERATOR "DEB;RPM;TBZ2")
 SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${VERLIHUB_VERSION}-${CMAKE_SYSTEM_PROCESSOR}")
 INCLUDE(CPack)
