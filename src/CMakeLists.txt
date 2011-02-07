@@ -215,7 +215,7 @@ target_link_libraries(verlihub libverlihub)
 # Generate verlihub_config
 MESSAGE(STATUS "Generating verlihub_config")
 STRING(REPLACE ";" " " VERLIHUB_LIBS "${VERLIHUB_LIBS}")
-CONFIGURE_FILE(../verlihub_config.cm ../verlihub_config)
+CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/verlihub_config.cm ${CMAKE_BINARY_DIR}/verlihub_config)
 # ----------------------------------------------------------------------------------------------------
 
 #TODO: Add -rdynamic for backtracking
@@ -223,5 +223,6 @@ INSTALL(TARGETS vhapi libverlihub verlihub
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 )
+
 INSTALL(FILES ${VERLIHUB_BINARY_DIR}/verlihub_config DESTINATION bin)
 INSTALL(FILES ${VERLIHUB_HDRS} ${VERLIHUB_BINARY_DIR}/dirsettings.h DESTINATION include/${PROJECT_NAME})

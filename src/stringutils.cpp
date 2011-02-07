@@ -38,11 +38,7 @@ namespace nStringUtils
 
 int StrCompare(const string &str1, int start, int count, const string &str2)
 {
-	#if !defined OLD_STD_STRING
 	return str1.compare(start,count,str2);
-	#else
-	return str2.compare(str1, start, count);
-	#endif
 }
 
 string toLower(const string str)
