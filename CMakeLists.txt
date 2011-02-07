@@ -5,7 +5,7 @@ SET(VERLIHUB_VERSION_MINOR 9)
 SET(VERLIHUB_VERSION_PATCH 9)
 SET(VERLIHUB_VERSION "${VERLIHUB_VERSION_MAJOR}.${VERLIHUB_VERSION_MINOR}.${VERLIHUB_VERSION_PATCH}")
 
-SET(VERLIHUB_SOVERSION "1")
+SET(VERLIHUB_SOVERSION "${VERLIHUB_VERSION}")
 SET(PROJECT_NAME "verlihub")
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake_modules)
 INCLUDE (CheckIncludeFiles)
@@ -79,7 +79,7 @@ CONFIGURE_FILE(config.h.cm config.h)
 MESSAGE(STATUS "Generating dirsettings.h file")
 CONFIGURE_FILE(dirsettings.h.cm dirsettings.h)
 MESSAGE(STATUS "Generating FindVerliHub.cmake file")
-CONFIGURE_FILE(cmake_modules/FindVerliHub.cmake.cm cmake_modules/FindVerliHub.cmake)
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake_modules/FindVerliHub.cmake.cm" "${CMAKE_BINARY_DIR}/cmake_modules/FindVerliHub.cmake")
 # ----------------------------------------------------------------------------------------------------
 
 
@@ -89,13 +89,10 @@ else()
  	install(FILES cmake_modules/FindVerliHub.cmake DESTINATION ${SHARE_INSTALL_DIR}/VerliHub/cmake OPTIONAL )
 endif()
 
-
-
 # Create uninstall configuration file and uninstall target
-CONFIGURE_FILE("cmake_uninstall.cmake.in" "cmake_uninstall.cmake" IMMEDIATE @ONLY)
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake.in" "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
 ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake")
 # ----------------------------------------------------------------------------------------------------
-
 
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(plugins)
@@ -106,20 +103,32 @@ ADD_SUBDIRECTORY(po)
 # ----------------------------------------------------------------------------------------------------
 # Build a CPack driven installer package
 INCLUDE(InstallRequiredSystemLibraries)
-SET(CPACK_RESOURCE_FILE_LICENSE
-     "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+SET(CPACK_PACKAGE_NAME "verlihub")
+SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+# Centos deps to compile: gcc-c++, mysql, mysql-devel, cmake, zlib, openssl, openssl-devel
+SET(CPACK_PACKAGE_DESCRIPTION "VerliHub Direct Connect Hub Server")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VerliHub Direct Connect Hub Server")
+
+SET(CPACK_PACKAGE_CONTACT "bugs@verlihub-project.org")
+SET(CPACK_PACKAGE_VENDOR "VerliHub Team")
 SET(CPACK_PACKAGE_VERSION_MAJOR "${VERLIHUB_VERSION_MAJOR}")
 SET(CPACK_PACKAGE_VERSION_MINOR "${VERLIHUB_VERSION_MINOR}")
-# Centos deps to compile: gcc-c++, mysql, mysql-devel, cmake, zlib, openssl, openssl-devel
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VerliHub Direct Connect Hub Server")
-SET(CPACK_PACKAGE_VENDOR "VerliHub Team")
+SET(CPACK_PACKAGE_VERSION_PATCH "${VERLIHUB_VERSION_PATCH}")
+SET(CPACK_PACKAGE_VERSION "${VERLIHUB_VERSION}")
+SET(CPACK_DEBIAN_PACKAGE_SECTION "net")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "zlib, mysql-server-5.1, geoip-bin, gettext, openssl, libpcre3")
+SET(CPACK_RPM_PACKAGE_LICENSE ${CPACK_RESOURCE_FILE_LICENSE})
+SET(CPACK_RPM_PACKAGE_GROUP "Application/Internet")
+set(CPACK_RPM_PACKAGE_REQUIRES "zlib openssl, mysql-server GeoIP gettext pcre")
+SET(CPACK_GENERATOR "DEB;RPM;TBZ2")
+SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${VERLIHUB_VERSION}-${CMAKE_SYSTEM_PROCESSOR}")
 INCLUDE(CPack)
 # ----------------------------------------------------------------------------------------------------
 
 
 message(STATUS)
 message(STATUS "========== VerliHub Build Information ==========")
-message(STATUS "Build Version: 0.9.9")
+message(STATUS "Build Version: ${VERLIHUB_VERSION}")
 message(STATUS "Install Prefix (CMAKE_INSTALL_PREFIX): ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "Install the *.cmake files into CMake root (INSTALL_CMAKE_FILES): ${INSTALL_CMAKE_FILES}")
 message(STATUS "Enable Geolocalization support (WITH_GEOIP): ${WITH_GEOIP}")
