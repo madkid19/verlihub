@@ -14,16 +14,10 @@ INCLUDE (CheckIncludeFiles)
 OPTION(WITH_GEOIP "Enable Geolocalization support" ON)
 OPTION(WITH_OPENSSL "Enable OpenSSL support" ON)
 OPTION(WITH_PLUGMAN "Enable Pluging Manager support" ON)
-
-if(CMAKE_INSTALL_PREFIX STREQUAL "/usr")
-    option(INSTALL_CMAKE_FILES "Install the *.cmake files into the CMake root" ON)
-else()
-    option(INSTALL_CMAKE_FILES "Install the *.cmake files into the CMake root" OFF)
-endif()
+OPTION(INSTALL_CMAKE_FILES "Install the *.cmake files into the CMake root" ON)
 
 # Find dependences
 Find_Package(OpenSSL)
-Find_Package(Crypt)
 IF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
 	MESSAGE(STATUS "WARNING: OpenSSL and Crypt not found. Password will be stored in plaintext.")
 ENDIF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
@@ -32,12 +26,12 @@ IF(OPENSSL_FOUND)
 	CHECK_INCLUDE_FILES(openssl/md5.h HAVE_OPENSSL_MD5_H)
 ENDIF(OPENSSL_FOUND)
 
+Find_Package(Crypt)
 IF(CRYPT_FOUND)
 	SET(HAVE_LIBCRYPT 1)
 ENDIF(CRYPT_FOUND)
 
 Find_Package(MySQL)
-
 Find_Package(ZLIB REQUIRED)
 Find_Package(GeoIP REQUIRED)
 Find_Package(DL REQUIRED)
@@ -45,6 +39,7 @@ Find_Package(Pcre REQUIRED)
 Find_Package(Threads REQUIRED)
 Find_Package(Gettext REQUIRED)
 Find_Package(Gettext-devel REQUIRED)
+SET(VERLIHUB_LIBS ${OPENSSL_LIBRARIES} ${CRYPT_LIBRARIES} ${MYSQL_LIBRARIES} ${GEOIP_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${GETTEXT_ASPRINTF_LIBRARY})
 # ----------------------------------------------------------------------------------------------------
 
 CHECK_INCLUDE_FILES(string.h HAVE_STRING_H)
@@ -79,14 +74,12 @@ CONFIGURE_FILE(config.h.cm config.h)
 MESSAGE(STATUS "Generating dirsettings.h file")
 CONFIGURE_FILE(dirsettings.h.cm dirsettings.h)
 MESSAGE(STATUS "Generating FindVerliHub.cmake file")
-CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake_modules/FindVerliHub.cmake.cm" "${CMAKE_BINARY_DIR}/cmake_modules/FindVerliHub.cmake")
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake_modules/FindVerliHub.cmake.cm" "${CMAKE_BINARY_DIR}/cmake_modules/FindVerliHub.cmake" @ONLY)
 # ----------------------------------------------------------------------------------------------------
 
 
 if(INSTALL_CMAKE_FILES)
  	install(FILES "${CMAKE_BINARY_DIR}/cmake_modules/FindVerliHub.cmake" DESTINATION ${CMAKE_ROOT}/Modules)
-else()
- 	install(FILES "${CMAKE_BINARY_DIR}/cmake_modules/FindVerliHub.cmake" DESTINATION ${SHARE_INSTALL_DIR}/VerliHub/cmake)
 endif()
 
 # Create uninstall configuration file and uninstall target
@@ -105,7 +98,6 @@ ADD_SUBDIRECTORY(po)
 INCLUDE(InstallRequiredSystemLibraries)
 SET(CPACK_PACKAGE_NAME "verlihub")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-# Centos deps to compile: gcc-c++, mysql, mysql-devel, cmake, zlib, openssl, openssl-devel
 SET(CPACK_PACKAGE_DESCRIPTION "VerliHub Direct Connect Hub Server")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VerliHub Direct Connect Hub Server")
 
