@@ -107,7 +107,6 @@ SET(CPACK_PACKAGE_NAME "verlihub")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 # Centos deps to compile: gcc-c++, mysql, mysql-devel, cmake, zlib, openssl, openssl-devel
 SET(CPACK_PACKAGE_DESCRIPTION "VerliHub Direct Connect Hub Server")
-SET(CPACK_PACKAGE_DESCRIPTION_FILE "VerliHub Direct Connect Hub Server")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VerliHub Direct Connect Hub Server")
 
 SET(CPACK_PACKAGE_CONTACT "bugs@verlihub-project.org")
