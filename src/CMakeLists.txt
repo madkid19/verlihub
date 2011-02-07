@@ -198,18 +198,22 @@ ENDIF(DEFINE_DEBUG)
 
 # TODO: Do not compile *.cpp files twice for verlihub anb libverlihub.
 # See: http://www.paraview.org/Wiki/CMake_FAQ#Does_that_mean_I_have_to_build_all_my_library_objects_twice.2C_once_for_shared_and_once_for_static.3F.21_I_don.27t_like_that.21
+ADD_EXECUTABLE(verlihub ${VERLIHUB_SRCS} verlihub.cpp)
+target_link_libraries(verlihub ${VERLIHUB_LIBS})
+
 ADD_LIBRARY(libverlihub SHARED ${VERLIHUB_SRCS})
 SET_TARGET_PROPERTIES(libverlihub PROPERTIES OUTPUT_NAME "verlihub")
-SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION 1.0.0 SOVERSION ${VERLIHUB_SOVERSION})
+SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION ${VERLIHUB_VERSION} SOVERSION ${VERLIHUB_SOVERSION})
 #target_link_libraries(libverlihub "-no-undefined" ${VERLIHUB_LIBS})
 target_link_libraries(libverlihub ${VERLIHUB_LIBS})
 
 ADD_LIBRARY(vhapi SHARED "script_api.cpp")
-SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION 1.0.0 SOVERSION ${VERLIHUB_SOVERSION})
+SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION ${VERLIHUB_VERSION} SOVERSION ${VERLIHUB_SOVERSION})
 #target_link_libraries(vhapi "-module -shared -dy")
 
-ADD_EXECUTABLE(verlihub verlihub.cpp)
-target_link_libraries(verlihub libverlihub)
+# Used to link libverlihub against verlihub executable
+#ADD_EXECUTABLE(verlihub verlihub.cpp)
+#target_link_libraries(verlihub libverlihub)
 
 # ----------------------------------------------------------------------------------------------------
 # Generate verlihub_config
