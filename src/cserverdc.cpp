@@ -573,18 +573,24 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	cTime runtime;
 	runtime -= mStartTime;
 	if ( mFrequency.mNumFill > 0 ) {
-		if (mSysLoad == eSL_RECOVERY) mStatus = "Recovery Mode";
-		if (mSysLoad == eSL_CAPACITY) mStatus = "Near Capacity";
-		if (mSysLoad == eSL_PROGRESSIVE) mStatus = "Progressive Mode";
-		if (mSysLoad == eSL_NORMAL) mStatus = "Normal Mode";
+		if (mSysLoad == eSL_RECOVERY)
+			mStatus = _("Recovery mode");
+		if (mSysLoad == eSL_CAPACITY)
+			mStatus = _("Near capacity");
+		if (mSysLoad == eSL_PROGRESSIVE)
+			mStatus = _("Progressive mode");
+		if (mSysLoad == eSL_NORMAL)
+			mStatus = _("Normal mode");
 	}
 	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
 	if (mC.host_header == 1) {
 		if(mC.extended_welcome_message) {
-			os << HUB_VERSION_NAME "-"<< HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << "|";
+			os << HUB_VERSION_NAME "-" << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << "|";
 			os << "<" << mC.hub_security << ">" << " " << _("RunTime") << ": " << runtime.AsPeriod()<<"|";
 			os << "<" << mC.hub_security << ">" << " " << _("User Count") << ": " << mUserCountTot <<"|";
 			os << "<" << mC.hub_security << ">" << " " << _("System Status") << ": " << mStatus << "|";    
+			if(!mC.hub_version_special.empty())
+				os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
 		} else {
 			os << autosprintf(_("This hub is running version %s%s %s of %s (RunTime: %s / User count: %d)"),
 			HUB_VERSION_STRING, mC.hub_version_special.c_str(), HUB_VERSION_CLASS, HUB_VERSION_NAME, runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
