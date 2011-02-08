@@ -181,19 +181,10 @@ ADD_CUSTOM_COMMAND(
 )
 ADD_CUSTOM_TARGET(make_time.h ALL)
 LIST(APPEND ${VERLIHUB_HDRS} make_time.h)
+# ----------------------------------------------------------------------------------------------------
+
 
 INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${GEOIP_INCLUDE_DIR} ${PCRE_INCLUDE_DIR})
-
-# Use cmake -DDEFINE_DEBUG=ON to enable debug
-OPTION(DEFINE_DEBUG "Build the project using debugging code" OFF)
-IF(DEFINE_DEBUG)
-	MESSAGE("Adding debug flag...")
-	SET(CMAKE_CXX_FLAGS "-Wall -O3")
-	SET(CMAKE_BUILD_TYPE Debug)
-	MESSAGE("Build type is " ${CMAKE_BUILD_TYPE})
-ENDIF(DEFINE_DEBUG)
-
-# ----------------------------------------------------------------------------------------------------
 
 # TODO: Do not compile *.cpp files twice for verlihub anb libverlihub.
 # See: http://www.paraview.org/Wiki/CMake_FAQ#Does_that_mean_I_have_to_build_all_my_library_objects_twice.2C_once_for_shared_and_once_for_static.3F.21_I_don.27t_like_that.21

@@ -60,6 +60,18 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
      ADD_DEFINITIONS(-DHAVE_APPLE)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
+# Use cmake -DDEFINE_DEBUG=ON to enable debug
+OPTION(DEFINE_DEBUG "Build the project using debugging code" OFF)
+IF(DEFINE_DEBUG)
+	# enable gcc specific stuff
+	if (CMAKE_COMPILER_IS_GNUCC)
+		MESSAGE("Adding debug flag...")
+		SET(CMAKE_CXX_FLAGS "-Wall -O3")
+		SET(CMAKE_BUILD_TYPE Debug)
+		MESSAGE("Build type is " ${CMAKE_BUILD_TYPE})
+	ENDIF()
+ENDIF(DEFINE_DEBUG)
+
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 
 FIND_PROGRAM(BASH_PATH bash PATHS /usr/bin /usr/local/bin)
