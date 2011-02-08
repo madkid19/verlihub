@@ -1408,9 +1408,17 @@ bool cDCConsole::cfSetVar::operator()()
 	if(mConn->mpUser->mClass < eUC_ADMIN)
 		return false;
 
+	// [file] variable value style
 	if (mParRex->PartFound(2))
 		mParRex->Extract(2,mParStr,file);
+	
 	mParRex->Extract(3,mParStr,var);
+	// file.variable value style
+	int pos  = var.find('.');
+	if(pos != string::npos) {
+		file = var.substr(0, pos);
+		var = var.substr(pos+1);
+	}
 	mParRex->Extract(4,mParStr,val);
 
 	cConfigItemBase *ci = NULL;
@@ -1432,7 +1440,7 @@ bool cDCConsole::cfSetVar::operator()()
 		ci->ConvertFrom(val);
 		ostringstream newValue;
 		newValue << *ci;
-		(*mOS) << autosprintf(_("Updated [%s]%s from '%s' to '%s'"), file.c_str(), var.c_str(), oldValue.str().c_str(), newValue.str().c_str());
+		(*mOS) << autosprintf(_("Updated %s.%s from '%s' to '%s'"), file.c_str(), var.c_str(), oldValue.str().c_str(), newValue.str().c_str());
 		mS->mSetupList.SaveItem(file.c_str(), ci);
 		if(DeleteItem)
 			delete ci;
