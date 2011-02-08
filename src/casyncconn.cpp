@@ -784,13 +784,17 @@ int cAsyncConn::Write(const string &data, bool Flush)
 			// If buffer size is lower then UNBLOCK size, allow read operation on the connection
 			if(mBufSend.size() < MAX_SEND_UNBLOCK_SIZE) {
 				mxServer->mConnChooser.cConnChoose::OptIn(this, cConnChoose::eCC_INPUT);
-				((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Unblocking read operation on socket " << endl;
-				if(Log(5)) LogStream() << "UnBlock INPUT" << endl;
+				if(Log(5)) {
+					((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Unblocking read operation on socket " << endl;
+					LogStream() << "UnBlock INPUT" << endl;
+				}
 			} // If buffer is bigger than max send size, block read operation
 			else if(mBufSend.size() >= MAX_SEND_FILL_SIZE) {
 				mxServer->mConnChooser.cConnChoose::OptOut(this, cConnChoose::eCC_INPUT);
-				((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Blocking read operation on socket " << endl;
-				if(Log(5)) LogStream() << "Block INPUT" << endl;
+				if(Log(5)) {
+					((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Blocking read operation on socket " << endl;
+					LogStream() << "Block INPUT" << endl;
+				}
 			}
 		}
 	} else { // All data has been sent
