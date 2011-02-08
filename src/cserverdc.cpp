@@ -585,7 +585,7 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
 	if (mC.host_header == 1) {
 		if(mC.extended_welcome_message) {
-			os << HUB_VERSION_NAME "-" << HUB_VERSION_STRING << mC.hub_version_special << " " << HUB_VERSION_CLASS << "|";
+			os << HUB_VERSION_NAME "-" << HUB_VERSION_STRING << " " << HUB_VERSION_CLASS << "|";
 			os << "<" << mC.hub_security << ">" << " " << _("RunTime") << ": " << runtime.AsPeriod()<<"|";
 			os << "<" << mC.hub_security << ">" << " " << _("User Count") << ": " << mUserCountTot <<"|";
 			os << "<" << mC.hub_security << ">" << " " << _("System Status") << ": " << mStatus << "|";    
