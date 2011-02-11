@@ -109,7 +109,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 	
 	if( (mServer->mC.tag_max_hs_ratio * mSlots) < mTotHubs ) {
 		os << autosprintf(_("Your hubs/slots ratio %.2f is too high (max is %.2f)."), (double) mTotHubs/mSlots, mServer->mC.tag_max_hs_ratio);
-		int slotToOpen = (mTotHubs / mServer->mC.tag_max_hs_ratio);
+		int slotToOpen = (int) (mTotHubs / mServer->mC.tag_max_hs_ratio);
 		if(slotToOpen > 0)
 			os << " " << autosprintf(_("Open %d slots for %d hubs."), (int) (mTotHubs / mServer->mC.tag_max_hs_ratio), mTotHubs);
 		code = eTC_MAX_HS_RATIO;
