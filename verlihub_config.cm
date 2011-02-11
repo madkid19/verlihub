@@ -1,27 +1,32 @@
 #!@BASH_PATH@
 
-prefix=@CMAKE_INSTALL_PREFIX@
+prefix="@CMAKE_INSTALL_PREFIX@"
 
 function printhelp
 {
-	echo "usage $0 [OPTIONS]"
-	echo " --cflags 		- print compiler flags"
-	echo " --libs			- print linker flags"
-	echo " --prefix			- print the installation prefix"
-	echo " --datadir		- print the datadir of verlihub"
-	echo " --version		- print verlihub's version"
+	echo "Usage $0 [OPTIONS]"
+	echo -e "\t--cflags\t\tPrint compiler flags"
+	echo -e "\t--libs\t\t\tPrint linker flags"
+	echo -e "\t--include\t\tPrint include directories"
+	echo -e "\t--prefix\t\tPrint the installation prefix"
+	echo -e "\t--datadir\t\tPrint the data directory of VerliHub"
+	echo -e "\t--version\t\tPrint VerliHub version"
+	echo -e "\t--help\t\t\tPrint this help"
 }
 
-case "x$1" in
-"x--cflags") echo -I$prefix/include -I$prefix/include/verlihub
-;;
+if [ "x$1" == "x" ]; then
+	printhelp
+	exit
+fi;
 
-"x--libs") echo @VERLIHUB_LIBS@ -L$prefix/lib -lverlihub
-;;
+case "x$1" in
+"x--cflags") echo @VERLIHUB_INCLUDE_DIRS@ -I$prefix/include/verlihub ;;
+"x--include") echo @VERLIHUB_INCLUDE_DIRS@ -I$prefix/include/verlihub ;;
+"x--libs") echo @VERLIHUB_LIBS@ -L$prefix/lib -lverlihub ;;
 "x--prefix") echo $prefix ;;
 "x--datadir") echo @CMAKE_INSTALL_PREFIX@/share/@PROJECT_NAME@ ;;
 "x--version") 
-	echo -n "verlihub version: @VERSION@"
+	echo -n "@VERLIHUB_VERSION@"
 	cat $prefix/include/verlihub/curr_date_time.h |sed -e "s/^.*\\\"\\(.*\\)\\\"/ \\1/" 
 ;;
 "x--help") printhelp ;;

@@ -183,13 +183,12 @@ ADD_CUSTOM_TARGET(make_time.h ALL)
 LIST(APPEND ${VERLIHUB_HDRS} make_time.h)
 # ----------------------------------------------------------------------------------------------------
 
-
 INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${GEOIP_INCLUDE_DIR} ${PCRE_INCLUDE_DIR})
 
 # TODO: Do not compile *.cpp files twice for verlihub anb libverlihub.
 # See: http://www.paraview.org/Wiki/CMake_FAQ#Does_that_mean_I_have_to_build_all_my_library_objects_twice.2C_once_for_shared_and_once_for_static.3F.21_I_don.27t_like_that.21
-ADD_EXECUTABLE(verlihub ${VERLIHUB_SRCS} verlihub.cpp)
-target_link_libraries(verlihub ${VERLIHUB_LIBS})
+#ADD_EXECUTABLE(verlihub ${VERLIHUB_SRCS} verlihub.cpp)
+#target_link_libraries(verlihub ${VERLIHUB_LIBS})
 
 ADD_LIBRARY(libverlihub SHARED ${VERLIHUB_SRCS})
 SET_TARGET_PROPERTIES(libverlihub PROPERTIES OUTPUT_NAME "verlihub")
@@ -202,8 +201,8 @@ SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION ${VERLIHUB_VERSION} SOVERSI
 #target_link_libraries(vhapi "-module -shared -dy")
 
 # Used to link libverlihub against verlihub executable
-#ADD_EXECUTABLE(verlihub verlihub.cpp)
-#target_link_libraries(verlihub libverlihub)
+ADD_EXECUTABLE(verlihub verlihub.cpp)
+target_link_libraries(verlihub libverlihub)
 
 # ----------------------------------------------------------------------------------------------------
 # Generate verlihub_config
