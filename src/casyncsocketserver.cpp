@@ -401,10 +401,12 @@ int cAsyncSocketServer::StartListening(int OverrideDefaultPort)
  */
 cAsyncConn * cAsyncSocketServer::ListenWithConn(cAsyncConn *ListenSock, int OnPort, bool UDP)
 {
-	if (ListenSock != NULL)
-	{
+	if(ListenSock != NULL) {
 		if(ListenSock->ListenOnPort(OnPort,mAddr.c_str(), UDP)< 0) {
-			if(Log(0)) LogStream() << "Can't listen on " << mAddr << ":" << OnPort << (UDP?" UDP":" TCP") << endl;
+			if(Log(0)) {
+				LogStream() << "Cannot listen on " << mAddr << ":" << OnPort << (UDP ? " UDP":" TCP") << endl;
+				LogStream() << "Please make sure the port is open and not already used by another process" << endl;
+			}
 			throw "Can't listen";
 			return NULL;
 		}
