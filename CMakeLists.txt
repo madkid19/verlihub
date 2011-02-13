@@ -39,8 +39,12 @@ Find_Package(Pcre REQUIRED)
 Find_Package(Threads REQUIRED)
 Find_Package(Gettext REQUIRED)
 Find_Package(Gettext-devel REQUIRED)
+
+
 SET(VERLIHUB_LIBS ${OPENSSL_LIBRARIES} ${CRYPT_LIBRARIES} ${MYSQL_LIBRARIES} ${GEOIP_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${GETTEXT_ASPRINTF_LIBRARY})
+SET(VERLIHUB_SCRIPTS_LIBS "-lverlihub -lvhapi")
 SET(VERLIHUB_INCLUDE_DIRS  "-I${OPENSSL_INCLUDE_DIR} -I${MYSQL_INCLUDE_DIR} -I${GEOIP_INCLUDE_DIR} -I${ZLIB_INCLUDE_DIRS} -I${PCRE_INCLUDE_DIRS}")
+
 # ----------------------------------------------------------------------------------------------------
 
 CHECK_INCLUDE_FILES(string.h HAVE_STRING_H)
@@ -66,10 +70,10 @@ OPTION(DEFINE_DEBUG "Build the project using debugging code" OFF)
 IF(DEFINE_DEBUG)
 	# enable gcc specific stuff
 	if (CMAKE_COMPILER_IS_GNUCC)
-		MESSAGE("Adding debug flag...")
+		MESSAGE(STATUS "Adding debug flag...")
 		SET(CMAKE_CXX_FLAGS "-Wall -O3")
 		SET(CMAKE_BUILD_TYPE Debug)
-		MESSAGE("Build type is " ${CMAKE_BUILD_TYPE})
+		MESSAGE(STATUS "Build type is " ${CMAKE_BUILD_TYPE})
 	ENDIF()
 ENDIF(DEFINE_DEBUG)
 
