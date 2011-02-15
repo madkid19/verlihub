@@ -1,15 +1,13 @@
-* fix min_share_use_hub share calculation
+* Migrate tag_min/max_version_* in database
+* asynchronous resolve of hostname
+
+
 * add custom locks for + commands and disable mainchat control over them
 * Redsign socket handling and introduce smart filtering
 * Fix proxy support
-* Introduce ipv6 support
-* Fix infoserver share conversion
 * Add idle timeout locks
-* Move all freetext to dbase
 * Add share detector plugin
 * Add support for MD5 hashing/seeding
-* Add support for sporadic nmdc protocol extensions
-* Insert secure protocol account (keys)
 * Fix triggers timers and modifications
 !!Extension
 * Port to Mac OS X
@@ -25,8 +23,6 @@
 + multicommand
 * iplog - log redirs
 * add active search plugin for passive ops (users)
-* +hubinfo
-* rights for commands
 * connectome (test for ghosts)
 * vote 4 kick (use tHashArray, cumulate times)
 * different max msg length for ops and admins
@@ -43,13 +39,11 @@
 * min_class_topic
 * add !gc 'file' parameter an 'var' too
 * notify in PM when min_share_use_hub is not met
-* add  shareban (e.T)
 * iplog - +seen <nick> command , reduce db size (keep last N records per ip, and M per nick)
 * visible +commands
 * min_share_reg/vip, wellcome message for guests, etc..
 * forbid - let flags work as flags  - to have multiple states
 * reglist add fields Last Modified and Last Modified By
-* multilang kicks
 * trigger - add periodical triggers
 * store IPs to UINT (instead of varchar/bigint), use bantype instead of _strings_, use 'between'
 * PM flooding -> display the message text too
@@ -58,12 +52,9 @@
 * optionaly disable auto alter of some tables
 * limit number of connections longer period on ip/nick resolution
 * turn off incomming search etc..
-* client ban
 * Also on/off reporting to opchat of force move 
 * option to remove any part of description
-* version ban (plugin?)
 * count i'p in floodprotect on load
-* asynchronous resolve of hostname
 * disable selected columns from myinfo
 * show tag when hide_keys is on
 * password for each class
@@ -76,19 +67,14 @@
 
 !!Project &Installation
 * http://www.lns.cornell.edu/public/COMP/info/autoconf/Defining-Directories.html#Defining%20Directories
-* don't search for GeoIP_new without libs
-* use also $prefix/etc
 * isp - dont add 0.0.0.0 every time
 * space-proof (in folder name) make & configure
 
 !!Cosmetic
-* registrace pres mail / generace hesla - plugin ?
 * when refused search - make a fake search response for feedback
-* change fullhub mesage to accept %[params]
 * forbid - send reports to another robot (eg chatroom)
 * add min_delay_chat variable in config
 * iplog - !uniq_ip <date-limit> (keep ip uniq ip without cleaning it up)
-* filter "You're being kicked" PM, translate Kick messages
 
 !!Minor bugs
 * hidekickclass nefunguje - a nebude
@@ -107,8 +93,6 @@
 * make !maykick work without reconnecting
 * key is probably wrong for hublists
 * successive kick removes reason
-
-!!Major bugs
 
 !!Unsure bugs
 * no PM with luaplugin ??
