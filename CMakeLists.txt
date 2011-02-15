@@ -94,7 +94,7 @@ CONFIGURE_FILE(dirsettings.h.cm dirsettings.h)
 
 
 if(INSTALL_CMAKE_FILES)
- 	install(FILES "${CMAKE_BINARY_DIR}/cmake_modules/FindVerliHub.cmake" DESTINATION ${CMAKE_ROOT}/Modules)
+ 	install(FILES "${CMAKE_SOURCE_DIR}/cmake_modules/FindVerliHub.cmake" DESTINATION ${CMAKE_ROOT}/Modules)
 endif()
 
 # Create uninstall configuration file and uninstall target
