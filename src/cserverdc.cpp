@@ -567,6 +567,11 @@ int cServerDC::SendToAllWithNickCC(const string &start,const string &end, int cm
 int cServerDC::OnNewConn(cAsyncConn *nc)
 {
 	cConnDC *conn = (cConnDC *)nc;
+	#ifndef WITHOUT_PLUGINS
+	if(!mCallBacks.mOnNewConn.CallAll(conn))
+		return -1;
+	#endif
+		
 	stringstream errmsg,os;
 	if(!conn) return -1;
 	string omsg;
@@ -610,10 +615,6 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 #ifndef _WIN32
 	if(!this->mUseDNS) conn->SetTimeOut(eTO_KEY, mC.timeout_length[eTO_KEY], mTime);
 #endif
-	#ifndef WITHOUT_PLUGINS
-	if(!mCallBacks.mOnNewConn.CallAll(conn))
-		return -1;
-	#endif
 	return 0;
 }
 

@@ -12,3 +12,5 @@
 #cmakedefine HAVE_OPENSSL_MD5_H 1
 /* Define to 1 if you have crypt library. */
 #cmakedefine HAVE_LIBCRYPT 1
+/* Define to 1 if you have gettext function. */
+#cmakedefine HAVE_GETTEXT 1
