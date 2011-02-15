@@ -667,6 +667,12 @@ int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 	}
 
 	mOwner->mC.hub_topic = topic;
+	// Save topic
+	cConfigItemBase *ci = mOwner->mC["hub_topic"];
+	if(ci) {
+		ci->ConvertFrom(topic);
+		mOwner->mSetupList.SaveItem(mOwner->mDBConf.config_name.c_str(), ci);
+	}
 
 	cDCProto::Create_HubName(omsg, mOwner->mC.hub_name, topic);
 	mOwner->SendToAll(omsg, eUC_NORMUSER, eUC_MASTER);

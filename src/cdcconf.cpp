@@ -62,6 +62,7 @@ void cDCConf::AddVars()
 	// Hub info and basic settings
 	Add("hub_name",hub_name,string("VerliHub"));
 	Add("hub_desc",hub_desc,string("No Description"));
+	Add("hub_topic",hub_topic,"");
 	Add("hub_category",hub_category,string(""));
 	Add("hub_owner",hub_owner,string(""));
 	Add("hub_version",hub_version,VERSION);
