@@ -7,11 +7,9 @@ Command  Arguments	              Help
 
 !set     <variable> <new_value>       Allows manipulation (through the hub) of all configuration variables. As an example, '!set tban_kick 86400' would set the variable tban_kick to 86400 seconds.  
 
-!ftedit  <trigger> <contents> 	      Replaces trigger's content with contents. For example !ftedit +help newhelp would change the +help to output newhelp.
-
 !ul      <limit> <time_in_minutes>    Temporarily change the user limit to <limit>. If <time_in_minutes> is not specified, 60 minutes is assumed.
 
-!hublist                              Sends your hub information to the public hublist. If you do this more often than every 15 minutes, you may be banned by the hublist server.
+!hublist                              Send your hub information to the public hublist.
 
 !reload                               Reloads verlihub's configuration. NOTE: Some configuration changes require the hub to be restarted!
 
