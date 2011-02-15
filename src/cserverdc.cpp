@@ -702,7 +702,7 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 
 	// Send the hub topic
 	string topic("$HubTopic ");
-	topic += mC.hub_desc + "|";
+	topic += mC.hub_topic + "|";
 	conn->Send(topic, false);
 
 	if(mC.send_user_info) {

@@ -1540,7 +1540,7 @@ int cDCProto::DCO_Banned(cMessageDC * msg, cConnDC * conn)
 int cDCProto::DCO_GetTopic(cMessageDC *, cConnDC * conn)
 {
 	string topic("$HubTopic ");
-	topic += mS->mC.hub_desc;
+	topic += mS->mC.hub_topic;
 	conn->Send(topic);
 	return 0;
 }
@@ -1558,7 +1558,7 @@ int cDCProto::DCO_SetTopic(cMessageDC * msg, cConnDC * conn)
 		return 0;
 	}
 	string &str = msg->ChunkString(eCH_1_PARAM);
-	mS->mC.hub_desc = str;
+	mS->mC.hub_topic = str;
 
 	ostringstream os;
 	os << autosprintf(_("Topis is set to: %s"), str.c_str());
