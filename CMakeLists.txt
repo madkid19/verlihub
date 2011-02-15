@@ -90,8 +90,6 @@ MESSAGE(STATUS "Generating config.h file")
 CONFIGURE_FILE(config.h.cm config.h)
 MESSAGE(STATUS "Generating dirsettings.h file")
 CONFIGURE_FILE(dirsettings.h.cm dirsettings.h)
-MESSAGE(STATUS "Generating FindVerliHub.cmake file")
-CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake_modules/FindVerliHub.cmake.cm" "${CMAKE_BINARY_DIR}/cmake_modules/FindVerliHub.cmake" @ONLY)
 # ----------------------------------------------------------------------------------------------------
 
 
