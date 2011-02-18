@@ -43,6 +43,7 @@ bool cpiPlug::RegisterAll()
 {
 	RegisterCallBack("VH_OnNewConn");
 	RegisterCallBack("VH_OnOperatorCommand");
+	return true;
 }
 
 bool cpiPlug::OnNewConn(cConnDC * conn)
