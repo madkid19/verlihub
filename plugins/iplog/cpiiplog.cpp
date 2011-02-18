@@ -26,7 +26,7 @@ using namespace nDirectConnect;
 cpiIPLog::cpiIPLog() :  mConsole(this),	mIPLog(NULL)
 {
 	mName = "IPLog";
-	mVersion = "1.1";
+	mVersion = IPLOG_VERSION;
 	mLogFlags = eLT_ALL;
 }
 
@@ -40,7 +40,6 @@ void cpiIPLog::OnLoad(cServerDC *server)
 
 bool cpiIPLog::RegisterAll()
 {
-	//treat messages that use to post offline msgs, remove them, read etc...
 	RegisterCallBack("VH_OnOperatorCommand");
         RegisterCallBack("VH_OnNewConn");
 	RegisterCallBack("VH_OnCloseConn");
@@ -85,8 +84,9 @@ bool cpiIPLog::OnOperatorCommand(cConnDC *conn, string *str)
 		
 cpiIPLog::~cpiIPLog()
 {
-	if (mIPLog) delete mIPLog;
-	mIPLog = NULL; // just for sure
+	if (mIPLog)
+		delete mIPLog;
+	mIPLog = NULL;
 }
 
 REGISTER_PLUGIN(cpiIPLog);

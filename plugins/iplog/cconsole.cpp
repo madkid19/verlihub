@@ -69,15 +69,13 @@ bool cConsole::cfLastIp::operator ( )()
 	GetParInt(eIP_COUNT,count);
 
 	unsigned long range_min,range_max;
-	switch(id)
-	{
+	switch(id) {
 		case eLAST_IP: 
 			GetPI()->mIPLog->GetLastIP(who, count, *mOS); break;
 		case eLAST_NICK:
 			GetPI()->mIPLog->GetLastNick(who, count, *mOS); break;
 		case eLAST_RANGE:
 			GetParIPRange(eIP_WHO,range_min,range_max);
-			//GetPI()->mIPLog->GetLastRange(range_min, range_max, count, *mOS); break;
 		default:break;
 	}
 	return true;
@@ -97,8 +95,7 @@ bool cConsole::cfHistoryOf::operator ( )()
 	
 	GetParStr(eHI_WHO,who);
 	GetParInt(eHI_COUNT,count);
-	switch(id)
-	{
+	switch(id) {
 		case eHIST_IP: 
 			GetPI()->mIPLog->GetIPHistory(who, count, *mOS); break;
 		case eHIST_NICK:

@@ -21,6 +21,7 @@
 #include "cconsole.h"
 #include "cpiforbid.h"
 #include "cforbidden.h"
+#include "src/i18n.h"
 
 using namespace nDirectConnect;
 
@@ -63,7 +64,7 @@ void cForbidConsole::GetHelpForCommand(int cmd, ostream &os)
 		default: break;
 	}
 	cDCProto::EscapeChars(help_str,help_str);
-	os << help_str;	
+	os << help_str;
 }
 
 
@@ -90,15 +91,13 @@ bool cForbidConsole::ReadDataFromCmd(cfBase *cmd, int id, cForbiddenWorker &data
 		eADD_CLASSp, eADD_CLASS, 
 		eADD_REASONp, eADD_REASONq, eADD_REASON};
 
-	switch(id)
-	{
+	switch(id) {
 		case eLC_DEL:
 			cmd->GetParUnEscapeStr(eADD_ALL,data.mWord);
 			break;
 		default:
-			if(! cmd->GetParRegex(eADD_PATTERN,data.mWord))
-			{
-				(*cmd->mOS) << "Sorry the regular expression you provided did not parse well\r\n";
+			if(! cmd->GetParRegex(eADD_PATTERN,data.mWord)) {
+				(*cmd->mOS) << _("Sorry the regular expression you provided cannot be parsed.") << "\r\n";
 				return false;
 			}
 			cmd->GetParInt(eADD_MASK, data.mCheckMask);

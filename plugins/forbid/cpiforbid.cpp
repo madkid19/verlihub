@@ -26,7 +26,7 @@ using namespace nDirectConnect;
 cpiForbid::cpiForbid() : mCfg(NULL)
 {
 	mName = "ForbiddenWords";
-	mVersion = "1.3";
+	mVersion = FORBID_VERSION;
 }
 
 void cpiForbid::OnLoad(cServerDC *server)

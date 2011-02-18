@@ -9,9 +9,9 @@
  ***************************************************************************/
 
 #include "cforbidden.h"
-
 #include "src/cconfigitembase.h"
 #include "src/cserverdc.h"
+#include "i18n.h"
 #include "cpiforbid.h"
 
 namespace nDirectConnect {
@@ -26,20 +26,19 @@ cForbiddenWorker::cForbiddenWorker() : mpRegex(NULL)
 
 cForbiddenWorker::~cForbiddenWorker()
 {
-	if (mpRegex) delete mpRegex;
+	if(mpRegex)
+		delete mpRegex;
 	mpRegex = NULL;
 }
 
 bool cForbiddenWorker::CheckMsg(const string &msg) 
 {
-	//cout << "check " << msg << " in " << *this << "  " << mpRegex->Exec(msg) << endl;
 	return (mpRegex->Exec(msg) > 0);
 }
 
 bool cForbiddenWorker::PrepareRegex()
 {
 	mpRegex = new cPCRE();
-	//cout << "Prepare " << mWord.c_str() <<  mpRegex->Compile(mWord.c_str(),PCRE_CASELESS)<< endl;
 	return mpRegex->Compile(mWord.c_str(),PCRE_CASELESS);
 }
 
@@ -53,36 +52,25 @@ int cForbiddenWorker::DoIt(const string & cmd_line, cConnDC *conn, cServerDC *se
 	string start, end;
 	string sender, text;
 
-	if(mReason.size())
-	{
-		// kick user by hub security
+	if(mReason.size()) {
+		// User is kick user by hub security
 		ostringstream os;
 		cUser *OP = server->mUserList.GetUserByNick(server->mC.hub_security);
 		server->DCKickNick(&os, OP, conn->mpUser->mNick, mReason, cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
 	}
 
-	//cout << cmd_line	<< endl;
-	if (eNOTIFY_OPS & mCheckMask)
-	{
+	// Notify it in opchat
+	if (eNOTIFY_OPS & mCheckMask) {
 
-		text = "FORBID: User is typing forbidden word(s) into ";
-
-		if(eCHECK_CHAT & mask)
-		text+= "PUBLIC ";
-		else
-		text+= "PRIVATE ";
-
-		text+= "chat: ";
-		text+= cmd_line;
-
-		//cout << text << endl;
+		ostringstream os;
+		os << autosprintf(_("FORBID: User is typing forbidden word(s) into %s: %s"), (eCHECK_CHAT & mask) ? _("PUBLIC chat") : _("PRIVATE chat"), cmd_line.c_str());
+		text = os.str();
 		server->ReportUserToOpchat(conn, text, false);
 
 		/* Send to the sender only :) */
 		/* Don't display to public if its a PM! Client already did it */
 		if(eCHECK_CHAT & mask)
-		server->DCPublic(conn->mpUser->mNick, cmd_line, conn);
-
+			server->DCPublic(conn->mpUser->mNick, cmd_line, conn);
 	}
 	return 1;
 }
@@ -120,20 +108,12 @@ bool cForbidden::CompareDataKey(const cForbiddenWorker &D1, const cForbiddenWork
 
 int cForbidden::ForbiddenParser(const string & str, cConnDC * conn, int mask)
 {
-	//string lcstr(str);
-	// the regex are compiled as caseless, so we can keep it all as it is
-	//transform(lcstr.begin(), lcstr.end(), lcstr.begin(), ::tolower);
-
 	iterator it;
 	cForbiddenWorker *forbid;
-	for( it = begin(); it != end(); ++it )
-	{
+	for(it = begin(); it != end(); ++it) {
 		forbid = *it;
-		//cout << forbid->mWord << " " << forbid->mCheckMask << "/" << mask << "  " << str << endl;
-		if((forbid->mCheckMask & mask) && forbid->CheckMsg(str))
-		{
-			if(forbid->mAfClass >= conn->mpUser->mClass)
-			{
+		if((forbid->mCheckMask & mask) && forbid->CheckMsg(str)) {
+			if(forbid->mAfClass >= conn->mpUser->mClass) {
 				forbid->DoIt(str, conn, mOwner->mServer, mask);
 				return 0;
 			}
@@ -146,14 +126,13 @@ int cForbidden::CheckRepeat(const string & str, int r)
 {
 	int i = 0 , j = 0;
 
-	for( ; i < str.size() - 1; i++)
-	{
+	for(; i < str.size() - 1; i++) {
 		if(str[i] == str[i+1])
-		    ++j;
+			++j;
 		else
-		    j=0;
+			j=0;
 		if(j==r)
-		    return 0;
+			return 0;
 	}
 	
 	return 1;
@@ -163,20 +142,16 @@ int cForbidden::CheckUppercasePercent(const string & str, int percent)
 {
 	int i = 0 , j = 0 , k = 0;
 
-	for( ; i < str.size(); i++)
-	{
-		if (str[i] >= 'a' && str[i] <= 'z')
+	for(; i < str.size(); i++) {
+		if(str[i] >= 'a' && str[i] <= 'z')
 			k++;
-
-		if (str[i] >= 'A' && str[i] <= 'Z')
-		{
+		if(str[i] >= 'A' && str[i] <= 'Z') {
 			k++;
 			j++;
 		}
 	}
 
-	if ((k * percent) < (j * 100))
-	{
+	if((k * percent) < (j * 100)) {
 		return 0;
 	}
 	

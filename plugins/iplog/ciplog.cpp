@@ -23,6 +23,7 @@
 #include "src/ctime.h"
 #include "src/cserverdc.h"
 #include "src/cbanlist.h"
+#include "src/i18n.h"
 
 using namespace nDirectConnect;
 using namespace nDirectConnect::nTables;
@@ -45,12 +46,6 @@ cIPLog::~cIPLog()
 void cIPLog::CleanUp()
 {
 	mQuery.Clear();
-	// I should probably make something more automated to create the table, maybe later
-//	mQuery.OStream() << "delete from iplog where("
-//		"realtime < " << cTime().Sec() - 7 * 3600* 24 <<
-//		")";
-//	mQuery.Query();
-//	mQuery.Clear();
 }
 
 void cIPLog::GetNickHistory(const string &ip, int limit, ostream &os)
@@ -76,13 +71,14 @@ void cIPLog::GetLastIP(const string &nick, int limit, ostream &os)
 void cIPLog::MakeSearchQuery(const string &who, bool isNick, int action, int limit)
 {
 	SelectFields(mQuery.OStream());
-	mQuery.OStream() << (isNick?"WHERE nick='":"WHERE ip=");
-	if (isNick){
+	mQuery.OStream() << (isNick ? "WHERE nick='" : "WHERE ip=");
+	if(isNick) {
 		WriteStringConstant(mQuery.OStream(),who);
 		mQuery.OStream() << "'";
 	} else
 		mQuery.OStream() << cBanList::Ip2Num(who);
-	if (action>= 0) mQuery.OStream() << " AND action =" << action;
+	if(action>= 0)
+		mQuery.OStream() << " AND action =" << action;
 	mQuery.OStream() << " ORDER BY date DESC LIMIT " << limit;
 }
 
@@ -95,7 +91,8 @@ void cIPLog::GetHistory(const string &who, bool isNick, int limit, ostream &os)
 	SetBaseTo(&mModel);
 
 	const char *Actions[]={"connect","login","logout","disconnect"};
-	const char *Infos[]={"",
+	const char *Infos[]={
+	    	"",
 		"bad nick, or banned nick or ip or whatever",
 		"used different nick in chat",
 		"kicked",
@@ -113,14 +110,17 @@ void cIPLog::GetHistory(const string &who, bool isNick, int limit, ostream &os)
 		"syntax error in some message"
 	};
 	db_iterator it;
-	for(it = db_begin(); it != db_end(); ++it)
-	{
+	for(it = db_begin(); it != db_end(); ++it) {
 		cBanList::Num2Ip(mModel.mIP, ip);
-		if (mModel.mType < 4) os << Actions[mModel.mType];
-		else os << mModel.mType;
+		if(mModel.mType < 4)
+			os << Actions[mModel.mType];
+		else
+			os << mModel.mType;
 		os << " : " << cTime(mModel.mDate,0).AsDate() << " - " << (isNick?ip:mModel.mNick) << " - ";
-		if (mModel.mInfo < 16) os << Infos[mModel.mInfo];
-		else os << mModel.mInfo;
+		if(mModel.mInfo < 16)
+			os << Infos[mModel.mInfo];
+		else
+			os << mModel.mInfo;
 		os << "\r\n";
 	}
 
@@ -130,16 +130,18 @@ void cIPLog::GetHistory(const string &who, bool isNick, int limit, ostream &os)
 void cIPLog::GetLastLogin(const string &who, bool isNick, int limit, ostream &os)
 {
 	string ip;
-	os << (isNick?"Nick ":"IP ") << who << " has lately been here " << (isNick?"on IPs":"withNicks")<<"\r\n";
+	if(isNick)
+		os << autosprintf(_("Nick %s has lately been here on IPs\n"), who.c_str());
+	else
+		os << autosprintf(_("IP %s has lately been here with nicknames\n"), who.c_str());
 
 	MakeSearchQuery(who, isNick, 1, limit);
 	SetBaseTo(&mModel);
 
 	db_iterator it;
-	for(it = db_begin(); it != db_end(); ++it)
-	{
+	for(it = db_begin(); it != db_end(); ++it) {
 		cBanList::Num2Ip(mModel.mIP, ip);
-		os << cTime(mModel.mDate,0).AsDate() << " - " << (isNick?ip:mModel.mNick) << "\r\n";
+		os << cTime(mModel.mDate,0).AsDate() << " - " << (isNick ? ip : mModel.mNick) << "\r\n";
 	}
 
 	mQuery.Clear();
