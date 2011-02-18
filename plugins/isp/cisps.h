@@ -22,8 +22,8 @@
 #define CSIPS_H
 
 #include <string>
-#include <verlihub/cconndc.h>
-#include <verlihub/tlistplugin.h>
+#include "src/cconndc.h"
+#include "src/tlistplugin.h"
 
 using namespace std;
 using namespace nDirectConnect::nEnums;
