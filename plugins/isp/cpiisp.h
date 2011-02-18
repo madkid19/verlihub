@@ -1,7 +1,7 @@
 #ifndef CPIISP_H
 #define CPIISP_H
 
-#include <verlihub/tlistplugin.h>
+#include "src/tlistplugin.h"
 #include "cisps.h"
 #include "cconsole.h"
 
