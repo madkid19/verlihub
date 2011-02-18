@@ -18,10 +18,10 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <verlihub/cbanlist.h>
-#include <verlihub/cconndc.h>
-#include <verlihub/cdcproto.h>
-#include <verlihub/stringutils.h>
+#include "src/cbanlist.h"
+#include "src/cconndc.h"
+#include "src/cdcproto.h"
+#include "src/stringutils.h"
 #include "cisps.h"
 #include "cpiisp.h"
 

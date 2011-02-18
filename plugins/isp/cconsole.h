@@ -20,11 +20,7 @@
 #ifndef NFORBIDCCONSOLE_H
 #define NFORBIDCCONSOLE_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <verlihub/tlistconsole.h>
+#include "src/tlistconsole.h"
 #include "cisps.h"
 
 class cpiISP;
