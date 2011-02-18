@@ -9,7 +9,7 @@ ADD_PLUGIN(LUA51_FOUND lua)
 MACRO_LOG_FEATURE(LUA51_FOUND "lua" "Lua Plugin for lua scripting" "http://www.lua.org" "5.1" "Lua libray NOT found")
 
 # Python plugin
-Find_Package(PythonLibs REQUIRED)
+Find_Package(PythonLibs)
 ADD_PLUGIN(PYTHONLIBS_FOUND python)
 MACRO_LOG_FEATURE(PYTHONLIBS_FOUND "python" "Python Plugin for python scripting" "http://www.python.org" "2.4" "Python libray NOT found")
 
