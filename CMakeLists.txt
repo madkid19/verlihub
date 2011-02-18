@@ -7,17 +7,22 @@ SET(VERLIHUB_VERSION "${VERLIHUB_VERSION_MAJOR}.${VERLIHUB_VERSION_MINOR}.${VERL
 
 SET(VERLIHUB_SOVERSION "${VERLIHUB_VERSION}")
 SET(PROJECT_NAME "verlihub")
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake_modules)
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/Modules)
 INCLUDE (CheckIncludeFiles)
+INCLUDE(MacroLogFeature)
+INCLUDE(VerliHubMacro)
 
 
-OPTION(WITH_GEOIP "Enable Geolocalization support" ON)
-OPTION(WITH_OPENSSL "Enable OpenSSL support" ON)
-OPTION(WITH_PLUGMAN "Enable Pluging Manager support" ON)
 OPTION(INSTALL_CMAKE_FILES "Install the *.cmake files into the CMake root" ON)
 
 # Find dependences
 Find_Package(OpenSSL)
+MACRO_LOG_FEATURE(OPENSSL_FOUND "openssl" "OpenSSL cryptography library" "http://www.openssl.org/" "" "OpenSSL NOT found")
+Find_Package(Crypt)
+MACRO_LOG_FEATURE(CRYPT_FOUND "crypto" "Crypto cryptographic primitives")
+IF(CRYPT_FOUND)
+	SET(HAVE_LIBCRYPT 1)
+ENDIF(CRYPT_FOUND)
 IF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
 	MESSAGE(STATUS "WARNING: OpenSSL and Crypt not found. Password will be stored in plaintext.")
 ENDIF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
@@ -26,25 +31,20 @@ IF(OPENSSL_FOUND)
 	CHECK_INCLUDE_FILES(openssl/md5.h HAVE_OPENSSL_MD5_H)
 ENDIF(OPENSSL_FOUND)
 
-Find_Package(Crypt)
-IF(CRYPT_FOUND)
-	SET(HAVE_LIBCRYPT 1)
-ENDIF(CRYPT_FOUND)
-
-Find_Package(MySQL)
+Find_Package(MySQL REQUIRED)
 Find_Package(ZLIB REQUIRED)
-Find_Package(GeoIP REQUIRED)
+Find_Package(GeoIP)
+MACRO_LOG_FEATURE(GEOIP_FOUND "geoip" "Geolocalization support library" "http://www.maxmind.com/geoip/api/c.shtml")
 Find_Package(DL REQUIRED)
 Find_Package(Pcre REQUIRED)
 Find_Package(Threads REQUIRED)
 Find_Package(Gettext REQUIRED)
 Find_Package(Gettext-devel REQUIRED)
 
-
 SET(VERLIHUB_LIBS ${OPENSSL_LIBRARIES} ${CRYPT_LIBRARIES} ${MYSQL_LIBRARIES} ${GEOIP_LIBRARIES} ${ZLIB_LIBRARIES} ${PCRE_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${GETTEXT_ASPRINTF_LIBRARY})
 SET(VERLIHUB_SCRIPTS_LIBS "-lverlihub -lvhapi")
 SET(VERLIHUB_INCLUDE_DIRS  "-I${OPENSSL_INCLUDE_DIR} -I${MYSQL_INCLUDE_DIR} -I${GEOIP_INCLUDE_DIR} -I${ZLIB_INCLUDE_DIRS} -I${PCRE_INCLUDE_DIRS}")
-
+INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${GEOIP_INCLUDE_DIR} ${PCRE_INCLUDE_DIR} ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
 # ----------------------------------------------------------------------------------------------------
 
 CHECK_INCLUDE_FILES(string.h HAVE_STRING_H)
@@ -70,7 +70,6 @@ OPTION(DEFINE_DEBUG "Build the project using debugging code" OFF)
 IF(DEFINE_DEBUG)
 	# enable gcc specific stuff
 	if (CMAKE_COMPILER_IS_GNUCC)
-		MESSAGE(STATUS "Adding debug flag...")
 		SET(CMAKE_CXX_FLAGS "-Wall -O3")
 		SET(CMAKE_BUILD_TYPE Debug)
 		MESSAGE(STATUS "Build type is " ${CMAKE_BUILD_TYPE})
@@ -79,27 +78,29 @@ ENDIF(DEFINE_DEBUG)
 
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 
-FIND_PROGRAM(BASH_PATH bash PATHS /usr/bin /usr/local/bin)
-IF(NOT BASH_PATH)
-	MESSAGE(FATAL_ERROR "Bash shell not found. Please install Bourne Again SHell")
-ENDIF(NOT BASH_PATH)
+IF(UNIX)
+	FIND_PROGRAM(BASH_PATH bash PATHS /usr/bin /usr/local/bin)
+	IF(NOT BASH_PATH)
+		MESSAGE(FATAL_ERROR "Bash shell not found. Please install Bourne Again SHell")
+	ENDIF(NOT BASH_PATH)
+ENDIF(UNIX)
 
 # ----------------------------------------------------------------------------------------------------
 # Generate configure files
 MESSAGE(STATUS "Generating config.h file")
-CONFIGURE_FILE(config.h.cm config.h)
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake/config.h.cm" "${CMAKE_BINARY_DIR}/config.h")
 MESSAGE(STATUS "Generating dirsettings.h file")
-CONFIGURE_FILE(dirsettings.h.cm dirsettings.h)
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake/dirsettings.h.cm" "${CMAKE_BINARY_DIR}/dirsettings.h")
 # ----------------------------------------------------------------------------------------------------
 
 
 if(INSTALL_CMAKE_FILES)
- 	install(FILES "${CMAKE_SOURCE_DIR}/cmake_modules/FindVerliHub.cmake" DESTINATION ${CMAKE_ROOT}/Modules)
+ 	install(FILES "${CMAKE_SOURCE_DIR}/cmake/Modules/FindVerliHub.cmake" DESTINATION ${CMAKE_ROOT}/Modules)
 endif()
 
 # Create uninstall configuration file and uninstall target
-CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake.in" "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
-ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake")
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in" "${CMAKE_BINARY_DIR}/cmake/cmake_uninstall.cmake" IMMEDIATE @ONLY)
+ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/cmake/cmake_uninstall.cmake")
 # ----------------------------------------------------------------------------------------------------
 
 ADD_SUBDIRECTORY(src)
@@ -138,10 +139,7 @@ message(STATUS)
 message(STATUS "========== VerliHub Build Information ==========")
 message(STATUS "Build Version: ${VERLIHUB_VERSION}")
 message(STATUS "Install Prefix (CMAKE_INSTALL_PREFIX): ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "Install the *.cmake files into CMake root (INSTALL_CMAKE_FILES): ${INSTALL_CMAKE_FILES}")
-message(STATUS "Enable Geolocalization support (WITH_GEOIP): ${WITH_GEOIP}")
-message(STATUS "Enable OpenSSL support (WITH_OPENSSL): ${WITH_OPENSSL}")
-message(STATUS "Enable Pluging Manager support (WITH_PLUGMAN): ${WITH_PLUGMAN}")
+MACRO_DISPLAY_FEATURE_LOG()
 message(STATUS)
 message(STATUS "To change any of these options, override them using -D{OPTION_NAME} on the command line.")
 message(STATUS "To build and install VerliHub, run \"make\" and \"make install\"")

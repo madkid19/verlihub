@@ -1,0 +1,24 @@
+SET(LUA_VERSION_MAJOR 1)
+SET(LUA_VERSION_MINOR 0)
+SET(LUA_VERSION "${LUA_VERSION_MAJOR}.${LUA_VERSION_MINOR}")
+
+add_definitions(-DLUA_VERSION=\"${LUA_VERSION}\")
+INCLUDE_DIRECTORIES(${LUA_INCLUDE_DIR})
+
+SET(LUA_HDRS
+	callbacks.h
+	cconsole.h
+	cluainterpreter.h
+	cpilua.h
+)
+SET(LUA_SRCS
+	callbacks.cpp
+	cconsole.cpp
+	cluainterpreter.cpp
+	cpilua.cpp
+)
+
+ADD_LIBRARY(liblua_pi MODULE ${LUA_SRCS})
+SET_TARGET_PROPERTIES(liblua_pi PROPERTIES OUTPUT_NAME "lua_pi")
+target_link_libraries(liblua_pi ${LUA_LIBRARIES})
+INSTALL(TARGETS liblua_pi LIBRARY DESTINATION lib)

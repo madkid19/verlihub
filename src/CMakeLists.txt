@@ -183,11 +183,8 @@ ADD_CUSTOM_TARGET(make_time.h ALL)
 LIST(APPEND ${VERLIHUB_HDRS} make_time.h)
 # ----------------------------------------------------------------------------------------------------
 
-INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${GEOIP_INCLUDE_DIR} ${PCRE_INCLUDE_DIR})
-
 #ADD_EXECUTABLE(verlihub ${VERLIHUB_SRCS} verlihub.cpp)
 #target_link_libraries(verlihub ${VERLIHUB_LIBS})
-
 ADD_LIBRARY(libverlihub SHARED ${VERLIHUB_SRCS})
 SET_TARGET_PROPERTIES(libverlihub PROPERTIES OUTPUT_NAME "verlihub")
 SET_TARGET_PROPERTIES(libverlihub PROPERTIES VERSION ${VERLIHUB_VERSION} SOVERSION ${VERLIHUB_SOVERSION})
@@ -206,7 +203,7 @@ target_link_libraries(verlihub libverlihub)
 # Generate verlihub_config
 MESSAGE(STATUS "Generating verlihub_config")
 STRING(REPLACE ";" " " VERLIHUB_LIBS "${VERLIHUB_LIBS}")
-CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/verlihub_config.cm ${CMAKE_BINARY_DIR}/verlihub_config)
+CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake/verlihub_config.cm" ${CMAKE_BINARY_DIR}/verlihub_config)
 # ----------------------------------------------------------------------------------------------------
 
 #TODO: Add -rdynamic for backtracking
