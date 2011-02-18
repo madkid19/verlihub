@@ -48,147 +48,6 @@ else
 	port_default=4111
 fi
 
-install_menu() {
-
-#wget -P $TEMP_DIR "http://www.verlihub-project.org/download/latest.ver" 2> $LOG
-
-#LUA_VER=`cat $TEMP_DIR/latest.ver | grep "lualib" | head -n 1 | cut -d"=" -f2`
-#LUA_PLUG_VER=`cat $TEMP_DIR/latest.ver | grep "luaplug" | head -n 1 | cut -d"=" -f2`
-#LUA_SOCKET_VER=`cat $TEMP_DIR/latest.ver | grep "luasocket" | head -n 1 | cut -d"=" -f2`
-#FORBID_VER=`cat $TEMP_DIR/latest.ver | grep "forbid" | head -n 1 | cut -d"=" -f2`
-#CHATROOM_VER=`cat $TEMP_DIR/latest.ver | grep "chatroom" | head -n 1 | cut -d"=" -f2`
-#IPLOG_VER=`cat $TEMP_DIR/latest.ver | grep "iplog" | head -n 1 | cut -d"=" -f2`
-#PYTHON_VER=`cat $TEMP_DIR/latest.ver | grep "python" | head -n 1 | cut -d"=" -f2`
-#REPLACER_VER=`cat $TEMP_DIR/latest.ver | grep "replacer" | head -n 1 | cut -d"=" -f2`
-#ISP_VER=`cat $TEMP_DIR/latest.ver | grep "isp" | head -n 1 | cut -d"=" -f2`
-#MESSENGER_VER=`cat $TEMP_DIR/latest.ver | grep "messenger" | head -n 1 | cut -d "=" -f2`
-#STATS_VER=`cat $TEMP_DIR/latest.ver | grep "stats" | head -n 1 | cut -d "=" -f2`
-
-$DIALOG --title "Welcome to Verlihub's installation script for plugins" \
-	--checklist "Move using [UP] [DOWN],[Space] to select\nPlease choose what plugins you want to install" 19 86 10 \
-	"Lua" "Support for lua scripts v$LUA_PLUG_VER" off\
-	"Forbid" "Filter chat from forbidden words v$FORBID_VER" off\
-	"Chatroom" "Multiple chatrooms to separate chat topics v$CHATROOM_VER" off\
-	"IPLog" "Log ip's, nicks; history commands v$IPLOG_VER" off\
-	"Python" "Support for python scripts v$PYTHON_VER" off\
-	"Replacer" "Replace some words by other v$REPLACER_VER" off\
-	"ISP" "Internet Service Provider settings, country codes..etc v$ISP_VER" off\
-	"Messenger" "Offline messages system $MESSENGER_VER" off\
-	"Stats" "Statistics plugin, trace diverse values in the database v$STATS_VER" off 2>$_temp
-list=`cat $_temp`
-
-for name in $list
-do
-    if [ $name = "\"Lua"\" ]; then
-	$DIALOG --infobox "Installing LUA Library, LuaSocket and LUA Plugin." 7 40
-## Download Lua Library
-#    if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-#suffix="-64-bit"
-#wget -P $TEMP_DIR $VERLI_SITE/download/lua-$LUA_VER$suffix.tar.gz 2> $LOG
-#    else
-#wget -P $TEMP_DIR $LUA_SITE/lua-$LUA_VER.tar.gz 2> $LOG
-#    fi
-#    if [ "$?" != "0" ]; then
-#	$DIALOG --title "Download Error" --msgbox "Could not download Lua Library." 7 40
-#	exit
-#    fi
-## Uncompress Lua Library
-#tar zxvf $TEMP_DIR/lua-$LUA_VER$suffix.tar.gz 2> $LOG
-#    if [ "$?" != "0" ]; then
-#	$DIALOG --title "Uncompressing Error" --msgbox "Could not uncompress Lua Library." 7 40
-#	exit
-#    fi
-## Cd to folder
-#pushd $TEMP_DIR/lua-$LUA_VER$suffix 2> $LOG
-## Compile Lua Library
-#	 make linux && $get_rights make install 2> $LOG
-#popd
-## Download LuaSocket
-#wget -P $TEMP_DIR $LUA_SOCKET_SITE/luasocket-$LUA_SOCKET_VER.tar.gz 2> $LOG
-#    if [ "$?" != "0" ]; then
-#	$DIALOG --title "Download Error" --msgbox "Could not download LuaSocket" 7 40
-#	exit
-#    fi
-## Uncompress LuaSocket
-#tar zxvf $TEMP_DIR/luasocket-$LUA_SOCKET_VER.tar.gz 2> $LOG
-#    if [ "$?" != "0" ]; then
-#	$DIALOG --title "Uncompressing Error" --msgbox "Could not uncompress Luasocket." 7 40
-#	exit
-#    fi
-## Compile LuaSocket
-#pushd $TEMP_DIR/luasocket-$LUA_SOCKET_VER 2> $LOG
-#	make && $get_rights make install 2> $LOG
-#popd
-#$get_rights ln /usr/local/lib/lua/5.1/socket/core.so /usr/local/lib/libluasocket.so 2> $LOG
-#$get_rights ln /usr/local/lib/lua/5.1/mime/core.so /usr/local/lib/libluamime.so 2> $LOG
-#    if [ "$?" = "0" ]; then
-#	$DIALOG --infobox "LuaSocket Installation Completed Successfully." 6 40
-#	
-#    else
-#	$DIALOG --title "LuaSocket Installation Error" --msgbox "Error \
-#	Luasocket installation could not complete." 10 50
-#	exit
-#    fi
-## Download LUA Plugin
-#wget -P $TEMP_DIR $VERLI_SITE/lua-$LUA_PLUG_VER.tar.gz 2> $LOG
-#    if [ "$?" != "0" ]; then
-#	$DIALOG --title "Download Error" --msgbox "Could not download Lua Plugin." 7 40
-#	exit
-#    fi
-## Uncompress Lua Plugin
-#tar zxvf $TEMP_DIR/lua-$LUA_PLUG_VER.tar.gz 2> $LOG
-#    if [ "$?" != "0" ]; then
-#	$DIALOG --title "Uncompressing Error" --msgbox "Could not uncompress Lua Plugin." 7 40
-#	exit
-#    fi
-## Compile Lua Plugin
-#pushd $TEMP_DIR/lua-$LUA_PLUG_VER 2> $LOG
-#./configure --with-luasocket && make && $get_rights make install 2> $LOG
-#    if [ "$?" = "0" ]; then
-#	$DIALOG --infobox "Lua Plugin Installation completed successfully." 6 40
-#	$LDCONFIG
-#    else
-#	$DIALOG --title "Lua Plugin Installation Error" --msgbox "Error \
-#	lua plugin installation could not complete." 10 50
-#	exit
-#    fi
-
-    elif [ $name = "\"Forbid"\" ]; then
-	$DIALOG --title "Installation Status" --msgbox "Installing Forbid Plugin." 7 40
-	## wget forbid and install it
-	## link http://downloads.sourceforge.net/verlihub/forbid-1.3.tar.gz
-    elif [ $name = "\"Chatroom"\" ]; then
-	$DIALOG --title "Installation Status" --msgbox "Installing Chatroom Plugin." 7 40
-	## wget chatroom and install it
-	## link http://downloads.sourceforge.net/verlihub/chatroom-1.1.tar.gz
-    elif [ $name = "\"IPLog"\" ]; then
-	$DIALOG --title "Installation Status" --msgbox "Installing IPLog Plugin." 7 40
-	## wget iplog and install it
-	## link http://downloads.sourceforge.net/verlihub/iplog-1.1.tar.gz
-    elif [ $name = "\"Python"\" ]; then
-	$DIALOG --title "Installation Status" --msgbox "Installing Python Plugin." 7 40
-	## wget python and install it
-	## link http://downloads.sourceforge.net/verlihub/python.tar.gz
-    elif [ $name = "\"Replacer"\" ]; then
-	$DIALOG --title "Installation Status" --msgbox "Installing Replacer Plugin." 7 40
-	## wget replacer and install it
-	## link http://downloads.sourceforge.net/verlihub/replacer-1.1.tar.gz
-    elif [ $name = "\"ISP"\" ]; then
-	$DIALOG --title "Installation Status" --msgbox "Installing ISP Plugin." 7 40
-	## wget isp and install it
-	## link http://downloads.sourceforge.net/verlihub/isp-1.1.tar.gz
-    elif [ $name = "\"Messenger"\" ]; then
-	$DIALOG --title "Installation Status" --msgbox "Installing Messenger Plugin." 7 40
-	## wget messenger and install it
-	## link http://downloads.sourceforge.net/verlihub/messanger-1.2.tar.gz
-    elif [ $name = "\"Stats"\" ]; then 
-	$DIALOG --title "Installation Status" --msgbox "Installing Stats Plugin." 7 40
-	## wget stats and install it
-	## link http://downloads.sourceforge.net/verlihub/stats-1.1.tar.gz
-    fi
-done
-}
-
 setup_hub() {
 
 MYSQL=mysql
@@ -458,14 +317,12 @@ main_menu() {
 $DIALOG --backtitle "Welcome to Verlihub's installation script" --title " vh_install_gui - Version $VER "\
 	--cancel-label "Quit" \
 	--menu "Move using [UP] [DOWN], [Enter] to select" 17 60 10\
-	Compile-Plugins "Compile Verlihub Plugins "\
 	New-Hub "Setup another hub on your server"\
 	Quit "Exit installation script" 2>$_temp
 
 opt=${?}
     if [ $opt != 0 ]; then quit; fi
 	menuitem=`cat $_temp`
-#	echo "menu=$menuitem"
     case $menuitem in
 	Fresh-Install) install_menu;;
 	New-Hub) setup_hub;;
