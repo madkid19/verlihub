@@ -3,7 +3,7 @@ INSERT IGNORE INTO pi_plug (nick,autoload,path,detail) VALUES
 	("lua"    ,0,"/usr/local/lib/liblua_pi.so"   ,"Support for lua scripts"),
 	("perl"   ,0,"/usr/local/lib/libperl_pi.so"  ,"Support for perl scripts"),
 	("python"   ,0,"/usr/local/lib/libpython_pi.so"  ,"Support for python scripts"),
-	("msg"    ,0,"/usr/local/lib/libmessanger_pi.so","Offline messages system"),
+	("msg"    ,0,"/usr/local/lib/libmessenger_pi.so","Offline messages system"),
 	("flood"  ,0,"/usr/local/lib/libfloodprot_pi.so","Advanced flood protection"),
 	("log"    ,0,"/usr/local/lib/libiplog_pi.so","Log ip's, nicks; history commands"),
 	("forbid" ,0,"/usr/local/lib/libforbid_pi.so","Filter chat from forbidden words"),
