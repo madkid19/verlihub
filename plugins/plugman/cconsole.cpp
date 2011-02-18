@@ -24,6 +24,7 @@
 #include "cconsole.h"
 #include "cpiplug.h"
 #include "cplugs.h"
+#include "src/i18n.h"
 
 using namespace nDirectConnect;
 
@@ -35,8 +36,8 @@ cPlugs *cPlugConsole::GetTheList()
 
 void cPlugConsole::ListHead(ostream *os)
 {
-	(*os) << "\r\n[::] Plugman version " << mOwner->Version() << "\r\n"
-		"[::] Verlihub executable: " << mOwner->mServer->mExecPath << "\r\n"
+	(*os) << "\r\n[::] " << autosprintf(_("Plugman version %s"), mOwner->Version().c_str()) << "\r\n"
+		"[::] " << autosprintf(_("Verlihub executable: %s"), mOwner->mServer->mExecPath.c_str()) << "\r\n"
 		"[::] Verlihub make-time: " << cTime(mOwner->mList->mVHTime,0).AsDate() << "\r\n"
 		"\r\n";
 }
@@ -141,12 +142,12 @@ bool cPlugConsole::ReadDataFromCmd(cfBase *cmd, int id, cPlug &data)
 	cmd->GetParStr(eADD_NICK, data.mNick);
 	if ((data.mNick.size() > 10) && (id == eLC_ADD))
 	{
-		*cmd->mOS << "Plugin name must be max 10 characters long; please provide another one";
+		*cmd->mOS << _("Plugin name must be max 10 characters long; please provide another one");
 		return false;
 	}
 	cmd->GetParUnEscapeStr(eADD_PATH, data.mPath);
 	if(data.mPath.size() < 1 && (id == eLC_ADD)) {
-		*cmd->mOS << "Please provide a valid path for the plugin";
+		*cmd->mOS << _("Please provide a valid path for the plugin");
 		return false;
 	}
 	cmd->GetParStr(eADD_DESC, data.mDesc);
@@ -169,8 +170,7 @@ void cPlugConsole::AddCommands()
 bool cPlugConsole::cfOn::operator()()
 {
 	cPlug Data;
-	if ( GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data))
-	{
+	if(GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data)) {
 		cPlug *Plug = GetTheList()->FindData(Data);
 		if (Plug) {
 			bool res = Plug->Plugin();
@@ -178,7 +178,7 @@ bool cPlugConsole::cfOn::operator()()
 			if(!res) *mOS << Plug->mLastError;
 			return res;
 		}
-		*mOS << "Plugin '" << Data.mNick << "' not found. ";
+		*mOS << autosprintf(_("Plugin '%s' not found."), Data.mNick.c_str());
 	}
 	return false;
 }
@@ -186,11 +186,11 @@ bool cPlugConsole::cfOn::operator()()
 bool cPlugConsole::cfOff::operator()()
 {
 	cPlug Data;
-	if ( GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data))
-	{
+	if(GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data)) {
 		cPlug *Plug = GetTheList()->FindData(Data);
-		if (Plug) return Plug->Plugout();
-		*mOS << "Plugin '" << Data.mNick << "' not found. ";
+		if(Plug)
+			return Plug->Plugout();
+		*mOS << autosprintf(_("Plugin '%s' not found."), Data.mNick.c_str());
 	}
 	return false;
 }
@@ -198,11 +198,11 @@ bool cPlugConsole::cfOff::operator()()
 bool cPlugConsole::cfRe::operator()()
 {
 	cPlug Data;
-	if ( GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data))
-	{
+	if(GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data)) {
 		cPlug *Plug = GetTheList()->FindData(Data);
-		if (Plug) return Plug->Replug();
-		*mOS << "Plugin '" << Data.mNick << "' not found. ";
+		if(Plug)
+			return Plug->Replug();
+		*mOS << autosprintf(_("Plugin '%s' not found."), Data.mNick.c_str());
 	}
 	return false;
 }

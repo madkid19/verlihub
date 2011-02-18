@@ -22,14 +22,13 @@
 #define CPLUG_H
 
 #include <string>
-//#include <cconndc.h>
 #include <ctime.h>
 #include <tlistplugin.h>
 
 using namespace std;
-//using namespace nDirectConnect::nEnums;
-namespace nDirectConnect{
-	namespace nPlugin{
+
+namespace nDirectConnect {
+	namespace nPlugin {
 		class cVHPluginMgr;
 	};
 };

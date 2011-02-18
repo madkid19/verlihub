@@ -21,6 +21,7 @@
 #include "cplugs.h"
 #include "cvhpluginmgr.h"
 #include "cserverdc.h"
+#include "src/i18n.h"
 #include <sys/stat.h>
 
 using namespace nDirectConnect;
@@ -36,31 +37,26 @@ cPlug::cPlug() :
 
 void cPlug::OnLoad()
 {
-	if (IsScript())
-	{
-		if (!FindDestPlugin())
-		{
-			mLastError = "Destination plugin not found.";
+	if(IsScript()) {
+		if(!FindDestPlugin()) {
+			mLastError = _("Destination plugin not found.");
 			SaveMe();
 			return;
 		}
 	}
-	if (mLoadOnStartup)
-	{
+	if(mLoadOnStartup) {
 		mReloadNext = false;
 		mUnloadNext = false;
 		Plugin();
 	}
 
-	if (mReloadNext)
-	{
+	if(mReloadNext) {
 		mReloadNext = false;
 		mUnloadNext = false;
 		Replug();
 
 	}
-	if (mUnloadNext)
-	{
+	if(mUnloadNext) {
 		mUnloadNext = false;
 		Plugout();
 		SaveMe();
@@ -75,33 +71,33 @@ cPlug *cPlug::FindDestPlugin() const
 cVHPlugin *cPlug::GetDestPlugin() const
 {
 	cPlug *OwnerPlugin = FindDestPlugin();
-	if (OwnerPlugin) return OwnerPlugin->IsLoaded();
+	if(OwnerPlugin)
+		return OwnerPlugin->IsLoaded();
 	else return NULL;
 }
 
 cVHPlugin *cPlug::IsLoaded() const
 {
-	if(IsScript())
-	{
+	if(IsScript()) {
 		cVHPlugin *plugin = GetDestPlugin();
-		if (plugin && plugin->IsScriptLoaded(mPath))
+		if(plugin && plugin->IsScriptLoaded(mPath))
 			return plugin;
-		else return NULL;
-	} else
-	{
+		else
+			return NULL;
+	} else {
 		cVHPluginMgr *pm = mOwner?mOwner->mPM:NULL;
-		if (pm) return (cVHPlugin *)pm->GetPluginByLib(mPath);
-		else return NULL;
+		if(pm)
+			return (cVHPlugin *)pm->GetPluginByLib(mPath);
+		else
+			return NULL;
 	}
 }
 
 bool cPlug::Plugin()
 {
 	cVHPluginMgr *pm = mOwner?mOwner->mPM:NULL;
-	if (pm && !IsLoaded() && CheckMakeTime())
-	{
-		if (IsScript())
-		{
+	if (pm && !IsLoaded() && CheckMakeTime()) {
+		if (IsScript()) {
 			ostringstream os;
 			bool result = false;
 
@@ -112,13 +108,15 @@ bool cPlug::Plugin()
 				else if (dest->SupportsScripts())
 					result = dest->LoadScript(mPath, os);
 				else {
-					mLastError = "Dest plugins does not support scripts";
+					mLastError = _("Plugin does not support scripts");
 					SaveMe();
 					return false;
 				}
 
-				if (result) os << "Load OK";
-				else os << "Load ERROR";
+				if (result)
+					os << _("Loaded");
+				else
+					os << _("Error loading");
 				mLastError = os.str();
 				SaveMe();
 				return result;
@@ -126,7 +124,7 @@ bool cPlug::Plugin()
 		} else {
 			if (pm->LoadPlugin(mPath)) {
 				mLoadTime = cTime().Sec();
-				mLastError = "Load OK";
+				mLastError = _("Loaded");
 				SaveMe();
 				return true;
 			} else {
@@ -142,13 +140,13 @@ bool cPlug::Plugin()
 bool cPlug::CheckMakeTime()
 {
 	// script don't have to be checked
-	if (IsScript()) return true;
+	if (IsScript())
+		return true;
 
 	mMakeTime = mOwner->GetFileTime(mPath);
 
-	if (mMakeTime && mMakeTime < mOwner->mVHTime)
-	{
-		mLastError = "Warning: the plugin should be recompiled because verlihub has been recently updated";
+	if(mMakeTime && mMakeTime < mOwner->mVHTime) {
+		mLastError = _("Warning: the plugin should be recompiled because verlihub has been recently updated");
 		SaveMe();
 		return false;
 	}
@@ -158,28 +156,27 @@ bool cPlug::CheckMakeTime()
 bool cPlug::Plugout()
 {
 	cVHPluginMgr *pm = mOwner?mOwner->mPM:NULL;
-	cVHPlugin *pi=IsLoaded();
-	if (pm && pi)
-	{
-		if (IsScript()) return pi->UnLoadScript(mPath);
-		else return pm->UnloadPlugin(pi->Name());
+	cVHPlugin *pi = IsLoaded();
+	if (pm && pi) {
+		if(IsScript())
+			return pi->UnLoadScript(mPath);
+		else
+			return pm->UnloadPlugin(pi->Name());
 	}
-	else return false;
+	return false;
 }
 
 bool cPlug::Replug()
 {
 	cVHPluginMgr *pm = mOwner?mOwner->mPM:NULL;
 	cVHPlugin *pi=IsLoaded();
-	if (pm && pi && CheckMakeTime())
-	{
+	if (pm && pi && CheckMakeTime()) {
 		if (pm->ReloadPlugin(pi->Name()))
 		{
-			mLastError = "Reload OK";
+			mLastError = _("Reloaded");
 			SaveMe();
 			return true;
-		} else
-		{
+		} else {
 			mLastError = pm->GetError();
 			SaveMe();
 			return false;
@@ -200,13 +197,14 @@ void cPlug::SaveMe()
 
 ostream& operator << (ostream &os, const cPlug &plug)
 {
-	os << "[::] Name: " << plug.mNick <<endl;
-	if (plug.IsScript()) os << " " << plug.mDest <<endl;
-	os << "[::] Status: " << (plug.IsLoaded()?"On":"Off") <<endl;
-	os << "[::] Mode: " << (plug.mLoadOnStartup?"Auto":"Manual") <<endl;
-	os << "[::] Path: " << plug.mPath <<endl;
-	os << "[::] Description: " << plug.mDesc <<endl;
-	os << "[::] Last Error: " << plug.mLastError <<endl;
+	os << "[::] " << autosprintf(_("Name: %s"), plug.mNick.c_str()) << endl;
+	if (plug.IsScript())
+		os << " " << plug.mDest << endl;
+	os << "[::] " << autosprintf(_("Status: %s"), (plug.IsLoaded() ? _("On") : _("Off"))) << endl;
+	os << "[::] " << autosprintf(_("Mode: %s"), (plug.mLoadOnStartup ? _("Auto") : _("Manual"))) << endl;
+	os << "[::] " << autosprintf(_("Path: %s"), plug.mPath.c_str()) << endl;
+	os << "[::] " << autosprintf(_("Description: %s"), plug.mDesc.c_str()) <<endl;
+	os << "[::] " << autosprintf(_("Last Error: %s"), plug.mLastError.c_str()) <<endl;
 	return os;
 }
 
@@ -242,8 +240,7 @@ void cPlugs::PluginAll(int method)
 {
 	iterator it;
 	bool IsAuto = false;
-	switch(method)
-	{
+	switch(method) {
 		case ePLUG_AUTOLOAD:
 		case ePLUG_AUTOUNLOAD:
 		case ePLUG_AUTORELOAD:
@@ -252,10 +249,8 @@ void cPlugs::PluginAll(int method)
 		default:break;
 	};
 
-	for (it = begin(); it != end(); ++it)
-	{
-		switch(method)
-		{
+	for(it = begin(); it != end(); ++it) {
+		switch(method) {
 			case ePLUG_AUTOLOAD:
 			case ePLUG_LOAD:
 				if ((!IsAuto || (*it)->mLoadOnStartup) && (*it)->mPath.size() > 0)
