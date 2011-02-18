@@ -30,7 +30,7 @@ using namespace nConfig;
 cpiChatroom::cpiChatroom()
 {
 	mName = "Chatroom";
-	mVersion = VERSION;
+	mVersion = CHATROOM_VERSION;
 	mCfg = NULL;
 }
 
@@ -50,12 +50,11 @@ void cpiChatroom::OnLoad(cServerDC *server)
 	mCfg->Save();
 	
 	tpiChatroomBase::OnLoad(server);
-	for (it = mServer->mUserList.begin(); it !=  mServer->mUserList.end() ; ++it)
-	{
+	for (it = mServer->mUserList.begin(); it !=  mServer->mUserList.end() ; ++it) {
 		user =(cUser*)*it;
 		if(user && user->mxConn)
 			mList->AutoJoin(user);
-	}	
+	}
 }
 
 bool cpiChatroom::OnUserLogin(cUser *user)
@@ -67,8 +66,7 @@ bool cpiChatroom::OnUserLogin(cUser *user)
 bool cpiChatroom::OnUserLogout(cUser *user)
 {
 	cRooms::iterator it;
-	for (it = mList->begin(); it != mList->end(); ++it)
-	{
+	for (it = mList->begin(); it != mList->end(); ++it) {
 		if(*it) (*it)->DelUser(user);
 	}
 	return true;
@@ -88,13 +86,15 @@ bool cpiChatroom::RegisterAll()
 
 bool cpiChatroom::OnUserCommand(cConnDC *conn, string *str)
 {
-	if( mConsole.DoCommand(*str, conn) ) return false;
+	if(mConsole.DoCommand(*str, conn))
+		return false;
 	return true;
 }
 
 bool cpiChatroom::OnOperatorCommand(cConnDC *conn, string *str)
 {
-	if( mConsole.DoCommand(*str, conn) ) return false;
+	if(mConsole.DoCommand(*str, conn))
+		return false;
 	return true;
 }
 

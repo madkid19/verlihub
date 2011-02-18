@@ -20,6 +20,7 @@
 #include "crooms.h"
 #include "cpichatroom.h"
 #include "src/cdcproto.h"
+#include "src/i18n.h"
 
 using namespace nUtils;
 
@@ -47,13 +48,13 @@ cRoom::cRoom()
 
 cRoom::~cRoom()
 {
-	if(mChatRoom)
-	{
+	if(mChatRoom) {
 		mPlugin->DelRobot(mChatRoom);
 		//delete mChatRoom;
 		mChatRoom = NULL;
 	}
-	if (mUsers) delete mUsers;
+	if(mUsers)
+		delete mUsers;
 	mUsers = NULL;
 	mServer = NULL;
 	mPlugin = NULL;
@@ -64,21 +65,20 @@ void cRoom::OnLoad()
 	//string nick="[CHAT]"+mNick;
 	string omsg;
 	string start(mNick);
-					
+
 	string desc("ChatRoom: "),speed(/*"Hub\x9"*/" "), mail(""), share("0");
 	if(!mUsers) {
 		mUsers = new cUserCollection(true,false);
 		mUsers->SetNickListSeparator("\r\n");
 	}
-	if (mChatRoom == NULL)
-	{
+	if (mChatRoom == NULL) {
 		mChatRoom=new cXChatRoom(mNick, this);
 		mChatRoom->mClass = tUserCl(10);
 		desc += mTopic;
 		::nDirectConnect::nProtocol::cDCProto::Create_MyINFO(mChatRoom->mMyINFO, mNick,desc,speed,mail,share);
 		mChatRoom->mMyINFO_basic = mChatRoom->mMyINFO;
 
-		mPlugin->AddRobot(mChatRoom);	
+		mPlugin->AddRobot(mChatRoom);
 		omsg = "$Hello "; omsg+= mNick; omsg+= "|";
 		mServer->mUserList.SendToAll(omsg,true,false);
 	}
@@ -86,37 +86,32 @@ void cRoom::OnLoad()
 
 void cRoom::AddUser(cUser *user)
 {
-	if (user != NULL && user->mxConn)
-	{
+	if (user != NULL && user->mxConn) {
 		mUsers->Add(user);
 	}
 }
 
 void cRoom::DelUser(cUser *user)
 {
-	if (user != NULL && user->mxConn)
-	{
+	if (user != NULL && user->mxConn) {
 		mUsers->Remove(user);
 	}
 }
 
 bool cRoom::IsUserAutoJoin(cUser *user)
 {
-	if ((user->mClass >= mAutoClassMin) &&
-    (user->mClass <= mAutoClassMax))
+	if ((user->mClass >= mAutoClassMin) && (user->mClass <= mAutoClassMax))
 		return true;
-	if (mAutoCC.size() && user->mxConn && user->mxConn->mCC.size() && 
-			(mAutoCC.find(user->mxConn->mCC) !=mAutoCC.npos))
+	if (mAutoCC.size() && user->mxConn && user->mxConn->mCC.size() && (mAutoCC.find(user->mxConn->mCC) !=mAutoCC.npos))
 		return true;
 	return false;
 }
 
 ostream& operator << (ostream &os, const cRoom &room)
 {
-	os << room.mNick << " - " << room.mTopic << " - By " << room.mCreator << "  Auto: " << 
-			room.mAutoClassMin << "-" << room.mAutoClassMax << "/CC:" << room.mAutoCC << "  MinClass: " <<
-			room.mMinClass;
-	if (room.mUsers) os << " -- Online " << room.mUsers->size() << " users";
+	os << autosprintf(_("%s - %s - By %s Auto: %d-%d/CC: %s MinClass: %d"), room.mNick.c_str(), room.mTopic.c_str(), room.mCreator.c_str(), room.mAutoClassMin, room.mAutoClassMax, room.mAutoCC.c_str(), room.mMinClass);
+	if(room.mUsers)
+		os << " -- " << autosprintf(_("Online %d users"), room.mUsers->size());
 	return os;
 }
 
@@ -154,10 +149,9 @@ void cRooms::AddFields()
 void cRooms::AutoJoin(cUser *user)
 {
 	iterator it;
-	for (it = begin(); it != end(); ++it)
-	{
+	for(it = begin(); it != end(); ++it) {
 		cRoom *room =(*it);
-		if ( room->IsUserAutoJoin(user)) {
+		if(room->IsUserAutoJoin(user)) {
 			room->AddUser(user);
 		}
 	}

@@ -102,17 +102,17 @@ bool cRoomConsole::ReadDataFromCmd(cfBase *cmd, int id, cRoom &data)
 	cmd->GetParInt(eADD_MINC, data.mMinClass);
 	cmd->GetParInt(eADD_MINAC,data.mAutoClassMin);
 	cmd->GetParInt(eADD_MAXAC,data.mAutoClassMax);
-	return true;	
+	return true;
 }
 
 bool cRoomConsole::IsConnAllowed(cConnDC *conn,int cmd)
 {
 	bool result = true;
-	if (!conn || !conn->mpUser) return false;
+	if(!conn || !conn->mpUser)
+		return false;
 	int UserClass = conn->mpUser->mClass;
-					
-	switch(cmd)
-	{
+
+	switch(cmd) {
 		case eLC_ADD: result = UserClass >= mOwner->mCfg->min_class_add; break;
 		case eLC_MOD: result = UserClass >= mOwner->mCfg->min_class_mod; break;
 		case eLC_DEL: result = UserClass >= mOwner->mCfg->min_class_del; break;
