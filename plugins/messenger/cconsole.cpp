@@ -49,8 +49,7 @@ cConsole::~cConsole()
 int cConsole::DoCommand(const string &str, cConnDC * conn)
 {
 	ostringstream os;
-	if(mCmdr.ParseAll(str, os, conn) >= 0)
-	{
+	if(mCmdr.ParseAll(str, os, conn) >= 0) {
 		mMessanger->mServer->DCPublicHS(os.str().data(),conn);
 		return 1;
 	}

@@ -84,8 +84,7 @@ public:
 	{
 		tvLuaInterpreter::iterator it;
 		
-		for(it = mLua.begin(); it != mLua.end(); ++it)
-		{
+		for(it = mLua.begin(); it != mLua.end(); ++it) {
 			if(*it != NULL)
 				delete *it;
 			*it = NULL;

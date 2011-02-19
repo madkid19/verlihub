@@ -48,7 +48,7 @@ bool cpiPlug::RegisterAll()
 
 bool cpiPlug::OnNewConn(cConnDC * conn)
 {
-	if (mServer->mC.host_header ==1) {
+	if (mServer->mC.host_header == 1) {
 		mServer->DCPublicHS("This hub is enhanced by " + mName + " for Verlihub.", conn);
 	}
 	return true; 

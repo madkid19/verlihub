@@ -35,7 +35,6 @@ public:
 	string mScriptName;
 	int id;
 	bool online;
-	//cQuery *mQuery;
 };
 
 };
