@@ -160,7 +160,6 @@ int cMsgList::DeliverMessagesSinceSync(unsigned sync)
 	db_iterator it;
 	int n = 0;
 	cUser *user = NULL;
-	long max_date = 0;
 	cQuery DelQ(mQuery);
 	
 	SetBaseTo(&mModel);

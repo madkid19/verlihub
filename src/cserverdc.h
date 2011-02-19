@@ -323,7 +323,7 @@ protected: // Protected methods
 	/** return true if the condition of minimal delay is verified
 	    and modify the timestamp */
 	bool MinDelay(cTime &what, int min);
-	bool MinDelayMS(cTime &what, long min);
+	bool MinDelayMS(cTime &what, long unsigned int min);
 	/** return true if accept is allowed - override */
 	bool AllowNewConn();
 	/** return negative if conn should be removed */

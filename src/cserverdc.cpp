@@ -792,7 +792,7 @@ bool cServerDC::BeginUserLogin(cConnDC *conn)
 {
 	// If user asks for nicklist, then login will happen after the sending of nicklist ends
 	// otherwise it will happen now
-	int WantedMask;
+	unsigned int WantedMask;
 	if (mC.delayed_login)
 	 	WantedMask = eLS_LOGIN_DONE - eLS_NICKLST;
 	else
@@ -904,7 +904,7 @@ bool cServerDC::MinDelay(cTime &then, int min)
 	}
 	return false;
 }
-bool cServerDC::MinDelayMS(cTime &what, long min)
+bool cServerDC::MinDelayMS(cTime& what, long unsigned int min)
 {
 	cTime now;
 	cTime diff=now-what;

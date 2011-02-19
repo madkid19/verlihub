@@ -411,7 +411,8 @@ bool AddRegUser(char *nick, int uClass, char * passwd, char* op)
 		if(user && user->mxConn) conn = user->mxConn;
 	}
 	if(uClass == eUC_MASTER) return false;
-	if( strlen(passwd) < server->mC.password_min_len ) return false;
+	if(strlen(passwd) < (unsigned int) server->mC.password_min_len)
+		return false;
 	return server->mR->AddRegUser(nick, conn, uClass, passwd);
 }
 bool DelRegUser(char *nick)
