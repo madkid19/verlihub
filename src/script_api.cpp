@@ -354,7 +354,7 @@ bool GetTempRights(char *nick,  map<string,int> &rights)
 	cTime time = cTime().Sec();
 
 	static const int ids[] = { nDirectConnect::nEnums::eUR_CHAT, nDirectConnect::nEnums::eUR_PM, nDirectConnect::nEnums::eUR_SEARCH, nDirectConnect::nEnums::eUR_CTM, nDirectConnect::nEnums::eUR_KICK, nDirectConnect::nEnums::eUR_REG, nDirectConnect::nEnums::eUR_OPCHAT, nDirectConnect::nEnums::eUR_DROP, nDirectConnect::nEnums::eUR_TBAN, nDirectConnect::nEnums::eUR_PBAN, nDirectConnect::nEnums::eUR_NOSHARE };
-	for(int i = 0; i< sizeof ids; i++) {
+	for(unsigned int i = 0; i < sizeof ids; i++) {
 		string key;
 		switch(ids[i]) {
 			case nDirectConnect::nEnums::eUR_CHAT:

@@ -175,6 +175,7 @@ bool cpiPython::RegisterAll()
 	RegisterCallBack("VH_OnTimer");
 	RegisterCallBack("VH_OnNewReg");
 	RegisterCallBack("VH_OnNewBan");
+	return true;
 }
 
 bool cpiPython::AutoLoad()
@@ -758,7 +759,6 @@ bool cpiPython::OnParsedMsgAny(cConnDC *conn, cMessageDC *msg)
 	if((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL))
 	{
 		w_Targs* args = lib_pack( "ss", conn->mpUser->mNick.c_str(), msg->mStr.c_str());
-		char *a, *b;
 		return CallAll(W_OnParsedMsgAny, args);
 	}
 	return true;
@@ -883,32 +883,38 @@ bool cpiPython::OnNewBan(cBan *ban)
 w_Targs* _usermc (int id, w_Targs* args) // (char *data, char *nick)
 {
 	char *data, *nick;
-	if (!cpiPython::lib_unpack(args, "ss", &data, &nick)) return NULL;
-	if (!data || !nick) return NULL;
+	if(!cpiPython::lib_unpack(args, "ss", &data, &nick))
+		return NULL;
+	if(!data || !nick)
+		return NULL;
 	string msg = string() + "<" + cpiPython::botname + "> " + data + "|";
 	cUser *u = cpiPython::me->server->mUserList.GetUserByNick(nick);
-	if (u && u->mxConn) { u->mxConn->Send( msg, true ); return w_ret1; }
+	if(u && u->mxConn) {
+		u->mxConn->Send( msg, true );
+		return w_ret1;
+	}
 	return NULL;
 }
 
 w_Targs* _mc (int id, w_Targs* args) // (char *data)
 {
-	char *data, *nick;
+	char *data;
 	if (!cpiPython::lib_unpack(args, "s", &data)) return NULL;
-	if (!data) return NULL;
+	if (!data)
+		return NULL;
 	string msg = string() + "<" + cpiPython::botname + "> " + data + "|";
 	cpiPython::me->server->SendToAll(msg, 0, 10);
 	return w_ret1;
 }
 
-
-
 w_Targs* _classmc (int id, w_Targs* args) // (char *data)
 {
 	char *data;
 	long minclass, maxclass;
-	if (!cpiPython::lib_unpack(args, "sll", &data, &minclass, &maxclass)) return NULL;
-	if (!data) return NULL;
+	if(!cpiPython::lib_unpack(args, "sll", &data, &minclass, &maxclass))
+		return NULL;
+	if(!data)
+		return NULL;
 	string msg = string() + "<" + cpiPython::botname + "> " + data + "|";
 	// we would use the call below but it is buggy - it does not care about provided class range
 	//cpiPython::me->server->SendToAll(msg, minclass, maxclass);

@@ -48,8 +48,8 @@ public:
 	virtual void OnLoad(cServerDC *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
-	cIPLog * mIPLog;
 	cConsole mConsole;
+	cIPLog * mIPLog;
 	int mLogFlags;
 };
 

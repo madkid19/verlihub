@@ -35,15 +35,15 @@ protected:
 		public:
 		cpiPython *GetPI(){ return ((cConsole *)(mCommand->mCmdr->mOwner))->mPython;}
 	};
-		
-	class cfGetPythonScript : public cfBase { virtual bool operator()();} mcfPythonScriptGet;
+
 	class cfAddPythonScript : public cfBase { virtual bool operator()();} mcfPythonScriptAdd;
+	class cfGetPythonScript : public cfBase { virtual bool operator()();} mcfPythonScriptGet;
 	class cfDelPythonScript : public cfBase { virtual bool operator()();} mcfPythonScriptDel;
 	class cfReloadPythonScript : public cfBase { virtual bool operator()();} mcfPythonScriptRe;
 	class cfLogPythonScript : public cfBase { virtual bool operator()();} mcfPythonScriptLog;
 	
-	cCommand mCmdPythonScriptGet;
 	cCommand mCmdPythonScriptAdd;
+	cCommand mCmdPythonScriptGet;
 	cCommand mCmdPythonScriptDel;
 	cCommand mCmdPythonScriptRe;
 	cCommand mCmdPythonScriptLog;

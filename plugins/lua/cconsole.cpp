@@ -135,7 +135,7 @@ bool cConsole::cfDelLuaScript::operator()()
 	
 	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script n° %s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script #%s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
 		else
 			(*mOS) << autosprintf(_("Script %s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
 		return false;
@@ -229,7 +229,7 @@ bool cConsole::cfReloadLuaScript::operator()()
 	
 	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script n° %s not unloaded because not found or not loaded."), scriptfile.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script #%s not unloaded because not found or not loaded."), scriptfile.c_str()) << "\r\n";
 		else
 			(*mOS) << autosprintf(_("Script %s not unloaded  because not found or not loaded."), scriptfile.c_str()) << "\r\n";
 		return false;

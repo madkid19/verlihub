@@ -74,6 +74,7 @@ public:
 	cPythonInterpreter *GetInterpreter(int id);
 	bool CallAll(int func, w_Targs* args);
 	int Size() { return mPython.size(); }
+	
 	void Empty()
 	{
 		tvPythonInterpreter::iterator it;
@@ -84,10 +85,12 @@ public:
 		}
 		mPython.clear();
 	}
-	int AddData(cPythonInterpreter *ip)
+	
+	void AddData(cPythonInterpreter *ip)
 	{
 		mPython.push_back(ip); 
 	}
+	
 	cPythonInterpreter * operator[](int i)
 	{
 		if(i < 0 || i > Size()) return NULL;

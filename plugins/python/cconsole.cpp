@@ -87,7 +87,7 @@ bool cConsole::cfDelPythonScript::operator()()
 	cPythonInterpreter *li;
 	for(it = GetPI()->mPython.begin(); it != GetPI()->mPython.end(); ++it) {
 		li = *it;
-		if(number && num == li->id || !number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile) == 0 ) {
+		if((number && num == li->id) || (!number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile) == 0)) {
 			found = true;
 			(*mOS) << autosprintf(_("Script: [ %d ] %s unloaded."), li->id,  li->mScriptName.c_str()) << "\r\n";
 			delete li;
@@ -97,11 +97,12 @@ bool cConsole::cfDelPythonScript::operator()()
 		}
 	}
 	
-	if(!found)
+	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script n° %s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script #%s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
 		else
 			(*mOS) << autosprintf(_("Script %s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
+	}
 	return true;
 }
 
@@ -175,7 +176,7 @@ bool cConsole::cfReloadPythonScript::operator()()
 	string name;
 	for(it = GetPI()->mPython.begin(); it != GetPI()->mPython.end(); ++it) {
 		li = *it;
-		if( number && num == li->id || !number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile) == 0 ) {
+		if((number && num == li->id) || (!number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile) == 0)) {
 			found = true;
 			name = li->mScriptName;
 			(*mOS) << autosprintf(_("Script: [ %d ] %s unloaded."), li->id, li->mScriptName.c_str()) << "\r\n";
@@ -187,7 +188,7 @@ bool cConsole::cfReloadPythonScript::operator()()
 	
 	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script n° %s not unloaded because not found or not loaded."), scriptfile.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script #%s not unloaded because not found or not loaded."), scriptfile.c_str()) << "\r\n";
 		else
 			(*mOS) << autosprintf(_("Script %s not unloaded  because not found or not loaded."), scriptfile.c_str()) << "\r\n";
 		return false;
