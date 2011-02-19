@@ -49,6 +49,7 @@ bool cpiStats::RegisterAll()
 	RegisterCallBack("VH_OnUserCommand");
 	RegisterCallBack("VH_OnTimer");
 	RegisterCallBack("VH_OnParsedMsgSearch");
+	return true;
 }
 
 bool cpiStats::OnTimer()

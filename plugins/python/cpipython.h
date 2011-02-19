@@ -94,8 +94,8 @@ public:
 		return mPython[i];
 	}
 	
-	cQuery *mQuery;
 	cConsole mConsole;
+	cQuery *mQuery;
 	typedef vector<cPythonInterpreter *> tvPythonInterpreter;
 	tvPythonInterpreter mPython;
 	string mScriptDir;
