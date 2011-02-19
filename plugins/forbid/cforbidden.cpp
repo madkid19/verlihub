@@ -63,7 +63,7 @@ int cForbiddenWorker::DoIt(const string & cmd_line, cConnDC *conn, cServerDC *se
 	if (eNOTIFY_OPS & mCheckMask) {
 
 		ostringstream os;
-		os << autosprintf(_("FORBID: User is typing forbidden word(s) into %s: %s"), (eCHECK_CHAT & mask) ? _("PUBLIC chat") : _("PRIVATE chat"), cmd_line.c_str());
+		os << autosprintf(_("FORBID: User sent forbidden words in %s: %s"), (eCHECK_CHAT & mask) ? _("PUBLIC chat") : _("PRIVATE chat"), cmd_line.c_str());
 		text = os.str();
 		server->ReportUserToOpchat(conn, text, false);
 

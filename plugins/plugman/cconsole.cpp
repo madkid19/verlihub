@@ -140,14 +140,13 @@ bool cPlugConsole::ReadDataFromCmd(cfBase *cmd, int id, cPlug &data)
 		eADD_AUTOp, eADD_AUTO};
 
 	cmd->GetParStr(eADD_NICK, data.mNick);
-	if ((data.mNick.size() > 10) && (id == eLC_ADD))
-	{
-		*cmd->mOS << _("Plugin name must be max 10 characters long; please provide another one");
+	if ((data.mNick.size() > 10) && (id == eLC_ADD)) {
+		*cmd->mOS << _("Plugin name must be max 10 characters long; please provide another one.");
 		return false;
 	}
 	cmd->GetParUnEscapeStr(eADD_PATH, data.mPath);
 	if(data.mPath.size() < 1 && (id == eLC_ADD)) {
-		*cmd->mOS << _("Please provide a valid path for the plugin");
+		*cmd->mOS << _("Please provide a valid path for the plugin.");
 		return false;
 	}
 	cmd->GetParStr(eADD_DESC, data.mDesc);

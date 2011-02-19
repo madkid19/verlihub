@@ -229,10 +229,10 @@ ostream & operator << (ostream &os, sMessage &Msg)
 	cTime date_sent(Msg.mDateSent,0);
 	switch (Msg.mPrintType) {
 		case sMessage::AS_SUBJECT:
-			os << autosprintf(_("From: %s To: %s\nDate: %s\n Subject: %s\n"), Msg.mSender.c_str(), Msg.mReceiver.c_str(), date_sent.AsDate().AsString().c_str(), Msg.mSubject.c_str());
+			os << autosprintf(_("From: %s To: %s\nDate: %s\nSubject: %s\n"), Msg.mSender.c_str(), Msg.mReceiver.c_str(), date_sent.AsDate().AsString().c_str(), Msg.mSubject.c_str());
 		break;
 		case sMessage::AS_BODY:
-			os << autosprintf(_("From: %s To: %s\nDate: %s\n Subject: %s\n%s\n----\n"), Msg.mSender.c_str(), Msg.mReceiver.c_str(), date_sent.AsDate().AsString().c_str(), Msg.mSubject.c_str(), Msg.mBody.c_str());
+			os << autosprintf(_("From: %s To: %s\nDate: %s\nSubject: %s\n%s\n----\n"), Msg.mSender.c_str(), Msg.mReceiver.c_str(), date_sent.AsDate().AsString().c_str(), Msg.mSubject.c_str(), Msg.mBody.c_str());
 		break;
 		case sMessage::AS_DELIVERY:
 			os << "\r\n" << autosprintf(_("#OFFLINE MESSAGE# [%s]\nSubject: %s -------------------------\n%s"), date_sent.AsDate().AsString().c_str(), Msg.mSubject.c_str(), Msg.mBody.c_str());

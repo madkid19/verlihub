@@ -1098,7 +1098,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 			if(conn->mpUser->mClass ==  eUC_VIPUSER) delay=mS->mC.int_search_vip;
 			if(conn->mpUser->mClass ==  eUC_OPERATOR) delay=mS->mC.int_search_op;
 			if(!CheckIP(conn,msg->ChunkString(eCH_AS_IP))) {
-				os << autosprintf(_("Active Search: Your ip is not %s but %s. Disconnecting"), msg->ChunkString(eCH_AS_IP).c_str(), conn->mAddrIP.c_str());
+				os << autosprintf(_("Active Search: your IP is not %s but %s. Disconnecting"), msg->ChunkString(eCH_AS_IP).c_str(), conn->mAddrIP.c_str());
 			mS->ConnCloseMsg(conn, os.str(), 4000, eCR_SYNTAX);
 			return -1;
 			}

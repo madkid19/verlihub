@@ -88,7 +88,7 @@ bool cConsole::cfDelReplacer::operator ( )()
 			isInList = true;
 
 	if(!isInList) {
-		(*mOS) << autosprintf(_("Word %s does not exist."), word_backup.c_str()) << "\r\n";
+		(*mOS) << autosprintf(_("Word '%s' does not exist."), word_backup.c_str()) << " ";
 		return false;
 	}
 
@@ -96,7 +96,7 @@ bool cConsole::cfDelReplacer::operator ( )()
 	FWord.mWord = word;
 
 	GetPI()->mReplacer->DelReplacer(FWord);
-	(*mOS) << autosprintf(_("Word %s deleted."), word_backup.c_str()) << "\r\n";
+	(*mOS) << autosprintf(_("Word '%s' deleted."), word_backup.c_str()) << " ";
 
 	GetPI()->mReplacer->LoadAll();
 	return true;
@@ -119,15 +119,15 @@ bool cConsole::cfAddReplacer::operator ( )()
 	cPCRE TestRE;
 	cDCProto::UnEscapeChars(word_backup, word);
 	if(!TestRE.Compile(word.data(), 0)) {
-		(*mOS) << _("Sorry the regular expression you provided cannot be parsed.") << "\r\n";
+		(*mOS) << _("Sorry the regular expression you provided cannot be parsed.") << " ";
 		return false;
 	}
 
 	for(int i = 0; i < GetPI()->mReplacer->Size(); i++) {
-	    if((*GetPI()->mReplacer)[i]->mWord == word) {
-	        (*mOS) << autosprintf(_("Word %s already exists"), word.c_str()) << "\r\n";
-	        return false;
-	    }
+		if((*GetPI()->mReplacer)[i]->mWord == word) {
+			(*mOS) << autosprintf(_("Word '%s' already exists."), word.c_str()) << " ";
+			return false;
+		}
 	}
 
 	FWord.mWord = word;
@@ -135,9 +135,9 @@ bool cConsole::cfAddReplacer::operator ( )()
 	string ch, cl;
 
 	if(GetPI()->mReplacer->AddReplacer(FWord))
-		(*mOS) << autosprintf(_("Added word %s. This word will be filtered in public chat for users with class that is less than or equal to %d."), word_backup.c_str(), FWord.mAfClass) << "\r\n";
+		(*mOS) << autosprintf(_("Added word %s. This word will be filtered in public chat for users with class that is less than or equal to %d."), word_backup.c_str(), FWord.mAfClass) << " ";
 	else
-	    (*mOS) << autosprintf(_("Error adding word %s."), word_backup.c_str()) << "\r\n";
+	    (*mOS) << autosprintf(_("Error adding word '%s'."), word_backup.c_str()) << " ";
 
 	GetPI()->mReplacer->LoadAll();
 

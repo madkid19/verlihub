@@ -89,7 +89,7 @@ bool cConsole::cfDelPythonScript::operator()()
 		li = *it;
 		if((number && num == li->id) || (!number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile) == 0)) {
 			found = true;
-			(*mOS) << autosprintf(_("Script: [ %d ] %s unloaded."), li->id,  li->mScriptName.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script %s unloaded."), li->mScriptName.c_str()) << " ";
 			delete li;
 			GetPI()->mPython.erase(it);
 			
@@ -99,9 +99,9 @@ bool cConsole::cfDelPythonScript::operator()()
 	
 	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script #%s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script #%s not unloaded because not found."), scriptfile.c_str()) << " ";
 		else
-			(*mOS) << autosprintf(_("Script %s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script %s not unloaded because not found."), scriptfile.c_str()) << " ";
 	}
 	return true;
 }
@@ -124,9 +124,9 @@ bool cConsole::cfAddPythonScript::operator()()
 	
 	GetPI()->mPython.push_back(ip);
 	if(ip->Init())
-		(*mOS) << autosprintf(_("Script %s successfully loaded and initialized."), ip->mScriptName.c_str()) << "\r\n";
+		(*mOS) << autosprintf(_("Script %s successfully loaded and initialized."), ip->mScriptName.c_str()) << " ";
 	else {
-		(*mOS) << autosprintf(_("Script %s not found or could not be parsed!."), scriptfile.c_str()) << "\r\n";
+		(*mOS) << autosprintf(_("Script %s not found or could not be parsed!."), scriptfile.c_str()) << " ";
 		GetPI()->mPython.pop_back();
 		delete ip;
 	}
@@ -179,7 +179,7 @@ bool cConsole::cfReloadPythonScript::operator()()
 		if((number && num == li->id) || (!number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile) == 0)) {
 			found = true;
 			name = li->mScriptName;
-			(*mOS) << autosprintf(_("Script: [ %d ] %s unloaded."), li->id, li->mScriptName.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script %s unloaded."), li->mScriptName.c_str()) << " ";
 			delete li;
 			GetPI()->mPython.erase(it);
 			break;
@@ -188,9 +188,9 @@ bool cConsole::cfReloadPythonScript::operator()()
 	
 	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script #%s not unloaded because not found or not loaded."), scriptfile.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script #%s not unloaded because not found or not loaded."), scriptfile.c_str()) << " ";
 		else
-			(*mOS) << autosprintf(_("Script %s not unloaded  because not found or not loaded."), scriptfile.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script %s not unloaded  because not found or not loaded."), scriptfile.c_str()) << " ";
 		return false;
 	} else {
 		cPythonInterpreter *ip = new cPythonInterpreter(name);
@@ -201,9 +201,9 @@ bool cConsole::cfReloadPythonScript::operator()()
 	
 		GetPI()->mPython.push_back(ip);
 		if(ip->Init())
-			(*mOS) << autosprintf(_("Script %s successfully loaded and initialized."), ip->mScriptName.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script %s successfully loaded and initialized."), ip->mScriptName.c_str()) << " ";
 		else {
-			(*mOS) << autosprintf(_("Script %s not found or could not be parsed!."), scriptfile.c_str()) << "\r\n";
+			(*mOS) << autosprintf(_("Script %s not found or could not be parsed!."), scriptfile.c_str()) << " ";
 			GetPI()->mPython.pop_back();
 			delete ip;
 		}
