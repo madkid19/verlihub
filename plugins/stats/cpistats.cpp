@@ -30,7 +30,7 @@ cpiStats::cpiStats() :
 	mFreqSearchP(cTime(), 300.0, 10)
 {
 	mName = "Stats";
-	mVersion = "1.1";
+	mVersion = STATS_VERSION;
 }
 
 void cpiStats::OnLoad(cServerDC *server)
@@ -43,9 +43,6 @@ void cpiStats::OnLoad(cServerDC *server)
 
 bool cpiStats::RegisterAll()
 {
-	//When user logins checkout his mailbox and eventualy tell him about messages
-	//RegisterCallBack("VH_OnNewUser");
-	//treat messages that use to post offline msgs, remove them, read etc...
 	RegisterCallBack("VH_OnUserCommand");
 	RegisterCallBack("VH_OnTimer");
 	RegisterCallBack("VH_OnParsedMsgSearch");
@@ -54,14 +51,12 @@ bool cpiStats::RegisterAll()
 
 bool cpiStats::OnTimer()
 {
-	if (mStatsTimer.Check(this->mServer->mTime , 1) == 0) 
-	{
+	if(mStatsTimer.Check(this->mServer->mTime , 1) == 0)  {
 		this->mStats->mTime = this->mServer->mTime.Sec();
 		int i = 0;
 		mStats->mUploadTotalBps = 0;
 		double curr;
-		for( i = 0; i <= USER_ZONES; i++)
-		{
+		for(i = 0; i <= USER_ZONES; i++) {
 			//cout << "Zone " << i << cTime().AsDate() << endl;
 			//mServer->mUploadZone[i].Dump();
 			curr = mServer->mUploadZone[i].GetMean(mServer->mTime);
@@ -87,8 +82,7 @@ bool cpiStats::OnTimer()
 
 bool cpiStats::OnParsedMsgSearch(cConnDC *, cMessageDC *msg)
 {
-	switch(msg->mType)
-	{
+	switch(msg->mType) {
 		case eDC_MSEARCH:
 		case eDC_SEARCH:
 			mFreqSearchA.Insert(cTime());
@@ -104,7 +98,8 @@ bool cpiStats::OnParsedMsgSearch(cConnDC *, cMessageDC *msg)
 
 cpiStats::~cpiStats()
 {
-	if (mStats) delete mStats;
+	if (mStats)
+		delete mStats;
 }
 
 REGISTER_PLUGIN(cpiStats);

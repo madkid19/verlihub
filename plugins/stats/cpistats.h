@@ -43,11 +43,9 @@ public:
 	cpiStats();
 	virtual ~cpiStats();
 	virtual bool RegisterAll();
-//	virtual bool OnUserCommand(cConnDC *, string *);
 	virtual bool OnParsedMsgSearch(cConnDC *, cMessageDC *);
 	virtual void OnLoad(cServerDC *);
 	virtual bool OnTimer();
-	//cConsole mConsole;
 	cStats * mStats;
 private:
 	cTimeOut mStatsTimer;

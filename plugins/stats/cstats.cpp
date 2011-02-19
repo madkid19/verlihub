@@ -40,7 +40,6 @@ cStats::~cStats()
 void cStats::CleanUp()
 {
 	mQuery.Clear();
-	// I should probably make something more automated to create the table, maybe later
 	mQuery.OStream() << "delete from " << mMySQLTable.mName << " where("
 		"realtime < " << cTime().Sec() - 7 * 3600* 24 <<
 		")";
@@ -50,7 +49,6 @@ void cStats::CleanUp()
 
 void cStats::AddFields()
 {
-	// this is useful for the parent class
 	mMySQLTable.mName = "pi_stats";
 	int i;
 	ostringstream field_name;
@@ -58,15 +56,13 @@ void cStats::AddFields()
 	AddPrimaryKey("realtime");
 	AddCol("uptime", "int(11)","",true,mUptimeSec);
 	AddCol("users_total","int(11)","0",true, mS->mUserCountTot);
-	for (i=0; i <= USER_ZONES; i++)
-	{
+	for(i=0; i <= USER_ZONES; i++) {
 		field_name.str("");
 		field_name << "users_zone" << i;
 		AddCol(field_name.str().data(),"int(11)","0",true, mS->mUserCount[i]);
 	}
 	AddCol("upload_total","double","0",true, mUploadTotalBps);
-	for (i=0; i <= USER_ZONES; i++)
-	{
+	for(i=0; i <= USER_ZONES; i++) {
 		field_name.str("");
 		field_name << "upload_zone" << i;
 		AddCol (field_name.str().data(),"double","0",true, mUploadInZonesBps[i]);
@@ -80,6 +76,5 @@ void cStats::AddFields()
 
 	SetBaseTo(this);
 }
-
 
 };

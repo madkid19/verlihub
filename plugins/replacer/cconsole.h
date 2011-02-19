@@ -52,11 +52,11 @@ protected:
 		public:
 		cpiReplace *GetPI(){ return ((cConsole *)(mCommand->mCmdr->mOwner))->mReplace;}
 	};
-	class cfGetReplacer : public cfBase { virtual bool operator()();} mcfReplaceGet;
 	class cfAddReplacer : public cfBase { virtual bool operator()();} mcfReplaceAdd;
+	class cfGetReplacer : public cfBase { virtual bool operator()();} mcfReplaceGet;
 	class cfDelReplacer : public cfBase { virtual bool operator()();} mcfReplaceDel;
-	cCommand mCmdReplaceGet;
 	cCommand mCmdReplaceAdd;
+	cCommand mCmdReplaceGet;	
 	cCommand mCmdReplaceDel;
 	cCmdr mCmdr;
 };

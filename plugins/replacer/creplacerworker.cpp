@@ -27,7 +27,6 @@ cReplacerWorker::~cReplacerWorker()
 bool cReplacerWorker::CheckMsg(const string &msg)
 {
 	return (0 < mRegex.Exec(msg));
-	//return (msg.find((*this)[i]->mWord) != -1);
 }
 
 bool cReplacerWorker::PrepareRegex()

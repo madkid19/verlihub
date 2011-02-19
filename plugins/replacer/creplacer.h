@@ -38,7 +38,7 @@ public:
 	void CreateTable(void);
 	int Size(){ return mData.size();}
 	void PrepareNew();
-	int DeleteLast();
+	void DeleteLast();
 
 	int AddReplacer(cReplacerWorker &);
 	void DelReplacer(cReplacerWorker &);

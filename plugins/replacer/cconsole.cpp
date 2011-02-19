@@ -22,6 +22,7 @@
 
 #include "src/cconndc.h"
 #include "src/cserverdc.h"
+#include "src/i18n.h"
 #include "cconsole.h"
 #include "cpireplace.h"
 #include "creplacer.h"
@@ -51,8 +52,7 @@ cConsole::~cConsole()
 int cConsole::DoCommand(const string &str, cConnDC * conn)
 {
 	ostringstream os;
-	if(mCmdr.ParseAll(str, os, conn) >= 0)
-	{
+	if(mCmdr.ParseAll(str, os, conn) >= 0) {
 		mReplace->mServer->DCPublicHS(os.str().data(),conn);
 		return 1;
 	}
@@ -64,13 +64,12 @@ bool cConsole::cfGetReplacer::operator ( )()
 	string word;
 	string rep_word;
 	cReplacerWorker *fw;
-	(*mOS) << "Replaced words: " << "\r\n";
-	for(int i = 0; i < GetPI()->mReplacer->Size(); i++)
-	{
+	(*mOS) << _("Replaced words:") << "\r\n";
+	for(int i = 0; i < GetPI()->mReplacer->Size(); i++) {
 		fw = (*GetPI()->mReplacer)[i];
 		cDCProto::EscapeChars(fw->mWord, word);
 		cDCProto::EscapeChars(fw->mRepWord, rep_word);
-		(*mOS) << word << " ---> " << rep_word << "  Affected: " << fw->mAfClass <<  "\r\n";
+		(*mOS) << autosprintf(_("%s ---> %s Affected class: %d"), word.c_str(), rep_word.c_str(), fw->mAfClass) <<  "\r\n";
 	}
 
 	return true;
@@ -88,9 +87,8 @@ bool cConsole::cfDelReplacer::operator ( )()
 		if((* GetPI()->mReplacer)[i]->mWord == word)
 			isInList = true;
 
-	if(!isInList)
-	{
-		(*mOS) << "Replaced word: " << word_backup << " is NOT in list, so couldn't delete!" << "\r\n";
+	if(!isInList) {
+		(*mOS) << autosprintf(_("Word %s does not exist."), word_backup.c_str()) << "\r\n";
 		return false;
 	}
 
@@ -98,7 +96,7 @@ bool cConsole::cfDelReplacer::operator ( )()
 	FWord.mWord = word;
 
 	GetPI()->mReplacer->DelReplacer(FWord);
-	(*mOS) << "Replaced word: " << word_backup << " deleted." << "\r\n";
+	(*mOS) << autosprintf(_("Word %s deleted."), word_backup.c_str()) << "\r\n";
 
 	GetPI()->mReplacer->LoadAll();
 	return true;
@@ -113,28 +111,21 @@ bool cConsole::cfAddReplacer::operator ( )()
 	GetParStr(2,rep_word);
 
 	/** third parameter is the affected class */
-	if(this->GetParStr(3,num))
-	{
+	if(this->GetParStr(3,num)) {
 		istringstream is(num);
 		is >> FWord.mAfClass;
 	}
 
 	cPCRE TestRE;
-	// regex can't be lowecased
-	//transform(word.begin(), word.end(), word.begin(), ::tolower);
-
 	cDCProto::UnEscapeChars(word_backup, word);
-	if (!TestRE.Compile(word.data(), 0))
-	{
-		(*mOS) << "Sorry the regular expression you provided did not parse well\r\n";
+	if(!TestRE.Compile(word.data(), 0)) {
+		(*mOS) << _("Sorry the regular expression you provided cannot be parsed.") << "\r\n";
 		return false;
 	}
 
-	for(int i = 0; i < GetPI()->mReplacer->Size(); i++)
-	{
-	    if((*GetPI()->mReplacer)[i]->mWord == word)
-	    {
-	        (*mOS) << "Replacer word: " << word << " already in list! NOT added!" << "\r\n";
+	for(int i = 0; i < GetPI()->mReplacer->Size(); i++) {
+	    if((*GetPI()->mReplacer)[i]->mWord == word) {
+	        (*mOS) << autosprintf(_("Word %s already exists"), word.c_str()) << "\r\n";
 	        return false;
 	    }
 	}
@@ -143,29 +134,14 @@ bool cConsole::cfAddReplacer::operator ( )()
 	FWord.mRepWord = rep_word;
 	string ch, cl;
 
-	if (GetPI()->mReplacer->AddReplacer(FWord))
-	{
-
-		switch(FWord.mAfClass)
-		{
-			case 1: cl = "normal"; break;
-			case 2: cl = "vip"; break;
-			case 3: cl = "cheef"; break;
-			case 4: cl = "operator"; break;
-			case 5: cl = "admin"; break;
-			case 10: cl = "master"; break;
-			default: cl = "operator"; break;
-		}
-
-		(*mOS) << "Replacer word: " << word_backup << " added! This word will be filtered in public chat for users with class that is less than or equal with " << cl << " class" << "\r\n";
-	}
+	if(GetPI()->mReplacer->AddReplacer(FWord))
+		(*mOS) << autosprintf(_("Added word %s. This word will be filtered in public chat for users with class that is less than or equal to %d."), word_backup.c_str(), FWord.mAfClass) << "\r\n";
 	else
-	    (*mOS) << "Replacer word: " << word_backup << " NOT added!" << "\r\n";
+	    (*mOS) << autosprintf(_("Error adding word %s."), word_backup.c_str()) << "\r\n";
 
 	GetPI()->mReplacer->LoadAll();
 
 	return true;
 }
-
 
 };

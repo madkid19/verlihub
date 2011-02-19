@@ -28,8 +28,19 @@ using namespace nDirectConnect;
 cpiReplace::cpiReplace() : mConsole(this), mReplacer(NULL), mCfg(NULL)
 {
 	mName = "WordReplacer";
-	mVersion = "1.1";
+	mVersion = REPLACER_VERSION;
 }
+
+cpiReplace::~cpiReplace()
+{
+	if(mReplacer)
+		delete mReplacer;
+	mReplacer = NULL;
+	if(mCfg)
+		delete mCfg;
+	mCfg = NULL;
+}
+
 
 void cpiReplace::OnLoad(cServerDC *server)
 {
@@ -46,16 +57,8 @@ bool cpiReplace::RegisterAll()
 {
 	RegisterCallBack("VH_OnOperatorCommand");
 	RegisterCallBack("VH_OnParsedMsgChat");
+	return true;
 }
-
-cpiReplace::~cpiReplace()
-{
-	if (mReplacer) delete mReplacer;
-	mReplacer = NULL;
-	if (mCfg) delete mCfg;
-	mCfg = NULL;
-}
-
 
 bool cpiReplace::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
 {
@@ -69,7 +72,8 @@ bool cpiReplace::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
 
 bool cpiReplace::OnOperatorCommand(cConnDC *conn, string *str)
 {
-	if( mConsole.DoCommand(*str, conn) ) return false;
+	if(mConsole.DoCommand(*str, conn))
+		return false;
 	return true;
 }
 

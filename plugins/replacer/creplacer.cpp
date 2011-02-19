@@ -21,10 +21,10 @@ cReplacer::cReplacer( cServerDC *server )
  : cConfMySQL(server->mMySQL) , mS(server)
 {
 	SetClassName("nDC::cReplacer");
-	mMySQLTable.mName="pi_replacer"; // made change
+	mMySQLTable.mName = "pi_replacer";
 	Add("word",mModel.mWord);
 	AddPrimaryKey("word");
-	Add("rep_word",mModel.mRepWord); // made change
+	Add("rep_word",mModel.mRepWord);
 	Add("afclass",mModel.mAfClass);
 	SetBaseTo(&mModel);
 }
@@ -39,15 +39,14 @@ void cReplacer::CreateTable(void)
 	query.OStream() <<
 		"CREATE TABLE IF NOT EXISTS " << mMySQLTable.mName << " ("
 		"word varchar(30) not null primary key,"
-		"rep_word varchar(30) not null," // made change
-		"afclass tinyint default 4" // affected class. normal=1, vip=2, cheef=3, op=4, admin=5, master=10
+		"rep_word varchar(30) not null,"
+		"afclass tinyint default 4"
 		")";
 	query.Query();
 }
 
 void cReplacer::Empty()
 {
-	//SetBaseTo( &mModel);
 	mData.clear();
 }
 
@@ -59,26 +58,27 @@ int cReplacer::LoadAll()
 	db_iterator it;
 
 	PrepareNew();
-	for(it = db_begin(); it != db_end(); ++it)
-	{
+	for(it = db_begin(); it != db_end(); ++it) {
 		n++;
-		if(Log(3)) LogStream() << "Loading :" << mData.back()->mWord << endl;
-		if(Log(3)) LogStream() << "Loading :" << mData.back()->mRepWord << endl; //made change
-		if(!mData.back()->PrepareRegex())
-		{
-			if(Log(3)) LogStream() << "Error in regex :" << mData.back()->mWord << endl;
-		} else {
+		if(Log(3))
+			LogStream() << "Loading :" << mData.back()->mWord << endl;
+		if(Log(3))
+			LogStream() << "Loading :" << mData.back()->mRepWord << endl;
+		if(!mData.back()->PrepareRegex()) {
+			if(Log(3))
+				LogStream() << "Error in regex :" << mData.back()->mWord << endl;
+		} else
 			PrepareNew();
-		}
 	}
 	mQuery.Clear();
 	DeleteLast();
 	return n;
 }
 
-int cReplacer::DeleteLast()
+void cReplacer::DeleteLast()
 {
-	if( !mData.size() ) return 0;
+	if(!mData.size())
+		return;
 	SetBaseTo(&mModel);
 	delete mData.back();
 	mData.pop_back();
@@ -93,7 +93,8 @@ void cReplacer::PrepareNew()
 
 cReplacerWorker * cReplacer::operator[](int i)
 {
-	if( i < 0 || i >= Size() ) return NULL;
+	if(i < 0 || i >= Size())
+		return NULL;
 	return mData[i];
 }
 
@@ -120,24 +121,18 @@ string cReplacer::ReplacerParser(const string & str, cConnDC * conn)
 
 	transform(lcstr.begin(), lcstr.end(), lcstr.begin(), ::tolower);
 
-	tDataType::iterator it;
-	for( it = mData.begin(); it != mData.end(); ++it )
-	{
-		if((*it)->CheckMsg(lcstr))
-		{
-			if((*it)->mAfClass >= conn->mpUser->mClass)
-			{
+	for(tDataType::iterator it = mData.begin(); it != mData.end(); ++it) {
+		if((*it)->CheckMsg(lcstr)) {
+			if((*it)->mAfClass >= conn->mpUser->mClass) {
 				t_word = (*it)->mWord;
 				r_word = (*it)->mRepWord;
 				find_loop = true;
-				while (find_loop)
-				{
+				while(find_loop) {
 					idx = temp.find(t_word.data());
-					if ( idx != string::npos )
-					{
+					if(idx != string::npos)
 						temp.replace(idx,t_word.length(),r_word.data(),r_word.length());
-					}
-					else find_loop = false;
+					else
+						find_loop = false;
 				}
 			}
 		}
