@@ -32,7 +32,10 @@ extern "C"
 #include "cluainterpreter.h"
 #include "curr_date_time.h"
 #include "src/stringutils.h"
+#include "src/i18n.h"
+#include "src/stringutils.h"
 #include <dirent.h>
+
 using namespace nDirectConnect;
 using namespace nStringUtils;
 
@@ -77,14 +80,11 @@ int cConsole::DoCommand(const string &str, cConnDC * conn)
 
 bool cConsole::cfVersionLuaScript::operator()()
 {
-	(*mOS) << "Lua Plugin v." << "\r";
-	(*mOS) << VERSION << "\r\n";
-	(*mOS) << "Lua version:" << "\r";
-	(*mOS) << LUA_RELEASE << "\r\n";
-	(*mOS) << "Copyright:" << "\r";
-	(*mOS) << LUA_COPYRIGHT << "\r\n";
-	(*mOS) << "Authors:" << "\r";
-	(*mOS) << LUA_AUTHORS << "\r\n";
+	(*mOS) << "\r\n[::] " << autosprintf(_("Lua version: %s"), LUA_VERSION) << "\r\n";
+	(*mOS) << "[::] " << autosprintf(_("Lua library version: %s"), LUA_RELEASE) << "\r\n";
+	(*mOS) << "[::] " << autosprintf(_("Copyrigh:t %s"), LUA_COPYRIGHT) << "\r\n";
+	(*mOS) << "[::] " << autosprintf(_("Authors: %s"), LUA_AUTHORS) << "\r\n";
+	
 	return true;
 }
 
@@ -93,17 +93,16 @@ bool cConsole::cfInfoLuaScript::operator()()
 	int size = 0;
 	if(GetPI()->Size() > 0) size = lua_getgccount(GetPI()->mLua[0]->mL);
 	
-	(*mOS) << "\n" << "[::] Version date: "<<  __CURR_DATE_TIME__ << "\r\n";
-	(*mOS) << "[::] Loaded scripts: " << GetPI()->Size()  << "\r\n";
-	(*mOS) << "[::] Memory used: " << size << " KB"  << "\r\n";
+	(*mOS) << "\n" << "[::] " << autosprintf(_("Version date: %s"), __CURR_DATE_TIME__);
+	(*mOS) << "[::] " << autosprintf(_("Loaded scripts: %d"), GetPI()->Size())  << "\r\n";
+	(*mOS) << "[::] " << autosprintf(_("Memory used: %s"), convertByte(size*1024, false).c_str()) << "\r\n";
 	return true;
 }
 
 bool cConsole::cfGetLuaScript::operator()()
 {
-	(*mOS) << "Loaded LUA scripts:" << "\r\n";
-	for(int i = 0; i < GetPI()->Size(); i++)
-	{
+	(*mOS) << _("Loaded LUA scripts:") << "\r\n";
+	for(int i = 0; i < GetPI()->Size(); i++) {
 		(*mOS) << "[ " << i << " ] " << GetPI()->mLua[i]->mScriptName << "\r\n";
 	}
 	return true;
@@ -129,14 +128,16 @@ bool cConsole::cfDelLuaScript::operator()()
 			scriptfile = li->mScriptName;
 			delete li;
 			GetPI()->mLua.erase(it);
-			(*mOS) << "Script: [ " << num << " ] " <<scriptfile << " unloaded." << "\r\n";
+			(*mOS) << autosprintf(_("Script: [ %d ] %s unloaded."), num, scriptfile.c_str()) << "\r\n";
 			break;
 		}
 	}
 	
 	if(!found) {
-		if(number) (*mOS) << "Script n° " << scriptfile << " not unloaded, because not found." << "\r\n";
-		else (*mOS) << "Script " << scriptfile << " not unloaded, because not found." << "\r\n";
+		if(number)
+			(*mOS) << autosprintf(_("Script n° %s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
+		else
+			(*mOS) << autosprintf(_("Script %s not unloaded because not found."), scriptfile.c_str()) << "\r\n";
 		return false;
 	}
 	return true;
@@ -163,7 +164,7 @@ bool cConsole::cfAddLuaScript::operator()()
 		DIR *dir = opendir(pathname.c_str());
 		int i = 0;
 		if(!dir) {
-			(*mOS) << "Failed loading " << pathname << " ";
+			(*mOS) << autosprintf(_("Failed loading directory %s."), pathname.c_str()) << "\r\n";
 			return false;
 		}
 		struct dirent *dent = NULL;
@@ -185,16 +186,16 @@ bool cConsole::cfAddLuaScript::operator()()
 			for(it = GetPI()->mLua.begin(); it != GetPI()->mLua.end(); ++it) {
 				li = *it;
 				if (StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile)==0) {
-					(*mOS) << "Script " << scriptfile << " is already loaded!" << "\r\n";
+					(*mOS) << autosprintf(_("Script: %s is already loaded."), scriptfile.c_str()) << "\r\n";
 					delete ip;
 					return false;
 				}
 			}
-			(*mOS) << "Script: " << scriptfile << " successfully loaded & initialized." << "\r\n";
+			(*mOS) << autosprintf(_("Script %s successfully loaded and initialized."), scriptfile.c_str()) << "\r\n";
 			GetPI()->AddData(ip);
 			ip->Load();
 		} else {
-			(*mOS) << "Script: " << scriptfile << " not found or could not be parsed!" << "\r\n";
+			(*mOS) << autosprintf(_("Script %s not found or could not be parsed!."), scriptfile.c_str()) << "\r\n";
 			delete ip;
 			return false;
 		}
@@ -221,24 +222,26 @@ bool cConsole::cfReloadLuaScript::operator()()
 			scriptfile = li->mScriptName;
 			delete li;
 			GetPI()->mLua.erase(it);
-			(*mOS) << "Script: [ " << num << " ] " <<scriptfile << " unloaded." << "\r\n";
+			(*mOS) << autosprintf(_("Script: [ %d ] %s unloaded."), num, scriptfile.c_str()) << "\r\n";
 			break;
 		}
 	}
 	
 	if(!found) {
-		if(number) (*mOS) << "Script n° " << scriptfile << " not unloaded, because not found or not loaded." << "\r\n";
-		else (*mOS) << "Script " << scriptfile << " not unloaded, because not found or not loaded." << "\r\n";
+		if(number)
+			(*mOS) << autosprintf(_("Script n° %s not unloaded because not found or not loaded."), scriptfile.c_str()) << "\r\n";
+		else
+			(*mOS) << autosprintf(_("Script %s not unloaded  because not found or not loaded."), scriptfile.c_str()) << "\r\n";
 		return false;
 	} else {
 		cLuaInterpreter *ip = new cLuaInterpreter(scriptfile);
 		if(ip) {
 			if(ip->Init()) {
-				(*mOS) << "Script: " << scriptfile << " successfully loaded & initialized." << "\r\n";
+				(*mOS) << autosprintf(_("Script %s successfully loaded and initialized."), scriptfile.c_str()) << "\r\n";
 				GetPI()->AddData(ip);
 				ip->Load();
 			} else {
-				(*mOS) << "Script: " << scriptfile << " not found or could not be parsed!" << "\r\n";
+				(*mOS) << autosprintf(_("Script %s not found or could not be parsed!."), scriptfile.c_str()) << "\r\n";
 				delete ip;
 			}
 		}
@@ -251,12 +254,14 @@ bool cConsole::cfLogLuaScript::operator()()
 	int level;
 	ostringstream msg;
 	if(GetParInt(1, level)) {
-		msg << "Switching Lua Log level from " << cpiLua::log_level;
-		//cout << level << endl;
+		stringstream ss;
+   		ss << cpiLua::log_level;
+   		string oldValue = ss.str();
+		ss.str("");
+		ss << level;
+   		string newValue = ss.str();
+		(*mOS) << autosprintf(_("Updated %s.%s from '%s' to '%s'"), "pi_lua", "log_level", oldValue.c_str(), newValue.c_str()) << "\r\n";
 		cpiLua::me->SetLogLevel(level);
-		msg << " to " << cpiLua::log_level << " ";
-		(*mOS) << msg.str();
-		
 	} else {
 		msg << "Current setting is " << cpiLua::log_level;
 		(*mOS) << msg.str();

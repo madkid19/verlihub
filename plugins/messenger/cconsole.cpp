@@ -22,6 +22,7 @@
 #endif
 #include "src/cconndc.h"
 #include "src/cserverdc.h"
+#include "src/i18n.h"
 #include "cconsole.h"
 #include "cpimessanger.h"
 #include "cmsglist.h"
@@ -69,28 +70,25 @@ bool cConsole::cfMessageSend::operator ( )()
 	this->GetParStr(4,msg.mBody);
 	
 	receiver = GetMessanger()->mServer->mUserList.GetUserByNick(msg.mReceiver);
-	if ((receiver != NULL) && (receiver->mxConn != NULL))
-	{
+	if ((receiver != NULL) && (receiver->mxConn != NULL)) {
 		GetMessanger()->mMsgs->DeliverOnline(receiver, msg);
-		(*mOS) << msg.mReceiver << " is online, sending directly...";
-	}
-	else 
-	{
+		(*mOS) << autosprintf(_("Sending message to %s because he is online."), msg.mReceiver.c_str());
+	} else  {
 		GetMessanger()->mMsgs->AddMessage(msg);
-		(*mOS) << "Message saved.";
+		(*mOS) << _("Message saved.");
 	}
 	return true;
 }
 
 bool cConsole::cfMessageRead::operator ( )()
 {
-	if (this->GetMessanger()->mMsgs->CountMessages(((cConnDC*) this->mExtra)->mpUser->mNick, false)) 
-	{
-		(*mOS) << "You have some messages.\r\n";
+	int messages = this->GetMessanger()->mMsgs->CountMessages(((cConnDC*) this->mExtra)->mpUser->mNick, false);
+	if (messages) {
+		(*mOS) << autosprintf(ngettext(_("You have %d message in your box."), _("You have %d messages in your box."), messages), messages) << "\r\n";
 		this->GetMessanger()->mMsgs->PrintSubjects(*mOS, ((cConnDC*) this->mExtra)->mpUser->mNick, false);
 	}
-	else (*mOS) << "You have no new messages.";
-
+	else
+		(*mOS) << _("You have no new message in your box.");
 	return true;
 }
 

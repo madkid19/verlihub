@@ -28,6 +28,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include "src/i18n.h"
+
 using namespace std;
 
 namespace nScripts
@@ -176,7 +178,7 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[])
 		{
 			const char *msg = lua_tostring(mL, -1);
 			if(msg == NULL)
-				msg = "(unknown LUA error)";
+				msg = _("(unknown LUA error)");
 			cout << "LUA error: " << msg << endl;
 			ReportLuaError( (char *) msg);
 			lua_pop(mL, 1);

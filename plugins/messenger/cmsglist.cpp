@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include "src/ctime.h"
 #include "src/cserverdc.h"
+#include "src/i18n.h"
 
 using namespace nUtils;
 namespace nMessanger
@@ -78,13 +79,14 @@ int cMsgList::CountMessages(const string &nick, bool sender)
 	if(!sender && mCache.IsLoaded() && !mCache.Find(nick)) return 0;
 	// if found in cache then count it..
 	mQuery.Clear();
-	mQuery.OStream() << "SELECT COUNT(body) FROM " << this->mMySQLTable.mName << " WHERE " << (sender?"sender":"receiver") << "='";
+	mQuery.OStream() << "SELECT COUNT(body) FROM " << this->mMySQLTable.mName << " WHERE " << (sender ? "sender" : "receiver") << "='";
 	WriteStringConstant(mQuery.OStream(), nick );
 	mQuery.OStream() << "'";
 	mQuery.Query();
 	int n = 0;
 	MYSQL_ROW row;
-	if(mQuery.StoreResult() && ( NULL != (row = mQuery.Row()))) n = atoi(row[0]);
+	if(mQuery.StoreResult() && ( NULL != (row = mQuery.Row())))
+		n = atoi(row[0]);
 	mQuery.Clear();
 	return n;
 }
@@ -101,13 +103,12 @@ int cMsgList::PrintSubjects(ostream &os, const string &nick, bool IsSender)
 	int n = 0;
 	mQuery.Clear();
 	SelectFields(mQuery.OStream());
-	mQuery.OStream() << "WHERE "  << (IsSender?"sender":"receiver") << "='";
+	mQuery.OStream() << "WHERE "  << (IsSender ? "sender" : "receiver") << "='";
 	WriteStringConstant(mQuery.OStream(), nick );
 	mQuery.OStream() << "'";
 	db_iterator it;
 	SetBaseTo(&mModel);
-	for( it = db_begin(); it != db_end(); ++it )
-	{
+	for(it = db_begin(); it != db_end(); ++it) {
 		os << mModel.AsSubj() << endl;
 		n++;
 	}
@@ -140,7 +141,8 @@ int cMsgList::DeliverMessagesForUser(cUser *dest)
 	SetBaseTo(&mModel);
 	
 	for( it = db_begin(); it != db_end(); ++it, ++n ) {
-		if (mModel.mDateSent > max_date) max_date = mModel.mDateSent;
+		if (mModel.mDateSent > max_date)
+			max_date = mModel.mDateSent;
 		DeliverModelToUser(dest);
 	}
 
@@ -167,13 +169,11 @@ int cMsgList::DeliverMessagesSinceSync(unsigned sync)
 	mQuery.OStream() << "WHERE date_sent >=" << sync;
 
 
-	for( it = db_begin(); it != db_end(); ++it, ++n )
-	{
+	for(it = db_begin(); it != db_end(); ++it, ++n ) {
 		if (!user || user->mNick != mModel.mReceiver)
 			user = mServer->mUserList.GetUserByNick(mModel.mReceiver);
 
-		if(user)
-		{
+		if(user) {
 			DeliverModelToUser(user);
 			DelQ.Clear();
 			DelQ.OStream() << "DELETE FROM " << mMySQLTable.mName;
@@ -195,23 +195,21 @@ int cMsgList::DeliverModelToUser(cUser *dest)
 	
 	os.str("");
 	omsg.erase();
-	SenderOffline = 
-		(NULL == mServer->mUserList.GetUserByNick(mModel.mSender));
+	SenderOffline =  (NULL == mServer->mUserList.GetUserByNick(mModel.mSender));
 
 	if (SenderOffline) {
-		omsg+="$Hello ";
-		omsg+= mModel.mSender;
-		omsg+= "|";
+		omsg += "$Hello ";
+		omsg += mModel.mSender;
+		omsg += "|";
 	}
 	
 	os << mModel.AsDelivery();
 	
-	cDCProto::Create_PM(omsg, mModel.mSender, dest->mNick, 
-			mModel.mSender, os.str() );
+	cDCProto::Create_PM(omsg, mModel.mSender, dest->mNick, mModel.mSender, os.str());
 	
 	if (SenderOffline) {
-		omsg+="|$Quit ";
-		omsg+= mModel.mSender;
+		omsg += "|$Quit ";
+		omsg += mModel.mSender;
 	}
 	
 	dest->mxConn->Send(omsg, true);
@@ -230,24 +228,15 @@ void cMsgList::UpdateCache()
 ostream & operator << (ostream &os, sMessage &Msg)
 {
 	cTime date_sent(Msg.mDateSent,0);
-	switch (Msg.mPrintType)
-	{
+	switch (Msg.mPrintType) {
 		case sMessage::AS_SUBJECT:
-			os << "From: " << Msg.mSender <<
-				" To: " << Msg.mReceiver <<
-				"\r\nDate: " << date_sent.AsDate() <<
-				"\r\nSubject: " << Msg.mSubject << "\r\n";
+			os << autosprintf(_("From: %s To: %s\nDate: %s\n Subject: %s\n"), Msg.mSender.c_str(), Msg.mReceiver.c_str(), date_sent.AsDate().AsString().c_str(), Msg.mSubject.c_str());
 		break;
 		case sMessage::AS_BODY:
-			os << "From: " << Msg.mSender <<
-				" To: " << Msg.mReceiver <<
-				"\r\nDate: " << date_sent.AsDate() <<
-				"\r\nSubject: " << Msg.mSubject << "\r\n" <<
-				Msg.mBody << "\r\n----\r\n";
+			os << autosprintf(_("From: %s To: %s\nDate: %s\n Subject: %s\n%s\n----\n"), Msg.mSender.c_str(), Msg.mReceiver.c_str(), date_sent.AsDate().AsString().c_str(), Msg.mSubject.c_str(), Msg.mBody.c_str());
 		break;
 		case sMessage::AS_DELIVERY:
-			os << "\r\n#OFFLINE MESSAGE# [" << date_sent.AsDate() << "]\r\nSubject : " << Msg.mSubject << 
-				"-------------------------\r\n" << Msg.mBody;
+			os << "\r\n" << autosprintf(_("#OFFLINE MESSAGE# [%s]\nSubject: %s -------------------------\n%s"), date_sent.AsDate().AsString().c_str(), Msg.mSubject.c_str(), Msg.mBody.c_str());
 		break;
 		case sMessage::AS_ONLINE:
 			os << Msg.mBody;

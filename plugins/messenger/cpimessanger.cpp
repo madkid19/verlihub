@@ -29,7 +29,7 @@ using namespace nDirectConnect;
 cpiMessanger::cpiMessanger() : mConsole(this), mMsgs(NULL), mReloadTimer(30., 0., cTime())
 {
 	mName = "Messanger";
-	mVersion = "1.2";
+	mVersion = MESSENGER_VERSION;
 }
 
 bool cpiMessanger::OnTimer()
@@ -37,6 +37,7 @@ bool cpiMessanger::OnTimer()
 	if (mReloadTimer.Check(mServer->mTime, 1)==0) {
 		mMsgs->UpdateCache();
 	}
+	return true;
 }
 
 
@@ -65,6 +66,7 @@ bool cpiMessanger::RegisterAll()
 	RegisterCallBack("VH_OnUserCommand");
 	RegisterCallBack("VH_OnUserLogin");
 	RegisterCallBack("VH_OnTimer");
+	return true;
 }
 
 cpiMessanger::~cpiMessanger()
