@@ -93,8 +93,8 @@ bool cConsole::cfInfoLuaScript::operator()()
 	int size = 0;
 	if(GetPI()->Size() > 0) size = lua_getgccount(GetPI()->mLua[0]->mL);
 	
-	(*mOS) << "\n" << "[::] " << autosprintf(_("Version date: %s"), __CURR_DATE_TIME__);
-	(*mOS) << "[::] " << autosprintf(_("Running scripts: %d"), GetPI()->Size())  << "\r\n";
+	(*mOS) << "\n" << "[::] " << autosprintf(_("Version date: %s"), __CURR_DATE_TIME__) << "\r\n";
+	(*mOS) << "[::] " << autosprintf(_("Running scripts: %d"), GetPI()->Size()) << "\r\n";
 	(*mOS) << "[::] " << autosprintf(_("Memory used: %s"), convertByte(size*1024, false).c_str()) << "\r\n";
 	return true;
 }
@@ -129,9 +129,9 @@ bool cConsole::cfDelLuaScript::operator()()
 		if ((number && num == i) || (!number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile)==0)) {
 			found = true;
 			scriptfile = li->mScriptName;
+			(*mOS) << autosprintf(_("Script %s stopped."), li->mScriptName.c_str()) << " ";
 			delete li;
 			GetPI()->mLua.erase(it);
-			(*mOS) << autosprintf(_("Script %s stopped."), li->mScriptName.c_str()) << " ";
 			break;
 		}
 	}
