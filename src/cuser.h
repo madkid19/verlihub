@@ -146,37 +146,35 @@ public:
 	bool CheckPwd(const string &pwd);
 	/** perform a registration: set class, rights etc... precondition: password was al right */
 	void Register();
-public: // Public attributes
-	/** pointer to the connection */
-	cConnDC * mxConn;
-	/** pointer to the srever
-		this is extern pointer do not delete */
-	cServerDC * mxServer;
-	/** the part of MyINFO command, that is common for all */
-	string mEmail;
 	
-	/** active connection state */
+	public:
+	/* Pointer to the connection */
+	cConnDC * mxConn;
+	/* Pointer to the srever (this pointer must never be deleted) */
+	cServerDC * mxServer;
+	/* Email retrived from MyINFO */
+	string mEmail;
+	/* True if user is in passive mode */
 	bool IsPassive;
 
-	/** user's rights */
+	/* Rights of the user */
 	unsigned long mRights;
 	/** different time stamps */
 	struct sTimes
 	{
-		/******** [s] ****/
-		/** connection time */
+		/* Connection time */
 		cTime connect;
-		/** login time, user entered userlist */
+		/* Login time, when the user is pushed in userlist */
 		cTime login;
-		/** last search */
+		/* Last search time */
 		cTime search;
-		/** my_info */
+		/* Time when MyInfo was sent */
 		cTime info;
-		/** chat */
+		/* Last chat message time*/
 		cTime chat;
-		/** getnicklist */
-		cTime nicklist;	
-		/** private message to any user*/
+		/* Last getnicklist time */
+		cTime nicklist;
+		/* Last private message time (to any user) */
 		cTime pm;
 		sTimes():connect(0l),login(0l),search(0l),info(0l),chat(0l),nicklist(0l),pm(0l){}
 	};
@@ -193,16 +191,12 @@ public: // Public attributes
 	nDirectConnect::nEnums::tUserCl mVisibleClassMin;
 	/** minimal class users that can see this one as operator */
 	nDirectConnect::nEnums::tUserCl mOpClassMin;
-	/** user's sharesize */
+	/** User share */
 	__int64 mShare;
 	/** the list of nicks queued to send either as to nicklist or myinfo. */
 	string mQueueUL;
 	/** ip, that user has for downloads ises in connect to me */
 	string mIP4DL;
-	/** specifies the one bove higher class of users can see kick chat mesages */
-	int mHideKicksForClass;
-	/** flood detectors */
-	cFreqLimiter mFloodPM;
 	/** chat discrimination */
 	long mGag;
 	long mNoPM;
@@ -222,11 +216,14 @@ public: // Public attributes
 	bool mHideShare;
 	/** class protection against kicking */
 	int mProtectFrom;
-	/** numeber of search **/
+	/* Numeber of searches */
 	int mSearchNumber;
+	/* The class over which the users are able to see kick messages*/
+	int mHideKicksForClass;
+	/* PM flood detector */
+	cFreqLimiter mFloodPM;
 
-
-protected: // Protected attributes
+	protected: // Protected attributes
 
 	public: long ShareEnthropy(const string &sharesize);
 	void DisplayInfo(ostream &os, int DisplClass);

@@ -97,8 +97,8 @@ std::ostream & operator<< (std::ostream &os, const cTime &t)
 
 		if(++i <= 2)
 			os << autosprintf(_("%d ms"), (int) t.tv_usec/1000) << " ";
-		if(++i <= 2)
-			os << autosprintf(_("%d µs"), (int)  t.tv_usec%1000) << " ";
+// 		if(++i <= 2)
+// 			os << autosprintf(_("%d µs"), (int)  t.tv_usec%1000) << " ";
 		break;
 	default :
 		os << t.tv_sec << "s " << t.tv_usec << "µs";

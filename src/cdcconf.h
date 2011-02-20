@@ -66,14 +66,14 @@ public:
 	friend class ::nDirectConnect::cDCConsole;
 	friend class ::nDirectConnect::cConnDC;
 public:
-	int max_users_total;
-	int max_users[7];
-	int max_extra_regs;
-	int max_extra_vips;
-	int max_extra_ops;
-	int max_extra_cheefs;
-	int max_extra_admins;
-	int max_attempts_threshold;
+	unsigned int max_users_total;
+	unsigned int max_users[7];
+	unsigned int max_extra_regs;
+	unsigned int max_extra_vips;
+	unsigned int max_extra_ops;
+	unsigned int max_extra_cheefs;
+	unsigned int max_extra_admins;
+	unsigned int max_attempts_threshold;
 	double max_upload_kbps;
 	unsigned long min_share;
 	unsigned long min_share_reg;

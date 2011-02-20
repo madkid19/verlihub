@@ -264,53 +264,16 @@ public:
 	string &GetIPList();
 
 	bool mKeepIPList;
-	bool mRemakeNextIPList;
-	string mIpList;
+	string mIpList;	
 	ufDoIpList mIpListMaker;
+	cVHCBL_String *mInfoListCB;
+	cVHCBL_String *mNickListCB;
+	bool mRemakeNextIPList;
 
 	string mCompositeNickList;
 	string mCompositeInfoList;
-	cVHCBL_String *mNickListCB;
-	cVHCBL_String *mInfoListCB;
 };
 
-/*
-template <class ItemType>
-class cCondIterator
-{
-public:
-   cCondIterator() { mCur = 0; }
-   virtual bool BasicStepOne() = 0;
-   virtual bool IsEnd() { return mCur != 0; };
-   virtual bool Advance() {
-      if (BasicStepOne()) while (!Verifies() && BasicStepOne());
-      return !IsEnd();
-   }
-   virtual bool Verifies() = 0;
-   ItemType mCur;
-};
-
-class cUserRangeIterator() : public cCondIterator<cUser*>
-{
-public:
-
-   cUserRangeIterator(const string &MinIP, const string &MaxIP)
-   {
-      mMinIP = cBanList::Ip2Num(MinIP);
-      mMaxIP = cBanList::Ip2Num(MaxIP);
-   }
-   
-   virtual bool Verifies() {
-      if (mCur && mCur->mxConn) {
-         long ip = cBanlist::Ip2Num(mCur->mxConn->AddrIP());
-         return (ip <= mMaxIP) && (ip >= mMinIP);
-      } else return false;
-   }
-
-   long mMinIP;
-   long mMaxIP;
-};
-*/
 };
 
 #endif

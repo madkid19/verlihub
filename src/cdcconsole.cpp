@@ -495,7 +495,7 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 {
 	string uType, cType;
-	int sInt;
+	int sInt = 0;
 
 	if (mOwner->mC.disable_usr_cmds) {
 		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
@@ -690,7 +690,7 @@ int cDCConsole::CmdKick(istringstream & cmd_line, cConnDC * conn)
 	string omsg, OtherNick, Reason;
 	string tmpline;
 	
-	if( conn && conn->mpUser && conn->mpUser->Can(eUR_KICK, mOwner->mTime.Sec())) {
+	if(conn && conn->mpUser && conn->mpUser->Can(eUR_KICK, mOwner->mTime.Sec())) {
 		cmd_line >> OtherNick;
 		getline(cmd_line,Reason);
 		while(cmd_line.good()) {
@@ -703,8 +703,6 @@ int cDCConsole::CmdKick(istringstream & cmd_line, cConnDC * conn)
 			mOwner->DCKickNick(&os, conn->mpUser, OtherNick, Reason,
 				cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
 		}
-	} else {
-		os << _("You cannot kick anyone!!");
 	}
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
@@ -959,12 +957,11 @@ bool cDCConsole::cfReport::operator()()
 	GetParStr(eREP_REASON, reason);
 
 	//-- to opchat
-	os << "REPORT: user '" << nick <<"' ";
-	if (user && user->mxConn) {
-		os << "IP= '" << user->mxConn->AddrIP() << "' HOST='" << user->mxConn->AddrHost() << "' ";
-	} else
-		os << _("which is offline ");
-	os << autosprintf(_("Reason='%s'. Reporter "), reason.c_str());
+	if (user && user->mxConn)
+		os << autosprintf(_("REPORT: user '%s' IP='%s' Host='%s'"), nick.c_str(), user->mxConn->AddrIP().c_str(), user->mxConn->AddrHost().c_str());
+	else 
+		os << autosprintf(_("REPORT: user '%s' which is offline "), nick.c_str());
+	os << autosprintf(_("Reason='%s'."), reason.c_str());
 	mS->ReportUserToOpchat(mConn, os.str(), mS->mC.dest_report_chat);
 	//-- to sender
 	*mOS << _("Thank you, your report has been accepted.");
@@ -1420,7 +1417,7 @@ bool cDCConsole::cfSetVar::operator()()
 	
 	mParRex->Extract(3,mParStr,var);
 	// file.variable value style
-	int pos  = var.find('.');
+	size_t pos  = var.find('.');
 	if(pos != string::npos) {
 		file = var.substr(0, pos);
 		var = var.substr(pos+1);
@@ -1792,16 +1789,16 @@ bool cDCConsole::cfRegUsr::operator()()
 	switch(Action) {
 		case eAC_SET: authorized = RegFound && (( MyClass >= eUC_ADMIN ) && (MyClass > ui.mClass) && (field != "class")); break;
 		case eAC_NEW:
-			authorized = !RegFound  && (MyClass >= (ParClass + mS->mC.classdif_reg));
+			authorized = !RegFound  && (MyClass >= (int) (ParClass + mS->mC.classdif_reg));
 			break;
 		case eAC_PASS: case eAC_HIDEKICK: case eAC_ENABLE: case eAC_DISABLE: case eAC_DEL:
-			authorized = RegFound && (MyClass >= (ui.mClass+mS->mC.classdif_reg));
+			authorized = RegFound && (MyClass >= (int) (ui.mClass+mS->mC.classdif_reg));
 			break;
 		case eAC_CLASS:
-			authorized = RegFound && (MyClass >= (ui.mClass+mS->mC.classdif_reg)) && (MyClass >= (ParClass + mS->mC.classdif_reg));
+			authorized = RegFound && (MyClass >= (int) (ui.mClass+mS->mC.classdif_reg)) && (MyClass >= (int) (ParClass + mS->mC.classdif_reg));
 			break;
 		case eAC_PROTECT:
-			authorized = RegFound && (MyClass >= (ui.mClass+mS->mC.classdif_reg)) && (MyClass >= (ParClass + 1));
+			authorized = RegFound && (MyClass >= (int)(ui.mClass+mS->mC.classdif_reg)) && (MyClass >= (ParClass + 1));
 			break;
 		case eAC_INFO : authorized = RegFound && (MyClass >= eUC_OPERATOR); break;
 	};
@@ -1842,7 +1839,7 @@ bool cDCConsole::cfRegUsr::operator()()
 					ostr.str(mS->mEmpty);
 					ostr << _("You have been registered, please set up your password NOW \n"
 						"using command +passwd <your_new_passwd>\n"
-						"replace <your_new_passwd> by your password of choice  chars at least.");
+						"replace <your_new_passwd> with your new password.");
 					mS->DCPrivateHS(ostr.str(), user->mxConn);
 				}
 				(*mOS) << _("User has been added; please tell him to change his password");

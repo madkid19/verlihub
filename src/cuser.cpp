@@ -129,23 +129,24 @@ void cUser::Send(string &data, bool pipe, bool flush)
 /** return true if user needs a password and the password is correct */
 bool cUser::CheckPwd(const string &pwd)
 {
-	if( !mxConn || !mxConn->mRegInfo ) return false;
+	if(!mxConn || !mxConn->mRegInfo)
+		return false;
 	return mxConn->mRegInfo->PWVerify(pwd);
 }
 
 /** perform a registration: set class, rights etc... precondition: password was al right */
 void cUser::Register()
 {
-	if (!mxConn || !mxConn->mRegInfo) return;
-	if (mxConn->mRegInfo->mPwdChange) return;
+	if(!mxConn || !mxConn->mRegInfo)
+		return;
+	if(mxConn->mRegInfo->mPwdChange)
+		return;
 	mClass = (tUserCl)mxConn->mRegInfo->mClass;
 	mProtectFrom = mxConn->mRegInfo->mClassProtect;
 	mHideKicksForClass = mxConn->mRegInfo->mClassHideKick;
 	mHideKick = mxConn->mRegInfo->mHideKick;
 	mHideShare = mxConn->mRegInfo->mHideShare;
-	if (mClass==eUC_PINGER)
-	{
-		// disallow all
+	if (mClass == eUC_PINGER) {
 		SetRight( eUR_CHAT, 0 , false );
 		SetRight( eUR_PM, 0, false );
 		SetRight( eUR_SEARCH, 0, false );
@@ -156,7 +157,6 @@ void cUser::Register()
 		SetRight( eUR_DROP, 0, false );
 		SetRight( eUR_TBAN, 0, false );
 		SetRight( eUR_PBAN, 0, false );
-		// excapet these
 		SetRight( eUR_NOSHARE, 0, true );
 	}
 }
@@ -343,28 +343,24 @@ void nDirectConnect::cChatRoom::SendPMToAll(const string & Msg, cConnDC *FromCon
 	string omsg;
 	string start, end, FromNick;
 
-	if (FromConn && FromConn->mpUser)
-	{
+	if (FromConn && FromConn->mpUser) {
 		FromNick = FromConn->mpUser->mNick;
 	} else {
 		FromNick = mNick;
 	}
 
-	if (mCol)
-	{
+	if (mCol) {
 		this->mxServer->mP.Create_PMForBroadcast(start, end, mNick, FromNick, Msg);
 		bool temp_save_inlist;
 
-		if (FromConn && FromConn->mpUser)
-		{
+		if (FromConn && FromConn->mpUser) {
 			temp_save_inlist = FromConn->mpUser->mInList;
 			FromConn->mpUser->mInList = false;
 		}
 
 		this->mCol->SendToAllWithNick(start,end);
 
-		if (FromConn && FromConn->mpUser)
-		{
+		if (FromConn && FromConn->mpUser) {
 			FromConn->mpUser->mInList = temp_save_inlist;
 		}
 	}

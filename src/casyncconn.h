@@ -296,7 +296,7 @@ public:
 	// for UDP messages to given host and port
 	static int SendUDPMsg(const string &host, int port, const string &data);
 	static unsigned long DNSResolveHost(const string &host);
-	static const char *IPAsString(unsigned long addr);
+	static string IPAsString(unsigned long addr);
 
 	int SetSockOpt(int optname, const void *optval, int optlen);
 	int GetSockOpt(int optname,       void *optval, int &optlen);

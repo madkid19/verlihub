@@ -478,7 +478,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		// under imit disables search and download
 		
 		if(conn->GetTheoricalClass() <= eUC_VIPUSER) {
-			unsigned long temp_min_share = 0;
+			__int64 temp_min_share = 0;
 			// TODO: Rename to min_share_use_hub_guest
 			if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
 				temp_min_share = mS->mC.min_share_use_hub;	
@@ -490,7 +490,6 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 			
 			// Found use hub limit
 			if(temp_min_share) {
-			
 				if (conn->mpUser->IsPassive)
 					temp_min_share = (__int64)(temp_min_share * mS->mC.min_share_factor_passive);
 				if (share < temp_min_share) {
@@ -897,7 +896,7 @@ bool cDCProto::CheckIP(cConnDC * conn, string &ip)
 bool cDCProto::isLanIP(string ip)
 {
 	
-	long senderIP = cBanList::Ip2Num(ip);
+	unsigned long senderIP = cBanList::Ip2Num(ip);
 	// see RFC 1918
 	if( (senderIP > 167772160UL && senderIP < 184549375UL) || (senderIP > 2886729728UL && senderIP < 2887778303UL) || (senderIP > 3232235520UL && senderIP < 3232301055UL)) return true;
 	return false;
@@ -910,7 +909,7 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	if(msg->SplitChunks()) return -1;
 	if(!conn->mpUser || !conn->mpUser->mInList) return -1;
 	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0)) {
-		unsigned long use_hub_share= 0;
+		unsigned long use_hub_share = 0;
 		if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
 			use_hub_share = mS->mC.min_share_use_hub;
 		} else if(mS->mC.min_share_use_hub_reg && conn->GetTheoricalClass() == eUC_REGUSER) {
@@ -1498,7 +1497,8 @@ int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 	char S='$';
 	cConnType *ConnType = mS->mConnTypes->FindConnType("default");
 	__int64 hl_minshare = mS->mC.min_share;
-	if (mS->mC.min_share_use_hub > hl_minshare) hl_minshare = mS->mC.min_share_use_hub;
+	if (mS->mC.min_share_use_hub > hl_minshare)
+		hl_minshare = mS->mC.min_share_use_hub;
 	os << "$HubINFO "
 		<< mS->mC.hub_name << S
 		<< mS->mC.hub_host << S

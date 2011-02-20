@@ -26,7 +26,7 @@ using std::cout;
 
 namespace nUtils {
 
-cInterpolExp::cInterpolExp(int &var, long toval, int togo, int skip):
+cInterpolExp::cInterpolExp(unsigned int &var, long toval, int togo, int skip):
 	mVariable(var),
 	mTargetValue(toval),
 	mStepsToGo(togo),

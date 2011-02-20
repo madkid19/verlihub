@@ -890,11 +890,14 @@ bool nServer::cAsyncConn::DNSResolveReverse(const string &ip, string &host)
 	return hp != NULL;
 }
 
-const char *nServer::cAsyncConn::IPAsString(unsigned long addr)
+string nServer::cAsyncConn::IPAsString(unsigned long addr)
 {
 	struct in_addr in;
-	*((unsigned long*)&in.s_addr)=addr;
-	return inet_ntoa(in);
+	in.s_addr = addr;
+	char ip[INET_ADDRSTRLEN];
+	//*((unsigned long*)&in.s_addr)=addr;
+	inet_ntop(AF_INET, (const void*) &in, ip, INET_ADDRSTRLEN);
+	return string(ip);
 }
 
 /**************************** 

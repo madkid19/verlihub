@@ -1335,11 +1335,11 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 {
 	ostringstream os;
 
-	os << Msg << " -- ";
+	os << Msg;
 	if (conn) {
 		if(!mUseDNS && mC.report_dns_lookup)
 			conn->DNSLookup();
-		os << "IP=' " << conn->AddrIP() <<" ' Host=' " << conn->AddrHost() <<" ' ";
+		os << autosprintf(_(" -- Reporter IP='%s' Host='%s'"), conn->AddrIP().c_str(), conn->AddrHost().c_str());
 		if (conn->mpUser)
 			os << _("User") << "='" << conn->mpUser->mNick << "' ";
 		if (!ToMain && this->mOpChat) {
@@ -1466,7 +1466,7 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 						ReportUserToOpchat(user->mxConn,msg, mC.dest_drop_chat);
 					}
 				} else
-					ostr << "\n" << _("Sorry, user cannot be kicked");
+					ostr << "\n" << _("User cannot be kicked.");
 
 				// temp ban kicked user
 				if (flags & eKCK_TBAN) {
