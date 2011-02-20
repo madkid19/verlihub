@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VerliHub\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-20 11:47+0100\n"
-"PO-Revision-Date: 2011-02-20 11:47+0100\n"
+"POT-Creation-Date: 2011-02-20 11:53+0100\n"
+"PO-Revision-Date: 2011-02-20 11:53+0100\n"
 "Last-Translator: NetCelli <netcelli.tux@gmail.com>\n"
 "Language-Team: VerliHub team\n"
 "Language: \n"
@@ -1712,7 +1712,7 @@ msgid "Loaded"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:119
-msgid "Error loading"
+msgid "Error loading script"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:149
