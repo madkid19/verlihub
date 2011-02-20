@@ -116,7 +116,7 @@ bool cPlug::Plugin()
 				if (result)
 					os << _("Loaded");
 				else
-					os << _("Error loading");
+					os << _("Error loading script");
 				mLastError = os.str();
 				SaveMe();
 				return result;
