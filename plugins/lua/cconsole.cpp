@@ -94,14 +94,14 @@ bool cConsole::cfInfoLuaScript::operator()()
 	if(GetPI()->Size() > 0) size = lua_getgccount(GetPI()->mLua[0]->mL);
 	
 	(*mOS) << "\n" << "[::] " << autosprintf(_("Version date: %s"), __CURR_DATE_TIME__);
-	(*mOS) << "[::] " << autosprintf(_("Loaded scripts: %d"), GetPI()->Size())  << "\r\n";
+	(*mOS) << "[::] " << autosprintf(_("Running scripts: %d"), GetPI()->Size())  << "\r\n";
 	(*mOS) << "[::] " << autosprintf(_("Memory used: %s"), convertByte(size*1024, false).c_str()) << "\r\n";
 	return true;
 }
 
 bool cConsole::cfGetLuaScript::operator()()
 {
-	(*mOS) << _("Loaded LUA scripts:") << "\r\n";
+	(*mOS) << _("Running LUA scripts:") << "\r\n";
 	for(int i = 0; i < GetPI()->Size(); i++) {
 		(*mOS) << "[ " << i << " ] " << GetPI()->mLua[i]->mScriptName << "\r\n";
 	}
@@ -131,16 +131,16 @@ bool cConsole::cfDelLuaScript::operator()()
 			scriptfile = li->mScriptName;
 			delete li;
 			GetPI()->mLua.erase(it);
-			(*mOS) << autosprintf(_("Script %s unloaded."), li->mScriptName.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s stopped."), li->mScriptName.c_str()) << " ";
 			break;
 		}
 	}
 	
 	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script #%s not unloaded because not found."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script #%s not stopped because it is not running."), scriptfile.c_str()) << " ";
 		else
-			(*mOS) << autosprintf(_("Script %s not unloaded because not found."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s not stopped because it is not running."), scriptfile.c_str()) << " ";
 		return false;
 	}
 	return true;
@@ -189,16 +189,16 @@ bool cConsole::cfAddLuaScript::operator()()
 			for(it = GetPI()->mLua.begin(); it != GetPI()->mLua.end(); ++it) {
 				li = *it;
 				if (StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile)==0) {
-					(*mOS) << autosprintf(_("Script %s is already loaded."), scriptfile.c_str()) << " ";
+					(*mOS) << autosprintf(_("Script %s is already running."), scriptfile.c_str()) << " ";
 					delete ip;
 					return false;
 				}
 			}
-			(*mOS) << autosprintf(_("Script %s successfully loaded and initialized."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s is now running."), scriptfile.c_str()) << " ";
 			GetPI()->AddData(ip);
 			ip->Load();
 		} else {
-			(*mOS) << autosprintf(_("Script %s not found or could not be parsed!."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s not found or could not be parsed."), scriptfile.c_str()) << " ";
 			delete ip;
 			return false;
 		}
@@ -214,7 +214,10 @@ bool cConsole::cfReloadLuaScript::operator()()
 	i = num = 0;
 	
 	GetParStr(1,scriptfile);
-	if (GetPI()->IsNumber(scriptfile.c_str())) {  num = atoi(scriptfile.c_str()); number = true; }
+	if (GetPI()->IsNumber(scriptfile.c_str())) {
+		num = atoi(scriptfile.c_str());
+		number = true;
+	}
 
 	vector<cLuaInterpreter *>::iterator it;
 	cLuaInterpreter *li;
@@ -222,29 +225,29 @@ bool cConsole::cfReloadLuaScript::operator()()
 		li = *it;
 		if ((number && num == i) || (!number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile)==0)) {
 			found = true;
+			(*mOS) << autosprintf(_("Script %s stopped."), li->mScriptName.c_str()) << " ";
 			scriptfile = li->mScriptName;
 			delete li;
 			GetPI()->mLua.erase(it);
-			(*mOS) << autosprintf(_("Script %s unloaded."), li->mScriptName.c_str()) << " ";
 			break;
 		}
 	}
 	
 	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script #%s not unloaded because not found or not loaded."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script #%s not stopped because it is not running."), scriptfile.c_str()) << " ";
 		else
-			(*mOS) << autosprintf(_("Script %s not unloaded  because not found or not loaded."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s not stopped  because it is not running."), scriptfile.c_str()) << " ";
 		return false;
 	} else {
 		cLuaInterpreter *ip = new cLuaInterpreter(scriptfile);
 		if(ip) {
 			if(ip->Init()) {
-				(*mOS) << autosprintf(_("Script %s successfully loaded and initialized."), scriptfile.c_str()) << " ";
+				(*mOS) << autosprintf(_("Script %s is now running."), scriptfile.c_str()) << " ";
 				GetPI()->AddData(ip);
 				ip->Load();
 			} else {
-				(*mOS) << autosprintf(_("Script %s not found or could not be parsed!."), scriptfile.c_str()) << " ";
+				(*mOS) << autosprintf(_("Script %s not found or could not be parsed."), scriptfile.c_str()) << " ";
 				delete ip;
 			}
 		}

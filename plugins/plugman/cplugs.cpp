@@ -146,7 +146,7 @@ bool cPlug::CheckMakeTime()
 	mMakeTime = mOwner->GetFileTime(mPath);
 
 	if(mMakeTime && mMakeTime < mOwner->mVHTime) {
-		mLastError = _("Warning: the plugin should be recompiled because verlihub has been recently updated");
+		mLastError = _("Warning: the plugin should be recompiled because VerliHub has been recently updated");
 		SaveMe();
 		return false;
 	}
@@ -171,8 +171,7 @@ bool cPlug::Replug()
 	cVHPluginMgr *pm = mOwner?mOwner->mPM:NULL;
 	cVHPlugin *pi=IsLoaded();
 	if (pm && pi && CheckMakeTime()) {
-		if (pm->ReloadPlugin(pi->Name()))
-		{
+		if (pm->ReloadPlugin(pi->Name())) {
 			mLastError = _("Reloaded");
 			SaveMe();
 			return true;
@@ -201,7 +200,7 @@ ostream& operator << (ostream &os, const cPlug &plug)
 	if (plug.IsScript())
 		os << " " << plug.mDest << endl;
 	os << "[::] " << autosprintf(_("Status: %s"), (plug.IsLoaded() ? _("On") : _("Off"))) << endl;
-	os << "[::] " << autosprintf(_("Mode: %s"), (plug.mLoadOnStartup ? _("Auto") : _("Manual"))) << endl;
+	os << "[::] " << autosprintf(_("Running mode: %s"), (plug.mLoadOnStartup ? _("Auto") : _("Manual"))) << endl;
 	os << "[::] " << autosprintf(_("Path: %s"), plug.mPath.c_str()) << endl;
 	os << "[::] " << autosprintf(_("Description: %s"), plug.mDesc.c_str()) <<endl;
 	os << "[::] " << autosprintf(_("Last Error: %s"), plug.mLastError.c_str()) <<endl;

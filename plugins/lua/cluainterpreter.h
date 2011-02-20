@@ -73,12 +73,13 @@ public:
 	
 	void editBot(char * Nick, char * Share, char * MyINFO, int Class)
 	{
-		mScriptBot *bot;
+		mScriptBot *bot = NULL;
 		for(unsigned int i = 0; i < botList.size(); i++) {
 			if(strcmp(botList[i]->uNick,Nick) == 0) {
 				bot = botList[i];
 			}
 		}
+		
 		if(bot != NULL) {
 			bot->uNick = Nick;
 			bot->uShare = Share;

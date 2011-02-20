@@ -767,16 +767,15 @@ int _EditBot(lua_State *L)
 		cUserRobot *robot = (cUserRobot*) server->mRobotList.GetUserBaseByNick(nick);
 		
 		if(robot != NULL) {
-			//Clear myinfo
-			robot->mMyINFO = "";
-			server->mP.Create_MyINFO(robot->mMyINFO, robot->mNick, desc, speed, email, share);
-			robot->mMyINFO_basic = robot->mMyINFO;
 			cLuaInterpreter *li = FindLua(L);
 			if(li == NULL) {
 				luaerror(L,"Lua not found");
 				return 2;
 			}
-			//li->addBot(nick, share, robot->mMyINFO, uclass);
+			//Clear myinfo
+			robot->mMyINFO = "";
+			server->mP.Create_MyINFO(robot->mMyINFO, robot->mNick, desc, speed, email, share);
+			robot->mMyINFO_basic = robot->mMyINFO;
 			li->editBot((char *) nick.c_str(), (char *) share.c_str(), (char *) robot->mMyINFO.c_str(), uclass);
 			string omsg = server->mP.GetMyInfo(robot, eUC_NORMUSER);
 			server->mUserList.SendToAll(omsg, false, true);
