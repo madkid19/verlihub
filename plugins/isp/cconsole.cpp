@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "src/cconndc.h"
+#include "src/i18n.h"
 #include "cconsole.h"
 #include "cpiisp.h"
 #include "cisps.h"
@@ -46,7 +47,7 @@ void cISPConsole::GetHelpForCommand(int cmd, ostream &os)
 	switch(cmd)
 	{
 		case eLC_LST: 
-		help_str = "!lstisp\r\nGive a list of ISPs"; 
+		help_str = "!lstisp\r\n" + string(_("Give a list of ISPs"));
 		break;
 		case eLC_ADD: 
 		case eLC_MOD:
@@ -124,28 +125,23 @@ bool cISPConsole::ReadDataFromCmd(cfBase *cmd, int id, cISP &data)
 		eADD_MNp, eADD_MNq, eADD_MN,
 		eADD_MCp, eADD_MCq, eADD_MC
 	};
-	if (!cmd->GetParIPRange(eADD_RANGE, data.mIPMin, data.mIPMax))
-	{
-		*(cmd->mOS) << "Unknown range format";
+	if (!cmd->GetParIPRange(eADD_RANGE, data.mIPMin, data.mIPMax)) {
+		*(cmd->mOS) << _("Unknown range format.");
 		return false;
 	}
 
 	cmd->GetParStr(eADD_NAME, data.mName);
 	cmd->GetParStr(eADD_CC, data.mCC);
-	if (!cmd->GetParRegex(eADD_NICK, data.mNickPattern) && 
-			cmd->PartFound(eADD_NICK))
-	{
-		*(cmd->mOS) << "Error in the nick regex";
+	if(!cmd->GetParRegex(eADD_NICK, data.mNickPattern) && cmd->PartFound(eADD_NICK)) {
+		*(cmd->mOS) << _("Sorry the regular expression for nickname you provided is not valid");
 		return false;
 	}
 	
 	cmd->GetParStr(eADD_DESC, data.mAddDescPrefix);
 	
-	if (!cmd->GetParRegex(eADD_CONN, data.mConnPattern) &&
-			cmd->PartFound(eADD_CONN))
-	{
+	if(!cmd->GetParRegex(eADD_CONN, data.mConnPattern) && cmd->PartFound(eADD_CONN)) {
 		data.mConnPattern = "";
-		*(cmd->mOS) << "Error in the conn regex";
+		*(cmd->mOS) << _("Sorry the regular expression for connection you provided is not valid");
 		return false;
 	}
 
@@ -161,7 +157,7 @@ bool cISPConsole::ReadDataFromCmd(cfBase *cmd, int id, cISP &data)
 
 	cmd->GetParStr(eADD_MN, data.mPatternMessage);
 	cmd->GetParStr(eADD_MC, data.mConnMessage);
-	return true;	
+	return true;
 }
 
 cISPConsole::~cISPConsole(){}
