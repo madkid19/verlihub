@@ -46,10 +46,9 @@ const char *cForbidConsole::CmdPrefix()
 void cForbidConsole::GetHelpForCommand(int cmd, ostream &os)
 {
 	string help_str;
-	switch(cmd)
-	{
+	switch(cmd) {
 		case eLC_LST: 
-		help_str = "!lstforbid\r\nGive a list of forbidden expressions"; 
+		help_str = "!lstforbid\r\n" + string(_("Give a list of forbidden expressions"));
 		break;
 		case eLC_ADD: 
 		case eLC_MOD:
@@ -97,7 +96,7 @@ bool cForbidConsole::ReadDataFromCmd(cfBase *cmd, int id, cForbiddenWorker &data
 			break;
 		default:
 			if(! cmd->GetParRegex(eADD_PATTERN,data.mWord)) {
-				(*cmd->mOS) << _("Sorry the regular expression you provided cannot be parsed.") << "\r\n";
+				(*cmd->mOS) << _("Sorry the regular expression you provided is not valid.") << "\r\n";
 				return false;
 			}
 			cmd->GetParInt(eADD_MASK, data.mCheckMask);

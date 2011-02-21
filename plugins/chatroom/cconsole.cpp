@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "src/cconndc.h"
+#include "src/i18n.h"
 #include "cconsole.h"
 #include "cpichatroom.h"
 #include "crooms.h"
@@ -27,7 +28,7 @@ using namespace nDirectConnect;
 
 
 cRooms *cRoomConsole::GetTheList()
-{ 
+{
 	return mOwner->mList; 
 }
 
@@ -47,7 +48,7 @@ void cRoomConsole::GetHelpForCommand(int cmd, ostream &os)
 	switch(cmd)
 	{
 		case eLC_LST: 
-		help_str = "!lstroom\r\nGive a list of chatrooms"; 
+		help_str = "!lstroom\r\n" + string(_("Give a list of chatrooms"));
 		break;
 		case eLC_ADD: 
 		case eLC_MOD:
