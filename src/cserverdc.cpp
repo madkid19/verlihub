@@ -829,6 +829,7 @@ bool cServerDC::BeginUserLogin(cConnDC *conn)
 		conn->CloseNow();
 		return false;
 	}
+	return true;
 }
 
 #define UseChache true

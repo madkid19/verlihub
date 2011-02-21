@@ -225,7 +225,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		mS->mR->Login(conn, nick);
 	}
 	conn->SetLSFlag(eLS_VALNICK|eLS_NICKLST); // set NICKLST because user may want to skip getting userlist
-	conn->ClearTimeOut(eTO_VALNICK);	
+	conn->ClearTimeOut(eTO_VALNICK);
 	conn->SetTimeOut(eTO_MYINFO, mS->mC.timeout_length[eTO_MYINFO], mS->mTime);
 	return 0;
 }
@@ -516,7 +516,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	conn->mpUser->mEmail = msg->ChunkString(eCH_MI_MAIL);
 
 	// User sent MyINFO for the frist time
-	if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) { 
+	if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) {
 		cBan Ban(mS);
 		bool banned = false;
 		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, cBan::eBF_SHARE | cBan::eBF_EMAIL);
@@ -621,9 +621,9 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		// note, we got it
 		conn->SetLSFlag(eLS_MYINFO);
 		// if all right, add user to userlist, if not yet there
-		if(!mS->BeginUserLogin(conn)) return -1;
+		if(!mS->BeginUserLogin(conn))
+			return -1;
 	}
-
 	conn->ClearTimeOut(eTO_MYINFO);
 	return 0;
 }
