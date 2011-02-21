@@ -32,6 +32,7 @@ bool cpiISP::RegisterAll()
 	RegisterCallBack("VH_OnParsedMsgMyINFO");
 	RegisterCallBack("VH_OnParsedMsgValidateNick");
 	RegisterCallBack("VH_OnOperatorCommand");
+	return true;
 }
 
 bool cpiISP::OnParsedMsgMyINFO(cConnDC * conn, cMessageDC *msg) 
