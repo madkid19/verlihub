@@ -74,14 +74,10 @@ bool cpiChatroom::OnUserLogout(cUser *user)
 
 bool cpiChatroom::RegisterAll()
 {
-	//When user logins checkout his mailbox and eventualy tell him about messages
-	//RegisterCallBack("VH_OnNewUser");
-	//treat messages that use to post offline msgs, remove them, read etc...
-	//RegisterCallBack("VH_OnUserCommand");
 	RegisterCallBack("VH_OnUserLogin");
 	RegisterCallBack("VH_OnUserLogout");
 	RegisterCallBack("VH_OnOperatorCommand");
-	//RegisterCallBack("VH_OnTimer");
+	return true;
 }
 
 bool cpiChatroom::OnUserCommand(cConnDC *conn, string *str)

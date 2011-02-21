@@ -53,31 +53,36 @@ public:
 		// first adjust the CurPos, and init limits
 		int MinPos = 0; 
 		int MaxPos = this->mDataIndex.size()-1;
-		if(CurPos > MaxPos) CurPos = MaxPos;
-		if(CurPos < MinPos) CurPos = MinPos;
+		if(CurPos > MaxPos)
+			CurPos = MaxPos;
+		if(CurPos < MinPos)
+			CurPos = MinPos;
 		
 		// Chech if the Proposed CurPos might be ok
-		DataType *Data2;
+		DataType *Data2 = NULL;
 		int Order = -1, CurOrder = 0;
-		if(CurPos <=MaxPos)
-		{
+		if(CurPos <=MaxPos) {
 			Data2 = this->GetDataAtOrder(CurPos);
 			Order = this->OrderTwoItems(data, *Data2);
-			if(!Order) return Data2;
+			if(!Order)
+				return Data2;
 			CurOrder = Order; // keep this for later - optimisation
 		}
 
 		// Try the Upper Limit
 		if (MaxPos>=0) {
-			if(MaxPos != CurPos)
-			{
+			if(MaxPos != CurPos) {
 				Data2 = this->GetDataAtOrder(MaxPos);
 				Order = this->OrderTwoItems(data, *Data2);
 			}
 		
 			switch (Order) {
-				case  0: CurPos = MaxPos; return Data2;
-				case  1: CurPos = MaxPos+1; return NULL;
+				case  0:
+					CurPos = MaxPos;
+					return Data2;
+				case  1:
+					CurPos = MaxPos+1;
+					return NULL;
 				default: break;
 			}
 		}
@@ -88,8 +93,12 @@ public:
 			Order = this->OrderTwoItems(data,*Data2);
 		
 			switch (Order) {
-				case  0: CurPos = MinPos; return Data2;
-				case -1: CurPos = MinPos; return NULL;
+				case  0:
+					CurPos = MinPos;
+					return Data2;
+				case -1:
+					CurPos = MinPos;
+					return NULL;
 				default: break;
 			}
 		}
@@ -137,27 +146,29 @@ protected:
 	DataType *FindDataPositionLimited(const DataType &data, int MinPos, int MaxPos, int &CurPos)
 	{
 		// compare data to last, first, middle
-		DataType *Data2;
+		DataType *Data2 = NULL;
 		int Order;
 
-		if (MaxPos > MinPos)
-		{
+		if (MaxPos > MinPos) {
 			int MidPos = (MaxPos+MinPos+1)/2;
 			CurPos = MidPos;
 			Data2 = this->GetDataAtOrder(MidPos);
 			Order = this->OrderTwoItems(data, *Data2);
 			
-			switch (Order)
-			{
-				case  0: return Data2;
+			switch(Order) {
+				case  0:
+					return Data2;
 				case  1: 
 					if(MidPos < MaxPos)
 						return this->FindDataPositionLimited(data, MidPos, MaxPos, CurPos);
-					else CurPos = MidPos +1; 
+					else
+						CurPos = MidPos +1; 
 					return NULL;
 				case -1:
-					if(MidPos > MinPos+1)	return this->FindDataPositionLimited(data, MinPos, MidPos -1, CurPos);
-					else return NULL;
+					if(MidPos > MinPos+1)
+						return this->FindDataPositionLimited(data, MinPos, MidPos -1, CurPos);
+					else
+						return NULL;
 			}
 		} else {
 			CurPos = MinPos;

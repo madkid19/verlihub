@@ -39,12 +39,10 @@ void cpiForbid::OnLoad(cServerDC *server)
 
 bool cpiForbid::RegisterAll()
 {
-	//When user logins checkout his mailbox and eventualy tell him about messages
-	//RegisterCallBack("VH_OnNewUser");
-	//treat messages that use to post offline msgs, remove them, read etc...
 	RegisterCallBack("VH_OnOperatorCommand");
 	RegisterCallBack("VH_OnParsedMsgChat");
 	RegisterCallBack("VH_OnParsedMsgPM");
+	return true;
 }
 
 cpiForbid::~cpiForbid()

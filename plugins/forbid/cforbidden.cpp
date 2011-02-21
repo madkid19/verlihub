@@ -124,14 +124,15 @@ int cForbidden::ForbiddenParser(const string & str, cConnDC * conn, int mask)
 
 int cForbidden::CheckRepeat(const string & str, int r)
 {
-	int i = 0 , j = 0;
+	unsigned int i = 0;
+	int j = 0;
 
 	for(; i < str.size() - 1; i++) {
 		if(str[i] == str[i+1])
 			++j;
 		else
 			j=0;
-		if(j==r)
+		if(j == r)
 			return 0;
 	}
 	
@@ -140,7 +141,7 @@ int cForbidden::CheckRepeat(const string & str, int r)
 
 int cForbidden::CheckUppercasePercent(const string & str, int percent)
 {
-	int i = 0 , j = 0 , k = 0;
+	unsigned int i = 0, j = 0 , k = 0;
 
 	for(; i < str.size(); i++) {
 		if(str[i] >= 'a' && str[i] <= 'z')
