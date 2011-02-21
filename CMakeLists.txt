@@ -17,6 +17,7 @@ OPTION(INSTALL_CMAKE_FILES "Install the *.cmake files into the CMake root" ON)
 
 # Find dependences
 Find_Package(OpenSSL REQUIRED)
+Find_Package(Crypt REQUIRED)
 Find_Package(MySQL REQUIRED)
 Find_Package(ZLIB REQUIRED)
 Find_Package(GeoIP)
@@ -129,6 +130,7 @@ ENDIF(WITH_LUA)
 
 SET(CPACK_GENERATOR "DEB;RPM;TBZ2")
 SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${VERLIHUB_VERSION}-${CMAKE_SYSTEM_PROCESSOR}")
+
 INCLUDE(CPack)
 # ----------------------------------------------------------------------------------------------------
 

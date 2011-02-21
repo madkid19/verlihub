@@ -133,7 +133,7 @@ bool cISPConsole::ReadDataFromCmd(cfBase *cmd, int id, cISP &data)
 	cmd->GetParStr(eADD_NAME, data.mName);
 	cmd->GetParStr(eADD_CC, data.mCC);
 	if(!cmd->GetParRegex(eADD_NICK, data.mNickPattern) && cmd->PartFound(eADD_NICK)) {
-		*(cmd->mOS) << _("Sorry the regular expression for nickname you provided is not valid");
+		*(cmd->mOS) << _("Sorry the regular expression for nickname you provided is not valid.");
 		return false;
 	}
 	
@@ -141,7 +141,7 @@ bool cISPConsole::ReadDataFromCmd(cfBase *cmd, int id, cISP &data)
 	
 	if(!cmd->GetParRegex(eADD_CONN, data.mConnPattern) && cmd->PartFound(eADD_CONN)) {
 		data.mConnPattern = "";
-		*(cmd->mOS) << _("Sorry the regular expression for connection you provided is not valid");
+		*(cmd->mOS) << _("Sorry the regular expression for connection you provided is not valid.");
 		return false;
 	}
 

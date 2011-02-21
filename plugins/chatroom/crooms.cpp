@@ -109,7 +109,7 @@ bool cRoom::IsUserAutoJoin(cUser *user)
 
 ostream& operator << (ostream &os, const cRoom &room)
 {
-	os << autosprintf(_("%s - %s - By %s Auto: %d-%d/CC: %s MinClass: %d"), room.mNick.c_str(), room.mTopic.c_str(), room.mCreator.c_str(), room.mAutoClassMin, room.mAutoClassMax, room.mAutoCC.c_str(), room.mMinClass);
+	os << autosprintf(_("%s - %s - By %s Auto: %d-%d/CC: %s Min class: %d"), room.mNick.c_str(), room.mTopic.c_str(), room.mCreator.c_str(), room.mAutoClassMin, room.mAutoClassMax, room.mAutoCC.c_str(), room.mMinClass);
 	if(room.mUsers)
 		os << " -- " << autosprintf(_("Online %d users"), room.mUsers->size());
 	return os;

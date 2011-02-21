@@ -85,7 +85,10 @@ void cIPLog::MakeSearchQuery(const string &who, bool isNick, int action, int lim
 void cIPLog::GetHistory(const string &who, bool isNick, int limit, ostream &os)
 {
 	string ip;
-	os << "Last " << limit << " events of " << (isNick?"Nick ":"IP ") << who << ":\r\n";
+	if(isNick)
+		os << autosprintf(_("Last %d events of nick %s:"), limit, who.c_str()) << "\r\n";
+	else
+		os << autosprintf(_("Last %d events of IP %s:"), limit, who.c_str()) << "\r\n";
 
 	MakeSearchQuery(who, isNick, -1, limit);
 	SetBaseTo(&mModel);
@@ -93,18 +96,18 @@ void cIPLog::GetHistory(const string &who, bool isNick, int limit, ostream &os)
 	const char *Actions[]={"connect","login","logout","disconnect"};
 	const char *Infos[]={
 	    	"",
-		"bad nick, or banned nick or ip or whatever",
-		"used different nick in chat",
-		"kicked",
-		"redirected",
-		"quits himself",
-		"critical hub load",
-		"timeout",
-		"user did nothing for too long time",
+		_("bad nick or banned nick/IP"),
+		_("used different nick in chat"),
+		_("kicked"),
+		_("redirected"),
+		_("quited"),
+		_("critical hub load"),
+		_("timeout"),
+		_("user did nothing for too long time"),
 		"user limit exceeded for this user",
 		"min or max share limit",
 		"no tags in description (or badly parsed)",
-		"tags not validated (general), slots or hubs or limiter, or version etc..",
+		"tag not valid",
 		"wrong password",
 		"error in login sequence",
 		"syntax error in some message"
@@ -131,9 +134,9 @@ void cIPLog::GetLastLogin(const string &who, bool isNick, int limit, ostream &os
 {
 	string ip;
 	if(isNick)
-		os << autosprintf(_("Nick %s has lately been here on IPs\n"), who.c_str());
+		os << autosprintf(_("Nick %s has lately been in the hub with the following IP"), who.c_str()) << "\n";
 	else
-		os << autosprintf(_("IP %s has lately been here with nicknames\n"), who.c_str());
+		os << autosprintf(_("IP %s has lately been in the hub with following nicknames"), who.c_str()) << "\n";
 
 	MakeSearchQuery(who, isNick, 1, limit);
 	SetBaseTo(&mModel);

@@ -28,7 +28,7 @@ using namespace std;
 #define _XOPEN_SOURCE
 #include <unistd.h>
 #include <string.h>
-#include <openssl/md5.h>#endif
+#include <openssl/md5.h>
 #include "creguserinfo.h"
 #include "ctime.h"
 #include "i18n.h"

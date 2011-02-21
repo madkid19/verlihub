@@ -580,12 +580,14 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	if ( mFrequency.mNumFill > 0 ) {
 		if (mSysLoad == eSL_RECOVERY)
 			mStatus = _("Recovery mode");
-		if (mSysLoad == eSL_CAPACITY)
+		elseif (mSysLoad == eSL_CAPACITY)
 			mStatus = _("Near capacity");
-		if (mSysLoad == eSL_PROGRESSIVE)
+		elseif (mSysLoad == eSL_PROGRESSIVE)
 			mStatus = _("Progressive mode");
-		if (mSysLoad == eSL_NORMAL)
+		elseif (mSysLoad == eSL_NORMAL)
 			mStatus = _("Normal mode");
+		else
+			mStatus = _("Not available");
 	}
 	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
 	if (mC.host_header == 1) {
