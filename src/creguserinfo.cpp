@@ -28,10 +28,7 @@ using namespace std;
 #define _XOPEN_SOURCE
 #include <unistd.h>
 #include <string.h>
-
-#if HAVE_LIBSSL && HAVE_OPENSSL_MD5_H
-#include <openssl/md5.h>
-#endif
+#include <openssl/md5.h>#endif
 #include "creguserinfo.h"
 #include "ctime.h"
 #include "i18n.h"
@@ -63,25 +60,19 @@ cRegUserInfo::~cRegUserInfo(){}
 bool cRegUserInfo::PWVerify(const string &pass)
 {
 	string crypted_p;
-#if HAVE_LIBSSL && HAVE_OPENSSL_MD5_H
 	unsigned char buf[MD5_DIGEST_LENGTH+1];
-#endif
 	bool Result = false;
 	switch (mPWCrypt)
 	{
-#if HAVE_LIBCRYPT || HAVE_LIBCRYPTO
 		case eCRYPT_ENCRYPT:
-			crypted_p=crypt(pass.c_str(),mPasswd.c_str());
+			crypted_p = crypt(pass.c_str(),mPasswd.c_str());
 			Result = crypted_p == mPasswd;
-			break;
-#endif
-#if HAVE_LIBSSL && HAVE_OPENSSL_MD5_H
+		break;
 		case eCRYPT_MD5:
 			MD5((const unsigned char*)pass.data(), pass.length(), buf);
 			buf[MD5_DIGEST_LENGTH] = 0;
 			Result = mPasswd == string((const char*)buf);
-			break;
-#endif
+		break;
 		case eCRYPT_NONE:
 			Result = pass == mPasswd;
 			break;
@@ -93,11 +84,7 @@ istream & operator >> (istream &is, cRegUserInfo &ui)
 {
 	int i;
 	is >> ui.GetNick() >> i >> ui.mPasswd >> ui.mClass;
-#if !HAVE_LIBCRYPT && !HAVE_LIBCRYPTO && !HAVE_LIBSSL
 	ui.mPWCrypt = i;
-#else
-    ui.mPWCrypt = cRegUserInfo::eCRYPT_NONE;
-#endif
 	return is;
 }
 
@@ -122,7 +109,6 @@ ostream & operator << (ostream &os, cRegUserInfo &ui)
 	return os;
 }
 
-/** nickname */
 string & cRegUserInfo::GetNick(){
 	return mNick;
 }
@@ -138,52 +124,35 @@ void nDirectConnect::nTables::cRegUserInfo::SetPass(string str, int crypt_method
 	string salt;
 	mPwdChange = !str.size();
 	
-	if(str.size())
-	{
-#if ! HAVE_LIBCRYPT && ! HAVE_LIBCRYPTO
-		if (crypt_method == eCRYPT_ENCRYPT) crypt_method = eCRYPT_MD5;
-#endif
-#if ! HAVE_LIBSSL || ! HAVE_OPENSSL_MD5_H
-		if (crypt_method == eCRYPT_MD5) crypt_method = eCRYPT_ENCRYPT;
-#endif
-#if ! HAVE_LIBCRYPT && ! HAVE_LIBCRYPTO
-		if (crypt_method == eCRYPT_ENCRYPT) crypt_method = eCRYPT_NONE;
-#endif
-
+	if(str.size()) {
 		static const char *saltchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmlopqrstuvwxyz0123456789./";
 		static const int saltcharsnum = strlen(saltchars);
 
 		unsigned char charsalt[2] = {((char*)&str)[0],((char*)&str)[1]};
-
-#if HAVE_LIBSSL && HAVE_OPENSSL_MD5_H
 		unsigned char buf[MD5_DIGEST_LENGTH+1];
-#endif
 
-		switch (crypt_method)
-		{
+		switch (crypt_method) {
 			case eCRYPT_ENCRYPT:
-#if HAVE_LIBCRYPT || HAVE_LIBCRYPTO
 				charsalt[0] = saltchars[charsalt[0] % saltcharsnum];
 				charsalt[1] = saltchars[charsalt[1] % saltcharsnum];
 				salt.assign((char *)charsalt,2);
 
 				mPasswd = crypt(str.c_str(),salt.c_str());
 				mPWCrypt = eCRYPT_ENCRYPT;
-#endif
-				break;
+			break;
 			case eCRYPT_MD5:
-#if HAVE_LIBSSL && HAVE_OPENSSL_MD5_H
+
 				MD5((const unsigned char *)str.c_str(), str.size(), buf);
 				buf[MD5_DIGEST_LENGTH]=0;
 				mPasswd = string((char*)buf);
 				mPWCrypt = eCRYPT_MD5;
-#endif
+
 				break;
 			case eCRYPT_NONE:
 				mPasswd = str;
 				mPWCrypt = eCRYPT_NONE;
 				break;
 		}
-	}
-	else mPasswd = str;
+	} else
+		mPasswd = str;
 }
