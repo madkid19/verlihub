@@ -16,25 +16,15 @@ INCLUDE(VerliHubMacro)
 OPTION(INSTALL_CMAKE_FILES "Install the *.cmake files into the CMake root" ON)
 
 # Find dependences
-Find_Package(OpenSSL)
-MACRO_LOG_FEATURE(OPENSSL_FOUND "openssl" "OpenSSL cryptography library" "http://www.openssl.org/" "" "OpenSSL NOT found")
-Find_Package(Crypt)
-MACRO_LOG_FEATURE(CRYPT_FOUND "crypto" "Crypto cryptographic primitives")
-IF(CRYPT_FOUND)
-	SET(HAVE_LIBCRYPT 1)
-ENDIF(CRYPT_FOUND)
-IF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
-	MESSAGE(STATUS "WARNING: OpenSSL and Crypt not found. Password will be stored in plaintext.")
-ENDIF(NOT OPENSSL_FOUND AND NOT CRYPT_FOUND)
-
-IF(OPENSSL_FOUND)
-	CHECK_INCLUDE_FILES(openssl/md5.h HAVE_OPENSSL_MD5_H)
-ENDIF(OPENSSL_FOUND)
-
+Find_Package(OpenSSL REQUIRED)
 Find_Package(MySQL REQUIRED)
 Find_Package(ZLIB REQUIRED)
 Find_Package(GeoIP)
+IF(GEOIP_FOUND)
+	ADD_DEFINITIONS(-DHAVE_LIBGEOIP)
+ENDIF(GEOIP_FOUND)
 MACRO_LOG_FEATURE(GEOIP_FOUND "geoip" "Geolocalization support library" "http://www.maxmind.com/geoip/api/c.shtml")
+
 Find_Package(DL REQUIRED)
 Find_Package(Pcre REQUIRED)
 Find_Package(Threads REQUIRED)
@@ -47,7 +37,6 @@ SET(VERLIHUB_INCLUDE_DIRS  "-I${OPENSSL_INCLUDE_DIR} -I${MYSQL_INCLUDE_DIR} -I${
 INCLUDE_DIRECTORIES(${OPENSSL_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIR} ${GEOIP_INCLUDE_DIR} ${PCRE_INCLUDE_DIR} ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
 # ----------------------------------------------------------------------------------------------------
 
-CHECK_INCLUDE_FILES(string.h HAVE_STRING_H)
 CHECK_INCLUDE_FILES(errno.h HAVE_ERRNO_H)
 CHECK_INCLUDE_FILES(sys/poll.h HAVE_SYS_POLL_H)
 #TODO: Fix creguserinfo.cpp for HAVE_LIBSSL and crypto stuff
@@ -93,7 +82,6 @@ MESSAGE(STATUS "Generating dirsettings.h file")
 CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/cmake/dirsettings.h.cm" "${CMAKE_BINARY_DIR}/dirsettings.h")
 # ----------------------------------------------------------------------------------------------------
 
-
 if(INSTALL_CMAKE_FILES)
  	install(FILES "${CMAKE_SOURCE_DIR}/cmake/Modules/FindVerliHub.cmake" DESTINATION ${CMAKE_ROOT}/Modules)
 endif()
@@ -124,7 +112,7 @@ SET(CPACK_PACKAGE_VERSION_MINOR "${VERLIHUB_VERSION_MINOR}")
 SET(CPACK_PACKAGE_VERSION_PATCH "${VERLIHUB_VERSION_PATCH}")
 SET(CPACK_PACKAGE_VERSION "${VERLIHUB_VERSION}")
 SET(CPACK_DEBIAN_PACKAGE_SECTION "net")
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "zlib, mysql-server-5.1, mysql-client-5.1, geoip-bin, gettext, openssl, libpcre3")
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "zlib, mysql-server-5.1, mysql-client-5.1, geoip-bin, gettext, libssl, openssl, libpcre3")
 
 SET(CPACK_RPM_PACKAGE_LICENSE ${CPACK_RESOURCE_FILE_LICENSE})
 SET(CPACK_RPM_PACKAGE_URL "http://www.verlihub-project.org")
@@ -143,7 +131,6 @@ SET(CPACK_GENERATOR "DEB;RPM;TBZ2")
 SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${VERLIHUB_VERSION}-${CMAKE_SYSTEM_PROCESSOR}")
 INCLUDE(CPack)
 # ----------------------------------------------------------------------------------------------------
-
 
 message(STATUS)
 message(STATUS "========== VerliHub Build Information ==========")

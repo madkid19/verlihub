@@ -25,9 +25,7 @@
 #include <config.h>
 #endif
 #include "ctime.h"
-#if HAVE_STRING_H
 #include <string.h>
-#endif
 #include <iostream>
 
 using namespace std;

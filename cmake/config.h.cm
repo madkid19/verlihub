@@ -1,5 +1,3 @@
-/* Define to 1 if you have the <string.h> header file. */
-#cmakedefine HAVE_STRING_H 1
 /* Define to 1 if you have the <errno.h> header file. */
 #cmakedefine HAVE_ERRNO_H 1
 /* Version number of package */
@@ -8,9 +6,5 @@
 #define PACKAGE "@PROJECT_NAME@"
 /* Define to 1 if you have the <sys/poll.h> header file. */
 #cmakedefine HAVE_SYS_POLL_H 1
-/* Define to 1 if you have the <openssl/md5.h> header file. */
-#cmakedefine HAVE_OPENSSL_MD5_H 1
-/* Define to 1 if you have crypt library. */
-#cmakedefine HAVE_LIBCRYPT 1
 /* Define to 1 if you have gettext function. */
 #cmakedefine HAVE_GETTEXT 1

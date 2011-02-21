@@ -84,7 +84,8 @@ if not foud return 0
 else return 1 and fill in the reuserinfo parameter */
 bool cRegList::FindRegInfo(cRegUserInfo &ui, const string &nick)
 {
-	if(mCache.IsLoaded() && !mCache.Find(nick)) return false;//@todo nick2dbkey
+	if(mCache.IsLoaded() && !mCache.Find(nick))
+		return false;//@todo nick2dbkey
 	SetBaseTo(&ui);
 	ui.mNick = nick;//@todo nick2dbkey
 	return LoadPK();
@@ -130,20 +131,29 @@ bool cRegList::AddRegUser(const string &nick, cConnDC *op, int cl, const char *p
 {
 	cRegUserInfo ui;
 
-	if(FindRegInfo(ui, nick)) return false;
-	if(nStringUtils::toLower(nick) == nStringUtils::toLower(mS->mC.opchat_name) || nStringUtils::toLower(nick) == nStringUtils::toLower(mS->mC.hub_security)) return false;
+	if(FindRegInfo(ui, nick))
+		return false;
+	// Do not register opchat or hub security
+	if(nStringUtils::toLower(nick) == nStringUtils::toLower(mS->mC.opchat_name) || nStringUtils::toLower(nick) == nStringUtils::toLower(mS->mC.hub_security))
+		return false;
 
 	ui.mNick = nick;//@todo nick2dbkey
-	if ((cl>=1 && cl<=5) || cl==10 || cl==-1) ui.mClass = cl;
-	else ui.mClass = 1;
+	if ((cl>=1 && cl<=5) || cl==10 || cl==-1)
+		ui.mClass = cl;
+	else
+		ui.mClass = 1;
 	ui.mRegDate = cTime().Sec();
-	ui.mRegOp   = (op && op->mpUser)?op->mpUser->mNick:string("hub-security");
+	ui.mRegOp = (op && op->mpUser) ? op->mpUser->mNick : string("hub-security");
 
-	if(password) ui.SetPass(string(password),mS->mC.default_password_encryption);
-	else ui.SetPass(string(),mS->mC.default_password_encryption);
+	if(password)
+		ui.SetPass(string(password),mS->mC.default_password_encryption);
+	else
+		ui.SetPass(string(),mS->mC.default_password_encryption);
 	
-	if(cl< 0) ui.mPwdChange = false;
-	if(mCache.IsLoaded()) mCache.Add(nick);//@todo nick2dbkey
+	if(cl < 0)
+		ui.mPwdChange = false;
+	if(mCache.IsLoaded())
+		mCache.Add(nick);//@todo nick2dbkey
 
 	SetBaseTo(&ui);
 	return SavePK();
@@ -153,7 +163,8 @@ bool cRegList::AddRegUser(const string &nick, cConnDC *op, int cl, const char *p
 /** No descriptions */
 bool cRegList::ChangePwd(const string &nick, const string &pwd, int crypt)
 {
-	if(!FindRegInfo(mModel, nick)) return false;
+	if(!FindRegInfo(mModel, nick))
+		return false;
 	mModel.SetPass(pwd,mS->mC.default_password_encryption);
 	return UpdatePK();
 }

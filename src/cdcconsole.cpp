@@ -652,15 +652,13 @@ int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 	ostringstream os;
 	string omsg,topic;
 	getline(cmd_line,topic);
-	if (conn->mpUser->mClass < mOwner->mC.topic_mod_class)
-	{
+	if(conn->mpUser->mClass < mOwner->mC.topic_mod_class) {
 		mOwner->DCPublicHS(_("You do not have permissions to change the topic."),conn);
 		return 1;
 	}	
 	if(topic[0] == ' ')
 		topic = topic.substr(1);
-	if (topic.length() > 255)
-	{
+	if(topic.length() > 255) {
 		os << autosprintf(_("Topic must be max 255 characters long. Your topic was %d characters long."), (int) topic.length());
 		mOwner->DCPublicHS(os.str().data(),conn);
 		return 1;
@@ -1707,12 +1705,14 @@ bool cDCConsole::cfRegUsr::operator()()
 	static const int actionids [] = { eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET, eAC_INFO, eAC_LIST };
 	
 	
-	if (this->mConn->mpUser->mClass < eUC_OPERATOR) return false;
+	if(this->mConn->mpUser->mClass < eUC_OPERATOR)
+		return false;
 
 	string tmp;
 	mIdRex->Extract(2,mIdStr,tmp);
 	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
-	if (Action < 0) return false;
+	if(Action < 0)
+		return false;
 	//static cPCRE mParmSearch("^(\\d+\\.\\d+\\.\\d+\\.\\d+)((\\/(\\d+))|(\\.\\.|-)(\\d+\\.\\d+\\.\\d+\\.\\d+))?$",0);
 	if(Action == eAC_LIST) {
 		(*mOS) << _("Found nicks:") << "\n" << mParStr;
@@ -1735,7 +1735,8 @@ bool cDCConsole::cfRegUsr::operator()()
 
 	int ParClass = 1;
 	int MyClass = this->mConn->mpUser->mClass;
-	if ((Action != eAC_INFO) && (! this->mConn->mpUser->Can(eUR_REG,mS->mTime.Sec()))) return false;
+	if((Action != eAC_INFO) && (! this->mConn->mpUser->Can(eUR_REG,mS->mTime.Sec())))
+		return false;
 
 	mParRex->Extract(1,mParStr,nick);
 	bool WithPar = false;

@@ -41,8 +41,6 @@ class cRegUserInfo
 public:
 	cRegUserInfo();
 	~cRegUserInfo();
-	/** verify password - return true if ok */
-	bool PWVerify(const string &pass);
 
 	/** friends */
 	friend ostream & operator << (ostream &, cRegUserInfo &i);
@@ -50,11 +48,32 @@ public:
 	friend class nDirectConnect::cUser;
 	friend class cRegList;
 
-	/** nickname */
-	string & GetNick();
-	/** return user class */
+	/**
+	 * Get the class of the user.
+	 * @return The class
+	 */
 	int getClass(){return mClass;};
-	void SetPass(string, int crypt_method);
+	
+	/**
+	 * Get the nickname of the user.
+	 * @return The nickname
+	 */
+	string & GetNick();
+	
+	/**
+	 * Verify the password of the user.
+	 * @param password The password to check
+	 * @return True if password matches or false on failure
+	 */
+	bool PWVerify(const string &pass);
+	
+	/**
+	 * Set user passwrod.
+	 * @param password The new password
+	 * @param crypt_method The crypt method to use
+	 * @return Zero on success or -1 on failure
+	 */
+	void SetPass(string password, int crypt_method);
 
 	enum {eCRYPT_NONE, eCRYPT_ENCRYPT, eCRYPT_MD5};
 public: // Public attributes

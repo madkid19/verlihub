@@ -23,10 +23,8 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#if HAVE_STRING_H
-#include <string.h>
-#endif
 #include <sstream>
+#include <string.h>
 #if defined _WIN32
 #include <windows.h>
 #endif
@@ -39,7 +37,8 @@ namespace nUtils {
 cTime::~cTime(){
 }
 
-string cTime::AsString() const{
+string cTime::AsString() const
+{
 	ostringstream os;
 	os << (*this);
 	return os.str();
@@ -56,52 +55,51 @@ std::ostream & operator<< (std::ostream &os, const cTime &t)
 
 	long n, rest, i;
 
-	switch (t.mPrintType)
-	{
-	case 1:
-		#ifdef WIN32
-			buf = ctime( (const time_t*)&(t.tv_sec) );
-		#else
-		ctime_r((time_t*)&t.tv_sec, buf);
-		#endif
-		buf[strlen(buf)-1]=0;
-		os << buf;
+	switch (t.mPrintType) {
+		case 1:
+			#ifdef WIN32
+				buf = ctime( (const time_t*)&(t.tv_sec) );
+			#else
+				ctime_r((time_t*)&t.tv_sec, buf);
+			#endif
+			buf[strlen(buf)-1]=0;
+			os << buf;
 		break;
-	case 2:
-		rest = t.tv_sec;
-		i = 0;
+		case 2:
+			rest = t.tv_sec;
+			i = 0;
 
-		n = rest / (24*3600*7);
-		rest %= (24*3600*7);
-		if(n && ++i <= 2)
-			os << autosprintf(_("%ld weeks"), n) << " ";
-		n = rest / (24*3600);
-		rest %= (24*3600);
-		if(n && ++i <= 2)
-			os << autosprintf(_("%ld days"), n) << " ";
+			n = rest / (24*3600*7);
+			rest %= (24*3600*7);
+			if(n && ++i <= 2)
+				os << autosprintf(_("%ld weeks"), n) << " ";
+			n = rest / (24*3600);
+			rest %= (24*3600);
+			if(n && ++i <= 2)
+				os << autosprintf(_("%ld days"), n) << " ";
 
-		n = rest / (3600);
-		rest %= (3600);
-		if(n && ++i <= 2)
-			os << autosprintf(_("%ld hours"), n) << " ";
+			n = rest / (3600);
+			rest %= (3600);
+			if(n && ++i <= 2)
+				os << autosprintf(_("%ld hours"), n) << " ";
 
-		n = rest / (60);
-		rest %= (60);
-		if(n && ++i <= 2)
-			os << autosprintf(_("%ld mins"), n) << " ";
+			n = rest / (60);
+			rest %= (60);
+			if(n && ++i <= 2)
+				os << autosprintf(_("%ld mins"), n) << " ";
 
-		n = rest;
-		rest = 0;
-		if(++i <= 2)
-			os << autosprintf(_("%ld secs"), n) << " ";
+			n = rest;
+			rest = 0;
+			if(++i <= 2)
+				os << autosprintf(_("%ld secs"), n) << " ";
 
-		if(++i <= 2)
-			os << autosprintf(_("%d ms"), (int) t.tv_usec/1000) << " ";
-// 		if(++i <= 2)
-// 			os << autosprintf(_("%d 탎"), (int)  t.tv_usec%1000) << " ";
+			if(++i <= 2)
+				os << autosprintf(_("%d ms"), (int) t.tv_usec/1000) << " ";
+	// 		if(++i <= 2)
+	// 			os << autosprintf(_("%d 탎"), (int)  t.tv_usec%1000) << " ";
 		break;
-	default :
-		os << t.tv_sec << "s " << t.tv_usec << "탎";
+		default :
+			os << t.tv_sec << "s " << t.tv_usec << "탎";
 		break;
 	}
 	return os;
