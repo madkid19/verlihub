@@ -83,7 +83,7 @@ bool cConsole::cfMessageRead::operator ( )()
 {
 	int messages = this->GetMessanger()->mMsgs->CountMessages(((cConnDC*) this->mExtra)->mpUser->mNick, false);
 	if (messages) {
-		(*mOS) << autosprintf(ngettext(_("You have %d message in your box."), _("You have %d messages in your box."), messages), messages) << "\r\n";
+		(*mOS) << autosprintf(ngettext("You have %d message in your box.", "You have %d messages in your box.", messages), messages) << "\r\n";
 		this->GetMessanger()->mMsgs->PrintSubjects(*mOS, ((cConnDC*) this->mExtra)->mpUser->mNick, false);
 	}
 	else
