@@ -42,7 +42,6 @@ public:
 	virtual void OnLoad(cServerDC *server);
 
 	virtual bool RegisterAll();
-	virtual bool OnNewConn(cConnDC * conn);
 	virtual bool OnOperatorCommand(cConnDC *, string *);
 };
 

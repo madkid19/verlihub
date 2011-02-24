@@ -26,7 +26,7 @@ using namespace nDirectConnect;
 cpiPlug::cpiPlug()
 {
 	mName = "plugman";
-	mVersion = "1.0";
+	mVersion = PLUGMAN_VERSION;
 }
 
 void cpiPlug::OnLoad(cServerDC *server)
@@ -41,22 +41,15 @@ cpiPlug::~cpiPlug() {}
 
 bool cpiPlug::RegisterAll()
 {
-	RegisterCallBack("VH_OnNewConn");
 	RegisterCallBack("VH_OnOperatorCommand");
 	return true;
 }
 
-bool cpiPlug::OnNewConn(cConnDC * conn)
-{
-	if (mServer->mC.host_header == 1) {
-		mServer->DCPublicHS("This hub is enhanced by " + mName + " for Verlihub.", conn);
-	}
-	return true; 
-}
-
 bool cpiPlug::OnOperatorCommand(cConnDC *conn, string *str)
 {
-	if( mConsole.DoCommand(*str, conn) ) return false;
+	// Redirect command to plugman console
+	if(mConsole.DoCommand(*str, conn))
+		return false;
 	return true;
 }
 
