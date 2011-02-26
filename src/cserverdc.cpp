@@ -1343,9 +1343,12 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 	if (conn) {
 		if(!mUseDNS && mC.report_dns_lookup)
 			conn->DNSLookup();
-		os << autosprintf(_(" -- Reporter IP='%s' Host='%s'"), conn->AddrIP().c_str(), conn->AddrHost().c_str());
+		os << " -- ";
+		os << autosprintf(_("IP='%s'"), conn->AddrIP().c_str());
+		if(!conn->AddrHost().empty())
+			os << autosprintf(_("Host='%s'"), conn->AddrHost().c_str());
 		if (conn->mpUser)
-			os << _("User") << "='" << conn->mpUser->mNick << "' ";
+			os << " " << _("User") << "='" << conn->mpUser->mNick << "' ";
 		if (!ToMain && this->mOpChat) {
 			this->mOpChat->SendPMToAll(os.str(), NULL);
 		} else {
