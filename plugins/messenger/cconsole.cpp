@@ -71,7 +71,7 @@ bool cConsole::cfMessageSend::operator ( )()
 	receiver = GetMessanger()->mServer->mUserList.GetUserByNick(msg.mReceiver);
 	if ((receiver != NULL) && (receiver->mxConn != NULL)) {
 		GetMessanger()->mMsgs->DeliverOnline(receiver, msg);
-		(*mOS) << autosprintf(_("Sending message to %s because he is online."), msg.mReceiver.c_str());
+		(*mOS) << autosprintf(_("The message has been sent to %s because he is online."), msg.mReceiver.c_str());
 	} else  {
 		GetMessanger()->mMsgs->AddMessage(msg);
 		(*mOS) << _("Message saved.");

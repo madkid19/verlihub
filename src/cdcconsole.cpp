@@ -1567,31 +1567,33 @@ bool cDCConsole::cfWho::operator()()
 			ip_min = cBanList::Ip2Num(tmp);
 			ip_max = ip_min;
 			cnt = mS->WhoIP(ip_min, ip_max, userlist, separator, true);
-			actionName = _("IP");
+			if(cnt)
+				(*mOS) << autosprintf(ngettext("Found %d user with IP %s:", "Found %d users with IP %s:", cnt), cnt, tmp.c_str());
 		break;
 		case eAC_RANGE:
 			if(! cDCConsole::GetIPRange(tmp, ip_min, ip_max) ) return false;
 			cnt = mS->WhoIP(ip_min, ip_max, userlist, separator, false);
-			actionName = _("range");
+			if(cnt)
+				(*mOS) << autosprintf(ngettext("Found %d user with range %s:", "Found %d users with range %s:", cnt), cnt, tmp.c_str());
 		break;
 		case eAC_CC:
 			if(tmp.size() != 2) {
-				(*mOS) << _("Country Code must be 2 characters long (for ex. US)");
+				(*mOS) << _("Country code must be 2 characters long (for ex. US)");
 				return false;
 			}
 			
 			tmp = toUpper(tmp);
 			cnt = mS->WhoCC(tmp, userlist, separator);
-			actionName = _("country code");
+			if(cnt)
+				(*mOS) << autosprintf(ngettext("Found %d user with country code %s:", "Found %d users with country code %s:", cnt), cnt, tmp.c_str());
 		break;
 		default: return false;
 	}
 
-	
-	if(!cnt)
-		(*mOS) << autosprintf(_("No user found with %s %s"), actionName.c_str(), tmp.c_str());
+	if(cnt)
+		(*mOS) << "\n\t" << userlist;
 	else
-		(*mOS) << autosprintf(_("Found %d users with %s %s: %s"), cnt, actionName.c_str(), tmp.c_str(), userlist.c_str()) << "\r\n\t";
+		(*mOS) << autosprintf(_("No user found."), actionName.c_str(), tmp.c_str());
 	return true;
 }
 
