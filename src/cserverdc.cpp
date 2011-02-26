@@ -659,7 +659,7 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 				if(old_usr->mxConn) {
 					if(old_usr->mxConn->Log(2))
 						old_usr->mxConn->LogStream() << "Closing because of a new connection" << endl;
-					omsg = _("Another instance of yourself is connecting. Bye and Hi.");
+					omsg = _("Another user is already logged in from this IP address. Disconnecting.");
 					old_usr->mxConn->Send(omsg,true);
 					old_usr->mxConn->CloseNow();
 				} else {
@@ -1430,7 +1430,7 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 
 					if(flags & eKCK_PM) {
 						ostr.str(mEmpty);
-						ostr << autosprintf(_("You are being kicked because: %s"), NewReason.c_str());
+						ostr << autosprintf(_("You have been kicked because %s"), NewReason.c_str());
 						DCPrivateHS(ostr.str(), user->mxConn, &OP->mNick);
 					}
 				}

@@ -620,7 +620,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 				// sent the message to the user
 				os << autosprintf(_("You are now registered with nick '%s'! Please reconnect and login with your password. Don't forget your password! It is '%s'."), regnick.c_str(), text.c_str());
 			} else {
-				os << _("An error occured while registering. Maybe illegeal characters in nick or password?");
+				os << _("An error occured while registering.");
 				mOwner->DCPublicHS(os.str(),conn);
 				return false;
 			}
@@ -771,7 +771,7 @@ int cDCConsole::CmdUserLimit(istringstream & cmd_line, cConnDC * conn)
 
 	if( maximum < 0 )
 	{
-		ostr << _("Type !help for more information: (usage !userlimit <max_users> [<minutes>=60])");
+		ostr << _("Type !help for more information (usage !userlimit <max_users> [<minutes>=60])");
 		mOwner->DCPublicHS(ostr.str(), conn);
 		return 1;
 	}

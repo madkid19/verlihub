@@ -267,7 +267,7 @@ const char * cTriggerConsole::GetParamsRegex(int cmd)
 bool cTriggerConsole::CheckData(cfBase *cmd, cTrigger &data)
 {
 	if(data.mDefinition.empty()) {
-		*cmd->mOS << _("Definition is empty or not specified. Please define it with -d option.");
+		*cmd->mOS << _("The definition is empty or not specified. Please define it with -d option.");
 		return false;
 	}
 	size_t pos = data.mDefinition.rfind("dbconfig");
@@ -286,7 +286,7 @@ bool cTriggerConsole::CheckData(cfBase *cmd, cTrigger &data)
 	ReplaceVarInString(triggerPath, "CFG", triggerPath, vPath);
 	ExpandPath(triggerPath);
 	if((triggerPath.substr(0,vPath.length()) != vPath)) {
-		*cmd->mOS << autosprintf(_("The definition %s of the trigger %s must be in VerliHub Config Folder (use %%[CFG] variable; for ex %%[CFG]/%s)"), data.mDefinition.c_str(), data.mCommand.c_str(), triggerName.c_str());
+		*cmd->mOS << autosprintf(_("The file %s for the trigger %s must be locate in VerliHub config folder (use %%[CFG] variable; for ex %%[CFG]/%s)"), data.mDefinition.c_str(), data.mCommand.c_str(), triggerName.c_str());
 		return false;
 	}
 	return true;

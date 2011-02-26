@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: VerliHub\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-26 15:34+0100\n"
-"PO-Revision-Date: 2011-02-26 15:34+0100\n"
+"POT-Creation-Date: 2011-02-26 18:01+0100\n"
+"PO-Revision-Date: 2011-02-26 18:01+0100\n"
 "Last-Translator: NetCelli <netcelli.tux@gmail.com>\n"
 "Language-Team: VerliHub team\n"
 "Language: \n"
@@ -158,35 +158,35 @@ msgstr ""
 msgid "User '%s' is not online, so you cannot invite him."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:162
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:163
 msgid "Key"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:162
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:163
 msgid "ValidateNick"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:162
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:163
 msgid "Login"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:162
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:163
 msgid "MyINFO"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:162
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:163
 msgid "Flush"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:162
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:163
 msgid "Set Password"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:174
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:175
 msgid "Operation timeout"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:182
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cconndc.cpp:183
 msgid "General timeout"
 msgstr ""
 
@@ -461,7 +461,7 @@ msgid "You are now registered with nick '%s'! Please reconnect and login with yo
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:623
-msgid "An error occured while registering. Maybe illegeal characters in nick or password?"
+msgid "An error occured while registering."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:644
@@ -509,7 +509,7 @@ msgid "Your command actions are now hidden from users with class below %d."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:774
-msgid "Type !help for more information: (usage !userlimit <max_users> [<minutes>=60])"
+msgid "Type !help for more information (usage !userlimit <max_users> [<minutes>=60])"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:805
@@ -546,10 +546,10 @@ msgstr ""
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:882
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:921
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1245
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1644
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1770
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1808
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:2020
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1646
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1772
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1810
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:2022
 msgid "You have no rights to do this."
 msgstr ""
 
@@ -614,8 +614,8 @@ msgstr ""
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1301
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1327
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1390
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1630
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1924
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1632
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1926
 msgid "This command is not implemented."
 msgstr ""
 
@@ -634,16 +634,16 @@ msgstr ""
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1240
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1262
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1271
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1620
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1622
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcproto.cpp:1327
 msgid "Please provide a valid reason."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1165
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1284
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1825
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1849
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1888
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1827
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1851
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1890
 msgid "Action has been discarded by plugin"
 msgstr ""
 
@@ -693,137 +693,144 @@ msgstr ""
 msgid "Error saving %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1575
-msgid "range"
-msgstr ""
-
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1579
-msgid "Country Code must be 2 characters long (for ex. US)"
-msgstr ""
-
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1585
-msgid "country code"
-msgstr ""
-
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1592
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1571
 #, c-format
-msgid "No user found with %s %s"
-msgstr ""
+msgid "Found %d user with IP %s:"
+msgid_plural "Found %d users with IP %s:"
+msgstr[0] ""
+msgstr[1] ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1594
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1577
 #, c-format
-msgid "Found %d users with %s %s: %s"
+msgid "Found %d user with range %s:"
+msgid_plural "Found %d users with range %s:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1581
+msgid "Country code must be 2 characters long (for ex. US)"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1656
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1588
+#, c-format
+msgid "Found %d user with country code %s:"
+msgid_plural "Found %d users with country code %s:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1596
+msgid "No user found."
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1658
 msgid "Loaded plugins:"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1660
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1662
 msgid "Available callbacks:"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1710
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1712
 msgid "Found nicks:"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1743
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1813
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1745
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1815
 msgid "Missing parameters."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1758
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1760
 msgid "Invalid classdif_reg value. Must be between 1 and 5. Please correct this first!"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1804
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1806
 #, c-format
 msgid "No registered user found with nick '%s'"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1806
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1820
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1808
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1822
 #, c-format
 msgid "User '%s' already exists"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1833
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1835
 msgid ""
 "You have been registered, please set up your password NOW \n"
 "using command +passwd <your_new_passwd>\n"
 "replace <your_new_passwd> with your new password."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1838
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1840
 msgid "User has been added; please tell him to change his password"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1842
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1844
 msgid "Error adding the new user"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1856
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1858
 #, c-format
 msgid "Deleted user '%s' from database"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1857
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1862
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1859
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1864
 #, c-format
 msgid "User information: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1861
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1863
 #, c-format
 msgid "Error deleting user '%s'"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1873
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1875
 msgid "Password updated"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1876
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1878
 msgid "Error updating password"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1882
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1884
 msgid "You can change your password now, use command +passwd followed by your new password"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1893
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1895
 #, c-format
 msgid "Your class has been changed to %s. Changes will take effect on next login."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1899
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1901
 msgid "Your registration has been enabled"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1905
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1907
 msgid "Your registration has been disabled"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1909
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1911
 #, c-format
 msgid "You are protected by classes greater than %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1915
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1917
 #, c-format
 msgid "You kicks are hidden by classes greater than %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1932
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1934
 #, c-format
 msgid "Updated variable '%s' to value %s for user %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1936
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:1938
 #, c-format
 msgid "Error setting variable '%s' to value %s for user %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:2031
+#: /home/netcelli/Verliproject/git_repos/verlihub/src/cdcconsole.cpp:2033
 #, c-format
 msgid "Message delivered to %d users in %s"
 msgstr ""
@@ -1398,7 +1405,7 @@ msgid "The hub is currently unable to service your request. Please try again in 
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:662
-msgid "Another instance of yourself is connecting. Bye and Hi."
+msgid "Another user is already logged in from this IP address. Disconnecting."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:680
@@ -1520,7 +1527,7 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1433
 #, c-format
-msgid "You are being kicked because: %s"
+msgid "You have been kicked because %s"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/cserverdc.cpp:1443
@@ -1587,7 +1594,7 @@ msgid "%s %s Flags: %d  SendAs: %s  Class: %d-%d"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/ctriggers.cpp:270
-msgid "Definition is empty or not specified. Please define it with -d option."
+msgid "The definition is empty or not specified. Please define it with -d option."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/ctriggers.cpp:275
@@ -1601,7 +1608,7 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/ctriggers.cpp:289
 #, c-format
-msgid "The definition %s of the trigger %s must be in VerliHub Config Folder (use %%[CFG] variable; for ex %%[CFG]/%s)"
+msgid "The file %s for the trigger %s must be locate in VerliHub config folder (use %%[CFG] variable; for ex %%[CFG]/%s)"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/src/ctriggers.cpp:381
@@ -1658,17 +1665,23 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/lua/cconsole.cpp:132
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/lua/cconsole.cpp:228
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:104
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:194
 #, c-format
 msgid "Script %s stopped."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/lua/cconsole.cpp:141
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/lua/cconsole.cpp:238
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:114
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:203
 #, c-format
 msgid "Script #%s not stopped because it is not running."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/lua/cconsole.cpp:143
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:116
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:205
 #, c-format
 msgid "Script %s not stopped because it is not running."
 msgstr ""
@@ -1685,6 +1698,8 @@ msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/lua/cconsole.cpp:197
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/lua/cconsole.cpp:246
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:139
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:216
 #, c-format
 msgid "Script %s is now running."
 msgstr ""
@@ -1700,279 +1715,279 @@ msgstr ""
 msgid "Script %s not stopped  because it is not running."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:39
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:42
 #, c-format
 msgid "Plugman version %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:40
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:43
 #, c-format
 msgid "Verlihub executable: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:144
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:147
 msgid "Plugin name must be max 10 characters long; please provide another one."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:149
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:152
 msgid "Please provide a valid path for the plugin."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:180
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:192
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:204
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:183
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:195
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cconsole.cpp:207
 #, c-format
 msgid "Plugin '%s' not found."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:42
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:44
 msgid "Plugin not found."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:111
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:113
 msgid "Plugin does not support scripts"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:117
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:127
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:119
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:129
 msgid "Loaded"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:119
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:121
 msgid "Error loading script"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:149
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:151
 msgid "Warning: the plugin should be recompiled because VerliHub has been recently updated"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:175
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:177
 msgid "Reloaded"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:199
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:201
 #, c-format
 msgid "Name: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:202
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:204
 #, c-format
 msgid "Status: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:202
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:204
 msgid "On"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:202
-msgid "Off"
-msgstr ""
-
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:203
-#, c-format
-msgid "Running mode: %s"
-msgstr ""
-
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:203
-msgid "Auto"
-msgstr ""
-
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:203
-msgid "Manual"
-msgstr ""
-
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:204
-#, c-format
-msgid "Path: %s"
+msgid "Off"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:205
 #, c-format
-msgid "Description: %s"
+msgid "Running mode: %s"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:205
+msgid "Auto"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:205
+msgid "Manual"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:206
 #, c-format
+msgid "Path: %s"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:207
+#, c-format
+msgid "Description: %s"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/plugman/cplugs.cpp:208
+#, c-format
 msgid "Last Error: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:58
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:74
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:115
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:140
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:162
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:70
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:86
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:127
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:152
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:174
 msgid "Python interpreter is not loaded."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:61
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:73
 msgid "Loaded Python scripts:"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:121
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:198
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:133
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:210
 msgid "Failed to allocate new Python interpreter."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:129
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:206
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:141
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/python/cconsole.cpp:218
 #, c-format
 msgid "Script %s not found or could not be parsed!."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cconsole.cpp:51
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cconsole.cpp:53
 msgid "Give a list of forbidden expressions"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cconsole.cpp:99
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cconsole.cpp:101
 msgid "Sorry the regular expression you provided is not valid."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cforbidden.cpp:66
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cforbidden.cpp:77
 #, c-format
 msgid "FORBID: User sent forbidden words in %s: %s"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cforbidden.cpp:66
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cforbidden.cpp:77
 msgid "PUBLIC chat"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cforbidden.cpp:66
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/forbid/cforbidden.cpp:77
 msgid "PRIVATE chat"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/chatroom/cconsole.cpp:51
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/chatroom/cconsole.cpp:53
 msgid "Give a list of chatrooms"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/chatroom/crooms.cpp:112
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/chatroom/crooms.cpp:115
 #, c-format
 msgid "%s - %s - By %s Auto: %d-%d/CC: %s Min class: %d"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/chatroom/crooms.cpp:114
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/chatroom/crooms.cpp:117
 #, c-format
 msgid "Online %d users"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/isp/cconsole.cpp:50
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/isp/cconsole.cpp:52
 msgid "Give a list of ISPs"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/isp/cconsole.cpp:129
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/isp/cconsole.cpp:131
 msgid "Unknown range format."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/isp/cconsole.cpp:136
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/isp/cconsole.cpp:138
 msgid "Sorry the regular expression for nickname you provided is not valid."
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/isp/cconsole.cpp:144
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/isp/cconsole.cpp:146
 msgid "Sorry the regular expression for connection you provided is not valid."
-msgstr ""
-
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:89
-#, c-format
-msgid "Last %d events of nick %s:"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:91
 #, c-format
+msgid "Last %d events of nick %s:"
+msgstr ""
+
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:93
+#, c-format
 msgid "Last %d events of IP %s:"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:96
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:98
 msgid "connect"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:96
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:98
 msgid "login"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:96
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:98
 msgid "logout"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:96
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:98
 msgid "disconnect"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:99
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:101
 msgid "bad nick or nick temporarily banned"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:100
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:102
 msgid "used different nick in chat"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:101
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:103
 msgid "kicked"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:102
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:104
 msgid "redirected"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:103
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:105
 msgid "exit from the hub"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:104
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:106
 msgid "critical hub load"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:105
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:107
 msgid "timeout"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:106
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:108
 msgid "user did nothing for too long time"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:107
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:109
 msgid "hub full"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:108
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:110
 msgid "share limit"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:109
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:111
 msgid "no tag or not valid"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:110
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:112
 msgid "tag breaks hub rules"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:111
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:113
 msgid "wrong password"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:112
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:114
 msgid "error in login sequence"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:113
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:115
 msgid "syntax error in some messages"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:114
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:116
 msgid "invalid key"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:139
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:141
 #, c-format
 msgid "Nick %s has lately been in the hub with the following IP"
 msgstr ""
 
-#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:141
+#: /home/netcelli/Verliproject/git_repos/verlihub/plugins/iplog/ciplog.cpp:143
 #, c-format
 msgid "IP %s has lately been in the hub with following nicknames"
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/messenger/cconsole.cpp:74
 #, c-format
-msgid "Sending message to %s because he is online."
+msgid "The message has been sent to %s because he is online."
 msgstr ""
 
 #: /home/netcelli/Verliproject/git_repos/verlihub/plugins/messenger/cconsole.cpp:77
