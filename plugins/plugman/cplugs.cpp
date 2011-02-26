@@ -39,7 +39,7 @@ void cPlug::OnLoad()
 {
 	if(IsScript()) {
 		if(!FindDestPlugin()) {
-			mLastError = _("Destination plugin not found.");
+			mLastError = _("Plugin not found.");
 			SaveMe();
 			return;
 		}

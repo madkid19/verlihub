@@ -5,11 +5,11 @@ Change it to suit your needs or use the file trigger definition to store your mo
 Welcome to Verlihub
 
 
-+rules       -- Displays a listing of the hub rules.
-+faq         -- Displays a list of helpful links if you are having trouble.
-+motd        -- Redisplays this message.
-+help        -- Displays a list of all commands available to you. Dependent upon user type.
++rules		-- Display a list of hub rules.
++faq		-- Display a list of helpful links if you are having trouble.
++motd	-- Display this message.
++help		-- Display a list of all available commands to you.
 
 
-The verlihub project's homepage is located at http://www.verlihub-project.org
-The verlihub forums are located at http://forums.verlihub-project.org
+The VerliHub Project homepage is located at http://www.verlihub-project.org
+The VerliHub Forums are located at http://forums.verlihub-project.org

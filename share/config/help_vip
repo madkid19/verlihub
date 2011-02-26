@@ -1,1 +1,11 @@
-As a VIP user of class 2, there are currently no special commands available to you. Sorry.
+As a VIP user, you may use these commands in the hub:
+
++rules                   -- Display a list of hub rules.
++faq                     -- Display a list of helpful links if you are having trouble.
++motd                    -- Display the Message of the Day.
++help                    -- Display this help message.
++regme                   -- Send a message to all OPs asking them to register your nick.
++myip                    -- Show you your IP address.
++myinfo                  -- Show you information about yourself.
++me                      -- Replace +me with your nick and then send a message to main chat.
++report <user> <reason>  -- Report a user to opchat for breaking the rules.
