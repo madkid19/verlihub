@@ -93,24 +93,25 @@ void cIPLog::GetHistory(const string &who, bool isNick, int limit, ostream &os)
 	MakeSearchQuery(who, isNick, -1, limit);
 	SetBaseTo(&mModel);
 
-	const char *Actions[]={"connect","login","logout","disconnect"};
+	const char *Actions[]={_("connect"),_("login"),_("logout"),_("disconnect")};
 	const char *Infos[]={
 	    	"",
-		_("bad nick or banned nick/IP"),
+		_("bad nick or nick temporarily banned"),
 		_("used different nick in chat"),
 		_("kicked"),
 		_("redirected"),
-		_("quited"),
+		_("exit from the hub"),
 		_("critical hub load"),
 		_("timeout"),
 		_("user did nothing for too long time"),
-		"user limit exceeded for this user",
-		"min or max share limit",
-		"no tags in description (or badly parsed)",
-		"tag not valid",
-		"wrong password",
-		"error in login sequence",
-		"syntax error in some message"
+		_("hub full"),
+		_("share limit"),
+		_("no tag or not valid"),
+		_("tag breaks hub rules"),
+		_("wrong password"),
+		_("error in login sequence"),
+		_("syntax error in some messages"),
+		_("invalid key")
 	};
 	db_iterator it;
 	for(it = db_begin(); it != db_end(); ++it) {
@@ -119,11 +120,12 @@ void cIPLog::GetHistory(const string &who, bool isNick, int limit, ostream &os)
 			os << Actions[mModel.mType];
 		else
 			os << mModel.mType;
-		os << " : " << cTime(mModel.mDate,0).AsDate() << " - " << (isNick?ip:mModel.mNick) << " - ";
-		if(mModel.mInfo < 16)
-			os << Infos[mModel.mInfo];
-		else
-			os << mModel.mInfo;
+		os << " : " << cTime(mModel.mDate,0).AsDate() << " - " << (isNick?ip:mModel.mNick);
+		if(mModel.mInfo < 16) {
+			if(strlen(Infos[mModel.mInfo]) > 0)
+				os << " - " << Infos[mModel.mInfo];
+		} else
+			os << " - " << mModel.mInfo;
 		os << "\r\n";
 	}
 
@@ -170,10 +172,11 @@ bool cIPLog::Log(cConnDC *conn, int action, int info)
 {
 	sUserStruct entry;
 	entry.mIP = cBanList::Ip2Num(conn->AddrIP());
-	if (conn->mpUser != NULL) entry.mNick = conn->mpUser->mNick;
-	else entry.mNick = "";
+	if(conn->mpUser != NULL)
+		entry.mNick = conn->mpUser->mNick;
+	else
+		entry.mNick = "";
 
-	
 	entry.mDate = cTime().Sec();
 	entry.mType = action;
 	entry.mInfo = info;

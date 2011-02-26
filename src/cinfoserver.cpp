@@ -129,9 +129,14 @@ void cInfoServer::Output(ostream &os, int Class)
 		os << "[::] " << autosprintf(_("Upload zone %d: %s"), i, convertByte(curr,true).c_str()) << endl;
 		total += curr;
 	}
-	os << "[::] " << autosprintf(_("Current upload total for all zones: %s"), convertByte(total,true).c_str()) << endl;
- 	for( i =0; i < 4; i++)
-		os << "[::] " << autosprintf(_("Zone (%d) %s users: %d / %d"), i, (i > 0 ? mServer->mC.cc_zone[i-1].c_str() : _("all")), mServer->mUserCount[i], mServer->mC.max_users[i]) << endl;
+	os << "[::] " << autosprintf(_("Current total upload for all zones: %s"), convertByte(total,true).c_str()) << endl;
+	os << "[::] " << autosprintf(_("Zone (%d) all users: %d / %d"), 0, mServer->mUserCount[i], mServer->mC.max_users[i]) << endl;
+ 	for(i =1; i < 4; i++) {
+		if(!mServer->mC.cc_zone[i-1].empty())
+			os << "[::] " << autosprintf(_("Zone (%d) %s users: %d / %d"), i, mServer->mC.cc_zone[i-1].c_str(), mServer->mUserCount[i], mServer->mC.max_users[i]) << endl;
+		else
+			os << "[::] " << autosprintf(_("Zone (%d) not set"), i) << endl;
+	}
 	for (i=4; i <= USER_ZONES; i++)
 		os << "[::] " << autosprintf(_("Zone (%d) IP-Range: %d / %d"), i, mServer->mUserCount[i], mServer->mC.max_users[i]) << endl;
 }
