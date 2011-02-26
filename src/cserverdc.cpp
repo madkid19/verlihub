@@ -1440,10 +1440,10 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					ostr << autosprintf(_("Kicked user %s"), Nick.c_str());
 				else
 					ostr << autosprintf(_("Dropped user %s"), Nick.c_str());
-				ostr << " IP: " << user->mxConn->AddrIP();
+				ostr << " (IP: " << user->mxConn->AddrIP();
 				if(user->mxConn->AddrHost().length())
-					ostr << " Host: " << user->mxConn->AddrHost();
-				ostr << " .. ;)";
+					ostr << ", host: " << user->mxConn->AddrHost();
+				ostr << ")";
 
 				if(user->mxConn->Log(2))
 					user->mxConn->LogStream() << "Kicked by " << OP->mNick << ", ban " << mC.tban_kick << "s"<< endl;
@@ -1481,11 +1481,11 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 
 					if(user->mToBan) {
 						mBanList->NewBan(Ban, Kick, user->mBanTime, cBan::eBF_NICKIP);
-						ostr << "\n" << _("and he is being banned") << " ";
+						ostr << " " << _("and banned") << " ";
 						Ban.DisplayKick(ostr);
 					} else {
 						mBanList->NewBan(Ban, Kick, mC.tban_kick, cBan::eBF_NICKIP);
-						ostr << "\n" << _("and he is being banned") << " ";
+						ostr << " " << _("and banned") << " ";
 						Ban.DisplayKick(ostr);
 					}
 					mBanList->AddBan(Ban);

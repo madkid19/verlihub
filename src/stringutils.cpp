@@ -222,7 +222,7 @@ string convertByte(__int64 byte, bool UnitType)
 		unit = 0;
 	} else {
 		for(unit = 0; lByte > 1024; unit++) {
-			lByte /= 1024;	
+			lByte /= 1024;
 		}
 	}
 	

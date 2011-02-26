@@ -22,6 +22,7 @@
 #include "cconndc.h"
 #include "cserverdc.h"
 #include "cbanlist.h"
+#include "i18n.h"
 #include <stdio.h>
 
 namespace nDirectConnect {
@@ -129,8 +130,7 @@ bool nDirectConnect::nTables::cBanList::LoadBanByKey(cBan &ban)
  */
 void nDirectConnect::nTables::cBanList::NewBan(cBan &ban, cConnDC *conn, const string &nick_op, const string &reason, unsigned length, unsigned type)
 {
-	if(conn != NULL)
-	{
+	if(conn != NULL) {
 		ban.mIP   = conn->AddrIP();
 		ban.mHost = conn->AddrHost();
 		ban.mDateStart = cTime().Sec();
@@ -138,13 +138,10 @@ void nDirectConnect::nTables::cBanList::NewBan(cBan &ban, cConnDC *conn, const s
 		ban.mReason = reason;
 		ban.mNickOp = nick_op;
 		ban.SetType(type);
-		if( conn->mpUser )
-		{
+		if(conn->mpUser) {
 			ban.mNick  = conn->mpUser->mNick;
 			ban.mShare = conn->mpUser->mShare;
-		}
-		else
-		{
+		} else {
 			ban.mNick = "nonick_" + ban.mIP;
 		}
 	}
@@ -162,27 +159,43 @@ void nDirectConnect::nTables::cBanList::NewBan(cBan &ban, cConnDC *conn, const s
 void nDirectConnect::nTables::cBanList::AddBan(cBan &ban)
 {
 	//@todo nick2dbkey
-	switch (1 << ban.mType)
-	{
-	case cBan::eBF_NICK: ban.mIP = "_nickban_"; break;
-	case cBan::eBF_IP: ban.mNick = "_ipban_"; break;
-	case cBan::eBF_RANGE: ban.mNick = "_rangeban_"; break;
-	case cBan::eBF_HOST1: ban.mIP = "_host1ban_";
-		if(!this->GetHostSubstring(ban.mHost,ban.mNick,1)) return; break;
-	case cBan::eBF_HOST2: ban.mIP = "_host2ban_";
-		if(!this->GetHostSubstring(ban.mHost,ban.mNick,2)) return; break;
-	case cBan::eBF_HOST3: ban.mIP = "_host3ban_";
-		if(!this->GetHostSubstring(ban.mHost,ban.mNick,3)) return; break;
-	case cBan::eBF_HOSTR1: ban.mIP = "_hostr1ban_";
-		if(!this->GetHostSubstring(ban.mHost,ban.mNick,-1)) return; break;
-	case cBan::eBF_SHARE:
-		ban.mNick = "_shareban_";
-		//ban.mIP = ban.mShare;
-	break;
-	//case cBan::eBF_EMAIL: ban.mNick = "_emailban_";
-	//	ban.mIP = ban.mMail; break;
-	case cBan::eBF_PREFIX: ban.mIP = "_prefixban_"; break;
-	default: break;
+	switch (1 << ban.mType) {
+		case cBan::eBF_NICK:
+			ban.mIP = "_nickban_";
+		break;
+		case cBan::eBF_IP:
+			ban.mNick = "_ipban_";
+		break;
+		case cBan::eBF_RANGE:
+			ban.mNick = "_rangeban_";
+		break;
+		case cBan::eBF_HOST1:
+			ban.mIP = "_host1ban_";
+			if(!this->GetHostSubstring(ban.mHost,ban.mNick,1))
+				return;
+		break;
+		case cBan::eBF_HOST2:
+			ban.mIP = "_host2ban_";
+			if(!this->GetHostSubstring(ban.mHost,ban.mNick,2))
+				return;
+		break;
+		case cBan::eBF_HOST3:
+			ban.mIP = "_host3ban_";
+			if(!this->GetHostSubstring(ban.mHost,ban.mNick,3))
+				return;
+		break;
+		case cBan::eBF_HOSTR1:
+			ban.mIP = "_hostr1ban_";
+			if(!this->GetHostSubstring(ban.mHost,ban.mNick,-1))
+				return;
+		break;
+		case cBan::eBF_SHARE:
+			ban.mNick = "_shareban_";
+		break;
+		case cBan::eBF_PREFIX:
+			ban.mIP = "_prefixban_";
+		break;
+		default: break;
 	}
    
 	// copy PK
@@ -193,8 +206,7 @@ void nDirectConnect::nTables::cBanList::AddBan(cBan &ban)
 	SetBaseTo( &OldBan );
 	bool update = false;
 
-	if(LoadPK())
-	{
+	if(LoadPK()) {
 		update = true;
 		mModel = OldBan;
 		if(ban.mReason.size())
@@ -203,18 +215,19 @@ void nDirectConnect::nTables::cBanList::AddBan(cBan &ban)
 			mModel.mDateEnd = ban.mDateEnd;
 		mModel.mNickOp = ban.mNickOp;
 
-		if((1 << ban.mType) == cBan::eBF_RANGE)
-		{
+		if((1 << ban.mType) == cBan::eBF_RANGE) {
 			mModel.mRangeMin = ban.mRangeMin;
 			mModel.mRangeMax = ban.mRangeMax;
 		}
-	}
-	else mModel = ban;
+	} else
+		mModel = ban;
 
-	SetBaseTo( &mModel );
+	SetBaseTo(&mModel);
 
-	if( update ) UpdatePK();
-	else SavePK(false);
+	if(update)
+		UpdatePK();
+	else
+		SavePK(false);
 }
 
 /*!
@@ -227,64 +240,61 @@ void nDirectConnect::nTables::cBanList::AddBan(cBan &ban)
 bool nDirectConnect::nTables::cBanList::TestBan(cBan &ban, cConnDC *conn, const string &Nick, unsigned mask)
 {
 	ostringstream query;
-	if(conn != NULL)
-	{
+	if(conn != NULL) {
 		bool fristWhere = false;
 		string ip = conn->AddrIP();
 		SelectFields(query);
 		string host = conn->AddrHost();
 		// IP and NICK and BOTH are done by this first one
 		query << " WHERE (";
-		if( mask & (cBan::eBF_NICKIP |cBan::eBF_IP) )
-		{
+		if(mask & (cBan::eBF_NICKIP |cBan::eBF_IP)) {
 			AddTestCondition(query , ip   , cBan::eBF_IP  );
 			query << " OR ";
 			fristWhere = true;
 		}
-		if( mask & (cBan::eBF_NICKIP |cBan::eBF_NICK) )//@todo nick2dbkey
-			AddTestCondition( query , Nick , cBan::eBF_NICK);
-		if( mask & cBan::eBF_RANGE ) AddTestCondition (query << " OR ", ip , cBan::eBF_RANGE);
-		if( conn->mpUser != NULL)
-		{
-			if( mask & cBan::eBF_SHARE ) {
+		if(mask & (cBan::eBF_NICKIP |cBan::eBF_NICK))
+			AddTestCondition(query , Nick , cBan::eBF_NICK);
+		
+		if(mask & cBan::eBF_RANGE)
+			AddTestCondition(query << " OR ", ip , cBan::eBF_RANGE);
+		if(conn->mpUser != NULL) {
+			if(mask & cBan::eBF_SHARE) {
 				ostringstream os (ostringstream::out);
 				os << conn->mpUser->mShare;
 				if(fristWhere) query << " OR ";
 				AddTestCondition (query, os.str(), cBan::eBF_SHARE); //fix OR condition
 			}
-		/*	if( mask & cBan::eBF_EMAIL ) {
-				if(fristWhere) query << " OR ";
-				AddTestCondition (query, conn->mpUser->mEmail, cBan::eBF_EMAIL);
-			}*/
 		}
-		if( mask & cBan::eBF_HOST1 ) AddTestCondition (query << " OR ", host, cBan::eBF_HOST1);
-		if( mask & cBan::eBF_HOST2 ) AddTestCondition (query << " OR ", host, cBan::eBF_HOST2);
-		if( mask & cBan::eBF_HOST3 ) AddTestCondition (query << " OR ", host, cBan::eBF_HOST3);
-		if( mask & cBan::eBF_HOSTR1 ) AddTestCondition (query << " OR ", host, cBan::eBF_HOSTR1);
-		if( mask & cBan::eBF_PREFIX ) AddTestCondition (query << " OR ", Nick, cBan::eBF_PREFIX);
+		if(mask & cBan::eBF_HOST1)
+			AddTestCondition (query << " OR ", host, cBan::eBF_HOST1);
+		if(mask & cBan::eBF_HOST2)
+			AddTestCondition (query << " OR ", host, cBan::eBF_HOST2);
+		if(mask & cBan::eBF_HOST3)
+			AddTestCondition (query << " OR ", host, cBan::eBF_HOST3);
+		if(mask & cBan::eBF_HOSTR1)
+			AddTestCondition (query << " OR ", host, cBan::eBF_HOSTR1);
+		if(mask & cBan::eBF_PREFIX)
+			AddTestCondition (query << " OR ", Nick, cBan::eBF_PREFIX);
 
 		query << " ) AND ( (date_limit >= " << cTime().Sec() <<
 			") OR date_limit IS NULL OR (date_limit = 0)) ORDER BY date_limit DESC LIMIT 1";
 		
-		if( -1 == StartQuery( query.str() )) return false;
-		SetBaseTo( &ban );
+		if(StartQuery(query.str()) == -1)
+		return false;
+		SetBaseTo(&ban);
 		bool found = (Load() >= 0);
 		EndQuery();
 		return found;
 	}
-	else return false;
-	/*
-	*/
+	return false;
 }
-
-
 
 /*!
     \fn nDirectConnect::nTables::cBanList::DelBan(cBan &Ban)
  */
 void nDirectConnect::nTables::cBanList::DelBan(cBan &Ban)
 {
-	SetBaseTo( &Ban );
+	SetBaseTo(&Ban);
 	DeletePK();
 }
 
@@ -295,9 +305,12 @@ void nDirectConnect::nTables::cBanList::DelBan(cBan &Ban)
 int nDirectConnect::nTables::cBanList::DeleteAllBansBy(const string &IP, const string &Nick, int Flags)
 {
 	mQuery.OStream() << "DELETE FROM " << mMySQLTable.mName << " WHERE ";
-	if(Flags & cBan::eBF_IP) mQuery.OStream() << " ip = '" << IP << "'";
-	if(Flags & (cBan::eBF_IP | cBan::eBF_NICK)) mQuery.OStream() << " AND";
-	if(Flags & cBan::eBF_NICK) mQuery.OStream() << " nick = '" << Nick << "'";
+	if(Flags & cBan::eBF_IP)
+		mQuery.OStream() << " ip = '" << IP << "'";
+	if(Flags & (cBan::eBF_IP | cBan::eBF_NICK))
+		mQuery.OStream() << " AND";
+	if(Flags & cBan::eBF_NICK)
+		mQuery.OStream() << " nick = '" << Nick << "'";
 
 	return mQuery.Query();
 }
@@ -310,8 +323,10 @@ void nDirectConnect::nTables::cBanList::NewBan(cBan &ban, const cKick &Kick, lon
 {
 	ban.mIP   = Kick.mIP;
 	ban.mDateStart = cTime().Sec();
-	if(period) ban.mDateEnd = ban.mDateStart + period;
-	else ban.mDateEnd = 0;
+	if(period)
+		ban.mDateEnd = ban.mDateStart + period;
+	else
+		ban.mDateEnd = 0;
 	ban.mReason = Kick.mReason;
 	ban.mNickOp = Kick.mOp;
 	ban.mNick  = Kick.mNick;
@@ -325,8 +340,7 @@ void nDirectConnect::nTables::cBanList::NewBan(cBan &ban, const cKick &Kick, lon
 int nDirectConnect::nTables::cBanList::Unban(ostream &os, const string &What, const string &reason, const string &NickOp, int TypeOfWhat, bool DoIt)
 {
 	SelectFields(mQuery.OStream());
-	if(! AddTestCondition(mQuery.OStream() << " WHERE ", What, TypeOfWhat))
-	{
+	if(!AddTestCondition(mQuery.OStream() << " WHERE ", What, TypeOfWhat)) {
 		mQuery.Clear();
 		return 0;
 	}
@@ -335,11 +349,9 @@ int nDirectConnect::nTables::cBanList::Unban(ostream &os, const string &What, co
 	int i = 0;
 	SetBaseTo(&mModel);
 
-	for( it = db_begin(); it != db_end(); ++it )
-	{
+	for(it = db_begin(); it != db_end(); ++it) {
 		mModel.DisplayComplete(os);
-		if( DoIt )
-		{
+		if(DoIt) {
 			unban = new cUnBan(mModel, mS);
 			unban->mUnReason = reason;
 			unban->mUnNickOp = NickOp;
@@ -351,8 +363,7 @@ int nDirectConnect::nTables::cBanList::Unban(ostream &os, const string &What, co
 		i++;
 	}
 	mQuery.Clear();
-	if( DoIt )
-	{
+	if(DoIt) {
 		mQuery.OStream() << "DELETE FROM " << this->mMySQLTable.mName << " WHERE ";
 		AddTestCondition(mQuery.OStream() , What, TypeOfWhat);
 		mQuery.Query();
@@ -368,24 +379,21 @@ bool nDirectConnect::nTables::cBanList::GetHostSubstring(const string &src, stri
 {
 	string tmp(".");
 	size_t pos;
-	if (level > 0)
-	{
+	if(level > 0) {
 		tmp += src;
 		pos = tmp.npos;
-		for (int i = 0; i < level; i++)
-		{
-			if (!pos) return false;
+		for(int i = 0; i < level; i++) {
+			if(!pos)
+				return false;
 			pos = tmp.rfind('.',pos-1);
 		}
 		dest.assign(tmp, pos, tmp.size()-pos);
-	}
-	if (level < 0)
-	{
+	} else if(level < 0) {
 		tmp = src;
 		pos = 0;
-		for (int i = 0; i < -level; i++)
-		{
-			if (pos == tmp.npos) return false;
+		for (int i = 0; i < -level; i++) {
+			if (pos == tmp.npos)
+				return false;
 			pos = tmp.find('.',pos+1);
 		}
 		dest.assign(tmp, 0, pos);
@@ -403,33 +411,56 @@ bool nDirectConnect::nTables::cBanList::AddTestCondition(ostream &os, const stri
 {
 	string host;
 	unsigned long num;
-	switch(Type)
-	{
-		case cBan::eBF_NICK : os << "( nick = '"; cConfMySQL::WriteStringConstant(os, What); os << "')"; break;
-		case cBan::eBF_IP : os << "(ip='"; cConfMySQL::WriteStringConstant(os, What); os << "')"; break;
+	switch(Type) {
+		case cBan::eBF_NICK:
+			os << "( nick = '"; cConfMySQL::WriteStringConstant(os, What); os << "')";
+		break;
+		case cBan::eBF_IP:
+			os << "(ip='"; cConfMySQL::WriteStringConstant(os, What); os << "')";
+		break;
 		//case (int)cBan::eBF_NICK  : os << "(ip='_nickban_' AND nick='" << What << "')"; break;
 		//case (int)cBan::eBF_IP    : os << "(nick='_ipban_' AND ip='" << What << "')"; break;
 		case cBan::eBF_RANGE :
 			num = Ip2Num(What);
-			os << "(nick='_rangeban_' AND " << num << " BETWEEN range_fr AND range_to )"; break;
+			os << "(nick='_rangeban_' AND " << num << " BETWEEN range_fr AND range_to )";
+		break;
 		case cBan::eBF_SHARE :
-			os << "(nick='_shareban_' AND share_size = '" << What << "')"; break;
+			os << "(nick='_shareban_' AND share_size = '" << What << "')";
+		break;
 		case cBan::eBF_EMAIL :
-			os << "(nick='_emailban_' AND ip = '" << What << "')"; break;
+			os << "(nick='_emailban_' AND ip = '" << What << "')";
+		break;
 		case cBan::eBF_HOST1 :
-			if( ! this->GetHostSubstring(What, host, 1)) { os << " 0 "; return false; }
-			os << "(ip='_host1ban_' AND '" << host << "' = nick)"; break;
+			if(!this->GetHostSubstring(What, host, 1)) {
+				os << " 0 ";
+				return false;
+			}
+			os << "(ip='_host1ban_' AND '" << host << "' = nick)";
+		break;
 		case cBan::eBF_HOST2 :
-			if( ! this->GetHostSubstring(What, host, 2)) { os << " 0 "; return false; }
-			os << "(ip='_host2ban_' AND '" << host << "' = nick)"; break;
+			if(!this->GetHostSubstring(What, host, 2)) {
+				os << " 0 ";
+				return false;
+			}
+			os << "(ip='_host2ban_' AND '" << host << "' = nick)";
+		break;
 		case cBan::eBF_HOST3 :
-			if( ! this->GetHostSubstring(What, host, 3)) { os << " 0 "; return false; };
-			os << "(ip='_host3ban_' AND '" << host << "' = nick)"; break;
+			if(!this->GetHostSubstring(What, host, 3)) {
+				os << " 0 ";
+				return false;
+			};
+			os << "(ip='_host3ban_' AND '" << host << "' = nick)";
+		break;
 		case cBan::eBF_HOSTR1 :
-			if( ! this->GetHostSubstring(What, host, -1)) { os << " 0 "; return false; };
-			os << "(ip='_hostr1ban_' AND '" << host << "' = nick)"; break;
+			if(!this->GetHostSubstring(What, host, -1)) {
+				os << " 0 ";
+				return false;
+			};
+			os << "(ip='_hostr1ban_' AND '" << host << "' = nick)";
+		break;
 		case cBan::eBF_PREFIX :
-			os << "(ip='_prefixban_' AND nick=LEFT('";cConfMySQL::WriteStringConstant(os, What); os << "',LENGTH(nick)))"; break;
+			os << "(ip='_prefixban_' AND nick=LEFT('";cConfMySQL::WriteStringConstant(os, What); os << "',LENGTH(nick)))";
+		break;
 		default: return false;
 	}
 	return true;
@@ -446,10 +477,9 @@ void nDirectConnect::nTables::cBanList::List(ostream &os, int count)
 	mQuery.OStream() << " order by date_start desc limit " << count;
 	db_iterator it;
 	SetBaseTo(&mModel);
-	os << "Last " << count << " bans added:" << "\r\n";
+	os << autosprintf(_("Last %d bans:"), count) << "\r\n";
 
-	for(it = db_begin() ; it != db_end(); ++it)
-	{
+	for(it = db_begin() ; it != db_end(); ++it) {
 		mModel.DisplayInline(os);
 		os << "\r\n";
 	}
@@ -489,8 +519,7 @@ long nDirectConnect::nTables::cBanList::IsNickTempBanned(const string &nick)
 {
 	unsigned long hash= mTempNickBanlist.HashStringLower(nick);
 	sTempBan *tban = this->mTempNickBanlist.GetByHash(hash);
-	if (tban != NULL)
-	{
+	if(tban != NULL) {
 		return tban->mUntil;
 	}
 	return 0;
@@ -501,8 +530,7 @@ long nDirectConnect::nTables::cBanList::IsIPTempBanned(unsigned long ip)
 {
 	unsigned long hash=ip; 
 	sTempBan *tban = this->mTempIPBanlist.GetByHash(hash);
-	if (tban != NULL)
-	{
+	if(tban != NULL) {
 		return tban->mUntil;
 	}
 	return 0;
@@ -512,13 +540,10 @@ void nDirectConnect::nTables::cBanList::AddNickTempBan(const string &nick, long 
 {
 	unsigned long hash = mTempNickBanlist.HashStringLower(nick);
 	sTempBan *tban = this->mTempNickBanlist.GetByHash(hash);
-	if (tban != NULL)
-	{
+	if(tban != NULL) {
 		tban->mUntil = time_t(until);
 		tban->mReason = reason;
-	}
-	else
-	{
+	} else {
 		tban = new sTempBan(until, reason);
 		this->mTempNickBanlist.AddWithHash(tban, hash );
 	}
@@ -528,13 +553,10 @@ void nDirectConnect::nTables::cBanList::AddIPTempBan(unsigned long ip, long unti
 {
 	unsigned long hash = ip; 
 	sTempBan *tban = this->mTempIPBanlist.GetByHash(hash);
-	if (tban != NULL)
-	{
+	if(tban != NULL) {
 		tban->mUntil = time_t(until);
 		tban->mReason = reason;
-	}
-	else
-	{
+	} else {
 		tban = new sTempBan(until, reason);
 		this->mTempIPBanlist.AddWithHash(tban, hash );
 	}
@@ -544,8 +566,7 @@ void nDirectConnect::nTables::cBanList::DelNickTempBan(const string &nick)
 {
 	unsigned long hash= mTempNickBanlist.HashStringLower(nick);
 	sTempBan *tban = this->mTempNickBanlist.GetByHash(hash);
-	if (tban != NULL)
-	{
+	if(tban != NULL) {
 		this->mTempNickBanlist.RemoveByHash(hash);
 		delete tban;
 	}
@@ -555,8 +576,7 @@ void nDirectConnect::nTables::cBanList::DelIPTempBan(unsigned long ip)
 {
 	unsigned long hash = ip;
 	sTempBan *tban = this->mTempIPBanlist.GetByHash(hash);
-	if (tban != NULL)
-	{
+	if(tban != NULL) {
 		this->mTempIPBanlist.RemoveByHash(hash);
 		delete tban;
 	}
@@ -573,29 +593,25 @@ int nDirectConnect::nTables::cBanList::RemoveOldShortTempBans(long before)
 	long Until;
 	sTempBan *tban;
 	
-	for(it = mTempNickBanlist.begin(); it != mTempNickBanlist.end();)
-	{
+	for(it = mTempNickBanlist.begin(); it != mTempNickBanlist.end();) {
 		Hash = it.mItem->mHash;
 		tban = *it;
 		Until = tban->mUntil;
 		
 		++it;
-		if(!before || (Until< before))
-		{
+		if(!before || (Until< before)) {
 			this->mTempNickBanlist.RemoveByHash(Hash);
 			delete tban;
 			n++;
 		}
 	}
-	for(it = mTempIPBanlist.begin(); it != mTempIPBanlist.end();)
-	{
+	for(it = mTempIPBanlist.begin(); it != mTempIPBanlist.end();) {
 		Hash = it.mItem->mHash;
 		tban = *it;
 		Until = tban->mUntil;
 		
 		++it;
-		if(!before || (Until< before))
-		{
+		if(!before || (Until< before)) {
 			this->mTempIPBanlist.RemoveByHash(Hash);
 			delete tban;
 			n++;

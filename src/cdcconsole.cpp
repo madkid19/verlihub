@@ -1088,8 +1088,7 @@ bool cDCConsole::cfClean::operator()()
 }
 
 bool cDCConsole::cfBan::operator()()
-{
-
+{      
 	static const char *bannames[]={"nick", "ip", "nickip", "", "range", "host1", "host2" , "host3", "hostr1",  "share", "prefix"};
 	static const int banids[]= {cBan::eBF_NICK, cBan::eBF_IP, cBan::eBF_NICKIP, cBan::eBF_NICKIP, cBan::eBF_RANGE,
       cBan::eBF_HOST1, cBan::eBF_HOST2, cBan::eBF_HOST3, cBan::eBF_HOSTR1, cBan::eBF_SHARE, cBan::eBF_PREFIX};
@@ -1104,10 +1103,11 @@ bool cDCConsole::cfBan::operator()()
 	time_t BanTime = 0;
 	string tmp;
 	int Count = 0;
-	int MyClass = 0;
-	if( !mConn->mpUser ) return false;
-	MyClass = mConn->mpUser->mClass;
-	if( MyClass < eUC_OPERATOR ) return false;
+	if(!mConn->mpUser)
+		return false;
+	int MyClass = mConn->mpUser->mClass;
+	if(MyClass < eUC_OPERATOR)
+		return false;
 
 	//"!(un)?ban([^_\\s]+)?(_(\\d+\\S))?( this (nick|ip))? ", "(\\S+)( (.*)$)?"
 
@@ -1116,52 +1116,47 @@ bool cDCConsole::cfBan::operator()()
 	bool IsPerm = !mIdRex->PartFound(BAN_LENGTH);
 
 	int BanAction = BAN_BAN;
-	if( mIdRex->PartFound(BAN_PREFIX) )
-	{
+	if(mIdRex->PartFound(BAN_PREFIX)) {
 		mIdRex->Extract( BAN_PREFIX, mIdStr, tmp);
 		BanAction = this->StringToIntFromList(tmp, prefixnames, prefixids, sizeof(prefixnames)/sizeof(char*));
 		if (BanAction < 0) return false;
 	}
 
-	if(mIdRex->PartFound(BAN_TYPE))
-	{
+	if(mIdRex->PartFound(BAN_TYPE)) {
 		mIdRex->Extract( BAN_TYPE, mIdStr, tmp);
 		BanType = this->StringToIntFromList(tmp, bannames, banids, sizeof(bannames)/sizeof(char*));
 		if (BanType < 0) return false;
 	}
 
-	if (BanType == cBan::eBF_NICK) IsNick = true;
+	if(BanType == cBan::eBF_NICK)
+		IsNick = true;
 
-	if ( mIdRex->PartFound(BAN_THIS) )
+	if(mIdRex->PartFound(BAN_THIS))
 		IsNick = ((0 == mIdRex->Compare( BAN_TYPE, mIdStr, "nick")) || (BanType == cBan::eBF_NICK));
 
 	string Who;
 	GetParUnEscapeStr(BAN_WHO, Who);
 
-	if(!IsPerm)
-	{
+	if(!IsPerm) {
 		mIdRex->Extract(BAN_LENGTH, mIdStr,tmp);
-		if(tmp != "perm")
-		{
+		if(tmp != "perm") {
 			BanTime = mS->Str2Period(tmp, *mOS);
-			if(BanTime < 0)
-			{
+			if(BanTime < 0) {
 				(*mOS) << _("Please provide a valid ban time.");
 				return false;
 			}
-		} else IsPerm = true;
+		} else
+			IsPerm = true;
 	}
 
 	bool unban = (BanAction == BAN_UNBAN);
 	cUser *user = NULL;
 	int BanCount = 100;
 
-	switch (BanAction)
-	{
+	switch (BanAction) {
 		case BAN_UNBAN:
-		case BAN_INFO:
 			if (unban) {
-				if( !GetParStr(BAN_REASON,tmp)) {
+				if(!GetParStr(BAN_REASON,tmp)) {
 					(*mOS) << _("Please provide a valid reason.");
 					return false;
 				}
@@ -1171,7 +1166,7 @@ bool cDCConsole::cfBan::operator()()
 					return false;
 				}
 				#endif
-				(*mOS) << _("Unbanning...") << "\r\n";
+				(*mOS) << _("User %s unbanned.") << "\r\n";
 			}
 
 			if(BanType == cBan::eBF_NICKIP) {
@@ -1193,12 +1188,13 @@ bool cDCConsole::cfBan::operator()()
 			} else {
 				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, BanType, unban);
 			}
-			(*mOS) << endl << autosprintf(_("Total %d bans."), Count);
+			(*mOS) << endl << autosprintf(ngettext("%d ban found.", "%d bans found.", Count), Count);
 		break;
 	case BAN_BAN:
 		Ban.mNickOp = mConn->mpUser->mNick;
 		mParRex->Extract(BAN_REASON, mParStr,Ban.mReason);
 		Ban.mDateStart = cTime().Sec();
+		cout << "Ban type is " << BanType << endl;
 		if(BanTime)
 			Ban.mDateEnd = Ban.mDateStart+BanTime;
 		else
@@ -1277,9 +1273,6 @@ bool cDCConsole::cfBan::operator()()
 			}
 			istringstream is(Who);
 			__int64 share;
-			/*cConfigItemBaseInt64 *ci = new cConfigItemBaseInt64(share);
-			ci->ConvertFrom(Who);
-			delete ci;*/
 			is >> share;
 			Ban.mShare = share;
 		}
@@ -1293,13 +1286,12 @@ bool cDCConsole::cfBan::operator()()
 		}
 		#endif
 		user = mS->mUserList.GetUserByNick(Ban.mNick);
-		if (user != NULL)
-		{
+		if(user != NULL) {
 			mS->DCKickNick(mOS, mConn->mpUser, Ban.mNick, Ban.mReason, cServerDC::eKCK_Reason | cServerDC::eKCK_Drop);
 		}
 
 		mS->mBanList->AddBan(Ban);
-		(*mOS) << _("Added ban: ");
+		(*mOS) << "\n" << _("Added ban.") << "\n";
 		Ban.DisplayComplete(*mOS);
 		break;
 	case BAN_LIST:
