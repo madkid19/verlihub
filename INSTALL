@@ -1,17 +1,19 @@
-Dependancies:
--------------
-A computer
-linux bsd osx or windows
-gcc-c++ (for posix based)
-mysql server, mysql client libraries and mysql development libraries
-pcre development libraries
-geoip
+Prerequisites:
+    CMake 2.6
+    OpenSSL
+    MySQL 5.1
+    zlib
+    libpcre
+    gettext
+Optional dependencies:
+    GeoIP
+    Lua 5.1
+    Python 2.5
 
-Installation:
--------------
-To install from source uncompress the archive enter the directory and type ./configure followed by make and then make install.
-You should not run as root so once the above is complete login as a user and type vh_install to install a profile for the hub to run under and rememeber on posix system only root can run the server on ports below 1024 so be sure to port forward 411 to 4111 using iptables or something.
 
-Support:
---------
-For installation support visit http://forums.verlihub-project.com or connect to dchub://hub.verlihub-project.org:7777 using your favourite dc++ client. You will need to register in both locations but its free in both like everything else with this project ;)
+To install VerliHub, run the following commands:
+./configure
+make
+make install
+
+
