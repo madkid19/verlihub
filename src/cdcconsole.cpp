@@ -1195,7 +1195,6 @@ bool cDCConsole::cfBan::operator()()
 		Ban.mNickOp = mConn->mpUser->mNick;
 		mParRex->Extract(BAN_REASON, mParStr,Ban.mReason);
 		Ban.mDateStart = cTime().Sec();
-		cout << "Ban type is " << BanType << endl;
 		if(BanTime)
 			Ban.mDateEnd = Ban.mDateStart+BanTime;
 		else
@@ -1207,23 +1206,24 @@ bool cDCConsole::cfBan::operator()()
 			case cBan::eBF_NICK:
 			case cBan::eBF_IP:
 			if(mS->mKickList->FindKick(Kick, Who, mConn->mpUser->mNick, 3000, true, true, IsNick)) {
-				mS->mBanList->NewBan(Ban, Kick, BanTime, BanType );
-				if( mParRex->PartFound(BAN_REASON) ) {
+				mS->mBanList->NewBan(Ban, Kick, BanTime, BanType);
+				if(mParRex->PartFound(BAN_REASON)) {
 					mParRex->Extract(BAN_REASON, mParStr,tmp);
 					Ban.mReason += "\r\n";
 					Ban.mReason += tmp;
 				}
 			} else {
-				if ( !mParRex->PartFound(BAN_REASON) ) {
+				if(!mParRex->PartFound(BAN_REASON)) {
 					(*mOS) << _("Please provide a valid reason.");
 					return false;
 				}
-				if (BanType == cBan::eBF_NICKIP) BanType = cBan::eBF_IP;
+				if (BanType == cBan::eBF_NICKIP)
+					BanType = cBan::eBF_IP;
 				mParRex->Extract(BAN_REASON, mParStr,Kick.mReason);
 				Kick.mOp = mConn->mpUser->mNick;
 				Kick.mTime = cTime().Sec();
 
-				if (BanType == cBan::eBF_NICK)
+				if(BanType == cBan::eBF_NICK)
 					Kick.mNick = Who;
 				else
 					Kick.mIP = Who;

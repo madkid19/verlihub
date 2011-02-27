@@ -138,12 +138,12 @@ void nDirectConnect::nTables::cBan::DisplayKick(ostream &os)
 	if(mDateEnd) {
 		cTime HowLong(mDateEnd-cTime().Sec(),0);
 		if(HowLong.Sec() < 0) {
-			os << autosprintf(_("ended on: %s"), HowLong.AsPeriod().AsString().c_str());
+			os << autosprintf(_("expired on: %s"), HowLong.AsDate().AsString().c_str());
 		} else {
 			os << autosprintf(_("for: %s"), HowLong.AsPeriod().AsString().c_str());
 		}
 	} else {
-		os << _("permanently.");
+		os << _("permanently");
 	}
 }
 
@@ -154,23 +154,28 @@ void nDirectConnect::nTables::cBan::DisplayKick(ostream &os)
 void nDirectConnect::nTables::cBan::DisplayInline(ostream &os)
 {
 	static const char *sep = " \t ";
-	if(mType & eBF_NICKIP)
-		os << mNick;
-	else if(mType & eBF_IP)
-		os << mIP;
-	else if(mType & eBF_NICK)
-		os << mNick;
-	else if(mType & eBF_RANGE) {
-		string initialRange, endRange;
-		cBanList::Num2Ip(mRangeMin, initialRange);
-		cBanList::Num2Ip(mRangeMax, endRange);
-		os << mRangeMin << "-" << mRangeMax;
-	} else if((mType & eBF_HOST1) || (mType & eBF_HOST2) || (mType & eBF_HOST3))
-		os << mHost;
-	else if(mType & eBF_SHARE)
-		os << nStringUtils::convertByte(mShare,false);
-	else if(mType & eBF_PREFIX)
-		os << mNick; // TODO: fix me
-	os << sep << mIP << sep << mNickOp << sep;
+	switch(1 << mType) {
+		case eBF_NICK:
+			os << mNick;
+		break;
+		case eBF_IP:
+		case eBF_RANGE:
+			os << mIP;
+		break;
+		case eBF_HOST1:
+		case eBF_HOST2:
+		case eBF_HOST3:
+			os << mHost;
+		break;
+		case eBF_SHARE:
+			os << nStringUtils::convertByte(mShare,false);
+		break;
+		case eBF_PREFIX:
+		default:
+			os << mNick; // TODO: fix me
+		break;
+	}
+	os << sep << mNickOp << sep;
 	DisplayKick(os);
+	os << sep << GetBanType();
 }
