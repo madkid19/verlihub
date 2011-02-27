@@ -46,7 +46,6 @@
 #include "i18n.h"
 
 #define HUB_VERSION_CLASS "(" __CURR_DATE_TIME__ ")"
-#define HUB_VERSION_STRING VERSION
 #define LOCK_VERSION PACKAGE
 #define HUB_VERSION_NAME "VerliHub"
 
@@ -590,10 +589,10 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 			mStatus = _("Not available");
 	}
 	
-	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" HUB_VERSION_STRING "|";
+	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" VERSION "|";
 	if (mC.host_header == 1) {
 		if(mC.extended_welcome_message) {
-			os << HUB_VERSION_NAME "-" << HUB_VERSION_STRING << " " << HUB_VERSION_CLASS << "|";
+			os << HUB_VERSION_NAME "-" << VERSION << " " << HUB_VERSION_CLASS << "|";
 			os << "<" << mC.hub_security << ">" << " " << _("RunTime") << ": " << runtime.AsPeriod()<<"|";
 			os << "<" << mC.hub_security << ">" << " " << _("User Count") << ": " << mUserCountTot <<"|";
 			os << "<" << mC.hub_security << ">" << " " << _("System Status") << ": " << mStatus << "|";    
@@ -601,7 +600,7 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 				os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
 		} else {
 			os << autosprintf(_("This hub is running version %s%s %s of %s (RunTime: %s / User count: %d)"),
-			HUB_VERSION_STRING, mC.hub_version_special.c_str(), HUB_VERSION_CLASS, HUB_VERSION_NAME, runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
+			VERSION, mC.hub_version_special.c_str(), HUB_VERSION_CLASS, HUB_VERSION_NAME, runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
 		}
 		cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
 	}

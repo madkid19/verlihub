@@ -35,6 +35,8 @@
 #include "ccommand.h"
 #include "ctriggers.h"
 #include "ccustomredirects.h"
+#include "curr_date_time.h"
+#include "config.h"
 #include "cdcclients.h"
 #include "i18n.h"
 #include <sys/resource.h>
@@ -453,7 +455,6 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 	return 1;
 }
 
-
 int cDCConsole::CmdChat (istringstream & cmd_line, cConnDC * conn, bool switchon)
 {
 	if(!conn->mpUser) {
@@ -479,7 +480,7 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	ostringstream os;
 	string omsg;
 	//This is here as manual values for true release info available to all
-	os << "\r\n[::] Release: Verlihub-0.9.9a (Monday April 26 2010)" << endl;
+	os << "\r\n[::] Release: Verlihub-" VERSION " (" __CURR_DATE_TIME__ ")" << endl;
 	os << "[::] " << _("Authors") << ": Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
 	os << "[::] " << _("Authors") << ": chaosuk (chaos@dchublist.com)" << endl;
 	os << "[::] " << _("Contributors") << ": Stefano, Intruder, Rolex, Frog" << endl;
