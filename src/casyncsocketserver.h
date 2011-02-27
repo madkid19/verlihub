@@ -38,75 +38,113 @@
 using namespace std;
 using namespace nUtils;
 
-/**
-  *  General Purpose socket server, hopefully easy to use and with some basic functionality
-  *
-*/
 namespace nServer {
 
 
-/**reusable asynchronous (rather non-blocking) socket server, multi-client, general purpose
-  *@author Daniel Muller
-  */
+/**
+ * General asynchronous (non-blocking) socket server with some basic functionality.
+ *
+ * @author Daniel Muller
+ */
 class cAsyncSocketServer : public cObj
 {
-public:
+    public:
 	friend class cAsyncConn;
-	virtual ~cAsyncSocketServer();
-	/** create a server listening on the given port */
+	
+	/**
+	* Class constructor.
+	* Create a server and start listening on given port.
+	* @param port The port to listen on.
+	*/
 	cAsyncSocketServer(int port=0);
-	/** do one time step, accept incomming connection, take care of existing, close closed connections */
-	//void step();
-	/** runs the main loop while protected mbRun is true, that is set by stop() function or pause function */
-	int run();
-	/** stop the main loop, do the last step and end it, doesn't close any connection */
-	void stop(int);
-	/** close the server with all connections, stop the loop and free all stuff */
+	
+	/**
+	* Class destructor.
+	*/
+	virtual ~cAsyncSocketServer();
+	
+	/**
+	* Stop main process loop and delete all connections.
+	*/
 	void close();
+	
+	/**
+	* Return the port on which the server is listening on.
+	* @return The port.
+	*/
+	virtual const int& getmPort();
+	
+	/**
+	* This event is triggered when a connection is closed.
+	* @param conn Closed connection.
+	*/
+	void OnConnClose(cAsyncConn*);
+	
+	/**
+	* This event is triggered every period of time.
+	* @param now Current time.
+	* @return The result.
+	*/
+	virtual int OnTimer(cTime &now);
+	
+	/**
+	* This event is trigger every N seconds and triggers the event OnTimerBase for every connections.
+	* @param now Current time.
+	*/
+	int OnTimerBase(cTime &now);
+	
+	/**
+	* Main process loop. Run it until it is stopped or paused.
+	* @return The error code.
+	*/
+	int run();
+	
+	/**
+	* Stop main process loop and set error code.
+	* @param code The error code.
+	*/
+	void stop(int);
+	
+	/**
+	* Time step. 
+	* This method accepts new incoming connection, take care of existing ones and close connections that are not actived anymore.
+	*/
+	void TimeStep();
+	
 	virtual cAsyncConn * ListenWithConn(cAsyncConn *, int OnPort, bool UDP=false);
 	virtual cAsyncConn * Listen(int OnPort, bool UDP = false);
 	virtual bool StopListenConn(cAsyncConn *);
 	virtual int StartListening(int OverrideDefaultPort=0);
 	/** Write property of int mPort. */
 	virtual void setmPort( const int& _newVal);
-	/** Read property of int mPort. */
-	virtual const int& getmPort();
-	/** trigger is called when connection is closed */
-	void OnConnClose(cAsyncConn*);
-	/** this function is going to be executed periodicaly every N seconds and will call function of the same name in evey connection */
-	int OnTimerBase(cTime &now);
-	/** this is called every period of time */
-	virtual int OnTimer(cTime &now);
-	/** do one time step, accept incomming connection, take care of existing, close closed connections */
-	void TimeStep();
-	/** the selector for sockets*/
-	//cSelector mSelector;
-	/** listen address */
+	
+	// Listening address
 	string mAddr;
-	/** period of connections and server timer */
+	// Connection period for timer
 	int timer_conn_period;
+	// Server period for timer
 	int timer_serv_period;
-	/** delay in miliseconds on every step */
+	// Delay in milliseconds for every step
 	int mStepDelay;
-	/** max size of every piece of message */
+	// Max size of chucks when message is splitted
 	unsigned long mMaxLineLength;
-	//typedef cSelector::iterator tSelectorKeyIterator;
-	/** fund hostnames for connections */
+	// Reverse DNS lookup when user joins
 	int mUseDNS;
-	/** the current time */
+	// Current time
 	cTime mTime;
-	//
+	// Measure the frequency of the server
 	cMeanFrequency<unsigned ,21> mFrequency;
-protected: // Protected attributes
-	/** indicates whether the loop should run or not */
+
+    protected:
+	// Indicate if the loop should be run or not
 	bool mbRun;
-	/** the listening socket */
-	//REM cAsyncConn mServerSock;
-	/** the server listenning port */
+	// The port to listen on
 	int mPort;
-	/** the list of connection pointers to cAsyncConn class or inherited */
+
 	typedef list<cAsyncConn*> tConnList;
+	// Iterator to iterate over connections list
 	typedef tConnList::iterator tCLIt;
+	// List of connections (pointers to cAsyncConn class)
 	tConnList mConnList;
 	#if !USE_SELECT
 		cConnPoll mConnChooser;
@@ -114,41 +152,88 @@ protected: // Protected attributes
 		cConnSelect mConnChooser;
 	#endif
 
-	/* a windows socket initialisation only once*/
+	// True if Windows sockets is initialized 
 	static bool WSinitialized;
 	cConnFactory *mFactory;
-protected: // Protected methods
-	/** add given connection to server */
+
+	/**
+	* Add the connection to the server so it can be processed every period of time.
+	* @param conn The connection to add.
+	*/
 	virtual void addConnection(cAsyncConn *);
-	/** remove given connection from server */
-	void delConnection(cAsyncConn * );
-	/** perform input operation, read all data from the connection, return number of bytes read, return negative number, if error occured */
-	virtual int input(cAsyncConn *conn);
-	/** perform output operation */
-	int output(cAsyncConn * conn);
-	/** treat message for given connection */
-	virtual void OnNewMessage(cAsyncConn *, string *);
-	/** create somehow a string to get line for given connection, ad return th pointer */
-	virtual string * FactoryString(cAsyncConn *);
+	
 	/** return true if accept is allowed */
-	virtual bool AllowNewConn(){return true;};
-	/** return negative if conn should be removed */
+	/**
+	* Return true if the server accepts new incoming connection.
+	* @return True if the server accepts a new connection or false otherwise.
+	*/
+	virtual bool AllowNewConn() { return true; };
+	
+	/**
+	* Remove the connection from the server.
+	* The pointer to the connection will be deleted and not valid anymore.
+	* @param conn The connection to remove.
+	*/
+	void delConnection(cAsyncConn *);
+	
+	/**
+	* Create a new string buffer for input/ouput operation.
+	* @param conn The connection.
+	* @return Pointer to the new string.
+	*/
+	virtual string * FactoryString(cAsyncConn *);
+	
+	/**
+	* Perform input operation on the given connection.
+	* This method will read all data from the connection
+	* and return the number of read bytes or a negative number if an error occurred.
+	* @param conn The connection.
+	* @return Number of read bytes.
+	*/
+	virtual int input(cAsyncConn *conn);
+	
+	/**
+	* This event is triggered when there is a new incoming message
+	* from a single connection.
+	* @param conn The connection that has new incoming message.
+	* @param message Pointer to the new message
+	*/
+	virtual void OnNewMessage(cAsyncConn *, string *);
+	
+	/**
+	* Perform output operation on the given connection.
+	* This method will send all data from the connection
+	* and return the number of sent bytes or a negative number if an error occurred.
+	* @param conn The connection.
+	* @return Number of sent bytes.
+	*/
+	int output(cAsyncConn * conn);
+	
+	/**
+	* This event is triggered when there is a new incoming connection.
+	* @param conn The new connection.
+	* @return Zero if connection is accepted or a negative number otherwise.
+	*/
 	virtual int OnNewConn(cAsyncConn*);
 
-	/// container for connestion timers
+	// Structure that contains timers
 	struct sTimers
 	{
-		// maion timer
+		// Main timer
 		cTime main;
-		// connection timer
+		// Connection timer
 		cTime conn;
 	};
+	// Timer structure
 	sTimers mT;
-private: // Private attributes
-	/** this won't be deleted instatnly if asked */
-	cAsyncConn * mNowTreating;
-protected:
+	
+	// Errore code when main loop ends
 	int mRunResult;
+    private:
+	// Pointer to the connection that server is currently handling
+	cAsyncConn * mNowTreating;
+
+
 };
 };
 

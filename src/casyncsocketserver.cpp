@@ -36,7 +36,6 @@ namespace nServer {
 
 bool cAsyncSocketServer::WSinitialized = false;
 
-/** create a server listening on the given port */
 cAsyncSocketServer::cAsyncSocketServer(int port):
 	cObj("cAsyncSocketServer"),
 	mAddr("0.0.0.0"),
@@ -51,7 +50,7 @@ cAsyncSocketServer::cAsyncSocketServer(int port):
 	mNowTreating(NULL),
 	mRunResult(0)
 {
-#ifdef _WIN32
+	#ifdef _WIN32
 	if(!this->WSinitialized)
 	{
 
@@ -86,34 +85,32 @@ cAsyncSocketServer::cAsyncSocketServer(int port):
 		this->WSinitialized = true;
 
 	}
-#endif
+	#endif
 }
 
 cAsyncSocketServer::~cAsyncSocketServer()
 {
 	close();
-#ifdef _WIN32
+	#ifdef _WIN32
 	WSACleanup();
-#endif
+	#endif
 	cout << "Allocated objects: " << cObj::GetCount() << endl;
 	cout << "Unclosed sockets: " << cAsyncConn::sSocketCounter << endl;
 }
 
-/** runs the main loop while protected mbRun is true, that is set by stop() function or pause function */
 int cAsyncSocketServer::run()
 {
 	mbRun = true;
 	cTime now;
-	if(Log(1)) LogStream() << "Main loop start." << endl;
-	while(mbRun)
-	{
-		mTime.Get();
+	if(Log(1))
+		LogStream() << "Main loop start." << endl;
+	while(mbRun) {
+		mTime.Get(); 
 		{
 			TimeStep();
 		}
 
-		if(now.Get() >= (mT.main + timer_serv_period))
-		{
+		if(now.Get() >= (mT.main + timer_serv_period)) {
 			mT.main = now;
 			OnTimerBase(now);
 		}
@@ -124,24 +121,22 @@ int cAsyncSocketServer::run()
 		#endif
 		mFrequency.Insert(mTime);
 	}
-	if(Log(1)) LogStream() << "Main loop stop(" << mRunResult <<")." << endl;
+	if(Log(1))
+		LogStream() << "Main loop stop(" << mRunResult << ")." << endl;
 	return mRunResult;
 }
 
-/** stop the main loop, do the last step and end it, doesn't close any connection */
 void cAsyncSocketServer::stop(int code)
 {
 	mbRun = false;
 	mRunResult = code;
 }
 
-/** close the server with all connections, stop the loop and free all stuff */
 void cAsyncSocketServer::close()
 {
 	mbRun = false;
 	tCLIt it;
-	for(it = mConnList.begin(); it != mConnList.end(); it++)
-	{
+	for(it = mConnList.begin(); it != mConnList.end(); it++) {
 		if (*it) {
 			mConnChooser.DelConn(*it);
 			if( mFactory!= NULL) mFactory->DeleteConn(*it);
@@ -151,18 +146,16 @@ void cAsyncSocketServer::close()
 	}
 }
 
-/** Read property of int mPort. */
-const int& cAsyncSocketServer::getmPort(){
+const int& cAsyncSocketServer::getmPort()
+{
 	return mPort;
 }
 
-/** Write property of int mPort. */
-void cAsyncSocketServer::setmPort( const int& _newVal){
+void cAsyncSocketServer::setmPort( const int& _newVal)
+{
 	mPort = _newVal;
 }
 
-/** add given connection to server, the pointer is managed then by the server,
-	it's deleted, when no more use for it*/
 void cAsyncSocketServer::addConnection(cAsyncConn *new_conn)
 {
 
@@ -182,22 +175,21 @@ void cAsyncSocketServer::addConnection(cAsyncConn *new_conn)
 	tCLIt it = mConnList.insert(mConnList.begin(),new_conn);
 	
 	new_conn->mIterator = it;
-	if(0 > OnNewConn(new_conn)) delConnection(new_conn);
+	if(0 > OnNewConn(new_conn))
+		delConnection(new_conn);
 }
 
-/** remove given connection from server */
 void cAsyncSocketServer::delConnection(cAsyncConn *old_conn)
 {
-	if(!old_conn) throw "delConnection null pointer";
-	if(mNowTreating == old_conn)
-	{
+	if(!old_conn)
+		throw "delConnection null pointer";
+	if(mNowTreating == old_conn) {
 		old_conn->ok = false;
 		return;
 	}
 	tCLIt it = old_conn->mIterator;
 	cAsyncConn *found=(*it);
-	if( (it ==  mConnList.end()) || (found != old_conn) )
-	{
+	if((it ==  mConnList.end()) || (found != old_conn)) {
 		cout << "not found " << old_conn << endl;
 		throw "Deleting non-existent connection";
 	}
@@ -209,74 +201,68 @@ void cAsyncSocketServer::delConnection(cAsyncConn *old_conn)
 	
 	if (old_conn->mxMyFactory != NULL)
 		old_conn->mxMyFactory->DeleteConn(old_conn);
-	else delete old_conn;
+	else
+		delete old_conn;
 }
 
-/** perform input operation, read all data from the connection, return number of bytes read, return negative number, if error occured */
 int cAsyncSocketServer::input(cAsyncConn *conn)
 {
 	int just_read=0;
-	// read all data available into a buffer
-		if(conn->ReadAll()<=0) return 0;
-	while(conn->ok && conn->mWritable)
-	{
-		// create new line obj if necessary
+	// Read all data available into a buffer
+	if(conn->ReadAll() <= 0)
+		return 0;
+	while(conn->ok && conn->mWritable) {
+		// Create new line obj if necessary
 		if(conn->LineStatus() == AC_LS_NO_LINE)
 			conn->SetLineToRead(FactoryString(conn),'|',mMaxLineLength);
-		// read data into it from the buffer
+		// Read data into it from the buffer
 		just_read += conn->ReadLineLocal();
-		/// test line done
-		if(conn->LineStatus() == AC_LS_LINE_DONE)
-		{
+		if(conn->LineStatus() == AC_LS_LINE_DONE) {
 			OnNewMessage(conn,conn->GetLine());
 			conn->ClearLine();
-			// connection may be closed after this
+			// Connection may be closed after this
 		}
-		if( conn->BufferEmpty() ) break;
+		if(conn->BufferEmpty())
+			break;
 	}
 	return just_read;
 }
 
-/** perform output operation */
 int cAsyncSocketServer::output(cAsyncConn * conn)
 {
 	conn->Flush();
 	return 0;
 }
 
-/** treat message for given connection */
 void cAsyncSocketServer::OnNewMessage(cAsyncConn *, string *str)
 {
 	delete str;
 }
 
-/** create a string to get line for given connection, ad return th pointer */
 string * cAsyncSocketServer::FactoryString(cAsyncConn *)
 {
 	return new string;
 }
 
-/** trigger is called when connection is closed */
 void cAsyncSocketServer::OnConnClose(cAsyncConn* conn)
 {
-	if(!conn) return;
+	if(!conn)
+		return;
 	mConnChooser.DelConn(conn);
 }
 
-/** return negative if conn should be removed or error */
 int cAsyncSocketServer::OnNewConn(cAsyncConn*conn)
 {
-	if(!conn) return -1;
+	if(!conn)
+		return -1;
 	return 0;
 }
 
-/** this function is going to be executed periodicaly every N seconds and will call function of the same name in evey connection */
 int cAsyncSocketServer::OnTimerBase(cTime &now)
 {
 	tCLIt it;
 	OnTimer(now);
-	if( (mT.conn + timer_conn_period) <= now)
-	{
+	if((mT.conn + timer_conn_period) <= now) {
 		mT.conn = now;
 		for(it=mConnList.begin(); it != mConnList.end(); it++)
 			if((*it)->ok) (*it)->OnTimerBase(now);
@@ -284,20 +270,17 @@ int cAsyncSocketServer::OnTimerBase(cTime &now)
 	return 0;
 }
 
-/** this is called every period of time */
 int cAsyncSocketServer::OnTimer(cTime &now)
 {
 	return 0;
 }
 
-/** do one time step, accept incomming connection, take care of existing, close closed connections */
 void cAsyncSocketServer::TimeStep()
 {
 	cTime tmout(0,1000l);
 	{
 		int n = mConnChooser.Choose(tmout);
-		if(!n)
-		{
+		if(!n) {
 			#if ! defined _WIN32
 			::usleep(50);
 			#else
@@ -313,8 +296,7 @@ void cAsyncSocketServer::TimeStep()
 	cConnSelect::iterator it;
 #endif
 	cConnChoose::sChooseRes res;
-	for(it = mConnChooser.begin(); it != mConnChooser.end(); )
-	{
+	for(it = mConnChooser.begin(); it != mConnChooser.end(); ) {
 		res = (*it);
 		++it;
 		mNowTreating = (cAsyncConn* )res.mConn;
@@ -322,15 +304,14 @@ void cAsyncSocketServer::TimeStep()
 		int activity = res.mRevent;
 		bool &OK = conn->ok;
 
-		if(!mNowTreating) continue;
-		// some connections may have been disabled during this loop, so skip them
-		if(OK && (activity & cConnChoose::eCC_INPUT) && conn->GetType() == eCT_LISTEN)
-		{
-			// accept incomming connection
+		if(!mNowTreating)
+			continue;
+		// Some connections may have been disabled during this loop so skip them
+		if(OK && (activity & cConnChoose::eCC_INPUT) && conn->GetType() == eCT_LISTEN) {
+			// Cccept incoming connection
 			int i=0;
 			cAsyncConn *new_conn;
-			do
-			{
+			do {
 			  
 				new_conn = conn->Accept();
 				
@@ -344,61 +325,52 @@ void cAsyncSocketServer::TimeStep()
 		}
 		if(OK && (activity & cConnChoose::eCC_INPUT)  && 
 			((conn->GetType() == eCT_CLIENT) || (conn->GetType() == eCT_CLIENTUDP)))  
-			// data to be read or data in buffer
+			// Data to be read or data in buffer
 		{
-			// returns number of bytes read, on error returns negative code, when connection shell be closed
-			if(input(conn) <= 0) OK=false;
+			if(input(conn) <= 0)
+				OK=false;
 		}
-		if(OK && (activity & cConnChoose::eCC_OUTPUT))
-		{
+		if(OK && (activity & cConnChoose::eCC_OUTPUT)) {
 			// NOTE: in sockbuf::write is a bug, missing buf increment, it will block until whole buffer is sent
 			output(conn);
 		}
 		mNowTreating = NULL;
-		if(!OK || (activity & (cConnChoose::eCC_ERROR | cConnChoose::eCC_CLOSE)))
-		{
+		if(!OK || (activity & (cConnChoose::eCC_ERROR | cConnChoose::eCC_CLOSE))) {
 			
 			delConnection(conn);
 		}
 	}
 }
 
-/*!
-    \fn cAsyncSocketServer::Listen(int OnPort, bool UDP = false)
- */
 cAsyncConn * cAsyncSocketServer::Listen(int OnPort, bool UDP)
 {
 	cAsyncConn *ListenSock;
 	
-	if(!UDP) ListenSock = new cAsyncConn(0, this, eCT_LISTEN);
-	else	 ListenSock = new cAsyncConn(0, this, eCT_CLIENTUDP);
-	
-	if (this->ListenWithConn(ListenSock, OnPort, UDP) != NULL)
-	{
-		return ListenSock;
-	}
+	if(!UDP)
+		ListenSock = new cAsyncConn(0, this, eCT_LISTEN);
 	else
-	{
+		ListenSock = new cAsyncConn(0, this, eCT_CLIENTUDP);
+	
+	if(this->ListenWithConn(ListenSock, OnPort, UDP) != NULL) {
+		return ListenSock;
+	} else {
 		delete ListenSock;
 		return NULL;
 	}
 }
 
 
-/*!
-    \fn cAsyncSocketServer::StartListening(int OverrideDefaultPort)
- */
 int cAsyncSocketServer::StartListening(int OverrideDefaultPort)
 {
-	if(OverrideDefaultPort && !mPort) mPort = OverrideDefaultPort;
-	if(mPort && !OverrideDefaultPort) OverrideDefaultPort = mPort;
-	if(this->Listen(OverrideDefaultPort, false) != NULL) return 0;
+	if(OverrideDefaultPort && !mPort)
+		mPort = OverrideDefaultPort;
+	if(mPort && !OverrideDefaultPort)
+		OverrideDefaultPort = mPort;
+	if(this->Listen(OverrideDefaultPort, false) != NULL)
+		return 0;
 	return -1;
 }
 
-/*!
-    \fn cAsyncSocketServer::ListenWithConn(cAsyncconn *, int OnPort, bool UDP=false)
- */
 cAsyncConn * cAsyncSocketServer::ListenWithConn(cAsyncConn *ListenSock, int OnPort, bool UDP)
 {
 	if(ListenSock != NULL) {
@@ -422,11 +394,11 @@ cAsyncConn * cAsyncSocketServer::ListenWithConn(cAsyncConn *ListenSock, int OnPo
 
 bool cAsyncSocketServer::StopListenConn(cAsyncConn *ListenSock)
 {
-	if (ListenSock != NULL)
-	{
+	if (ListenSock != NULL) {
 		this->mConnChooser.DelConn(ListenSock);
 		return true;
-	} else return false;
+	}
+	return false;
 }
 
 };
