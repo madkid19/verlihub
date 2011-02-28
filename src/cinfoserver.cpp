@@ -130,7 +130,7 @@ void cInfoServer::Output(ostream &os, int Class)
 		total += curr;
 	}
 	os << "[::] " << autosprintf(_("Current total upload for all zones: %s"), convertByte(total,true).c_str()) << endl;
-	os << "[::] " << autosprintf(_("Zone (%d) all users: %d / %d"), 0, mServer->mUserCount[i], mServer->mC.max_users[i]) << endl;
+	os << "[::] " << autosprintf(_("Zone (%d) all users: %d / %d"), 0, mServer->mUserCount[0], mServer->mC.max_users[0]) << endl;
  	for(i =1; i < 4; i++) {
 		if(!mServer->mC.cc_zone[i-1].empty())
 			os << "[::] " << autosprintf(_("Zone (%d) %s users: %d / %d"), i, mServer->mC.cc_zone[i-1].c_str(), mServer->mUserCount[i], mServer->mC.max_users[i]) << endl;

@@ -65,227 +65,250 @@ class cDCConsole : public cDCConsoleBase
 {
 public:
 	/**
-	    * Class constructor.
-	    * @param s Pointer to VerliHub server.
-	    * @param mysql The connection object to MySQL database.
+	* Class constructor.
+	* @param s Pointer to VerliHub server.
+	* @param mysql The connection object to MySQL database.
 	*/
 	cDCConsole(cServerDC *s, cMySQL &mysql);
 	
 	/**
-	    * Class destructor.
+	* Class destructor.
 	*/
 	virtual ~cDCConsole();
 	
 	/**
-	    * Handle operator's commands like !restart, !quit, etc. In case the command does not exist, it is passed to Trigger console
-	    * @param command The command to run.
-	    * @param conn The user's connection that wants to run the command.
-	    * @return 0 if an error occurred, 1 otherwise.
+	* Handle operator's commands like !restart, !quit, etc.
+	* In case the command does not exist, it is passed to Trigger console
+	* @param command The command to run.
+	* @param conn The user's connection that wants to run the command.
+	* @return Zero if an error occurred, 1 otherwise.
 	*/
 	virtual int OpCommand(const string &, cConnDC*);
 	
 	/**
-	    * Handle user's commands like +myinfo, +chat, +report, etc. In case the command does not exist, it is passed to Trigger console
-	    * @param command The command to run.
-	    * @param conn The user's connection that wants to run the command.
-	    * @return 0 if an error occurred, 1 otherwise.
+	* Handle user's commands like +myinfo, +chat, +report, etc.
+	* In case the command does not exist, it is passed to Trigger console
+	* @param command The command to run.
+	* @param conn The user's connection that wants to run the command.
+	 @return Zero if an error occurred, 1 otherwise.
 	*/
 	virtual int UsrCommand(const string & , cConnDC * );
 	
 	/**
-	    * Handle !getip or !gi. This command sends to the user his IP address.
-	    * @param cmd_line The stream. Not used.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1.
+	* Handle !getip or !gi hub command.
+	* This command sends to the user his IP address.
+	* @param cmd_line The stream. Not used.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1.
 	*/
 	int  CmdGetip(istringstream &, cConnDC *);
 	
 	/**
-	    * Handle !gethost <user1> <user2> or !gh.  These commands send users' hostname.
-	    * @param cmd_line The stream that contains the list of users.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1.
+	* Handle !gethost <user1> <user2>.. or !gh hub command.
+	* These commands send users' hostname.
+	* @param cmd_line The stream that contains the list of users.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1.
 	*/
 	int CmdGethost(istringstream & , cConnDC * );
 	
 	/**
-	    * Handle !getinfo <user1> <user2> ..or !gi. These commands send users' information like Country Code, IP address and host.
-	    * @param cmd_line The stream that contains the list of users.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return 0 if an error occurred, 1 otherwise.
+	* Handle !getinfo <user1> <user2>.. or !gi hub command.
+	* These commands send users' information like Country Code, IP address and host.
+	* @param cmd_line The stream that contains the list of users.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Zero if an error occurred, 1 otherwise.
 	*/
 	int CmdGetinfo(istringstream &cmd_line , cConnDC *conn );
 
 	/**
-	    * Handle !quit or !restart. These commands shutdown or restart the hub.
-	    * @param cmd_line The stream. Not used.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1.
+	* Handle !quit or !restart hub command.
+	* These commands shutdown or restart the hub.
+	* @param cmd_line The stream. Not used.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1.
 	*/
 	int CmdQuit(istringstream &, cConnDC * conn,int code);
 
 	/**
-	    * Handle !getconfig or !gc. These commands returns the list of available config variables with values.
-	    * @param cmd_line The stream. Not used.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1.
+	* Handle !getconfig or !gc hub command.
+	* These commands returns the list of available config variables with values.
+	* @param cmd_line The stream. Not used.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1.
 	*/
 	int CmdGetconfig(istringstream & cmd_line, cConnDC * conn);
 
 	/**
-	    * Handle !help. This command sends the available help message depending on user class.
-	    * Command is handled by Trigger console.
-	    * @param cmd_line The stream. Not used.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1.
+	* Handle !help hub command.
+	* This command sends the available help message depending on user class.
+	* Command is handled by Trigger console.
+	* @param cmd_line The stream. Not used.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1.
 	*/
 	int CmdHelp(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle !ccbroadcast <CC list> <message> or !ccbc. This command sends a message to all users that belong to a Country in CC list.
-	    * @param cmd_line The stream that contains the country code list and the message.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1.
+	* Handle !ccbroadcast <CC list> <message> or !ccbc  hub command.
+	* This command sends a message to all users that belong to a Country in CC list.
+	* @param cmd_line The stream that contains the country code list and the message.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1.
 	*/
 	int CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn,int cl_min, int cl_max);
 	
 	/**
-	    * Handle +password <password>. This command is used by the user to set his password when he has been registered for the first time.
-	    * @param cmd_line The stream that contains the password.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return 0 if an error occurred, 1 otherwise.
+	* Handle +password <password> hub command.
+	* This command is used by the user to set his password when he has been registered for the first time.
+	* @param cmd_line The stream that contains the password.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return 0 if an error occurred, 1 otherwise.
 	*/
 	int CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle +info. This command sends to the user information about himself and the hub.
-	    * @param cmd_line The stream. Not used.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return 0 if an error occurred, 1 otherwise.
+	* Handle +info  hub command.
+	* This command sends to the user information about himself and the hub.
+	* @param cmd_line The stream. Not used.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return 0 if an error occurred, 1 otherwise.
 	*/
 	
 	int CmdUInfo(istringstream & cmd_line, cConnDC * conn);
 	int CmdRInfo(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle +myinfo. This command returns the information about the user.
-	    * @param cmd_line The stream. Not used.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1.
+	* Handle +myinfo  hub command.
+	* This command returns the information about the user.
+	* @param cmd_line The stream. Not used.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1.
 	*/
 	int CmdMyInfo(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle +myip. This command returns the IP address of the user.
-	    * @param cmd_line The stream. Not used.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1.
+	* Handle +myip hub command.
+	* This command returns the IP address of the user.
+	* @param cmd_line The stream. Not used.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1.
 	*/
 	int CmdMyIp(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle +me <message>. This command lets an user to talk in 3rd person.
-	    * @param cmd_line The stream that contains the message.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return 0 if an error occured or 1 otherwise.
+	* Handle +me <message> hub command.
+	* This command lets an user to talk in 3rd person.
+	* @param cmd_line The stream that contains the message.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return 0 if an error occured or 1 otherwise.
 	*/	
 	int CmdMe(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle +regme <password>. This command sends a report to OpChat in order to ask registration to Hub Operator or register an user automatically if autoreg_class config variable is set properly.
-	    * @param cmd_line The stream that contains the password.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return 0 if an error occured or 1 otherwise.
+	* Handle +regme <password> hub command.
+	* This command sends a report to OpChat in order to ask registration to Hub Operator or register an user automatically if autoreg_class config variable is set properly.
+	* @param cmd_line The stream that contains the password.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return 0 if an error occured or 1 otherwise.
 	*/
 	int CmdRegMe(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle +kick <user> <reason>. This command will kick an user with the given reason.
-	    * @param cmd_line The stream that contains user and the reason.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1.
+	* Handle +kick <user> <reason>.
+	* This command will kick an user with the given reason.
+	* @param cmd_line The stream that contains user and the reason.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1.
 	*/
 	int CmdKick(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle +chat and +nochat. These two commands are used to talk in mainchat.
-	    * @param cmd_line The stream. Not Used.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @param switchon. If set to true add the user to mChatUsers list that contains the users that can talk in mainchat. False value does the opposite.
-	    * @return 0 if the user does not exist or 1 otherwise.
+	* Handle +chat and +nochat hub command.
+	* These two commands are used to talk in mainchat.
+	* @param cmd_line The stream. Not Used.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @param switchon. If set to true add the user to mChatUsers list that contains the users that can talk in mainchat. False value does the opposite.
+	* @return 0 if the user does not exist or 1 otherwise.
 	*/
 	int CmdChat(istringstream & cmd_line, cConnDC * conn, bool switchon);
 	
 	/**
-	    * Handle !hideme or !hm <class>. This command will hide any commands for users with class lower than <class>.
-	    * @param cmd_line The stream that contains the class.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1
+	* Handle !hideme or !hm <class> hub command.
+	* This command will hide any commands for users with class lower than <class>.
+	* @param cmd_line The stream that contains the class.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1
 	*/
 	int CmdHideMe(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle !ul(imit) <users> <time>. This command will progressively increase the max allowed users in the hub in <time>. The time must be speficied in minutes; this value can be ommited and default value is 60 minutes.
-	    * @param cmd_line The stream that contains the number of users and the time.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1
+	* Handle !ul(imit) <users> <time>  hub command.
+	* This command will progressively increase the max allowed users in the hub in <time>. The time must be speficied in minutes; this value can be ommited and default value is 60 minutes.
+	* @param cmd_line The stream that contains the number of users and the time.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1
 	*/
 	int CmdUserLimit(istringstream & cmd_line, cConnDC * conn);
 	
 	/**
-	    * Handle !unhidekick <user>. This command will un-hide kick made by <user>, previously hidden by using !hidekick <user> command.
-	    * @param cmd_line The stream that contains the username.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1
+	* Handle !unhidekick <user> hub command.
+	* This command will un-hide kick made by <user>, previously hidden by using !hidekick <user> command.
+	* @param cmd_line The stream that contains the username.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1
 	*/
 	int CmdUnHideKick(istringstream &cmd_line, cConnDC *conn);
 	
 	/**
-	    * Handle !hidekick <user>. This command will hide kick made by <user> until he reconnects to the hub.
-	    * @param cmd_line The stream that contains the username.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1
+	* Handle !hidekick <user> hub command.
+	* This command will hide kick made by <user> until he reconnects to the hub.
+	* @param cmd_line The stream that contains the username.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1
 	*/
 	int CmdHideKick(istringstream &cmd_line, cConnDC *conn);
 
 	/**
-	    * Handle !class <nick> <new_class>. This command will change temporarily the user's class.
-	    * @param cmd_line The stream that contains the data like the username and the class.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1
+	* Handle !class <nick> <new_class> hub command.
+	* This command will change temporarily the user's class.
+	* @param cmd_line The stream that contains the data like the username and the class.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1
 	*/
 	int CmdClass(istringstream &cmd_line, cConnDC *conn);
 	
 	
 	/**
-	    * Handle !protect <user> <class> command. This command protects an user against another one with lower class than <class>.
-	    * @param cmd_line The stream that contains the data like the username to protect and the class.
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1
+	* Handle !protect <user> <class>  hub command.
+	* This command protects an user against another one with lower class than <class>.
+	* @param cmd_line The stream that contains the data like the username to protect and the class.
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1
 	*/
 	int CmdProtect(istringstream &cmd_line, cConnDC *conn);
 	
 	/**
-	    * Handle !reload command to reload VerliHub cache like triggers, custom redirects, configuration and reglist.
-	    * @param cmd_line The stream. Not used
-	    * @param conn Pointer to user's connection which to send the result message.
-	    * @return Always 1
+	* Handle !reload command to reload VerliHub cache like triggers, custom redirects, configuration and reglist.
+	* @param cmd_line The stream. Not used
+	* @param conn Pointer to user's connection which to send the result message.
+	* @return Always 1
 	*/
 	int CmdReload (istringstream &cmd_line, cConnDC *conn);
 	
 	/**
-	    * Handle !commands or !cmds to show the list of available and register commands in VerliHub console.
-	    * @param cmd_line The stream. Not used
-	    * @param conn Pointer to user's connection which to send the list of command.
-	    * @return Always 1
+	* Handle !commands or !cmds to show the list of available and register commands in VerliHub console.
+	* @param cmd_line The stream. Not used
+	* @param conn Pointer to user's connection which to send the list of command.
+	* @return Always 1
 	*/
 	int CmdCmds (istringstream &cmd_line, cConnDC *conn);
 	
 	/**
-	    * Handle !topic <msg> command to set the hub topic for the hub. The topic will be appended after the hub name and look like this: <HUB NAME> - <TOPIC>
-	    * @param cmd_line The stream the contains the topic.
-	    * @param conn Pointer to user's connection which set the hub topic. It is used to send error message.
-	    * @return Always 1
+	* Handle !topic <msg> command to set the hub topic for the hub. The topic will be appended after the hub name and look like this: <HUB NAME> - <TOPIC>
+	* @param cmd_line The stream the contains the topic.
+	* @param conn Pointer to user's connection which set the hub topic. It is used to send error message.
+	* @return Always 1
 	*/
 	int CmdTopic(istringstream & cmd_line, cConnDC * conn); 
 
@@ -345,7 +368,7 @@ private:
 	struct cfClean : cfDCCmdBase { virtual bool operator()(); } mFunClean;
 	cDCCmdBase mCmdClean;
 	
-	// redirection consoles to other console
+	// Redirect commands to other console
 	struct cfRedirToConsole : cfDCCmdBase {
 		virtual bool operator()();
 		tConsoleBase<cDCConsole> *mConsole;

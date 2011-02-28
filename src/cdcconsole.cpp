@@ -1594,7 +1594,7 @@ bool cDCConsole::cfWho::operator()()
 	if(cnt)
 		(*mOS) << "\n\t" << userlist;
 	else
-		(*mOS) << autosprintf(_("No user found."), actionName.c_str(), tmp.c_str());
+		(*mOS) << _("No user found.");
 	return true;
 }
 
