@@ -180,166 +180,512 @@ class cServerDC : public cAsyncSocketServer
 	friend class ::nDirectConnect::nTables::cRegList;
 	friend class ::nDirectConnect::nTables::cDCBanList;
 	friend class ::nDirectConnect::cUser;
-public:
+    public:
+	// Path to VerliHub config folder
 	string mConfigBaseDir;
-	cDBConf mDBConf; // database configuration
-	// mysql database connection
+	// Database configuration
+	cDBConf mDBConf;
+	// MySQL database connection
 	cMySQL mMySQL;
-	cDCConf mC; // configuration
-	cSetupList mSetupList; // setup loader
-	cDCProto mP; // protocol
-	class cDCConsole *mCo; // console
-	class cRegList *mR; // reg users
-	cPenaltyList *mPenList; // penalties and temp rights
-	/** banlist */
+	// VerliHub configuration
+	cDCConf mC;
+	// Setup loader
+	cSetupList mSetupList;
+	// Protocol message handler
+	cDCProto mP;
+	// Console managment
+	class cDCConsole *mCo;
+	// User registration and reglist handler
+	class cRegList *mR;
+	// Penalities and temp rights handler
+	cPenaltyList *mPenList;
+	// Banlist
 	cBanList *mBanList;
+	// Unbanlist
 	cUnBanList *mUnBanList;
+	// Kick list
 	cKickList *mKickList;
+	// OpChat room
 	cChatRoom *mOpChat;
+	// Connection types handler
 	cConnTypes *mConnTypes;
+	// ZLib compression class
 	cZLib *mZLib;
-	string mExecPath; // the filename of this process
-public:
+	// Process name
+	string mExecPath;
+
+	/**
+	* Base class constructor.
+	* @param CfgBase Path to VerliHub configuration folder.
+	* @param ExecPath Process name.
+	*/
 	cServerDC(string CfgBase = string("./.verlihub"), const string &ExecPath= "");
+	
+	/**
+	* Class destructor.
+	*/
 	virtual ~cServerDC();
-	/** override default listen */
-	virtual int StartListening(int OverrideDefaultPort=0);
-	/** sends a public chat message to a given connection */
-	int DCPublic(const string &from, const string &msg,class cConnDC *conn);
-	int DCPublicToAll(const string &from, const string &txt, int min_class=1, int max_class=10);
-	/** send a hub security public message */
-	int DCPublicHS(const string &text, cConnDC *conn);
-	/** tells if a user with such nick can login into the hub */
-	tVAL_NICK ValidateNick(const string &nick, bool registered);
-	/** return 1 if user is valid and can go in
-	return 0 otherwise, and also close the connection */
-	int ValidateUser(cConnDC *conn, const string &nick);
 
-	/** try to add user into userlist, return true on success */
-	bool AddToList(cUser *usr);
+	/**
+	* Add a robot to the robot and user lists.
+	* 
+	* User is automatically added to other lists like passive, active or op list.
+	* Robot user is also able to receive hub events that has been registered and manage them.
+	* @see AddToList()
+	* @param usr The robot to add.
+	* @return True if robot is added or false otherwise.
+	*/
 	bool AddRobot(cUserRobot *robot);
-	bool DelRobot(cUserRobot *robot);
-	/** removes user with given nick from uselist, return true on success */
-	bool RemoveNick(cUser *);
-	/** find user with given nick, if not there return NULL */
-	//cUser * FindUserNick(const string &nick);
-	/** send the same data to every user */
-	void SendToAll(string &str, int cm,int cM);
-	/** sends to every user data composed by start+nick+end */
-	int SendToAllWithNick(const string &start,const string &end, int cm,int cM);
-	int SendToAllWithNickCC(const string &start,const string &end, int cm,int cM, const string &cc_zone);
-	/** The message filter, decides what to do with the message */
+	
+	/**
+	* Add an user to userlist.
+	* 
+	* User is automatically added to other lists like passive, active or op list.
+	* @param usr The user to add.
+	* @return True if user is added or false otherwise.
+	*/
+	bool AddToList(cUser *usr);
+	
+	/**
+	* This method tells the server what the server can receive and what actions to perform depending on hub health.
+	* It is a kind of message filter.
+	* Note that:
+	* If user is not in the userlist, he can send key, validate nick, mypass, version, getnicklist and myinfo.
+	* If user is in the userlist, he can do everything except sending key, validate nick, mypass and version.
+	* If hub health is critical, user may be banned or just disconnected.
+	* @param msg Type of received protocol message.
+	* @param conn The user connection.
+	* @return The action to do or what the user can send.
+	*/
 	tMsgAct Filter( tDCMsg msg, cConnDC * conn );
-	int SaveFile(const string &file, const string &text);
-	/** this is called every period of time */
+	
+	/**
+	* This method is called every period.
+	* It flushes messages in queue, updates hub health (aka frequency),
+	* updates bandwidth usage stats, clean temp ban, run hublist registration
+	* and reload hub configuration.
+	* @param now Current time.
+	* @return False if callbacks fails or true otherwise.
+	*/
 	virtual int OnTimer(cTime &now);
-	/** converts number with units to a time period in seconds */
-	unsigned Str2Period(const string &, ostream &);
-	// send HubSecurity Message to public chat to all users
-	void DCPublicHSToAll(const string &text);
-	/** send a hub security public message */
+	
+	/**
+	* Start the socket and listen on ports.
+	* @param OverrideDefaultPort The port to override.
+	* @return The result of the socket operation.
+	*/
+	virtual int StartListening(int OverrideDefaultPort=0);
+	
+	/**
+	* Kick an user and close his connection.
+	* @param use_os A valid pointer to a strem where to store the message to send to the user. If NULL message is directly sent to the user.
+	* @param OP A pointer to cUser object of the operator who kicked the user.
+	* @param Nick The string of the nick to kick.
+	* @param Reason The reason of the kick.
+	* @param flags Change the behavior of the kick. For ex. also drop the user.
+	*/
+	void DCKickNick(ostream *, cUser *OP, const string &Nick, const string &Reason, int flags);
+	
+	/**
+	* Send a private message to an user as hub security.
+	* @param text The message to send.
+	* @param conn The user connection.
+	* @param from The sender nickname. If it is not specified hub security nickname is used.
+	* @return A number greater than zero if message is sent.
+	*/
 	int DCPrivateHS(const string & text, cConnDC * conn,string *from = NULL);
-	/** does the registration on given hublist */
-	int RegisterInHublist(string host, int port, cConnDC *conn);
+	
+	/**
+	* Send a message in mainchat for the given connection.
+	* @param from Sender nickname.
+	* @param msg The message to send.
+	* @param conn The connection of the recipient.
+	* @return Zero if connection is not valid or one on success.
+	*/
+	int DCPublic(const string &from, const string &msg,class cConnDC *conn);
+	
+	/**
+	* Send a message in mainchat for the given connection as hub security.
+	* 
+	* This is the same of calling cServerDC::DCPublic(mC.hub_security, msg, conn);
+	* @param msg The message to send.
+	* @param conn The connection of the recipient.
+	* @return Zero if connection is not valid or one on success.
+	*/
+	int DCPublicHS(const string &text, cConnDC *conn);
+	
+	/**
+	* Send a public message to all users as hub security.
+	* @param text  The message to send
+	*/
+	void DCPublicHSToAll(const string &text);
+	
+	/**
+	* Send a message in mainchat to everyone.
+	* 
+	* This methos also allows to restrict the recipients on their classes.
+	* 
+	* @param from Sender nickname.
+	* @param msg The message to send.
+	* @param min_class Minimum class (default to 0).
+	* @param max_class Maximum class (default to 10).
+	* @return Always one.
+	*/
+	int DCPublicToAll(const string &from, const string &txt, int min_class=1, int max_class=10);
+	
+	/**
+	* Remove a robot from lists.
+	* @see RemoveNick()
+	* @param usr The robot to remove.
+	* @return True if the robot is removed or false otherwise.
+	*/
+	bool DelRobot(cUserRobot *robot);
+	
+	/**
+	* Register the hub to the given hublist.
+	* @param host The address of hublist.
+	* @param port The port.
+	* @param NickForReply The nickname of the user to send the result.
+	* @return Always one.
+	*/
 	int DoRegisterInHublist(string host, int port, string NickForReply);
-	/** No descriptions */
+	
+	/**
+	* Return the total share of the hub.
+	* @return The total share.
+	*/
 	__int64 GetTotalShareSize();
-	/** fill in the list of nicks with given ip */
-	int WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, const string&separator, bool exact=true);
-	int WhoCC(string CC, string &dest, const string&separator);
-	/** buffer to send to all */
-	string mSendAllBuf;
+	
+	/**
+	* Register the hub to the given hublist.
+	* 
+	* This method does the same thing of DoRegisterInHublist() but it is asynchronous.
+	* @param host The address of hublist.
+	* @param port The port.
+	* @param conn The user connection to send the result.
+	* @return One if the operation can be added and processed by thread or zero otherwise.
+	*/
+	int RegisterInHublist(string host, int port, cConnDC *conn);
+	
+	/**
+	* Report an user to opchat.
+	* @param conn User connection.
+	* @param Msg The message to report.
+	* @param ToMain Send report to mainchat.
+	*/
 	void ReportUserToOpchat(cConnDC *, const string &Msg, bool ToMain = false);
+	
+	/**
+	* Remove an user from lists.
+	* @param usr The user to remove.
+	* @return True if the user is removed or false otherwise.
+	*/
+	bool RemoveNick(cUser *);
+	
+	/**
+	* Save a file.
+	* 
+	* Use %[CFG] variable in your path if you want to store the file in VerliHub config folder.
+	* For example: %[CFG]/plugin.cnf.
+	* @param file The filename.
+	* @param text The content of the file.
+	* @return One is the file has been saved or zero if the file cannot be created.
+	*/
+	int SaveFile(const string &file, const string &text);
+	
+	/**
+	* Send data to all users that are in userlist.
+	* 
+	* This methos also allows to restrict the recipients on their classes.
+	* @param str The data to send.
+	* @param cm Minimium class.
+	* @param CM Maximum class.
+	*/
+	void SendToAll(string &str, int cm,int cM);
+	
+	/**
+	* Send data to all users that are in userlist and belongs to the specified class range.
+	*
+	* Message to send is built in this way: start+nick+end.
+	* This methos also allows to restrict the recipients on their classes.
+	* @param start The data to send.
+	* @param end The data to send.
+	* @param cm Minimium class.
+	* @param CM Maximum class.
+	* @return The number of users that receives the message.
+	*/
+	int SendToAllWithNick(const string &start,const string &end, int cm,int cM);
+	
+	/**
+	* Send data to all users that are in userlist and belongs to the specified class range and country.
+	* 
+	* Message to send is built in this way: start+nick+end.
+	* This methos also allows to restrict the recipients on their classes.
+	* @param start The data to send.
+	* @param end The data to send.
+	* @param cm Minimium class.
+	* @param CM Maximum class.
+	* @param cc_zone Country code.
+	* @return The number of users that receives the message.
+	*/
+	int SendToAllWithNickCC(const string &start,const string &end, int cm,int cM, const string &cc_zone);
+	
+	/**
+	* Notify all users of a new user.
+	* 
+	* The following operations are done in order:
+	* 1. Send $Hello to hello users.
+	* 2. Send MyInfo to all.
+	* 3. Update OpList if the user is an operator.
+	* @param user The new user.
+	* @return Always true.
+	*/
 	bool ShowUserToAll(cUserBase *user);
+	
+	/**
+	* Convert a string of time in seconds.
+	* @param str The string to convert.
+	* @param err Error stream.
+	* @return Converted time in seconds.
+	*/
+	unsigned Str2Period(const string &, ostream &);
+	
+	/**
+	* Check if nickname is valid or not (nick length, valid characters, no prefix and temp ban on nick)
+	* @param nick The nickname of the user.
+	* @param registered If the user is registered or not.
+	* @return An integer that explains the error.
+	*/
+	tVAL_NICK ValidateNick(const string &nick, bool registered);
+	
+	/**
+	* Check if the user is allowed to enter the hub.
+	* 
+	* The following operations are done in order:
+	* 1. Check if the nick is valid.
+	* 2. Check if the user is banned or kicked.
+	* 3. Verify if nickname  has a valid prefix.
+	* If validation fails the connection is closed and not valid anymore.
+	* @param conn User connection.
+	* @param nick The nickname of the user.
+	* @return Zero if an error occurs or one otherwise.
+	*/
+	int ValidateUser(cConnDC *conn, const string &nick);
+	
+	/**
+	* Return the list of the users that belongs to a country.
+	* @param CC The country code.
+	* @param dest The string where to store the users.
+	* @param separator The seperator to use to split the user inside destination string.
+	* @return The number of found users.
+	*/
+	int WhoCC(string CC, string &dest, const string&separator);
+	
+	/**
+	* Return the list of the users that belongs to the specified IP range.
+	* @param ip_min Min IP range or the exact IP address.
+	* @param ip_max Max IP range.
+	* @param dest The string where to store the users.
+	* @param separator The seperator to use to split the user inside destination string.
+	* @param exact Set it to true if you want to use an exact IP address; in this case ip_max is ignored.
+	* @return The number of found users.
+	*/
+	int WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, const string&separator, bool exact=true);
 
-public: // Public attributes
+
+	// The buffer that holds data to send to all
+	string mSendAllBuf;
+	// Static pointer to this class
 	static cServerDC *sCurrentServer;
-	/** system load indicator */
+	// System load indicator
 	tSysLoad mSysLoad;
-	/** last op that used the broadcast function */
+	// Last op that used the broadcast function
 	string LastBCNick;
-	/** string containing all myinfos in a row */
+	// String containing all myinfos in a row
 	string mNickInfoString;
-	/** network output log */
+	// Network output log
 	ofstream mNetOutLog;
-
-	/** hublist registration thread */
+	// Hublist registration thread
 	#ifndef _WIN32 //TODO: Implement worker thread on Windows
 	cWorkerThread mHublistReg;
 	#endif
-
+	// Frequency for all zones
 	cMeanFrequency<unsigned long, 10> mUploadZone[USER_ZONES+1];
 	
-	/********** typedefs */
-
-	/** temporary time functions */
-	/** trigger functions type */
 	typedef int tDC_MsgFunc(cMessageDC * msg, cConnDC * conn);
 	typedef vector<cTempFunctionBase *> tTmpFunc;
 	typedef tTmpFunc::iterator tTFIt;
 
-	/** list of temporary functions */
+	// List of temporary functions
 	tTmpFunc mTmpFunc;
 
-	/** the userlist */
 	typedef cUserCollection::tHashType tUserHash;
+	// Userlist of all user
 	cCompositeUserCollection mUserList;
+	// Userlist of users not logged in yet
 	cUserCollection mInProgresUsers;
 	
 	enum { eKCK_Drop = 1, eKCK_Reason = 2, eKCK_PM = 4, eKCK_TBAN = 8};
-	void DCKickNick(ostream *, cUser *OP, const string &Nick, const string &Reason, int flags);
-public: //Private attributes
-	/** secondary lists of users */
+
+
+	// Oplist
 	cCompositeUserCollection mOpList;
+	// List of users in opchat
 	cUserCollection mOpchatList;
+	// List of active users
 	cUserCollection mActiveUsers;
+	// List of passive users
 	cUserCollection mPassiveUsers;
+	// List of hello users
 	cUserCollection mHelloUsers;
+	// List of users allowed to talk
 	cUserCollection mChatUsers;
+	// List of bots
 	cUserCollection mRobotList;
+	// User peak
 	unsigned mUsersPeak;
 
-#if HAVE_LIBGEOIP
-	/** country code database lib */
+	#if HAVE_LIBGEOIP
+	// GeoIp object for country code support
 	static cGeoIP sGeoIP;
-#endif
+	#endif
+	
 protected: // Protected methods
-	/** create somehow a string to get line for given connection, ad return th pointer */
-	virtual string * FactoryString(cAsyncConn * );
-	/** treat message for given connection */
-	void OnNewMessage(cAsyncConn * , string * );
-	/** check if user is logged in with same nick, eventually decide if old conn should be closed, return tru if conn can login */
-	bool VerifyUniqueNick(cConnDC *conn);
-	/** start the user becomiing in the userlist */
-	bool BeginUserLogin(cConnDC *conn);
-	/** is called when user is about to get into the userslist */
-	void DoUserLogin(cConnDC *conn);
-	/** Things done when the protocol login is done */
+	/**
+	* This method is called when user is logged in.
+	* 
+	* The following operations are done in order:
+	* 1. Send MOTD trigger.
+	* 2. Verify if the user has to change his password.
+	* 3. Send hub topic, information about himself and welcome message if any is set.
+	* @see DoUserLogin(), BeginUserLogin()
+	* @param conn User connection.
+	*/
 	void AfterUserLogin(cConnDC *conn);
-	/** close a given connection with sending a message as a reason, and do it at least in to_usec microseconds */
-	void ConnCloseMsg(cConnDC *conn, const string &msg, int to_msec=4000, int Reason = eCR_DEFAULT);
-	/** send the hello messahe, on which response we'll get MyINFO */
-	int DCHello(const string & nick, cConnDC * conn, string *info=NULL);
-	/** return true if the condition of minimal delay is verified
-	    and modify the timestamp */
-	bool MinDelay(cTime &what, int min);
-	bool MinDelayMS(cTime &what, long unsigned int min);
-	/** return true if accept is allowed - override */
+	
+	/**
+	* Return if the server is able to accept a new incoming connection.
+	* @return True if connection is accepted or false otherwise.
+	*/
 	bool AllowNewConn();
-	/** return negative if conn should be removed */
-	int OnNewConn(cAsyncConn * );
+	
+	/**
+	* This method is called before the user is logged in.
+	* 
+	* This method performs few checks on the user before adding him to userlist.
+	* It also checks for duplicated nick and establish when to send nicklist (before or after login).
+	* @param conn User connection.
+	* @return Return true if the user can login and connection is allowed; otherwise return false.
+	*/
+	bool BeginUserLogin(cConnDC *conn);
+	
+	/**
+	* Close a connection and send a message with the reason of why connection has been closed.
+	* It is also possible to specify a timeout in micro-second to wait before disconnecting
+	* the user and a reason of disconnect that is used to determinate which redirect address to use.
+	* @param conn User connection.
+	* @param msg The reason to send to the user.
+	* @param to_msec Micro-seconds to wait before disconnecting (default 4000).
+	* @param Reason The reason used for redirect.
+	*/
+	void ConnCloseMsg(cConnDC *conn, const string &msg, int to_msec=4000, int Reason = eCR_DEFAULT);
+	
+	/**
+	* Send hello message to the user. Example: $Hello foobar.
+	* Extra information can be sent after hello message by passing
+	* a pointer to a string containing the message.
+	* @param nick The nickname of the user.
+	* @param conn User connection.
+	* @param info Extra information.
+	*/
+	int DCHello(const string & nick, cConnDC * conn, string *info=NULL);
+	
+	/**
+	* This methos is called when user is going to be added to userlist.
+	*
+	* This method is called after BeginUserLogin().
+	* 
+	* The following operations are done in order:
+	* 1. Verify unique nick again because the user is not added to userlist yet.
+	* 2. Apply user rights
+	* 3. Notify all users of new user 
+	* It also checks for duplicated nick and establish when to send nicklist (before or after login).
+	* @see BeginUserLogin(), AfterUserLogin()
+	* @param conn User connection.
+	*/
+	void DoUserLogin(cConnDC *conn);
+	
+	/** create somehow a string to get line for given connection, ad return th pointer */
+	/**
+	* 
+	* @param conn User connection
+	* @return Allocated string.
+	*/
+	virtual string * FactoryString(cAsyncConn * );
+	
+	/**
+	* Check if timeout if expired (seconds resolution).
+	* @param what cTime object to check.
+	* @param int Timeout in seconds.
+	* @return True if timer is expired or false otherwise.
+	*/
+	bool MinDelay(cTime &what, int min);
+	
+	/**
+	* Check if timeout if expired (milli-seconds resolution).
+	* @param what cTime object to check.
+	* @param int Timeout in seconds.
+	* @return True if timer is expired or false otherwise.
+	*/
+	bool MinDelayMS(cTime &what, long unsigned int min);
+	
+	/**
+	* This method is triggered when there is a new incoming connection.
+	* 
+	* Send $Lock message and check if connection should be allowed
+	* depending on hub health.
+	* @param conn User connection.
+	* @return A negative number if connection is refused or zero otherwise.
+	*/
+	int OnNewConn(cAsyncConn *);
+	
+	/**
+	* This method is triggered when there is a new incoming message.
+	* 
+	* Treat a message and pass it to the protocol parser.
+	* @param conn User connection.
+	* @param msg The message.
+	*/
+	void OnNewMessage(cAsyncConn * , string * );
+	
+	/**
+	* Check if another user with same nick is already logged in.
+	* 
+	* Eventually decide if old connection (the one of the user logged in)
+	* shold be closed or not
+	* @param conn User connection.
+	* @return Return true if the user can login and connection is allowed; otherwise return false.
+	*/
+	bool VerifyUniqueNick(cConnDC *conn);
 
-public: // Protected attributes
-	/** the number of allowed users */
+    public:
+	// Usercount of zones (CC and IP-range zones)
 	int mUserCount[USER_ZONES+1];
+	// Total number of users
 	int mUserCountTot;
+	// Total share of the hub
 	__int64 mTotalShare;
+	// Health of the hub
 	string mStatus;
-	/** when hub started */
+	// cTime object when the hub was started
 	cTime mStartTime;
+	// Timer that deletes temp bans
 	cTimeOut mSlowTimer;
+	// Timer that periodically registers the hub to hublists
 	cTimeOut mHublistTimer;
+	// Timer that reloads hub configuration
 	cTimeOut mReloadcfgTimer;
+	// Plugin manager
 	cVHPluginMgr mPluginManager;
 private:
 	struct sCallBacks
@@ -409,7 +755,7 @@ private:
 		cVHCBL_Ban		mOnNewBan;
 		cVHCBL_StrStrStr	mOnUnBan;
 	};
-
+	// Structure that holds all callbacks.
 	sCallBacks mCallBacks;
 };
 

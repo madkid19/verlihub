@@ -151,8 +151,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	VerliHub->mMyINFO_basic = VerliHub->mMyINFO;
 	AddRobot((cMainRobot*)VerliHub);
 
-	if (mC.opchat_name.size())
-	{
+	if(mC.opchat_name.size()) {
 		mOpChat=new cOpChat(this);
 		mOpChat->mClass=tUserCl(10);
 		mP.Create_MyINFO(mOpChat->mMyINFO, mOpChat->mNick,mC.opchat_desc,speed,mail,share);
@@ -182,11 +181,10 @@ cServerDC::~cServerDC()
 	// remove all users
 	cUserCollection::iterator it;
 	cUser *user;
-	for (it=mUserList.begin(); it != mUserList.end();)
-	{
+	for (it=mUserList.begin(); it != mUserList.end();) {
 		user = (cUser*)*it;
 		++it;
-		if (user->mxConn){
+		if (user->mxConn) {
 			delConnection(user->mxConn);
 		} else {
 			this->RemoveNick(user);
@@ -194,7 +192,9 @@ cServerDC::~cServerDC()
 	}
 
 	// destruct the lists of pointers
-	for (tTFIt i = mTmpFunc.begin(); i != mTmpFunc.end(); i++ ) if(*i) delete *i;
+	for (tTFIt i = mTmpFunc.begin(); i != mTmpFunc.end(); i++ )
+		if(*i)
+			delete *i;
 	close();
 	if (mFactory) delete mFactory;
 	mFactory = NULL;
@@ -222,8 +222,7 @@ int cServerDC::StartListening(int OverrideDefaultPort)
 	int _result = cAsyncSocketServer::StartListening(OverrideDefaultPort);
 	istringstream is(mC.extra_listen_ports);
 	int i = 1;
-	while(i)
-	{
+	while(i) {
 		i = 0;
 		is >> i;
 		if (i) cAsyncSocketServer::Listen(i, false);
@@ -231,33 +230,15 @@ int cServerDC::StartListening(int OverrideDefaultPort)
 	return _result;
 }
 
-/**
- * The rules for allowed messages
- * ------------------------------
- *  *** USER IS NOT LOGGED IN USERLIST ***
- *  . mask = KEY | VALIDATENICK | MYPASS | VERSION | GETNICKLIST | MYINFO
- *  . (they may apprear in given order)
- *  . GETNICKLIST only if eLS_KEYOK && eLS_VALNICK && eLS_PASSWD && eLS_VERSION
- *  *** USER IS IN USERLIST ***
- *  . EVERYTHING except KEY VALIDATENICK MYPASS VERSION
- *  -------
- *  *** hub is loaded ***
- *	SOME MAY BE REMOVED: SEARCH*, SR, MYINFO_ALL , CHAT, GETNICKLIST
- *
- **/
-
 tMsgAct cServerDC::Filter( tDCMsg msg, cConnDC *conn )
 {
 	tMsgAct result = eMA_PROCEED;
-	if(!conn) // this is strange
-	{
+	if(!conn) {
 		if(ErrLog(0)) LogStream() << "Got NULL conn into filter" << endl;
 		return eMA_ERROR;
 	}
-	if(!conn->mpUser || !conn->mpUser->mInList)
-	{
-		switch(msg)
-		{
+	if(!conn->mpUser || !conn->mpUser->mInList) {
+		switch(msg) {
 			case eDC_KEY:
 			case eDC_VALIDATENICK:
 			case eDC_MYPASS:
@@ -268,11 +249,8 @@ tMsgAct cServerDC::Filter( tDCMsg msg, cConnDC *conn )
 			break;
 			default: result = eMA_HANGUP;
 		}
-	}
-	else
-	{
-		switch(msg)
-		{
+	} else {
+		switch(msg) {
 			case eDC_KEY:
 			case eDC_VALIDATENICK:
 			case eDC_MYPASS:
@@ -283,8 +261,7 @@ tMsgAct cServerDC::Filter( tDCMsg msg, cConnDC *conn )
 		}
 	}
 
-	switch( mSysLoad )
-	{
+	switch(mSysLoad) {
 		case eSL_SYSTEM_DOWN: return eMA_TBAN; break; // locked up
 		case eSL_RECOVERY: return eMA_HANGUP1; break; // attempting recovery
 		case eSL_CAPACITY: break; // limits reached
@@ -295,7 +272,6 @@ tMsgAct cServerDC::Filter( tDCMsg msg, cConnDC *conn )
 	return result; 
 }
 
-/** sends a public chat message to a given connection */
 int cServerDC::DCPublic(const string &from, const string &txt, cConnDC *conn)
 {
 	static string msg;
@@ -322,13 +298,11 @@ int cServerDC::DCPublicToAll(const string &from, const string &txt, int min_clas
 	return 1;
 }
 
-/** send a hub security public message */
 int cServerDC::DCPublicHS(const string &text, cConnDC *conn)
 {
 	return DCPublic( mC.hub_security, text,  conn );
 }
 
-/** send a hub security public message */
 void cServerDC::DCPublicHSToAll(const string &text)
 {
 	static string msg;
@@ -337,7 +311,6 @@ void cServerDC::DCPublicHSToAll(const string &text)
 	mUserList.SendToAll(msg, true, true);
 }
 
-/** send a hub security private message */
 int cServerDC::DCPrivateHS(const string & text, cConnDC * conn, string *from)
 {
 	string msg;
@@ -345,15 +318,9 @@ int cServerDC::DCPrivateHS(const string & text, cConnDC * conn, string *from)
 	return conn->Send(msg, true);
 }
 
-/** \brief adds a robot user to the list
-  *
-  * the robot user will receive him designed events in a special way
-  * by calling this function you add a user into a robot list mRobotList
-  */
 bool cServerDC::AddRobot(cUserRobot *robot)
 {
-	if (AddToList(robot))
-	{
+	if (AddToList(robot)) {
 		mRobotList.Add(robot);
 		robot->mxServer = this;
 		return true;
@@ -363,59 +330,57 @@ bool cServerDC::AddRobot(cUserRobot *robot)
 
 bool cServerDC::DelRobot(cUserRobot *robot)
 {
-	if (this->RemoveNick(robot))
-	{
+	if (this->RemoveNick(robot)) {
 		mRobotList.Remove(robot);
 		return true;
 	}
 	else return false;
 }
 
-/** adds a user into a user list */
 bool cServerDC::AddToList(cUser *usr)
 {
-	if(!usr)
-	{
+	if(!usr) {
 		if(ErrLog(1)) LogStream() << "Adding a NULL user to userlist" << endl;
 		return false;
 	}
-	if(usr->mInList)
-	{
+	if(usr->mInList) {
 		if(ErrLog(2)) LogStream() << "User is already in the user list, he says it " << endl;
 		return false;
 	}
 
 	tUserHash Hash = mUserList.Nick2Hash(usr->mNick);
 
-	if( !mUserList.AddWithHash(usr, Hash) )
-	{
+	if(!mUserList.AddWithHash(usr, Hash)) {
 		if(ErrLog(2)) LogStream() << "Adding twice user with same hash " << usr->mNick << endl;
 		usr->mInList = false;
 		return false;
 	}
 	
 	usr->mInList = true;
-	if( !usr->IsPassive ) mActiveUsers.AddWithHash(usr, Hash);
-	if( usr->IsPassive ) mPassiveUsers.AddWithHash(usr, Hash);
-	if( usr->mClass >= eUC_OPERATOR && !
-		( usr->mxConn && usr->mxConn->mRegInfo && usr->mxConn->mRegInfo->mHideKeys))
+	if(!usr->IsPassive)
+		mActiveUsers.AddWithHash(usr, Hash);
+	if(usr->IsPassive)
+		mPassiveUsers.AddWithHash(usr, Hash);
+	if(usr->mClass >= eUC_OPERATOR && ! (usr->mxConn && usr->mxConn->mRegInfo && usr->mxConn->mRegInfo->mHideKeys))
 		mOpList.AddWithHash(usr, Hash);
-	if( usr->Can(eUR_OPCHAT, mTime.Sec()) ) mOpchatList.AddWithHash(usr, Hash);
-	if( usr->mxConn && !(usr->mxConn->mFeatures & eSF_NOHELLO) )
+	if(usr->Can(eUR_OPCHAT, mTime.Sec()))
+		mOpchatList.AddWithHash(usr, Hash);
+	if(usr->mxConn && !(usr->mxConn->mFeatures & eSF_NOHELLO))
 		mHelloUsers.AddWithHash(usr, Hash);
-	if( (usr->mClass >= eUC_OPERATOR) || mC.chat_default_on )
+	if((usr->mClass >= eUC_OPERATOR) || mC.chat_default_on)
 		mChatUsers.AddWithHash(usr, Hash);
 	else
 		DCPublicHS(_("<< To turn your chat on use command +chat; turn it off with +nochat >>"), usr->mxConn);
 
-	if(usr->mxConn && usr->mxConn->Log(3)) usr->mxConn->LogStream() << "Adding at the end of Nicklist" << endl;
+	if(usr->mxConn && usr->mxConn->Log(3))
+		usr->mxConn->LogStream() << "Adding at the end of Nicklist" << endl;
 
-	if(usr->mxConn && usr->mxConn->Log(3)) usr->mxConn->LogStream() << "Becomes in list" << endl;
+	if(usr->mxConn && usr->mxConn->Log(3))
+		usr->mxConn->LogStream() << "Becomes in list" << endl;
 
 	return true;
 }
 
-/** removes user with given nick from uselist, return true on success */
 bool cServerDC::RemoveNick(cUser *User)
 {
 	tUserHash Hash = mUserList.Nick2Hash(User->mNick);
@@ -426,33 +391,34 @@ bool cServerDC::RemoveNick(cUser *User)
 		#endif
                 // make sure that the user we want to remove is the correct one!
                 cUser *other = mUserList.GetUserByNick(User->mNick);
-		if(!User->mxConn)
-		{
+		if(!User->mxConn) {
 			//cout << "Removing robot user" << endl;
 			mUserList.RemoveByHash(Hash);
-		}
-                else if(other && other->mxConn && User->mxConn && other->mxConn == User->mxConn)
-                {
+		} else if(other && other->mxConn && User->mxConn && other->mxConn == User->mxConn) {
             		//cout << "Leave: " << User->mNick << " count = " << mUserList.size() << endl;
 			mUserList.RemoveByHash(Hash);
-		}
-		else
-		{
+		} else {
 			// this may cause problems when user is robot with 0 connection
 			//cout << "NOT found the correct user!, skip removing: " << User->mNick << endl;
 	                return false;
 		}
 	}
-	if(mOpList.ContainsHash(Hash)) mOpList.RemoveByHash(Hash);
-	if(mOpchatList.ContainsHash(Hash)) mOpchatList.RemoveByHash(Hash);
-	if(mActiveUsers.ContainsHash(Hash)) mActiveUsers.RemoveByHash(Hash);
-	if(mPassiveUsers.ContainsHash(Hash)) mPassiveUsers.RemoveByHash(Hash);
-	if(mHelloUsers.ContainsHash(Hash)) mHelloUsers.RemoveByHash(Hash);
-	if(mChatUsers.ContainsHash(Hash)) mChatUsers.RemoveByHash(Hash);
-	if(mInProgresUsers.ContainsHash(Hash)) mInProgresUsers.RemoveByHash(Hash);
+	if(mOpList.ContainsHash(Hash))
+		mOpList.RemoveByHash(Hash);
+	if(mOpchatList.ContainsHash(Hash))
+		mOpchatList.RemoveByHash(Hash);
+	if(mActiveUsers.ContainsHash(Hash))
+		mActiveUsers.RemoveByHash(Hash);
+	if(mPassiveUsers.ContainsHash(Hash))
+		mPassiveUsers.RemoveByHash(Hash);
+	if(mHelloUsers.ContainsHash(Hash))
+		mHelloUsers.RemoveByHash(Hash);
+	if(mChatUsers.ContainsHash(Hash))
+		mChatUsers.RemoveByHash(Hash);
+	if(mInProgresUsers.ContainsHash(Hash))
+		mInProgresUsers.RemoveByHash(Hash);
 
-	if (User->mInList)
-	{
+	if(User->mInList) {
 		User->mInList=false;
 		static string omsg;
 		omsg = "";
@@ -460,15 +426,13 @@ bool cServerDC::RemoveNick(cUser *User)
 
 		// delayed myinfo implies delay of quit too, otherwise there would be mess in peoples userslists
 		mUserList.SendToAll(omsg,mC.delayed_myinfo, true);
-		if(mC.show_tags == 1)
-		{
+		if(mC.show_tags == 1) {
 			mOpchatList.SendToAll(omsg,mC.delayed_myinfo, true);
 		}
 	}
 	return true;
 }
 
-/** send the same data to every user */
 void cServerDC::SendToAll(string &data, int cm,int cM)
 {
 	cConnDC *conn;
@@ -476,47 +440,42 @@ void cServerDC::SendToAll(string &data, int cm,int cM)
 	int size = data.size();
 
 	// prepare data
-	if(size >= MAX_SEND_SIZE-1)
-	{
+	if(size >= MAX_SEND_SIZE-1) {
 		if(Log(2))
 			LogStream() << "Truncating too long message from: "
 				<< data.size() << " to " << MAX_SEND_SIZE -1 << " Message starts with: " << data.substr(0,10) << endl;
 		data.resize( MAX_SEND_SIZE -1,' ');
 		size = MAX_SEND_SIZE -1;
 	}
-	if(data[data.size()-1] !='|')
-	{
+	if(data[data.size()-1] !='|') {
 		data.append("|");
 		size ++;
 	}
 
-	int count=0;
-	for(i=mConnList.begin(); i!= mConnList.end(); i++)
-	{
+	int count = 0;
+	for(i=mConnList.begin(); i!= mConnList.end(); i++) {
 		conn=(cConnDC *)(*i);
-		if(conn && conn->ok && conn->mWritable && conn->mpUser && conn->mpUser->mInList)
-		{
+		if(conn && conn->ok && conn->mWritable && conn->mpUser && conn->mpUser->mInList) {
 			conn->Write(data, true);
 			mUploadZone[conn->mGeoZone].Insert(mTime,data.size());
 			++count;
 		}
 	}
-	if(Log(5)) LogStream() << "ALL << " << data.substr(0,100) << endl;
+	if(Log(5))
+		LogStream() << "ALL << " << data.substr(0,100) << endl;
 	if(msLogLevel >= 3)
 		mNetOutLog << ((unsigned long)count) *data.size() << " "
 			<< data.size() << " "
 			<< count << " " << data.substr(0,10) << endl;
 }
 
-/** sends to every user data composed by start+nick+end */
 int cServerDC::SendToAllWithNick(const string &start,const string &end, int cm,int cM)
 {
 	static string str;
 	cConnDC *conn;
 	tCLIt i;
 	int counter = 0;
-	for(i=mConnList.begin(); i!= mConnList.end(); i++)
-	{
+	for(i=mConnList.begin(); i!= mConnList.end(); i++) {
 		conn=(cConnDC *)(*i);
 		if(
 			conn &&
@@ -541,8 +500,7 @@ int cServerDC::SendToAllWithNickCC(const string &start,const string &end, int cm
 	cConnDC *conn;
 	tCLIt i;
 	int counter = 0;
-	for(i=mConnList.begin(); i!= mConnList.end(); i++)
-	{
+	for(i=mConnList.begin(); i!= mConnList.end(); i++) {
 		conn=(cConnDC *)(*i);
 		if(
 			conn &&
@@ -562,7 +520,6 @@ int cServerDC::SendToAllWithNickCC(const string &start,const string &end, int cm
 	return counter;
 }
 
-/** return negative if conn should be removed */
 int cServerDC::OnNewConn(cAsyncConn *nc)
 {
 	cConnDC *conn = (cConnDC *)nc;
@@ -614,19 +571,19 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 		return -1;
 	}
 
+//FIXME: This make no sense
 #ifndef _WIN32
-	if(!this->mUseDNS) conn->SetTimeOut(eTO_KEY, mC.timeout_length[eTO_KEY], mTime);
+	if(!this->mUseDNS)
+		conn->SetTimeOut(eTO_KEY, mC.timeout_length[eTO_KEY], mTime);
 #endif
 	return 0;
 }
 
-/** create a string to get a line for a given connection, and return the pointer */
 string * cServerDC::FactoryString(cAsyncConn *conn)
 {
 	return conn->FactoryString();
 }
 
-/** treat message for given connection */
 void cServerDC::OnNewMessage(cAsyncConn *conn, string *str)
 {
 	if(conn->Log(4))
@@ -635,7 +592,6 @@ void cServerDC::OnNewMessage(cAsyncConn *conn, string *str)
 	conn->mxProtocol->TreatMsg(conn->mpMsgParser, conn);
 }
 
-/** return true if user is free to login */
 bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 {
 	string UsrKey, omsg;
@@ -730,7 +686,6 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	}
 }
 
-/** is called when user is about to get into the userslist */
 void cServerDC::DoUserLogin(cConnDC *conn)
 {
 	// verify we didn't get here by chance
@@ -875,14 +830,12 @@ bool cServerDC::ShowUserToAll(cUserBase *user)
 	return true;
 }
 
-/** close a given connection with sending a message as a reason, and do it at least in to_usec microseconds */
 void cServerDC::ConnCloseMsg(cConnDC *conn, const string &msg, int msec, int reason)
 {
 	DCPublicHS(msg,conn);
 	conn->CloseNice(msec, reason);
 }
 
-/** send the hello message, on which response we'll get MyINFO */
 int cServerDC::DCHello(const string & nick, cConnDC * conn, string *info)
 {
 	string str("$Hello ");
@@ -893,20 +846,18 @@ int cServerDC::DCHello(const string & nick, cConnDC * conn, string *info)
 	return 0;
 }
 
-/** return true if the condition of minimal delay is verified
-and modify the timestamp */
 bool cServerDC::MinDelay(cTime &then, int min)
 {
 	// @todo use timeins instead of mindelay, or change to microsecond resolution
 	cTime now;
 	cTime diff=now-then;
-	if(diff.Sec() >= min)
-	{
+	if(diff.Sec() >= min) {
 		then = now;
 		return true;
 	}
 	return false;
 }
+
 bool cServerDC::MinDelayMS(cTime& what, long unsigned int min)
 {
 	cTime now;
@@ -917,7 +868,7 @@ bool cServerDC::MinDelayMS(cTime& what, long unsigned int min)
 	}
 	return false;
 }
-/** return true if accept is allowed - override */
+
 bool cServerDC::AllowNewConn()
 {
 	return mConnList.size() <= (unsigned) mC.max_users_total + mC.max_extra_regs + mC.max_extra_vips + mC.max_extra_ops + mC.max_extra_cheefs + mC.max_extra_admins + 300;
@@ -935,13 +886,12 @@ int cServerDC::SaveFile(const string &file, const string &text)
 	return 1;
 }
 
-/** return 1 if user is valid and can go in
-return 0 otherwise */
 int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 {
 	// first validate the IP and host if any
 	stringstream errmsg,os;
-	if(!conn) return 0;
+	if(!conn)
+		return 0;
 	string omsg;
 	//time_t n;
 	bool close=false;
@@ -1048,9 +998,6 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 	return 1;
 }
 
-/** tells if a user with such nick can login into the hub
-	return
-*/
 tVAL_NICK cServerDC::ValidateNick(const string &nick, bool registered)
 {
 	cTime now;
@@ -1065,12 +1012,11 @@ tVAL_NICK cServerDC::ValidateNick(const string &nick, bool registered)
 		if(StrCompare(nick,0,mC.nick_prefix.length(),mC.nick_prefix) != 0) return eVN_PREFIX;
 		if(StrCompare(nick,0,4,"[OP]") == 0) return eVN_NOT_REGED_OP;
 	}
-	if( mBanList->IsNickTempBanned(nick) > now.Sec()) return eVN_BANNED;
+	if(mBanList->IsNickTempBanned(nick) > now.Sec())
+		return eVN_BANNED;
 	return eVN_OK;
 }
 
-
-/** this is called every period of time */
 int cServerDC::OnTimer(cTime &now)
 {
 	mHelloUsers.FlushCache();
@@ -1083,14 +1029,14 @@ int cServerDC::OnTimer(cTime &now)
 	mInProgresUsers.FlushCache();
 	
 	mSysLoad = eSL_NORMAL;
-	if(mFrequency.mNumFill > 0)  {
+	if(mFrequency.mNumFill > 0) {
 		double freq = mFrequency.GetMean(mTime);
 	
 		if(freq < 1.2 * mC.min_frequency) mSysLoad = eSL_PROGRESSIVE;
 		if(freq < 1.0 * mC.min_frequency) mSysLoad = eSL_CAPACITY;
 		if(freq < 0.8 * mC.min_frequency) mSysLoad = eSL_RECOVERY;
 		if(freq < 0.5 * mC.min_frequency) mSysLoad = eSL_SYSTEM_DOWN;
-	}	
+	}
 
 	if(mC.max_upload_kbps > 0.00001) {
 		int zone;
@@ -1109,7 +1055,6 @@ int cServerDC::OnTimer(cTime &now)
 			if((*i)->done()) {
 				delete *i;
 				(*i) = NULL;
-//				cout << " deleting tmpfunc" << endl;
 			} else {
 				// step the rest
 				(*i)->step();
@@ -1148,7 +1093,6 @@ int cServerDC::OnTimer(cTime &now)
 	return true;
 }
 
-/** converts number with units to a time period in seconds */
 unsigned cServerDC::Str2Period(const string &s, ostream &err)
 {
 	istringstream is(s);
@@ -1188,7 +1132,6 @@ unsigned cServerDC::Str2Period(const string &s, ostream &err)
 	return u;
 }
 
-/** does the registration on given hublist */
 int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 {
 	ostringstream os, os2;
@@ -1282,7 +1225,6 @@ int cServerDC::RegisterInHublist(string host, int port, cConnDC *conn)
 	}
 }
 
-/** No descriptions */
 __int64 cServerDC::GetTotalShareSize()
 {
 	__int64 total =0;
@@ -1307,7 +1249,6 @@ int cServerDC::WhoCC(string CC, string &dest, const string&separator)
 	return cnt;
 }
 
-/** fill in the list of nicks with given ip */
 int cServerDC::WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, const string&separator, bool exact)
 {
 	cUserCollection::iterator i;
@@ -1360,22 +1301,6 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 }
 
 };
-
-
-/*!
-    \fn nDirectConnect::cServerDC::DCKickNick(cUser *OP, const string &Nick, const string &Reason,
-    	int flags)
- */
-/**
-	
-  Kick an user and close the connection
-	
-  @param[in,out] use_os
-  @param[in,out] OP A pointer to cUser object of the operator who kicked the user.
-  @param[in] Nick The string of the nick to kick
-  @param[in] Reason The reason of the kick
-  @param[in] flags Change the behavior of the kick. For ex. also drop the user
-*/
 
 void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const string &Nick, const string &Reason, int flags)
 {
@@ -1504,4 +1429,3 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 		}
 	}
 }
-
