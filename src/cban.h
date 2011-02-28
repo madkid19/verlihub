@@ -26,44 +26,95 @@
 namespace nDirectConnect {
 
 class cServerDC;
-/**
-  *  Classes and structure representing and treating MYSQL tables used by verlihub
-  *
-  */
+
 namespace nTables {
-
 /**
-a ban record structure
-
-@author Daniel Muller
-*/
+ * This class represents a ban that is stored into banlist table.
+ * It provides basic methods to display the ban.
+ *
+ * @author Daniel Muller
+ */
 class cBan : public cObj
 {
-public:
+    public:
+	
+	/**
+	* Class constructor.
+	* @param server Pointer to the server.
+	*/
 	cBan(class cServerDC *);
+	
+	/**
+	* Class destructor.
+	*/
 	~cBan();
-	virtual void DisplayUser(ostream &);
+	
+	/**
+	* Display full information about the ban.
+	* @param os The output stream.
+	*/
 	virtual void DisplayComplete(ostream &os);
+	
+	/**
+	* Display kick information.
+	* @param os The output stream.
+	*/
 	virtual void DisplayKick(ostream &os);
+	
+	/**
+	* Display ban information into a single line.
+	* @param os The output stream.
+	*/
+	void DisplayInline(ostream &os);
+	
+	/**
+	* Display ban information about the user.
+	* @param os The output stream.
+	*/
+	virtual void DisplayUser(ostream &);
+	
+	/**
+	* Return a string describing the type of the ban.
+	* @return The type of the ban.
+	*/
 	const char *GetBanType();
+	
+	/**
+	* Set the type of the ban.
+	* @param type Ban type.
+	*/
+	void SetType(unsigned type)
+	{
+		for(mType = 0; mType < 11; mType++)
+			if(type == (unsigned)(1 << mType))
+				break;
+	}
+	
+	/**
+	* Write ban information to the output stream.
+	*/
+	friend ostream & operator << (ostream &, cBan &);
 
-	// banned ip address
+	// Banned IP address
 	string mIP;
-	// banned nick
+	// Banned nick
 	string mNick;
-	// banned host name
+	// Banned host name
 	string mHost;
-	// banned share size
+	// Banned share size
 	__int64 mShare;
-	// banned mail
+	// Banned mail
 	string mMail;
-	// banned ip range
+	// Lowest IP in banned IP range
 	unsigned long mRangeMin;
+	// Highest IP in banned IP range
 	unsigned long mRangeMax;
-	// unix timestamp of the start, end
+	// Time of the ban in Unix time format
 	long mDateStart;
+	// End of the ban in Unix time format
 	long mDateEnd;
 
+	// Type of the ban
 	enum {
 		eBF_NICKIP = 1 << 0,
 		eBF_IP  = 1 << 1,
@@ -77,50 +128,63 @@ public:
 		eBF_PREFIX = 1 << 9,
 		eBF_HOSTR1 = 1 << 10,
 	};
+	// Ban type
 	unsigned mType;
-
-	// op banner
+	// Operator who banned an user
 	string mNickOp;
-	// the ban reason
+	// Ban reason
 	string mReason;
-
-	friend ostream & operator << (ostream &, cBan &);
-	void DisplayInline(ostream &os);
-
-	/*!
-		\fn nDirectConnect::nTables::cBan::SetType(unsigned )
-	*/
-	void SetType(unsigned type)
-	{
-		for(mType = 0; mType < 11; mType++) if ( type == (unsigned)(1 << mType)) break;
-	}
-
+	// How ban should be displayed to output stream
 	int mDisplayType;
-
+	// Pointer to the server
 	cServerDC *mS;
 };
 
 /**
-  Unban is a formaer ban, extended by some details.
-  This is a class correspondig to the MySQL table
-*/
+ * This class represents an unban that is stored into unbanlist table.
+ * It provides basic methods to display the unban.
+ *
+ * @author Daniel Muller
+ */
 class cUnBan : public cBan
 {
-public:
+    public:
+	/**
+	* Class constructor.
+	* @param ban A ban
+	* @param server Pointer to the server.
+	*/
 	cUnBan(cBan &, cServerDC *);
+	
+	/**
+	* Class constructor.
+	* @param server Pointer to the server.
+	*/
 	cUnBan(cServerDC *);
+	
+	/**
+	* Class destructor.
+	*/
 	~cUnBan();
 
-	virtual void DisplayUser(ostream &);
+	/**
+	* Display full information about the ban.
+	* @param os The output stream.
+	*/
 	virtual void DisplayComplete(ostream &os);
+	
+	/**
+	* Display unban information about the user.
+	* @param os The output stream.
+	*/
+	virtual void DisplayUser(ostream &);
 
+	// Time of the unban in Unix time format
 	long mDateUnban;
-
-	// op unbanner
+	// Operator who unbanned an user
 	string mUnNickOp;
-	// the unban reason
+	// Unban reason
 	string mUnReason;
-
 };
 
 };

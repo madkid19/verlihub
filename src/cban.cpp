@@ -75,9 +75,6 @@ ostream & operator << (ostream &os, nDirectConnect::nTables::cBan &ban)
 	return os;
 }
 
-/*!
-    \fn nDirectConnect::nTables::cBan::DisplayUser(ostream &)
- */
 void nDirectConnect::nTables::cBan::DisplayUser(ostream &os)
 {
 	if(mNick.size())
@@ -107,9 +104,6 @@ void nDirectConnect::nTables::cUnBan::DisplayUser(ostream &os)
 	os << autosprintf(_("Removed: %s by %s because %s"), cTime(mDateUnban,0).AsDate().AsString().c_str(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
 }
 
-/*!
-    \fn nDirectConnect::nTables::cBan::DisplayComplete(ostream &os)
- */
 void nDirectConnect::nTables::cBan::DisplayComplete(ostream &os)
 {
 	DisplayUser(os);
@@ -129,10 +123,6 @@ void nDirectConnect::nTables::cUnBan::DisplayComplete(ostream &os)
 	os << autosprintf(_("Removed: %s by %s because %s"), cTime(mDateUnban,0).AsDate().AsString().c_str(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
 }
 
-/*!
-    \fn nDirectConnect::nTables::cBan::DisplayKick(ostream &os)
-    A display method for the after kick output to operator
- */
 void nDirectConnect::nTables::cBan::DisplayKick(ostream &os)
 {
 	if(mDateEnd) {
@@ -147,10 +137,6 @@ void nDirectConnect::nTables::cBan::DisplayKick(ostream &os)
 	}
 }
 
-
-/*!
-    \fn nDirectConnect::nTables::cBan::DisplayInline(ostream &os)
- */
 void nDirectConnect::nTables::cBan::DisplayInline(ostream &os)
 {
 	static const char *sep = " \t ";
