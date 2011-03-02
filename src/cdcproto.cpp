@@ -465,9 +465,9 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		if((share < min_share) || (max_share && (share > max_share))) {
 			ostringstream message;
 			if(share < min_share)
-				message << autosprintf(_("You share %s, but the min share is %s. (active:%s / passive:%s)"), convertByte(share,false).c_str(), convertByte(min_share,false).c_str(), convertByte(min_share_a,false).c_str(), convertByte(min_share_p,false).c_str());
+				message << autosprintf(_("You share %s, but the min share is %s. (active:%s / passive:%s)"), convertByte(share,false).c_str(), convertByte(min_share*1024,false).c_str(), convertByte(min_share_a*1024,false).c_str(), convertByte(min_share_p*1024,false).c_str());
 			else
-				message << autosprintf(_("You share %s, but the max share is %s."), convertByte(share,false).c_str(), convertByte(max_share,false).c_str());
+				message << autosprintf(_("You share %s, but the max share is %s."), convertByte(share,false).c_str(), convertByte(max_share*1024,false).c_str());
 			if(conn->Log(2))
 				conn->LogStream() << "Share limit."<< endl;
 			mS->ConnCloseMsg(conn, message.str(), 4000, eCR_SHARE_LIMIT);
