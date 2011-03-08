@@ -266,6 +266,7 @@ void cDCConf::AddVars()
 	// End IP and zone configuration
 	
 	// Custom messages
+	Add("ban_extra_message", ban_extra_message, "");
 	Add("msg_replace_ban",msg_replace_ban, string(""));
 	Add("msg_welcome_guest",msg_welcome[0]);
 	Add("msg_welcome_reg",msg_welcome[1]);

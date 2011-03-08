@@ -207,6 +207,8 @@ public:
 	int wrongpassword_report;
 	int botinfo_report;
 	double timeout_length[6];
+	
+	string ban_extra_message;
 	string msg_replace_ban;
 	string msg_welcome[11];
 	bool desc_insert_mode;

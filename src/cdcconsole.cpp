@@ -483,6 +483,7 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	os << "\r\n[::] Release: Verlihub-" VERSION " (" __CURR_DATE_TIME__ ")" << endl;
 	os << "[::] " << _("Authors") << ": Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
 	os << "[::] " << _("Authors") << ": chaosuk (chaos@dchublist.com)" << endl;
+	os << "[::] " << _("Translators") << ": Czech (Uhlik), Italian (netcelli)" << endl;
 	os << "[::] " << _("Contributors") << ": Stefano, Intruder, Rolex, Frog" << endl;
 	os << "[::] " << _("Credits") << ": We would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << endl;
 	os << "[::] " << _("Website") << ": http://www.verlihub-project.org" << endl;
@@ -1227,7 +1228,9 @@ bool cDCConsole::cfBan::operator()()
 					Kick.mNick = Who;
 				else
 					Kick.mIP = Who;
-
+				// Append extra ban message
+				if(!mS->mC.ban_extra_message.empty())
+					Kick.mReason += " " + mS->mC.ban_extra_message;
 				mS->mBanList->NewBan(Ban, Kick, BanTime, BanType);
 			}
 			break;

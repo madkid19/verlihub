@@ -1349,7 +1349,7 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					string omsg;
 					ostr << OP->mNick << " is kicking " << Nick << " because: " << NewReason;
 					omsg = ostr.str();
-					if(!mC.hide_all_kicks && !OP->mHideKick )
+					if(!mC.hide_all_kicks && !OP->mHideKick)
 						SendToAll(omsg, OP->mHideKicksForClass ,int(eUC_MASTER));
 
 					if(flags & eKCK_PM) {
