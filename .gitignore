@@ -16,7 +16,6 @@ autom4te.cache
 .deps
 build/
 verlihub_config
-scripts/vh_*
 */Makefile
 src/make_time.h
 dirsettings.h

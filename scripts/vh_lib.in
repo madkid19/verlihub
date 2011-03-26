@@ -1,0 +1,262 @@
+#!@BASH_PATH@
+
+###########################################################################
+#   Author: Verlihub Team  (devs at verlihub-project dot org )            #
+#                                                                         #
+#   Copyright (C) 2006-2011 by Verlihub Project                           #
+#   devs at verlihub-project dot org                                      #
+#                                                                         #
+#   This program is free software; you can redistribute it and/or modify  #
+#   it under the terms of the GNU General Public License as published by  #
+#   the Free Software Foundation; either version 2 of the License, or     #
+#   (at your option) any later version.                                   #
+#                                                                         #
+#   This program is distributed in the hope that it will be useful,       #
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of        #
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
+#   GNU General Public License for more details.                          #
+#                                                                         #
+#   You should have received a copy of the GNU General Public License     #
+#   along with this program; if not, write to the                         #
+#   Free Software Foundation, Inc.,                                       #
+#   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
+###########################################################################
+
+# Declare gloabl variables
+MYSQL=mysql
+PREFIX=@prefix@
+BINDIR=@bindir@
+DATADIR=@datadir@
+LIBDIR=@libdir@
+DAEMON_NAME="vh_daemon"
+TIMESTAMP=`date +%s`
+VER="1.5"
+
+# Include config
+source $BINDIR/vh_config
+
+# Check if user class is a valid number
+function check_class() #class
+{
+	if [ $1 == "-1" ] || [ $1 == "0" ] || [ $1 == "1" ] || [ $1 == "2" ] || [ $1 == "3" ] || [ $1 == "4" ] || [ $1 == "5" ] || [ $1 == "10" ]; then
+		return 1;
+	else
+		return 0;
+	fi
+}
+
+# Build SQL to insert new user in the DB
+function register() # nickname, class, password
+{
+	SQL_FIELDS="reg_date,reg_op,nick,class"
+	SQL_VALUES="unix_timestamp(now()),'vh_regnick','$1','$2'"
+
+	if [ "$3" != "" ]; then
+		SQL_FIELDS="$SQL_FIELDS,login_pwd,pwd_change,pwd_crypt"
+		SQL_VALUES="$SQL_VALUES,encrypt('$3'),0,1"
+	fi;
+
+	MYSQL_QUERY="INSERT INTO reglist ($SQL_FIELDS) VALUES ($SQL_VALUES)";
+	if ! mysql_query "$MYSQL_QUERY" &> /dev/null ; then
+		return 1;
+	else
+		return 0;
+	fi
+}
+
+# Return config directory from default paths
+function get_path_from_defaults()
+{
+	CONFIG_DIR="/etc/verlihub"
+	[ -d $PREFIX/etc/verlihub ] && CONFIG_DIR="$PREFIX/etc/verlihub"
+	[ -d ./.verlihub ] && CONFIG_DIR="./.verlihub"
+	[ -d ~/.verlihub ] && CONFIG_DIR="${HOME}.verlihub"
+}
+
+# Check if path is correct or not and set it as config directory; 
+function set_path() #path_to_be_checked
+{
+	if [ "_$1" != "_" ]; then
+		CONFIG_DIR=$1
+	else
+		echo "-- Searching config directory in default path"
+		get_path_from_defaults
+	fi
+
+	if [ -d "$CONFIG_DIR" ] && [ -f "$CONFIG_DIR/dbconfig" ]; then
+		export VERLIHUB_CFG=$CONFIG_DIR
+		return 0;		
+	fi
+	echo_s "-- Directory '$CONFIG_DIR' is not a valid config folder\n" $RED
+	return 1;
+}
+
+# Get variable
+function get_var_from_conf() # var_name
+{
+	RETURN=$(grep -E "$1 ?=" ${VERLIHUB_CFG}/dbconfig | sed -e 's/.*= *//')
+	if [ "_$RETURN" == "_" ]; then
+		exit 1; # non funziona e nn esce dallo script
+	fi
+		echo $RETURN
+		return 0;
+}
+
+# Return PID
+function get_pid() # path_to_dbconfig
+{
+	PID_FILE="$1/pid"
+	
+	if [ -e $PID_FILE ]; then
+		PID_RESULT=$(cat $PID_FILE)
+		return 0;
+	fi
+	return 1;
+}
+
+# Check if hub is running
+function is_hub_running() # path_to_dbconfig
+{
+	if get_pid $1 ; then
+		ps -p $PID_RESULT | grep "$DAEMON_NAME" > /dev/null && return 0;
+	fi
+	return 1;
+}
+
+# Return db_host
+function get_db_host() { echo $(get_var_from_conf "db_host" "verlihub"); }
+
+# Return db_data
+function get_db_name() { echo $(get_var_from_conf "db_data" "verlihub"); }
+
+# Return db_user
+function get_db_user() { echo $(get_var_from_conf "db_user" "verlihub"); }
+
+# Return db_pass
+function get_db_pass() { echo $(get_var_from_conf "db_pass" "$TIMESTAMP"); }
+
+# Connect to MySQL server
+function mysql_connect() { 
+	@BASH_PATH@ -c "mysql -h $(get_db_host) -D $(get_db_name) -u $(get_db_user) -p$(get_db_pass) $1" && return 0 || return 1;
+}
+
+# Run given query
+function mysql_query() { mysql_connect "--execute=\"$1\"" && return 0 || return 1; }
+
+# Update var in setuplist
+function mysql_update() # variable, value
+{
+	mysql_query "UPDATE SetupList SET val='$2' WHERE var='$1'";
+}
+
+# Import SQL file
+function mysql_import() #path_to_file
+{
+	mysql_connect " < \"$1\""
+}
+
+# Check if given table exists in the database
+function is_table_exists() # table
+{ 
+	mysql_query "desc $1" &> /dev/null || return 1; return 0;
+}
+
+function does_mysql_account_exists() # host, user, pass
+{
+	if [ "_$1" == "_" -o "_$2" == "_" -o "_$3" == "_" ]; then
+		exit 1;
+	fi
+	$MYSQL -h "$1" -u "$2" -p"$3" -e "show databases" &>/dev/null  && return 0 || return 1
+}
+
+function does_mysql_db_exists() # host, user, pass, db
+{
+	if [ "_$1" == "_" -o "_$2" == "_" -o "_$3" == "_" ]; then
+		exit 1;
+	fi
+	$MYSQL -h "$1" -u "$2" -p"$3" -e "use $4" &>/dev/null  && return 0 || return 1
+}
+
+function mysql_get_socket()
+{
+	MYSQL_CONF="/etc/my.cnf /etc/mysql/my.cnf ~/.my.cnf /usr/local/etc/my.cnf"
+	for FILE in $MYSQL_CONF
+	do
+		if [ -r $FILE ]; then
+		SOCKET=$(cat $FILE | grep "^socket" | head -n 1 | cut -d"=" -f2| tr -d " ")
+		fi
+	done
+}
+
+function create_mysql_tables() # get_socket
+{
+	is_table_exists "reglist" "SetupList" && return 0
+	if $1 ; then
+		mysql_get_socket
+		if [ ! -z $SOCKET ]; then
+			export "MYSQL_UNIX_PORT=$SOCKET"
+		fi
+	fi
+	
+	$BINDIR/verlihub 2&>$VERLIHUB_CFG/install_log &
+	PID=$!
+	sleep 5
+	kill -9 $PID &>/dev/null
+	is_table_exists "reglist" "SetupList" || return 1
+	return 0
+}
+
+# Colors
+BOLD='\E[1m'
+BLUE='\E[34m'
+RED='\E[31m'
+GREEN='\E[32m'
+GREEN_BOLD='\E[1;32m'
+RED_BOLD='\E[1;31m'
+BLUE_BOLD='\E[1;34m'
+function echo_s() # (message,color)
+{
+	local DEFAULT_MSG="No message passed."
+	MESSAGE=${1:-$DEFAULT_MSG}
+	COLOR=$2
+	echo -en "${COLOR}${MESSAGE}"
+
+	# Reset text attributes to normal
+	tput sgr0
+	return
+} 
+
+# Make question to user
+function ask() # question, default value
+{
+	if [ "_$1" == "_" ]; then
+		exit;
+	fi
+	if [ "_$2" != "_" ]; then
+		read -p "$1 ($2): " VALUE
+		if [ "_$VALUE" == "_" ]; then
+			VALUE=$2
+		fi
+	else
+		IS_ANSWER_NOT_EMPTY=false
+		until $IS_ANSWER_NOT_EMPTY;
+		do
+			read -p "$1: " VALUE
+			if [ "_$VALUE" != "_" ]; then
+				IS_ANSWER_NOT_EMPTY=true
+			fi
+		done
+	fi
+	echo "$VALUE"
+}
+
+# Ask user to choose
+function yes_or_no # (question)
+{
+	read -p "$1"" (y/N) " ANS
+	if [ "$ANS" == "Y" ] || [ "$ANS" == "y" ]; then
+		return 0
+	else
+		return 1
+	fi
+}

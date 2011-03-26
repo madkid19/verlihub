@@ -1,14 +1,9 @@
 SET(SCRIPT_FILES
-	vh_runhub
-	vh_getcfg
-	vh_getdb
-	vh_install_cli
-	vh_regnick
-	vh_restart
-	vh_setup
-	vh_trigger
-	vh_install_gui
-	vh_install
+	vh_daemon
+	vh_lib
+	vh_manage
+	vh_manage_cli
+	vh_multihub
 	vh_migration_0.9.8eto0.9.9a
 )
 

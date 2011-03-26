@@ -1,69 +1,91 @@
 #!@BASH_PATH@
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-bindir=@bindir@
-confdir=`$bindir/vh_getcfg`
-dbconf="$confdir/dbconfig"
+# Include library
+source $(dirname $0)/vh_lib
 
-function DeleteConfigVariable
+function delete_config_var() #var
 {
-	vh_getdb --query "DELETE FROM SetupList WHERE var='$1' and file='config'"
-}
-
-function DeleteLangVariable
-{
-	vh_getdb --query "DELETE FROM SetupList WHERE var='$1' and file!='config'"
-}
-
-function YesNo # (question)
-{
-	read -p "$1"" (y/N)" rep
-	if [ "$rep" == "Y" ] || [ "$rep" == "y" ]; then
-		return 0
-	else
-		return 1
+	if ! mysql_query "DELETE FROM SetupList WHERE var='$1' and file='config'" ; then
+		echo "-- Error executing query to delete config variables"
+		exit 1;
 	fi
 }
 
-echo "VerliHub migration script to version 0.9.9a"
-echo
+function delete_lang_var() #var
+{
+	if ! mysql_query "DELETE FROM SetupList WHERE var='$1' and file!='config'" ; then
+		echo "-- Error executing query to delete lang variables"
+		exit 1;
+	fi
+}
 
-if [ ! -f $dbconf ]; then
-	echo "Verlihub config folder '$dbconf' does not exist. Please provide it by running the following command:"
-	echo "'export VERLIHUB_CFG=/path/to/config/folder'"
-	exit 1;
-fi;
 
-echo "You verlihub config folder is '$dbconf'."
-YesNo "Do you want to continue with migration?" || exit 1
+echo_s "-- Welcome to verliHub migration script to version 0.9.9a\n" $RED_BOLD
+echo "-- In order to make migration you need to specify the verlihub config folder to get database information"
 
-echo "-- Deleting ban message variables"
-ban_messages=(ban_reason ban_remaining ban_expired ban_for ban_permanently ban_type ban_removed ban_by ban_types_nickip ban_types_ip ban_types_nick ban_types_iprange ban_types_host1 ban_types_host2 ban_types_host3 ban_types_share ban_types_email ban_types_prefix ban_types_rhost1)
-for variable in ${ban_messages[@]}; do
-	DeleteLangVariable $variable
+# Select path where to put verlihub config file
+IS_CHOOSEN_FOLDER_OK=false
+until $IS_CHOOSEN_FOLDER_OK;
+do
+	echo_s "\t[1] " $BOLD && echo "/etc/verlihub"
+	echo_s "\t[2] " $BOLD && echo "$HOME.verlihub"
+	echo_s "\t[3] " $BOLD && echo "$PREFIX/etc/verlihub"
+	echo_s "\t[4] " $BOLD && echo "Other, choose path where put config file"
+
+	CHOOSEN_FOLDER=$(ask "Select number")
+
+	# Get selected folder
+	case $CHOOSEN_FOLDER in
+		"1") CHOOSEN_FOLDER="/etc/verlihub/";;
+		"2") CHOOSEN_FOLDER="$HOME.verlihub/";;
+		"3") CHOOSEN_FOLDER="$PREFIX/etc/verlihub/";;
+		"4") CHOOSEN_FOLDER=$(ask "Type complete path");
+	esac
+
+	if set_path $CHOOSEN_FOLDER ; then
+		IS_CHOOSEN_FOLDER_OK=true
+	else
+	echo -e "\nOk, let's try again"
+	fi
 done
 
-echo "-- Deleting timeout message variables"
-timeout_messages=(timeout_key timeout_nick timeout_login timeout_myinfo timeout_flush timeout_setpass)
-for variable in ${timeout_messages[@]}; do
-	DeleteLangVariable $variable
-done
+echo "-- You verlihub config folder is '$CONFIG_DIR'"
 
-echo "-- Deleting tag_min_version and tag_max_version variables"
-clients=(plusplus dcgui odc dc dcpro strongdc idc zdc apexdc zion)
-for variable in ${other_messages[@]}; do
-	DeleteConfigVariable "tag_min_version_$variable"
-	DeleteConfigVariable "tag_max_version_$variable"
-done
+if $(yes_or_no "Do you want to continue with migration?") ; then
+	echo "-- Deleting ban message variables"
+	BAN_MESSAGES=(ban_reason ban_remaining ban_expired ban_for ban_permanently ban_type ban_removed ban_by ban_types_nickip ban_types_ip ban_types_nick ban_types_iprange ban_types_host1 ban_types_host2 ban_types_host3 ban_types_share ban_types_email ban_types_prefix ban_types_rhost1)
+	for VAR in ${BAN_MESSAGES[@]}; do
+		delete_lang_var $VAR
+	done
+	sleep 2
 
-echo "-- Deleting other variables"
-other_messages=(save_lang chat_msg_long chat_msg_lines pwd_cannot pwd_can pwd_min pwd_success pwd_set_error pwd_setup ip nick user host ip_range because op type not_in_userlist error success wrong_dc_tag tag_max_hubs tag_max_slots tag_min_slots tag_max_hs_ratio tag_min_limit tag_min_ls_ratio tag_no_sock msg_downgrade msg_upgrade msg_topic_set msg_topic_reset autoreg_nick_prefix autoreg_already_reg autoreg_success autoreg_error timeout_any operation_timeout msg_chat_onoff msg_change_pwd msg_banned msg_hub_full msg_nick_prefix msg_downgrade msg_upgrade msg_replace_ban login_share_min login_share_max autoreg_min_share search_share_min ctm_share_min)
-for variable in ${other_messages[@]}; do
-	DeleteLangVariable $variable
-done
+	echo "-- Deleting timeout message variables"
+	TIMEOUT_MESSAGES=(timeout_key timeout_nick timeout_login timeout_myinfo timeout_flush timeout_setpass)
+	for VAR in ${TIMEOUT_MESSAGES[@]}; do
+		delete_lang_var $VAR
+	done
+	sleep 2
+	
+	echo "-- Deleting tag_min_version and tag_max_version variables"
+	CLIENTS=(plusplus dcgui odc dc dcpro strongdc idc zdc apexdc zion)
+	for VAR in ${CLIENTS[@]}; do
+		delete_config_var "tag_min_version_$VAR"
+		delete_config_var "tag_max_version_$VAR"
+	done
+	sleep 2
 
-echo "-- Renaming variable 'lang_name' to 'locale' in dbconfig file"
-sed -i 's/lang_name/locale/g' $dbconf
+	echo "-- Deleting other variables"
+	OTHER_MESSAGES=(save_lang chat_msg_long chat_msg_lines pwd_cannot pwd_can pwd_min pwd_success pwd_set_error pwd_setup ip nick user host ip_range because op type not_in_userlist error success wrong_dc_tag tag_max_hubs tag_max_slots tag_min_slots tag_max_hs_ratio tag_min_limit tag_min_ls_ratio tag_no_sock msg_downgrade msg_upgrade msg_topic_set msg_topic_reset autoreg_nick_prefix autoreg_already_reg autoreg_success autoreg_error timeout_any operation_timeout msg_chat_onoff msg_change_pwd msg_banned msg_hub_full msg_nick_prefix msg_downgrade msg_upgrade msg_replace_ban login_share_min login_share_max autoreg_min_share search_share_min ctm_share_min)
+	for VAR in ${OTHER_MESSAGES[@]}; do
+		delete_lang_var $VAR
+	done
+	sleep 2
 
-echo "Done!"
+	echo "-- Renaming variable 'lang_name' to 'locale' in dbconfig file"
+	sed -i "s/lang_name/locale/g" "$CONFIG_DIR/dbconfig"  > /dev/null 2>&1
+
+	echo "-- Done"
+else
+	echo "-- Skipped migration"
+fi
+exit 0;
