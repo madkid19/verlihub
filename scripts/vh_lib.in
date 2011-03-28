@@ -92,14 +92,16 @@ function set_path() #path_to_be_checked
 }
 
 # Get variable
-function get_var_from_conf() # var_name
+function get_var_from_conf() # var_name, default_value
 {
-	RETURN=$(grep -E "$1 ?=" ${VERLIHUB_CFG}/dbconfig | sed -e 's/.*= *//')
+	RETURN=$(grep -E "$1 ?=" ${VERLIHUB_CFG}/dbconfig 2> /dev/null | sed -e 's/.*= *//')
 	if [ "_$RETURN" == "_" ]; then
-		exit 1; # non funziona e nn esce dallo script
-	fi
+		echo $2		
+		
+	else
 		echo $RETURN
-		return 0;
+	fi
+	return 0;
 }
 
 # Return PID
