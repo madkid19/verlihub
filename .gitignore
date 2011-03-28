@@ -3,3 +3,4 @@ Doxyfile
 .directory
 *.kdev4
 build/
+/Makefile
