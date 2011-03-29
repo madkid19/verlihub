@@ -423,7 +423,7 @@ function install_cli()
 				echo -e "Ok, let's try again.\n\n"
 			fi
 		else
-			ANSWER=$(ask "-- The config folder '$CHOOSEN_FOLDER' does not exist and will be created. Do you want to continue? [y/N]");
+			ANSWER=$(ask "-- The config folder '$CHOOSEN_FOLDER' does not exist and will be created.\n   Do you want to continue? [y/N]");
 			if [ $ANSWER == 'y' ]; then
 				IS_CHOOSEN_FOLDER_OK=true
 				CHOOSEN_FOLDER_NOT_EXISTS=true
@@ -530,10 +530,10 @@ mysql_update "hub_name" $VH_HUB_NAME
 mysql_update "hub_host" "$VH_HUB_HOST:$VH_HUB_PORT"
 mysql_update "listen_port" $VH_HUB_PORT
 if ! register $VH_MASTER_NAME "10" $VH_MASTER_PASSWORD ; then
-	echo_s "-- A error occured with registering user '$VH_MASTER_NAME'. Please do it manually" $RED_BOLD
+	echo_s "-- A error occured with registering user '$VH_MASTER_NAME'. Please do it manually\n" $RED_BOLD
 fi
 if ! mysql_import $DATADIR/sql/default_reglist.sql > /dev/null 2>&1 ; then
-	echo_s "-- A error occured with file importing '$DATADIR/sql/default_reglist.sql'" $RED_BOLD
+	echo_s "-- A error occured with file importing '$DATADIR/sql/default_reglist.sql'\n" $RED_BOLD
 	exit 1;
 fi
 

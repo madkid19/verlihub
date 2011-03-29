@@ -97,7 +97,6 @@ function get_var_from_conf() # var_name, default_value
 	RETURN=$(grep -E "$1 ?=" ${VERLIHUB_CFG}/dbconfig 2> /dev/null | sed -e 's/.*= *//')
 	if [ "_$RETURN" == "_" ]; then
 		echo $2		
-		
 	else
 		echo $RETURN
 	fi
@@ -126,7 +125,7 @@ function is_hub_running() # path_to_dbconfig
 }
 
 # Return db_host
-function get_db_host() { echo $(get_var_from_conf "db_host" "verlihub"); }
+function get_db_host() { echo $(get_var_from_conf "db_host" "localhost"); }
 
 # Return db_data
 function get_db_name() { echo $(get_var_from_conf "db_data" "verlihub"); }
