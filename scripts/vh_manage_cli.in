@@ -42,6 +42,7 @@ help_me()
 		echo_s "\t--password" $BLUE && echo -e " \t<password> \t\tUser's password (optional)"
 		echo_s "\t--class" $BLUE && echo -e " \t<class> \t\tClass of the user (-1, 0, 1, 2, 3, 4, 5, 10)"
 		echo_s "\t--configdir" $BLUE && echo -e " \t<path_to_dbconfig> \tSpecify the hub with location of dbconfig file. Optional"
+		echo_s "   --geoip" $RED && echo -e "\t[path_to_dbconfig] \t\tUpdate GeoIP automatically"
 	echo_s "   --backup" $RED && echo -e "\t<destination_path> [path_to_dbconfig] \tMake backup of database from given dbconfig path"
 	echo_s "   --restore" $RED && echo -e "\t<path_to_sql>      [path_to_dbconfig] \tImport the given SQL file in the database for given dbconfig path"
 	echo_s "   --version" $RED && echo -e "\t\t\t\tPrint version information"
@@ -79,8 +80,8 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	ERROR_FILE=$CONFIG_DIR/err
 
 	# Backup logs
-        [ -e $ERROR_FILE ] && mv -f $ERROR_FILE $ERROR_FILE.old
-        [ -e $LOG_FILE ] && mv -f $LOG_FILE $LOG_FILE.old
+	[ -e $ERROR_FILE ] && mv -f $ERROR_FILE $ERROR_FILE.old
+	[ -e $LOG_FILE ] && mv -f $LOG_FILE $LOG_FILE.old
 	# Create log files
 	touch $LOG_FILE && touch $ERROR_FILE
 
@@ -170,7 +171,7 @@ function backup() # destination folder, path_to_dbconfig
 	# Check if mysqldump is installed
 	DUMP=`whereis mysqldump | awk '{ print $2 }'`
 	if [ -z "$DUMP" ]; then
-		echo_s "-- This command requires mysqldump to function, please consider installing it\n"
+		echo_s "-- This command requires mysqldump to work, please consider installing it\n"
 		exit;
 	fi
 	# Check destination folder
@@ -256,7 +257,7 @@ function add_user()
 	fi
 
 	if ! register $USER_NICKNAME $USER_CLASS $USER_PASSWORD ; then
-		echo_s "-- A error occured while trying to execute MySQL query. Is user '$USER_NICKNAME' already exists?" $RED
+		echo_s "-- A error occured while trying to execute MySQL query. Is user '$USER_NICKNAME' already exists?\n" $RED
 		exit;
 	fi
 	echo "-- Done"
@@ -279,6 +280,56 @@ function ask_admin_access_cli()
 		echo_s ": $MYSQL_ADMIN_PASSWORD \n"
 		yes_or_no "Do you want to continue with this information?" && ARE_ADMIN_DB_INFO_OK=true || echo -e "Let's do it again\n\n"
 	done
+}
+
+# Update GeoIP
+function update_geoip()
+{
+	if [ $UID -ne 0 ]; then
+		echo_s "-- You can only run this option with root account\n" $RED
+		exit 0;
+	fi
+
+	# Check if mysqldump is installed
+	DUMP=`whereis gzip | awk '{ print $2 }'`
+	if [ -z "$DUMP" ]; then
+		echo_s "-- This command requires gzip to work, please consider installing it\n"
+		exit 1;
+	fi
+	# Check config directory
+	if ! set_path $1 ; then
+		exit 1;
+	fi
+	# Check if directory exists
+	if [ ! -d /usr/share/GeoIP/ ]; then
+		echo_s "-- Can't find '/usr/share/GeoIP/'. If you installed GeoIP in another prefix you should update it manually\n" $RED
+		exit 1;
+	fi;
+
+	# Maxmind link
+	local ADDRESS="http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz "
+	
+	# Download tarball
+	echo "-- Download GeoIP from Maxmind server"
+	wget $ADDRESS > /dev/null 2>&1
+	if [ $? -ne 0 ]; then
+		echo_s "-- A error happens while trying to download GeoIP tarball\n" $RED
+		exit 1;
+	fi
+	# Decompress the file
+	gzip -d GeoIP.dat.gz
+	if [ $? -ne 0 ]; then
+		echo_s "-- A error happens while trying to decompress GeoIP tarball\n" $RED
+		exit 1;
+	fi
+	# Move the file
+	mv -f GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+	if [ $? -ne 0 ]; then
+		echo_s "-- A error happens while trying to copy GeoIP DAT file\n" $RED
+		exit 1;
+	fi
+	echo "-- Done"
+	exit 0;
 }
 
 # Install verlihub
@@ -554,6 +605,8 @@ case "_$1" in
 	"_--restart")	shift
 			kill_hub $1
 			run_hub "$1" "restart";;
+	"_--geoip")	shift
+			update_geoip $1;;
 	"_--restore")	shift
 			restore $1 $2;;
 	"_--backup")	shift
