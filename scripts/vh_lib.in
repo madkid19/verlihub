@@ -96,7 +96,7 @@ function get_var_from_conf() # var_name, default_value
 {
 	RETURN=$(grep -E "$1 ?=" ${VERLIHUB_CFG}/dbconfig 2> /dev/null | sed -e 's/.*= *//')
 	if [ "_$RETURN" == "_" ]; then
-		echo $2		
+		echo $2
 	else
 		echo $RETURN
 	fi
@@ -148,6 +148,18 @@ function mysql_query() { mysql_connect "--execute=\"$1\"" && return 0 || return 
 function mysql_update() # variable, value
 {
 	mysql_query "UPDATE SetupList SET val='$2' WHERE var='$1'";
+}
+
+# Get val from SetupList
+function mysql_value() #val
+{
+	VAL=$(mysql_query "SELECT val FROM SetupList WHERE var = '$1'")
+	VAL=$(echo $VAL | cut -d' ' -f2) # Get second value of return string from MySQL
+	if [ "$VAL" == "NULL" ] || [ "_$VAL" == "_" ]; then
+		echo "not_set"
+	else
+		echo $VAL
+	fi
 }
 
 # Import SQL file
