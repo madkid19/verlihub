@@ -1,0 +1,208 @@
+#!@BASH_PATH@
+
+###########################################################################
+#   Author: Verlihub Team  (devs at verlihub-project dot org )            #
+#                                                                         #
+#   Copyright (C) 2006-2011 by Verlihub Project                           #
+#   devs at verlihub-project dot org                                      #
+#                                                                         #
+#   This program is free software; you can redistribute it and/or modify  #
+#   it under the terms of the GNU General Public License as published by  #
+#   the Free Software Foundation; either version 2 of the License, or     #
+#   (at your option) any later version.                                   #
+#                                                                         #
+#   This program is distributed in the hope that it will be useful,       #
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of        #
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         #
+#   GNU General Public License for more details.                          #
+#                                                                         #
+#   You should have received a copy of the GNU General Public License     #
+#   along with this program; if not, write to the                         #
+#   Free Software Foundation, Inc.,                                       #
+#   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
+###########################################################################
+
+SCRIPT=$0
+# Include library
+source $(dirname $0)/vh_lib
+
+help_me()
+{
+	echo_s "$SCRIPT\n" $BOLD
+	echo "This is a utility script for convert registered users to VerliHub, usage:"
+	echo_s "   --ptokax" $RED && echo -e "  <path_to_RegisteredUsers.xml> <path_to_Profiles.xml>\tConvert registrations from PtokaX to VerliHub"
+	echo_s "   --aquila" $RED && echo -e "\t\t\t\tConvert registrations from Aquila to VerliHub"
+	echo_s "   --ynhub" $RED && echo -e "\t\t\t\tConvert registrations from YnHub to VerliHub"
+	echo_s "   --version" $RED && echo -e "\t\tPrint version information"
+	echo_s "   --help" $RED && echo -e "\t\tShow this help"
+	echo ""
+}
+
+function _get_profile_map_key() #string (map_key profile_name)
+{
+	echo $1 | cut -d' ' -f1
+}
+
+function _get_ptokax_profile_name() #string (map_key profile_name)
+{
+	echo $1 | cut -d' ' -f2
+}
+
+function _get_verlihub_profile_name() #class
+{
+	case "$1" in
+		0) 	echo "Guest";;
+		1) 	echo "Registered user";;
+		2)	echo "VIP";;
+		3)	echo "OP";;
+		4)	echo "Cheef";;
+		5)	echo "Admin";;
+		10)	echo "Master";;
+		*)	echo "Master";;
+	esac;
+}
+
+function _import_ptokax_profile() #Profiles.xml
+{
+
+	# Collect profile
+	echo "-- Found $NUMBER_OF_PROFILES profile(s)"
+	# Print profiles summary
+	echo_s "-- Now you need to map PtokaX profile with VerliHub\n" $RED_BOLD
+	echo "-- These are VerliHub profiles you can choose (use bold ID as answer):"
+	echo_s "\t[0] " $BOLD && echo "- Guest users"
+	echo_s "\t[1] " $BOLD && echo "- Registered users"
+	echo_s "\t[2] " $BOLD && echo "- VIP users"
+	echo_s "\t[3] " $BOLD && echo "- Operator user"
+	echo_s "\t[4] " $BOLD && echo "- Cheef user"
+	echo_s "\t[5] " $BOLD && echo "- Admin user"
+	echo_s "\t[10] " $BOLD && echo "- Master user"
+	echo
+
+	# Ask user to mapping
+	IS_NEW_MAP_OK=false
+	until $IS_NEW_MAP_OK;
+	do
+		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		do
+			local PTOKAX_PROFILE_NAME=$(xpath $1 "//Profiles/Profile[$J]/Name/text()" 2> /dev/null)	
+			local IS_SINGLE_MAPPING_OK=false
+
+			until $IS_SINGLE_MAPPING_OK;
+			do
+				local PTOKAX_CLASS=$(( $J-1 ))
+				MAP=$(ask "Ptokax profile [$PTOKAX_CLASS - $PTOKAX_PROFILE_NAME] map with")
+				if check_class $MAP ; then
+					echo_s "-- Type a valid number: 0, 1, 2, 3, 4, 5, 10\n" $RED
+				else
+					IS_SINGLE_MAPPING_OK=true
+				fi
+				# Populate array with verlihub class (map) and ptokax profile name
+				PROFILES[$PTOKAX_CLASS]="$MAP $PTOKAX_PROFILE_NAME"
+			done
+		done
+
+		# Print new map
+		echo
+		echo "-- This the new profile map:"
+		echo_s "\t[Ptokax profile] " $BOLD && echo_s "=> \t" && echo_s "[Verlihub profile]\n" $BOLD
+		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		do
+			local PTOKAX_CLASS=$(( $J-1 ))
+			local PTOKAX_PROFILE_NAME=$(_get_ptokax_profile_name "${PROFILES[$PTOKAX_CLASS]}")
+			local VERLIHUB_CLASS=$(_get_profile_map_key "${PROFILES[$PTOKAX_CLASS]}")
+			local VERLIHUB_PROFILE_NAME=$(_get_verlihub_profile_name $VERLIHUB_CLASS)
+
+			echo -e "\t[$PTOKAX_CLASS - $PTOKAX_PROFILE_NAME] \t=>\t [$VERLIHUB_CLASS - $VERLIHUB_PROFILE_NAME]"
+		done
+		yes_or_no "-- Are mapping correct?" && IS_NEW_MAP_OK=true || echo -e "Let's do it again\n\n"
+	done
+}
+
+function version()
+{ 
+	echo_s "Script version: " $BOLD && echo "$VER"; 
+	echo_s "Verlihub version: " $BOLD && echo @VERLIHUB_VERSION@;
+}
+
+function convert_ptokax() # path_to_regs, path_to_profiles
+{
+	# Check if users file is correct and exits
+	if [ $(basename "$1") != "RegisteredUsers.xml" ] || [ ! -f "$1" ]; then
+		echo_s "-- Please enter a valid users file (RegisteredUsers.xml)\n" $RED
+		exit 1;
+	fi
+	# Check if profile file is correct and exists
+	if [ $(basename "$2") != "Profiles.xml" ] || [ ! -f "$2" ]; then
+		echo_s "-- Please enter a valid profiles file (Profiles.xml)\n" $RED
+		exit 1;
+	fi
+	# Check config path
+	if [ "_$3" == "_" ] ; then
+		echo_s "-- Please enter a config path\n" $RED
+		exit 1;
+	fi
+	if ! set_path $3 ; then
+		exit 1;
+	fi
+	# Check if profiles exist
+	local NUMBER_OF_PROFILES=$(grep "<Profile>" $2 | wc -l)
+	if [ $NUMBER_OF_PROFILES -eq 0 ]; then
+		echo_s "-- No profile found. Cannot continue" $RED
+		exit 1;
+	fi
+	# Check if there are users to convert
+	local NUMBER_OF_USERS=$(grep "<RegisteredUser>" $1 | wc -l)
+	if [ $NUMBER_OF_USERS -eq 0 ]; then
+		echo "-- There is no user to import"
+		exit 0;
+	fi
+
+	# Import profile
+	_import_ptokax_profile $2
+	
+	yes_or_no "-- Find $NUMBER_OF_USERS registered users. Do you want to continue with importing?" && CONTINUE=true
+	if [ $CONTINUE ]; then
+		echo "-- Importing users; this could take some times"
+		for I in $(seq 1 $NUMBER_OF_USERS)
+		do
+			local CHILD="//RegisteredUsers/RegisteredUser[$I]"
+			local NICKNAME=$(xpath $1 "$CHILD/Nick/text()" 2> /dev/null)
+			local PASSWORD=$(xpath $1 "$CHILD/Password/text()" 2> /dev/null)
+			if [ "$_NICKNAME" == "_" ]; then
+				continue;
+			fi
+			local PROFILE=$(xpath $1 "$CHILD/Profile/text()" 2> /dev/null)
+			# check empty
+			local CLASS=$(_get_profile_map_key "${PROFILES[$PTOKAX_CLASS]}")
+			if ! register "$NICKNAME" "$CLASS" "$PASSWORD" ; then
+				echo_s "-- Error importing user '$NICKNAME'\n" $RED
+			fi
+		done
+		echo "-- Done"
+	else
+		echo "-- Skipped"
+	fi
+	exit 0;
+}
+
+
+# Check xpath
+XPATH=`whereis xpath | awk '{ print $2 }'`
+if [ -z "$XPATH" ]; then
+	echo_s "-- You need to install Xpath to read XML files, please install it\n" $RED
+	exit 1;
+fi
+
+case "_$1" in
+	"_") 		help_me ;;
+	"_--help") 	help_me;;
+	"_--version")	version;;
+	"_--ptokax")	shift
+					convert_ptokax $*;;
+	"_--aquila")	convert "aquila";;
+	"_--ynhub")		convert "ynhub";;
+	*)
+		echo_s "Unknown option $1, try $SCRIPT --help\n" $RED
+		exit;;
+esac;
