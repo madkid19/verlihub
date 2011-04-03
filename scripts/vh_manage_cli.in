@@ -45,6 +45,7 @@ help_me()
 		echo_s "   --geoip" $RED && echo -e "\t[path_to_dbconfig] \t\tUpdate GeoIP"
 	echo_s "   --backup" $RED && echo -e "\t<destination_path> [path_to_dbconfig] \tMake backup of database from given dbconfig path"
 	echo_s "   --restore" $RED && echo -e "\t<path_to_sql>      [path_to_dbconfig] \tImport the given SQL file in the database for given dbconfig path"
+	echo_s "   --clean" $RED && echo -e "\t[path_to_dbconfig] \t\t\tClean kicklist, banlist, unbanlist, iplog, stats and messages tables"
 	echo_s "   --version" $RED && echo -e "\t\t\t\tPrint version information"
 	echo_s "   --help" $RED && echo -e "\t\t\t\tShow this help"
 	echo ""
@@ -332,6 +333,36 @@ function update_geoip()
 	exit 0;
 }
 
+# Clean up tables
+function clean() #path_to_config
+{
+	# Check config path
+	if ! set_path "$1" ; then
+		exit 1;
+	fi
+	TABLES=("banlist" "kicklist" "unbanlist")
+
+	if is_table_exists "pi_iplog" ; then
+		TABLES+=("pi_iplog")
+	fi
+	if is_table_exists "pi_messages" ; then
+		TABLES+=("pi_messages")
+	fi
+	if is_table_exists "pi_stats" ; then
+		TABLES+=("pi_stats")
+	fi
+	for TABLE in ${TABLES[@]}; do
+		if $(yes_or_no "Do you want to truncate '$TABLE' table?") ; then
+			if ! mysql_query "TRUNCATE TABLE $TABLE;" ; then
+				echo_s "-- Error truncating table '$TABLE'\n" $RED
+			else
+				echo "-- Truncated '$TABLE'"			
+			fi
+		fi
+	done
+	exit 0;
+}
+
 # Install verlihub
 function install_cli() 
 {
@@ -599,22 +630,22 @@ case "_$1" in
 	"_--version")	version;;
 	"_--install")	install_cli;;
 	"_--run")	shift
-			run_hub $1;;
+				run_hub $1;;
 	"_--stop")	shift
-			kill_hub $1;;
+				kill_hub $1;;
 	"_--restart")	shift
-			kill_hub $1
-			run_hub "$1" "restart";;
+					kill_hub $1
+					run_hub "$1" "restart";;
 	"_--geoip")	shift
-			update_geoip $1;;
+				update_geoip $1;;
 	"_--restore")	shift
-			restore $1 $2;;
+					restore $1 $2;;
 	"_--backup")	shift
-			backup $1 $2;;
-	"_--adduser")
-		shift
-		add_user $@;;
-	
+					backup $1 $2;;
+	"_--clean")	shift
+				clean $1;;
+	"_--adduser") 	shift
+					add_user $@;;
 	*)
 		echo_s "Unknown option $1, try $SCRIPT --help\n" $RED
 		exit;;
