@@ -30,7 +30,7 @@ DATADIR=@datadir@
 LIBDIR=@libdir@
 DAEMON_NAME="vh_daemon"
 TIMESTAMP=`date +%s`
-VER="1.5"
+VER="1.6"
 
 # Include config
 source $BINDIR/vh_config
@@ -52,12 +52,20 @@ function register() # nickname, class, password
 	SQL_VALUES="unix_timestamp(now()),'vh_regnick','$1','$2'"
 
 	if [ "$3" != "" ]; then
+		local ENCRYPTION=$(mysql_value "default_password_encryption")
+		local PASSWORD=""
+		case "$ENCRYPTION" in
+			0) PASSWORD=$3;;
+			1) PASSWORD="ENCRYPT('$3')";;
+			2) PASSWORD="MD5('$3')";;
+			*) PASSWORD="ENCRYPT('$3')";;
+		esac;
 		SQL_FIELDS="$SQL_FIELDS,login_pwd,pwd_change,pwd_crypt"
-		SQL_VALUES="$SQL_VALUES,encrypt('$3'),0,1"
+		SQL_VALUES="$SQL_VALUES,$PASSWORD,0,1"
 	fi;
 
 	MYSQL_QUERY="INSERT INTO reglist ($SQL_FIELDS) VALUES ($SQL_VALUES)";
-	if ! mysql_query "$MYSQL_QUERY" &> /dev/null ; then
+	if ! mysql_query "$MYSQL_QUERY" &>/dev/null ; then
 		return 1;
 	else
 		return 0;
@@ -142,7 +150,7 @@ function mysql_connect() {
 }
 
 # Run given query
-function mysql_query() { mysql_connect "--execute=\"$1\"" && return 0 || return 1; }
+function mysql_query() { mysql_connect "--execute=\"$1\"" &>/dev/null && return 0 || return 1; }
 
 # Update var in setuplist
 function mysql_update() # variable, value
