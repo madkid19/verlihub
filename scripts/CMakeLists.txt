@@ -4,6 +4,7 @@ SET(SCRIPT_FILES
 	vh_manage
 	vh_manage_cli
 	vh_multihub
+	vh_regimporter
 	vh_migration_0.9.8eto0.9.9a
 )
 
