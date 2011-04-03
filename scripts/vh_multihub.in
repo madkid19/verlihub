@@ -201,12 +201,12 @@ function help_me()
 {
 	echo_s "μ-Verlihub (multi-Verlihub)\n" $BOLD
 	echo "This is a utility to run, restart and stop hubs with Verlihub, usage:"
-	echo_s "   --list" $RED && echo -e "\t\t\tShow a list of added hubs"
-	echo_s "   --add" $RED && echo -e "\t\t\tAdd new hub to config file"
-	echo_s "   --del" $RED && echo -e "\t[ID]\t\tDelete a hub from config file"
-	echo_s "   --run" $RED && echo -e "\t[ID]\t\tRun single hub or all hubs togheter"
-	echo_s "   --stop" $RED && echo -e "\t[ID]\t\tStop single hub or all hubs togheter"
-	echo_s "   --restart" $RED && echo -e "\t[ID]\t\tRestart single hub or all hubs togheter"
+	echo_s "   --list" $RED && echo -e "\t\t\tShow a list"
+	echo_s "   --add" $RED && echo -e "\t\t\tAdd a new hub"
+	echo_s "   --del" $RED && echo -e "\t[ID]\t\tDelete an hub"
+	echo_s "   --run" $RED && echo -e "\t[ID]\t\tRun a single hub or all hubs togheter"
+	echo_s "   --stop" $RED && echo -e "\t[ID]\t\tStop a single hub or all hubs togheter"
+	echo_s "   --restart" $RED && echo -e "\t[ID]\t\tRestart a single hub or all hubs togheter"
 	echo_s "   --version" $RED && echo -e "\t\t\tPrint version information"
 	echo_s "   --help" $RED && echo -e "\t\t\tShow this help"
 }
