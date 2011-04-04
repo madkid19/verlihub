@@ -172,7 +172,7 @@ function _get_hubs_list() # print_legend
 		local DATE="$(echo $LINE | cut -d: -f4)"
 
 		# Check if hub is running
-		if is_hub_running $PATH_TO_CONFIG ; then
+		if _is_hub_running $PATH_TO_CONFIG ; then
 			COLOR=$GREEN_BOLD
 		else
 			COLOR=$RED_BOLD

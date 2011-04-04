@@ -23,6 +23,7 @@
 ###########################################################################
 
 SCRIPT=$0
+
 # Include library
 source $(dirname $0)/vh_lib
 
@@ -38,14 +39,64 @@ help_me()
 	echo ""
 }
 
-function _get_profile_map_key() #string (map_key profile_name)
+# Check if given file exists and match with default name
+function _check_file() #file, default_file_name
+{
+	local FILE=$(basename "$1")
+	if [ "_$FILE" != "_$2" ] || [ ! -f "$1" ]; then
+		echo_s "-- Please enter a valid $2 file\n" $RED
+		exit 1;
+	fi
+}
+
+# Check if config path is correct
+function _check_config_path() #path_to_dbconfig
+{
+	if [ "_$1" == "_" ] ; then
+		echo_s "-- Please enter a config path\n" $RED
+		exit 1;
+	fi
+	if ! set_path $1 ; then
+		exit 1;
+	fi
+}
+
+# Check if profile file is empty
+function _check_empty_profile() #node_name, path_to_profile
+{
+	NUMBER_OF_PROFILES=$(grep "<$1>" "$2" | wc -l)
+	if [ $NUMBER_OF_PROFILES -eq 0 ]; then
+		echo_s "-- No profile found. Cannot continue" $RED
+		exit 1;
+	fi
+}
+
+# Check if there are users in the file
+function _check_empty_users() #node_name, path_to_profile
+{
+	NUMBER_OF_USERS=$(grep "<$1>" $2 | wc -l)
+	if [ $NUMBER_OF_USERS -eq 0 ]; then
+		echo "-- There is no user to import"
+		exit 0;
+	fi
+}
+
+# Get the original profile level or class
+function _get_profile_key() #string (profile_key profile_name map_key)
 {
 	echo $1 | cut -d' ' -f1
 }
 
-function _get_ptokax_profile_name() #string (map_key profile_name)
+# Get the roginal profile name
+function _get_profile_name() #string (profile_key profile_name map_key)
 {
 	echo $1 | cut -d' ' -f2
+}
+
+# Get Verlihub class for new profile
+function _get_profile_map_key() #string (profile_key profile_name map_key)
+{
+	echo $1 | cut -d' ' -f3
 }
 
 function _get_verlihub_profile_name() #class
@@ -62,13 +113,11 @@ function _get_verlihub_profile_name() #class
 	esac;
 }
 
-function _import_ptokax_profile() #Profiles.xml
+function _print_vh_class_summury() #hubsoft_name
 {
-
-	# Collect profile
 	echo "-- Found $NUMBER_OF_PROFILES profile(s)"
 	# Print profiles summary
-	echo_s "-- Now you need to map PtokaX profile with VerliHub\n" $RED_BOLD
+	echo_s "-- Now you need to map $1 profile with VerliHub\n" $RED_BOLD
 	echo "-- These are VerliHub profiles you can choose (use bold ID as answer):"
 	echo_s "\t[0] " $BOLD && echo "- Guest users"
 	echo_s "\t[1] " $BOLD && echo "- Registered users"
@@ -78,6 +127,12 @@ function _import_ptokax_profile() #Profiles.xml
 	echo_s "\t[5] " $BOLD && echo "- Admin user"
 	echo_s "\t[10] " $BOLD && echo "- Master user"
 	echo
+}
+
+# Map PtokaX profiles
+function _import_ptokax_profile() #Profiles.xml
+{
+	_print_vh_class_summury "PtokaX"
 
 	# Ask user to mapping
 	IS_NEW_MAP_OK=false
@@ -98,26 +153,79 @@ function _import_ptokax_profile() #Profiles.xml
 					IS_SINGLE_MAPPING_OK=true
 				fi
 				# Populate array with verlihub class (map) and ptokax profile name
-				PROFILES[$PTOKAX_CLASS]="$MAP $PTOKAX_PROFILE_NAME"
+				local PROFILES[$PTOKAX_CLASS]="$PTOKAX_CLASS $PTOKAX_PROFILE_NAME $MAP"
 			done
 		done
 
 		# Print new map
 		echo
-		echo "-- This the new profile map:"
+		echo "-- This is the profile map:"
 		echo_s "\t[Ptokax profile] " $BOLD && echo_s "=> \t" && echo_s "[Verlihub profile]\n" $BOLD
 		for J in $( seq 1 $NUMBER_OF_PROFILES )
 		do
 			local PTOKAX_CLASS=$(( $J-1 ))
-			local PTOKAX_PROFILE_NAME=$(_get_ptokax_profile_name "${PROFILES[$PTOKAX_CLASS]}")
+			local PTOKAX_PROFILE_NAME=$(_get_profile_name "${PROFILES[$PTOKAX_CLASS]}")
 			local VERLIHUB_CLASS=$(_get_profile_map_key "${PROFILES[$PTOKAX_CLASS]}")
 			local VERLIHUB_PROFILE_NAME=$(_get_verlihub_profile_name $VERLIHUB_CLASS)
 
 			echo -e "\t[$PTOKAX_CLASS - $PTOKAX_PROFILE_NAME] \t=>\t [$VERLIHUB_CLASS - $VERLIHUB_PROFILE_NAME]"
+
+			# Create profiles map
+			PROFILES_MAP[$PTOKAX_CLASS]=$VERLIHUB_CLASS
 		done
-		yes_or_no "-- Are mapping correct?" && IS_NEW_MAP_OK=true || echo -e "Let's do it again\n\n"
+		yes_or_no "-- Is map correct?" && IS_NEW_MAP_OK=true || echo -e "Let's do it again\n\n"
 	done
 }
+
+function _import_ynhub_profile() #profiles.xml
+{
+	_print_vh_class_summury "YnHub"
+
+	# Ask user to mapping
+	IS_NEW_MAP_OK=false
+#set -x
+	until $IS_NEW_MAP_OK;
+	do
+		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		do
+			local YNHUB_PROFILE_NAME=$(xpath $1 "//Profiles/Profile[$J]/Name/text()" 2> /dev/null)
+			local YNHUB_PROFILE_KEY=$(xpath $1 "//Profiles/Profile[$J]/ProfileLevel/text()" 2> /dev/null)		
+			local IS_SINGLE_MAPPING_OK=false
+
+			until $IS_SINGLE_MAPPING_OK;
+			do
+				MAP=$(ask "YnHub profile [$YNHUB_PROFILE_KEY - $YNHUB_PROFILE_NAME] map with")
+				if check_class $MAP ; then
+					echo_s "-- Type a valid number: 0, 1, 2, 3, 4, 5, 10\n" $RED
+				else
+					IS_SINGLE_MAPPING_OK=true
+				fi
+				# Populate array with verlihub class (map) and ptokax profile name
+				local PROFILES[$J]="$YNHUB_PROFILE_KEY $YNHUB_PROFILE_NAME $MAP"
+				
+			done
+		done
+
+		# Print new map
+		echo
+		echo "-- This is the profile map:"
+		echo_s "\t[YnHub profile] " $BOLD && echo_s "=> \t" && echo_s "[Verlihub profile]\n" $BOLD
+		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		do
+			local YNHUB_PROFILE_NAME=$(_get_profile_name "${PROFILES[$J]}")
+			local YNHUB_PROFILE_KEY=$(_get_profile_key "${PROFILES[$J]}")
+			local VERLIHUB_CLASS=$(_get_profile_map_key "${PROFILES[$J]}")
+			local VERLIHUB_PROFILE_NAME=$(_get_verlihub_profile_name $VERLIHUB_CLASS)
+
+			echo -e "\t[$YNHUB_PROFILE_KEY - $YNHUB_PROFILE_NAME] \t=>\t [$VERLIHUB_CLASS - $VERLIHUB_PROFILE_NAME]"
+
+			# Create profiles map
+			PROFILES_MAP["$YNHUB_PROFILE_NAME"]=$VERLIHUB_CLASS
+		done
+		yes_or_no "-- Is map correct?" && IS_NEW_MAP_OK=true || echo -e "Let's do it again\n\n"
+	done
+}
+
 
 function version()
 { 
@@ -125,41 +233,19 @@ function version()
 	echo_s "Verlihub version: " $BOLD && echo @VERLIHUB_VERSION@;
 }
 
+
 function convert_ptokax() # path_to_regs, path_to_profiles
 {
 	# Check if users file is correct and exits
-	local USERS_FILE=$(basename "$1")
-	if [ "_$USERS_FILE" != "_RegisteredUsers.xml" ] || [ ! -f "$1" ]; then
-		echo_s "-- Please enter a valid users file (RegisteredUsers.xml)\n" $RED
-		exit 1;
-	fi
+	_check_file "$1" "RegisteredUsers.xml"
 	# Check if profile file is correct and exists
-	local PROFILES_FILE=$(basename "$2")
-	if [ "_$PROFILES_FILE" != "_Profiles.xml" ] || [ ! -f "$2" ]; then
-		echo_s "-- Please enter a valid profiles file (Profiles.xml)\n" $RED
-		exit 1;
-	fi
+	_check_file "$2" "Profiles.xml"
 	# Check config path
-	if [ "_$3" == "_" ] ; then
-		echo_s "-- Please enter a config path\n" $RED
-		exit 1;
-	fi
-	if ! set_path $3 ; then
-		exit 1;
-	fi
+	_check_config_path "$3" 
 	# Check if profiles exist
-	local NUMBER_OF_PROFILES=$(grep "<Profile>" $2 | wc -l)
-	if [ $NUMBER_OF_PROFILES -eq 0 ]; then
-		echo_s "-- No profile found. Cannot continue" $RED
-		exit 1;
-	fi
+	_check_empty_profile "Profile" $2
 	# Check if there are users to convert
-	local NUMBER_OF_USERS=$(grep "<RegisteredUser>" $1 | wc -l)
-	if [ $NUMBER_OF_USERS -eq 0 ]; then
-		echo "-- There is no user to import"
-		exit 0;
-	fi
-
+	_check_empty_users "RegisteredUser" $1
 	# Import profile
 	_import_ptokax_profile $2
 	
@@ -175,9 +261,53 @@ function convert_ptokax() # path_to_regs, path_to_profiles
 				continue;
 			fi
 			local PROFILE=$(xpath $1 "$CHILD/Profile/text()" 2> /dev/null)
-			# check empty
-			local CLASS=$(_get_profile_map_key "${PROFILES[$PTOKAX_CLASS]}")
-			if ! register "$NICKNAME" "$CLASS" "$PASSWORD" ; then
+			if [ "$_PROFILE" == "_" ]; then
+				continue;
+			fi
+			local CLASS=${PROFILES_MAP[$PROFILE]}
+			if ! _register "$NICKNAME" "$CLASS" "$PASSWORD" ; then
+				echo_s "-- Error importing user '$NICKNAME'\n" $RED
+			fi
+		done
+		echo "-- Done"
+	else
+		echo "-- Skipped"
+	fi
+	exit 0;
+}
+
+function convert_ynhub() # path_to_regs, path_to_profiles
+{
+	# Check if users file is correct and exits
+	_check_file "$1" "accounts.xml"
+	# Check if profile file is correct and exists
+	_check_file "$2" "profiles.xml"
+	# Check config path
+	_check_config_path "$3"
+	# Check if profiles exist
+	_check_empty_profile "Profile" $2
+	# Check if there are users to convert
+	#_check_empty_users "RegisteredUser" $1
+	# Import profile
+	_import_ynhub_profile $2
+
+	yes_or_no "-- Find $NUMBER_OF_USERS registered users. Do you want to continue with importing?" && CONTINUE=true
+	if [ $CONTINUE ]; then
+		echo "-- Importing users; this could take some times"
+		for I in $(seq 1 $NUMBER_OF_USERS)
+		do
+			local CHILD="//Accounts/Account[$I]"
+			local NICKNAME=$(xpath $1 "$CHILD/Nick/text()" 2> /dev/null)
+			local PASSWORD=$(xpath $1 "$CHILD/Pass/text()" 2> /dev/null)
+			if [ "$_NICKNAME" == "_" ]; then
+				continue;
+			fi
+			local PROFILE=$(xpath $1 "$CHILD/Profile/text()" 2> /dev/null)
+			if [ "$_PROFILE" == "_" ]; then
+				continue;
+			fi
+			local CLASS=${PROFILES_MAP[$PROFILE]}
+			if ! _register "$NICKNAME" "$CLASS" "$PASSWORD" ; then
 				echo_s "-- Error importing user '$NICKNAME'\n" $RED
 			fi
 		done
@@ -202,8 +332,9 @@ case "_$1" in
 	"_--version")	version;;
 	"_--ptokax")	shift
 					convert_ptokax $*;;
+	"_--ynhub")		shift
+					convert_ynhub $*;;
 	"_--aquila")	convert "aquila";;
-	"_--ynhub")		convert "ynhub";;
 	*)
 		echo_s "Unknown option $1, try $SCRIPT --help\n" $RED
 		exit;;

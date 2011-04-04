@@ -3,17 +3,17 @@
 # Include library
 source $(dirname $0)/vh_lib
 
-function delete_config_var() #var
+function _delete_config_var() #var
 {
-	if ! mysql_query "DELETE FROM SetupList WHERE var='$1' and file='config'" ; then
+	if ! _mysql_query "DELETE FROM SetupList WHERE var='$1' and file='config'" ; then
 		echo "-- Error executing query to delete config variables"
 		exit 1;
 	fi
 }
 
-function delete_lang_var() #var
+function _delete_lang_var() #var
 {
-	if ! mysql_query "DELETE FROM SetupList WHERE var='$1' and file!='config'" ; then
+	if ! _mysql_query "DELETE FROM SetupList WHERE var='$1' and file!='config'" ; then
 		echo "-- Error executing query to delete lang variables"
 		exit 1;
 	fi
@@ -55,29 +55,29 @@ if $(yes_or_no "Do you want to continue with migration?") ; then
 	echo "-- Deleting ban message variables"
 	BAN_MESSAGES=(ban_reason ban_remaining ban_expired ban_for ban_permanently ban_type ban_removed ban_by ban_types_nickip ban_types_ip ban_types_nick ban_types_iprange ban_types_host1 ban_types_host2 ban_types_host3 ban_types_share ban_types_email ban_types_prefix ban_types_rhost1)
 	for VAR in ${BAN_MESSAGES[@]}; do
-		delete_lang_var $VAR
+		_delete_lang_var $VAR
 	done
 	sleep 2
 
 	echo "-- Deleting timeout message variables"
 	TIMEOUT_MESSAGES=(timeout_key timeout_nick timeout_login timeout_myinfo timeout_flush timeout_setpass)
 	for VAR in ${TIMEOUT_MESSAGES[@]}; do
-		delete_lang_var $VAR
+		_delete_lang_var $VAR
 	done
 	sleep 2
 	
 	echo "-- Deleting tag_min_version and tag_max_version variables"
 	CLIENTS=(plusplus dcgui odc dc dcpro strongdc idc zdc apexdc zion)
 	for VAR in ${CLIENTS[@]}; do
-		delete_config_var "tag_min_version_$VAR"
-		delete_config_var "tag_max_version_$VAR"
+		_delete_config_var "tag_min_version_$VAR"
+		_delete_config_var "tag_max_version_$VAR"
 	done
 	sleep 2
 
 	echo "-- Deleting other variables"
 	OTHER_MESSAGES=(save_lang chat_msg_long chat_msg_lines pwd_cannot pwd_can pwd_min pwd_success pwd_set_error pwd_setup ip nick user host ip_range because op type not_in_userlist error success wrong_dc_tag tag_max_hubs tag_max_slots tag_min_slots tag_max_hs_ratio tag_min_limit tag_min_ls_ratio tag_no_sock msg_downgrade msg_upgrade msg_topic_set msg_topic_reset autoreg_nick_prefix autoreg_already_reg autoreg_success autoreg_error timeout_any operation_timeout msg_chat_onoff msg_change_pwd msg_banned msg_hub_full msg_nick_prefix msg_downgrade msg_upgrade msg_replace_ban login_share_min login_share_max autoreg_min_share search_share_min ctm_share_min)
 	for VAR in ${OTHER_MESSAGES[@]}; do
-		delete_lang_var $VAR
+		_delete_lang_var $VAR
 	done
 	sleep 2
 
