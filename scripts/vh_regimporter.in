@@ -30,7 +30,8 @@ source $(dirname $0)/vh_lib
 help_me()
 {
 	echo_s "$SCRIPT\n" $BOLD
-	echo "This is a utility script for convert registered users to VerliHub, usage:"
+	echo "This is an utility script to convert registered users to VerliHub."
+	echo "Usage:"
 	echo_s "   --ptokax" $RED && echo -e "\t<RegisteredUsers.xml> <Profiles.xml> <path_to_dbconfig>\tConvert registrations from PtokaX to VerliHub"
 	echo_s "   --ynhub" $RED && echo -e "\t<accounts.xml> <profiles.xml> <path_to_dbconfig>\tConvert registrations from YnHub to VerliHub"
 	echo_s "   --aquila" $RED && echo -e "\t<Aquila.xml> <path_to_dbconfig>\t\t\t\tConvert registrations from Aquila to VerliHub"
@@ -53,7 +54,7 @@ function _check_file() #file, default_file_name
 function _check_config_path() #path_to_dbconfig
 {
 	if [ "_$1" == "_" ] ; then
-		echo_s "-- Please enter a config path\n" $RED
+		echo_s "-- Please enter the config path\n" $RED
 		exit 1;
 	fi
 	if ! set_path $1 ; then
@@ -85,7 +86,7 @@ function _xml_count() # file, selector
 function _check_empty_profile() # profile_file, selector
 {
 	if [ $(_xml_count $1 $2) -eq 0 ]; then
-		echo_s "-- No profile found. Cannot continue" $RED
+		echo_s "-- No profile found. Exiting" $RED
 		exit 1;
 	fi
 }
@@ -136,7 +137,7 @@ function _print_vh_class_summury() #hubsoft_name
 {
 	# Print profiles summary
 	echo "-- Now you need to map $1 profile with VerliHub"
-	echo "-- These are VerliHub profiles you can choose (use bold ID as answer):"
+	echo "-- These are VerliHub profiles that you can choose (use the number in the square bracket as answer):"
 	echo_s "\t[0] " $BOLD && echo "- Guest user"
 	echo_s "\t[1] " $BOLD && echo "- Registered user"
 	echo_s "\t[2] " $BOLD && echo "- VIP user"
@@ -148,8 +149,8 @@ function _print_vh_class_summury() #hubsoft_name
 }
 
 function version()
-{ 
-	echo_s "Script version: " $BOLD && echo "$VER"; 
+{
+	echo_s "Script version: " $BOLD && echo "$VER";
 	echo_s "Verlihub version: " $BOLD && echo @VERLIHUB_VERSION@;
 }
 
@@ -166,16 +167,16 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 	# Check if profile file is correct and exists
 	_check_file "$2" $PROFILE_FILE
 	# Check config path
-	_check_config_path "$3" 
+	_check_config_path "$3"
 
 	# Check if there are users to convert
 	_check_empty_users "$1" $USER_NODE
 	# Check if profiles exist
 	_check_empty_profile "$2" $PROFILE_NODE
-	
+
 	local NUMBER_OF_PROFILES=$(_xml_count $2 $PROFILE_NODE)
 	local NUMBER_OF_USERS=$(_xml_count $1 $USER_NODE)
-	echo_s "-- They have been found " && echo_s $(_xml_count $2 $PROFILE_NODE) $BOLD && echo_s " profiles" $BOLD
+	echo_s "-- Found " && echo_s $(_xml_count $2 $PROFILE_NODE) $BOLD && echo_s " profiles" $BOLD
 	echo_s " and " && echo_s $(_xml_count $1 $USER_NODE) $BOLD && echo_s " users\n" $BOLD
 	sleep 2
 
@@ -187,7 +188,7 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 	do
 		for J in $( seq 1 $NUMBER_OF_PROFILES )
 		do
-			local PTOKAX_PROFILE_NAME=$(_xml_value $2 "$PROFILE_NODE[$J]/Name")	
+			local PTOKAX_PROFILE_NAME=$(_xml_value $2 "$PROFILE_NODE[$J]/Name")
 			local IS_SINGLE_MAPPING_OK=false
 
 			until $IS_SINGLE_MAPPING_OK;
@@ -205,7 +206,7 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 		done
 		# Print new map
 		echo
-		echo "-- This is the profile map:"
+		echo "-- This is the map of profiles:"
 		echo_s "\t[Ptokax profile] " $BOLD && echo_s "=>\t" && echo_s "[Verlihub profile]\n" $BOLD
 		for J in $( seq 1 $NUMBER_OF_PROFILES )
 		do
@@ -219,9 +220,9 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 			# Create profiles map
 			PROFILES_MAP[$PTOKAX_CLASS]=$VERLIHUB_CLASS
 		done
-		yes_or_no "-- Is map correct?" && IS_NEW_MAP_OK=true || echo -e "Let's do it again\n"
+		yes_or_no "-- Is this correct?" && IS_NEW_MAP_OK=true || echo -e "Let's do it again\n"
 	done
-	
+
 	yes_or_no "-- Do you want to continue with importing?" && CONTINUE=true
 	if [ $CONTINUE ]; then
 		echo "-- Importing users; this could take some times"
@@ -267,7 +268,7 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 	# Check if profile file is correct and exists
 	_check_file "$2" $PROFILE_FILE
 	# Check config path
-	_check_config_path "$3" 
+	_check_config_path "$3"
 
 	# Check if there are users to convert
 	_check_empty_users "$1" $USER_NODE
@@ -276,7 +277,7 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 
 	local NUMBER_OF_PROFILES=$(_xml_count $2 $PROFILE_NODE)
 	local NUMBER_OF_USERS=$(_xml_count $1 $USER_NODE)
-	echo_s "-- They have been found " && echo_s $(_xml_count $2 $PROFILE_NODE) $BOLD && echo_s " profiles" $BOLD
+	echo_s "-- Found " && echo_s $(_xml_count $2 $PROFILE_NODE) $BOLD && echo_s " profiles" $BOLD
 	echo_s " and " && echo_s $(_xml_count $1 $USER_NODE) $BOLD && echo_s " users\n" $BOLD
 	sleep 2
 
@@ -289,7 +290,7 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 		for J in $( seq 1 $NUMBER_OF_PROFILES )
 		do
 			local YNHUB_PROFILE_NAME=$(_xml_value $2 "//$PROFILE_NODE[$J]/Name")
-			local YNHUB_PROFILE_KEY=$(_xml_value $2 "//$PROFILE_NODE[$J]/ProfileLevel")		
+			local YNHUB_PROFILE_KEY=$(_xml_value $2 "//$PROFILE_NODE[$J]/ProfileLevel")
 			local IS_SINGLE_MAPPING_OK=false
 
 			until $IS_SINGLE_MAPPING_OK;
@@ -302,12 +303,12 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 				fi
 				# Populate array with verlihub class (map) and ptokax profile name
 				local PROFILES[$J]="$YNHUB_PROFILE_KEY $YNHUB_PROFILE_NAME $MAP"
-				
+
 			done
 		done
 		# Print new map
 		echo
-		echo "-- This is the profile map:"
+		echo "-- This is the map of profiles:"
 		echo_s "\t[YnHub profile] " $BOLD && echo_s "=> \t" && echo_s "[Verlihub profile]\n" $BOLD
 		for J in $( seq 1 $NUMBER_OF_PROFILES )
 		do
@@ -321,7 +322,7 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 			# Create profiles map
 			PROFILES_MAP["$YNHUB_PROFILE_NAME"]="$VERLIHUB_CLASS"
 		done
-		yes_or_no "-- Is map correct?" && IS_NEW_MAP_OK=true || echo -e "Let's do it again\n\n"
+		yes_or_no "-- Is this correct?" && IS_NEW_MAP_OK=true || echo -e "Let's do it again\n\n"
 	done
 
 	yes_or_no "-- Do you want to continue with importing?" && CONTINUE=true
@@ -374,7 +375,7 @@ function convert_aquila #Aquila.xml, path_to_dbconfig
 # Check libxml2
 XMLLINT=`whereis xmllint | awk '{ print $2 }'`
 if [ -z "$XMLLINT" ]; then
-	echo_s "-- You need to install libxml2 to read XML files, please install it\n" $RED
+	echo_s "-- You need to install libxml2 to read XML files. Please install it\n" $RED
 	exit 1;
 fi
 
