@@ -32,9 +32,6 @@ DAEMON_NAME="vh_daemon"
 TIMESTAMP=`date +%s`
 VER="1.5"
 
-# Include config
-source $BINDIR/vh_config
-
 # Check if user class is a valid number
 function check_class() #class
 {
