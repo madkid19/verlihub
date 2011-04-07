@@ -154,12 +154,12 @@ setup_hub() {
 
 	# Test if account exists
 	$DIALOG --infobox "Checking MySQL account $MYSQL_USER@$MYSQL_HOST; this could take some times..." 5 49
-	does_mysql_account_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" && ACCOUNT_EXISTS=true || ACCOUNT_EXISTS=false
+	_does_mysql_account_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" && ACCOUNT_EXISTS=true || ACCOUNT_EXISTS=false
 	if ! $ACCOUNT_EXISTS ; then 
 		$DIALOG --title "MySQL settings" --msgbox "The MySQL account '$MYSQL_USER' can not be accessed, it will be created now" 7 50
 		ask_admin_access
 		$MYSQL -h "$MYSQL_HOST" -u "$MYSQL_ADMIN_USER" -p"$MYSQL_ADMIN_PASSWORD" -e "CREATE USER '$MYSQL_USER'@'$CURRENT_ADDRESS' IDENTIFIED BY '$MYSQL_PASSWORD'"
-		if ! does_mysql_account_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" ;	then
+		if ! _does_mysql_account_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" ;	then
 			$DIALOG --title "MySQL settings" --msgbox "The MySQL account cannot be created. Fix the problem and run the setup again." 8 50
 			quit;
 		fi
@@ -169,7 +169,7 @@ setup_hub() {
 
 	# Test if database exists
 	$DIALOG --infobox "Checking MySQL database $MYSQL_DB_NAME; this could take some times..." 5 45
-	does_mysql_db_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB_NAME" && DB_EXISTS=true || DB_EXISTS=false
+	_does_mysql_db_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB_NAME" && DB_EXISTS=true || DB_EXISTS=false
 	# Create database
 	if ! $DB_EXISTS ; then 
 		$DIALOG --title "MySQL settings" --msgbox "The MySQL database '$MYSQL_DB_NAME' does not exist, it will be created now." 7 50
@@ -184,7 +184,7 @@ setup_hub() {
 		ask_admin_access
 	fi
 	$MYSQL -h "$MYSQL_HOST" -u "$MYSQL_ADMIN_USER" -p"$MYSQL_ADMIN_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DB_NAME\`; GRANT ALL ON \`$MYSQL_DB_NAME\`.* to 	'$MYSQL_USER'@'$CURRENT_ADDRESS' identified by '$MYSQL_PASSWORD'"
-	if ! does_mysql_db_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB_NAME" ; 
+	if ! _does_mysql_db_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB_NAME" ; 
 	then
 		$DIALOG --title "MySQL settings" --msgbox "A error happens while trying to create DB or to gran permission. Fix the problem and run the setup again." 8 50
 		quit;
@@ -275,7 +275,7 @@ setup_hub() {
 
 	# Create tables
 	set_path $CHOOSEN_FOLDER > /dev/null 2>&1;
-	if ! create_mysql_tables $IS_MYSQL_HOST_LOCAL; then
+	if ! _create_mysql_tables $IS_MYSQL_HOST_LOCAL; then
 		$DIALOG --title "ERROR" --msgbox "ERROR: cannot create verlihub's tables in the database, cannot continue with the installation. Please check '$CHOOSEN_FOLDER/install_log' file for more info and run installation again." 8 70
 		$DIALOG --title ="ERROR" --textbox "$CHOOSEN_FOLDER/install_log" 30 80
 		quit;
@@ -325,13 +325,13 @@ setup_hub() {
 	
 	# Save info to DB
 	$DIALOG --infobox "Creating settings; this could take some times..." 5 45
-	mysql_update "hub_name" $VH_HUB_NAME
-	mysql_update "hub_host" "$VH_HUB_HOST:$VH_HUB_PORT"
-	mysql_update "listen_port" $VH_HUB_PORT
-	if ! register $VH_MASTER_NAME "10" $VH_MASTER_PASSWORD ; then
+	_mysql_update "hub_name" $VH_HUB_NAME
+	_mysql_update "hub_host" "$VH_HUB_HOST:$VH_HUB_PORT"
+	_mysql_update "listen_port" $VH_HUB_PORT
+	if ! _register $VH_MASTER_NAME "10" $VH_MASTER_PASSWORD ; then
 		$DIALOG --title "Hub settings" --msgbox "A error occured with registering user '$VH_MASTER_NAME'. Please do it manually" 7 45
 	fi
-	if ! mysql_import $DATADIR/sql/default_reglist.sql > /dev/null 2>&1  ; then
+	if ! _mysql_import $DATADIR/sql/default_reglist.sql > /dev/null 2>&1  ; then
 		$DIALOG --title "Hub settings" --msgbox "A error occured with file importing '$DATADIR/sql/default_reglist.sql'" 7 45
 		quit;
 	fi
@@ -385,7 +385,7 @@ function run_hub() # restart
 	fi
 
 	# Check if hub is already running
-	if is_hub_running $CONFIG_DIR ; then
+	if _is_hub_running $CONFIG_DIR ; then
 		$DIALOG --title "$TITLE" --msgbox "Hub is already running with PID $PID_RESULT. To stop it use stop hub function in $0'" 8 53
 		quit;
 	fi
@@ -405,7 +405,7 @@ function run_hub() # restart
 	[ $MYSQL_HOST == "localhost" ] && IS_MYSQL_HOST_LOCAL=true
 	[ $MYSQL_HOST == "127.0.0.1" ] && IS_MYSQL_HOST_LOCAL=true
 	if $IS_MYSQL_HOST_LOCAL ; then
-		mysql_get_socket
+		_mysql_get_socket
 		if [ ! -z $SOCKET ]; then
 			export "MYSQL_UNIX_PORT=$SOCKET"
 		fi
@@ -427,7 +427,7 @@ function run_hub() # restart
 	# Save pid
 	PID_FILE="$CONFIG_DIR/pid"
 	echo $PID > $PID_FILE
-	if ! is_hub_running $CONFIG_DIR ; then
+	if ! _is_hub_running $CONFIG_DIR ; then
 		$DIALOG --title "$TITLE" --msgbox "Hub is not running. Please check '$LOG_FILE' and '$ERROR_FILE' for more information" 9 49
 		rm -f $PID_FILE
 		quit;
@@ -480,12 +480,12 @@ function kill_hub() # restart
 	done
 
 	# Check if hub is already running
-	if ! is_hub_running $CONFIG_DIR ; then
+	if ! _is_hub_running $CONFIG_DIR ; then
 		$DIALOG --title "$TITLE" --msgbox "The path '$CHOOSEN_FOLDER' is not a valid config directory. Please specify another folder." 8 49		
 		rm -f $PID_FILE
 		return 1;
 	fi
-	get_pid $CONFIG_DIR
+	_get_pid $CONFIG_DIR
 	$DIALOG --infobox "Killing verlihub (PID: $PID_RESULT)..." 4 45
 	if ! kill $PID_RESULT > /dev/null 2>&1 ; then
 		$DIALOG --title "$TITLE" --msgbox "Error" 6 30

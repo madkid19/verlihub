@@ -45,6 +45,7 @@ help_me()
 		echo_s "   --geoip" $RED && echo -e "\t[path_to_dbconfig] \t\tUpdate GeoIP"
 	echo_s "   --backup" $RED && echo -e "\t<destination_path> [path_to_dbconfig] \tMake backup of database from the given dbconfig path"
 	echo_s "   --restore" $RED && echo -e "\t<path_to_sql>      [path_to_dbconfig] \tImport the given SQL file in the database for given dbconfig path"
+	echo_s "   --clean" $RED && echo -e "\t[path_to_dbconfig] \t\t\tClean kicklist, banlist, unbanlist, iplog, stats and messages tables"
 	echo_s "   --version" $RED && echo -e "\t\t\t\tPrint version information"
 	echo_s "   --help" $RED && echo -e "\t\t\t\tShow this help"
 	echo ""
@@ -70,7 +71,7 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	fi
 
 	# Check if hub is already running
-	if is_hub_running $CONFIG_DIR ; then
+	if _is_hub_running $CONFIG_DIR ; then
 		echo "-- Hub is already running with PID $PID_RESULT. To stop it use --stop option"
 		exit 1;
 	fi
@@ -91,7 +92,7 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	[ $MYSQL_HOST == "localhost" ] && IS_MYSQL_HOST_LOCAL=true
 	[ $MYSQL_HOST == "127.0.0.1" ] && IS_MYSQL_HOST_LOCAL=true
 	if $IS_MYSQL_HOST_LOCAL ; then
-		mysql_get_socket
+		_mysql_get_socket
 		if [ ! -z $SOCKET ]; then
 			export "MYSQL_UNIX_PORT=$SOCKET"
 		fi
@@ -110,7 +111,7 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	# Save pid
 	PID_FILE="$CONFIG_DIR/pid"
 	echo $PID > $PID_FILE
-	if ! is_hub_running $CONFIG_DIR ; then
+	if ! _is_hub_running $CONFIG_DIR ; then
 		echo_s "-- Hub is not running. Please check '$LOG_FILE' and '$ERROR_FILE' for more information\n" $RED
 		rm -f $PID_FILE
 		return 1;
@@ -129,19 +130,19 @@ function kill_hub() # path_to_dbconfig
 	fi
 
 	# Check if hub is already running
-	if ! is_hub_running $CONFIG_DIR ; then
+	if ! _is_hub_running $CONFIG_DIR ; then
 		echo_s "-- Hub with config path '$CONFIG_DIR' is not running\n" $RED
 		rm -f $PID_FILE
 		return 1;
 	fi
-	get_pid $CONFIG_DIR
-        echo -n "-- Killing verlihub (PID: $PID_RESULT)..."
-        if ! kill $PID_RESULT > /dev/null 2>&1 ; then
+	_get_pid $CONFIG_DIR
+		echo -n "-- Killing verlihub (PID: $PID_RESULT)..."
+		if ! kill $PID_RESULT > /dev/null 2>&1 ; then
 		echo_s " USER HAS NO RIGHT TO STOP THE PROCESS\n" $RED
 		echo_s "-- Please use 'kill -9 $PID_RESULT' as root\n" $RED
 		exit 1;
 	fi
-        rm -f "$CONFIG_DIR/pid"
+		rm -f "$CONFIG_DIR/pid"
 	sleep 2
 	echo " Done"
 }
@@ -160,7 +161,7 @@ function restore() # sql_file, path_to_dbconfig
 		exit;
 	fi
 	# Import SQL
-	if ! $(mysql_import $1) > /dev/null 2>&1  ; then
+	if ! $(_mysql_import $1) > /dev/null 2>&1  ; then
 		echo_s "-- A error occured with file importing\n" $RED
 		exit;	fi
 	echo "-- File imported successfully";
@@ -226,7 +227,7 @@ function add_user()
 	fi
 
 	# Check if reglist exists
-	if ! is_table_exists "reglist" ; then
+	if ! _is_table_exists "reglist" ; then
 		echo_s "-- Reglist table does not exist. Fix the error and try again\n" $RED
 		exit 1;
 	fi
@@ -256,7 +257,7 @@ function add_user()
 		echo_s ": $CONFIG_DIR\n"
 	fi
 
-	if ! register $USER_NICKNAME $USER_CLASS $USER_PASSWORD ; then
+	if ! _register $USER_NICKNAME $USER_CLASS $USER_PASSWORD ; then
 		echo_s "-- A error occured while trying to execute MySQL query. Is user '$USER_NICKNAME' already exists?\n" $RED
 		exit;
 	fi
@@ -332,6 +333,36 @@ function update_geoip()
 	exit 0;
 }
 
+# Clean up tables
+function clean() #path_to_config
+{
+	# Check config path
+	if ! set_path "$1" ; then
+		exit 1;
+	fi
+	TABLES=("banlist" "kicklist" "unbanlist")
+
+	if _is_table_exists "pi_iplog" ; then
+		TABLES+=("pi_iplog")
+	fi
+	if _is_table_exists "pi_messages" ; then
+		TABLES+=("pi_messages")
+	fi
+	if _is_table_exists "pi_stats" ; then
+		TABLES+=("pi_stats")
+	fi
+	for TABLE in ${TABLES[@]}; do
+		if $(yes_or_no "Do you want to truncate '$TABLE' table?") ; then
+			if ! _mysql_query "TRUNCATE TABLE $TABLE;" ; then
+				echo_s "-- Error truncating table '$TABLE'\n" $RED
+			else
+				echo "-- Truncated '$TABLE'"			
+			fi
+		fi
+	done
+	exit 0;
+}
+
 # Install verlihub
 function install_cli() 
 {
@@ -404,13 +435,13 @@ function install_cli()
 
 	# Test if account exists
 	echo_s "\n-- Checking MySQL account $MYSQL_USER@$MYSQL_HOST; this could take some times...\n" $RED_BOLD
-	does_mysql_account_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" && ACCOUNT_EXISTS=true || ACCOUNT_EXISTS=false
+	_does_mysql_account_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" && ACCOUNT_EXISTS=true || ACCOUNT_EXISTS=false
 
 	if ! $ACCOUNT_EXISTS ; then 
 		echo_s "-- The MySQL account '$MYSQL_USER' can not be accessed, it will be created now\n"
 		ask_admin_access_cli
 		$MYSQL -h "$MYSQL_HOST" -u "$MYSQL_ADMIN_USER" -p"$MYSQL_ADMIN_PASSWORD" -e "CREATE USER '$MYSQL_USER'@'$CURRENT_ADDRESS' IDENTIFIED BY '$MYSQL_PASSWORD'" &> /dev/null
-		if ! does_mysql_account_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" ;
+		if ! _does_mysql_account_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" ;
 		then
 			echo_s "-- The MySQL account cannot be created. Fix the problem and run the setup again\n"
 			die;
@@ -421,7 +452,7 @@ function install_cli()
 
 	# Test if database exists
 	echo_s "\n-- Checking MySQL database $MYSQL_DB_NAME; this could take some times...\n" $RED_BOLD
-	does_mysql_db_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB_NAME" && DB_EXISTS=true || DB_EXISTS=false
+	_does_mysql_db_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB_NAME" && DB_EXISTS=true || DB_EXISTS=false
 	# Create database
 	if ! $DB_EXISTS ; then 
 		echo_s "-- The MySQL database '$MYSQL_DB_NAME' does not exist, it will be created now\n"
@@ -437,7 +468,7 @@ function install_cli()
 		ask_admin_access_cli
 	fi
 	$MYSQL -h "$MYSQL_HOST" -u "$MYSQL_ADMIN_USER" -p"$MYSQL_ADMIN_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DB_NAME\`; GRANT ALL ON \`$MYSQL_DB_NAME\`.* to 	'$MYSQL_USER'@'$CURRENT_ADDRESS' identified by '$MYSQL_PASSWORD'" &> /dev/null
-	if ! does_mysql_db_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB_NAME" ; 
+	if ! _does_mysql_db_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB_NAME" ; 
 	then
 		echo_s "A error happens while trying to create DB or to gran permission. Fix the problem and run the setup again\n"
 		exit 1;
@@ -534,7 +565,7 @@ function install_cli()
 
 	# Create tables
 	set_path $CHOOSEN_FOLDER > /dev/null 2>&1;
-	if ! create_mysql_tables $IS_MYSQL_HOST_LOCAL; then
+	if ! _create_mysql_tables $IS_MYSQL_HOST_LOCAL; then
 		echo_s "-- ERROR: cannot create verlihub's tables in the database, cannot continue with the installation. Please check '$CHOOSEN_FOLDER/install_log' file for more info and run installation again\n" $RED
 		exit 1;
 	fi
@@ -577,13 +608,13 @@ done
 
 # Save info to DB
 echo "-- Creating settings; this could take some times..."
-mysql_update "hub_name" $VH_HUB_NAME
-mysql_update "hub_host" "$VH_HUB_HOST:$VH_HUB_PORT"
-mysql_update "listen_port" $VH_HUB_PORT
-if ! register $VH_MASTER_NAME "10" $VH_MASTER_PASSWORD ; then
+_mysql_update "hub_name" $VH_HUB_NAME
+_mysql_update "hub_host" "$VH_HUB_HOST:$VH_HUB_PORT"
+_mysql_update "listen_port" $VH_HUB_PORT
+if ! _register $VH_MASTER_NAME "10" $VH_MASTER_PASSWORD ; then
 	echo_s "-- A error occured with registering user '$VH_MASTER_NAME'. Please do it manually\n" $RED_BOLD
 fi
-if ! mysql_import $DATADIR/sql/default_reglist.sql > /dev/null 2>&1 ; then
+if ! _mysql_import $DATADIR/sql/default_reglist.sql > /dev/null 2>&1 ; then
 	echo_s "-- A error occured with file importing '$DATADIR/sql/default_reglist.sql'\n" $RED_BOLD
 	exit 1;
 fi
@@ -599,22 +630,22 @@ case "_$1" in
 	"_--version")	version;;
 	"_--install")	install_cli;;
 	"_--run")	shift
-			run_hub $1;;
+				run_hub $1;;
 	"_--stop")	shift
-			kill_hub $1;;
+				kill_hub $1;;
 	"_--restart")	shift
-			kill_hub $1
-			run_hub "$1" "restart";;
+					kill_hub $1
+					run_hub "$1" "restart";;
 	"_--geoip")	shift
-			update_geoip $1;;
+				update_geoip $1;;
 	"_--restore")	shift
-			restore $1 $2;;
+					restore $1 $2;;
 	"_--backup")	shift
-			backup $1 $2;;
-	"_--adduser")
-		shift
-		add_user $@;;
-	
+					backup $1 $2;;
+	"_--clean")	shift
+				clean $1;;
+	"_--adduser") 	shift
+					add_user $@;;
 	*)
 		echo_s "Unknown option $1, try $SCRIPT --help\n" $RED
 		exit;;
