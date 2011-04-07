@@ -368,6 +368,7 @@ function convert_aquila #Aquila.xml, path_to_dbconfig
 #	_check_empty_profile "Group" $1
 
 	_check_empty_profile $1 "Groups/Group/Name"
+#set pass_encrypt for each user if crypt method is idfferend  from crypt
 }
 
 # Check libxml2
@@ -384,7 +385,7 @@ case "_$1" in
 	"_--version")	version;;
 	"_--ptokax")	shift
 					convert_ptokax $*;;
-	"_--ynhub")		shift
+	"_--ynhub")	shift
 					convert_ynhub $*;;
 	"_--aquila")	shift
 					convert_aquila $*;;
