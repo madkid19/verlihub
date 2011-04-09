@@ -69,7 +69,7 @@ namespace nDirectConnect {
 			case eCR_HUB_LOAD:
 				return eHubBusy;
 			break;
-			case eCR_RECONNET:
+			case eCR_RECONNECT:
 				return eReconnect;
 			default: return 0;
 		}
