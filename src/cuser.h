@@ -115,7 +115,7 @@ public:
 	cUserBase(const string &nick);
 	virtual ~cUserBase();
 		virtual bool CanSend(); 
-	virtual void Send(string &data, bool pipe, bool cache=true);
+	virtual void Send(string &data, bool pipe, bool flush=true);
 public: // Public attributes
 	/** user's  nickname */
 	string mNick;
