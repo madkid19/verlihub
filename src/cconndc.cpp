@@ -82,7 +82,6 @@ bool cConnDC::SetUser(cUser *usr)
 
 int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 {
-    	cout << "Called cConnDC::Send" << endl;
 	if(!mWritable)
 		return 0;
 
