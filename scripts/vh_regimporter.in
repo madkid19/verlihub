@@ -65,10 +65,11 @@ function _check_config_path() #path_to_dbconfig
 # Get value from node
 function _xml_value() #file, #selector
 {
-	xmllint --nowarning --xpath "//$2/text()" $1
+	local RETURN=$(xmllint --nowarning --xpath "//$2/text()" $1)
 	if [ ${?} -ne 0 ]; then
 		exit 1;
 	fi
+	echo $RETURN
 }
 
 # Get number of nodes
@@ -176,8 +177,8 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 
 	local NUMBER_OF_PROFILES=$(_xml_count $2 $PROFILE_NODE)
 	local NUMBER_OF_USERS=$(_xml_count $1 $USER_NODE)
-	echo_s "-- Found " && echo_s $(_xml_count $2 $PROFILE_NODE) $BOLD && echo_s " profiles" $BOLD
-	echo_s " and " && echo_s $(_xml_count $1 $USER_NODE) $BOLD && echo_s " users\n" $BOLD
+	echo_s "-- Found " && echo_s $NUMBER_OF_PROFILES $BOLD && echo_s " profiles" $BOLD
+	echo_s " and " && echo_s $NUMBER_OF_USERS $BOLD && echo_s " users\n" $BOLD
 	sleep 2
 
 	# Import profile
@@ -224,6 +225,10 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 	done
 
 	yes_or_no "-- Do you want to continue with importing?" && CONTINUE=true
+
+	# Aquila does not store clear password but only crypt. If hub is using different encryption method 
+	# we should set pwd_crypt to 1
+	local ENCRYPTION=$(_mysql_value "default_password_encryption")
 	if [ $CONTINUE ]; then
 		echo "-- Importing users; this could take some times"
 		for I in $(seq 1 $NUMBER_OF_USERS)
@@ -242,7 +247,7 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 			if [ "$_CLASS" == "_" ]; then
 				continue;
 			fi
-			if ! _register "$NICKNAME" "$CLASS" "$PASSWORD" ; then
+			if ! _register "$NICKNAME" "$CLASS" "$PASSWORD" "plain" ; then
 				echo_s "-- Error importing user '$NICKNAME'\n" $RED
 			fi
 		done
@@ -277,8 +282,8 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 
 	local NUMBER_OF_PROFILES=$(_xml_count $2 $PROFILE_NODE)
 	local NUMBER_OF_USERS=$(_xml_count $1 $USER_NODE)
-	echo_s "-- Found " && echo_s $(_xml_count $2 $PROFILE_NODE) $BOLD && echo_s " profiles" $BOLD
-	echo_s " and " && echo_s $(_xml_count $1 $USER_NODE) $BOLD && echo_s " users\n" $BOLD
+	echo_s "-- Found " && echo_s $NUMBER_OF_PROFILES $BOLD && echo_s " profiles" $BOLD
+	echo_s " and " && echo_s $NUMBER_OF_USERS $BOLD && echo_s " users\n" $BOLD
 	sleep 2
 
 	# Import profile
@@ -289,8 +294,8 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 	do
 		for J in $( seq 1 $NUMBER_OF_PROFILES )
 		do
-			local YNHUB_PROFILE_NAME=$(_xml_value $2 "//$PROFILE_NODE[$J]/Name")
-			local YNHUB_PROFILE_KEY=$(_xml_value $2 "//$PROFILE_NODE[$J]/ProfileLevel")
+			local YNHUB_PROFILE_NAME=$(_xml_value $2 "$PROFILE_NODE[$J]/Name")
+			local YNHUB_PROFILE_KEY=$(_xml_value $2 "$PROFILE_NODE[$J]/ProfileLevel")
 			local IS_SINGLE_MAPPING_OK=false
 
 			until $IS_SINGLE_MAPPING_OK;
@@ -328,6 +333,7 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 	yes_or_no "-- Do you want to continue with importing?" && CONTINUE=true
 	if [ $CONTINUE ]; then
 		echo "-- Importing users; this could take some times"
+
 		for I in $(seq 1 $NUMBER_OF_USERS)
 		do
 			local CHILD="$USER_NODE[$I]"
@@ -344,7 +350,14 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 			if [ "$_CLASS" == "_" ]; then
 				continue;
 			fi
-			if ! _register "$NICKNAME" "$CLASS" "$PASSWORD" ; then
+			# Get other information
+			local REG_DATE=$(_xml_value $1 "$CHILD/Created")
+			REG_DATE=$(date --utc --date "$REG_DATE" +%s)
+	 		local REG_OP=$(_xml_value $1 "$CHILD/CreatedBy")
+   			local LAST_LOGIN=$(_xml_value $1 "$CHILD/LastUsed")
+			LAST_LOGIN=$(date --utc --date "$LAST_LOGIN" +%s)
+			
+			if ! _register "$NICKNAME" "$CLASS" "$PASSWORD" "encrypt" "$REG_DATE" "$REG_OP" "$LAST_LOGIN" ; then
 				echo_s "-- Error importing user '$NICKNAME'\n" $RED
 			fi
 		done
@@ -357,19 +370,107 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 
 function convert_aquila #Aquila.xml, path_to_dbconfig
 {
+	FILE="Aquila.xml"
+	USER_NODE="Aquila/Accounts/Account"
+	PROFILE_NODE="Aquila/Groups/Group"
 
-# Invert _check_empty_profile var
+	# Declare associative araay (bash 4.0)
+	declare -A PROFILES_MAP
 
-
-	# Check if config file is correct and exits
-	_check_file "$1" "Aquila.xml"
+	# Check if file is correct and exits
+	_check_file "$1" $FILE
 	# Check config path
 	_check_config_path "$2"
-	# Check if profiles exist
-#	_check_empty_profile "Group" $1
 
-	_check_empty_profile $1 "Groups/Group/Name"
-#set pass_encrypt for each user if crypt method is idfferend  from crypt
+	# Check if there are users to convert
+	_check_empty_users "$1" $USER_NODE
+	# Check if profiles exist
+	_check_empty_profile "$1" $PROFILE_NODE
+
+	local NUMBER_OF_PROFILES=$(_xml_count $1 $PROFILE_NODE)
+	local NUMBER_OF_USERS=$(_xml_count $1 $USER_NODE)
+	echo_s "-- Found " && echo_s $NUMBER_OF_PROFILES $BOLD && echo_s " profiles" $BOLD
+	echo_s " and " && echo_s $NUMBER_OF_USERS $BOLD && echo_s " users\n" $BOLD
+	sleep 2
+
+	# Import profile
+	_print_vh_class_summury "Aquila"
+	# Ask user to mapping
+	IS_NEW_MAP_OK=false
+	until $IS_NEW_MAP_OK;
+	do
+		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		do
+			local AQUILA_PROFILE_NAME=$(_xml_value $1 "$PROFILE_NODE[$J]/Name")
+			local IS_SINGLE_MAPPING_OK=false
+
+			until $IS_SINGLE_MAPPING_OK;
+			do
+				MAP=$(ask "Aquila profile '$AQUILA_PROFILE_NAME' map with")
+				if check_class $MAP ; then
+					echo_s "-- Type a valid number: 0, 1, 2, 3, 4, 5, 10\n" $RED
+				else
+					IS_SINGLE_MAPPING_OK=true
+				fi
+				# Populate array with verlihub class (map) and ptokax profile name
+				local PROFILES[$J]="$J $AQUILA_PROFILE_NAME $MAP"
+
+			done
+		done
+		# Print new map
+		echo
+		echo "-- This is the map of profiles:"
+		echo_s "\t[Aquila profile] " $BOLD && echo_s "=> \t" && echo_s "[Verlihub profile]\n" $BOLD
+		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		do
+			local AQUILA_PROFILE_NAME=$(_get_profile_name "${PROFILES[$J]}")
+			local VERLIHUB_CLASS=$(_get_profile_map_key "${PROFILES[$J]}")
+			local VERLIHUB_PROFILE_NAME=$(_get_verlihub_profile_name $VERLIHUB_CLASS)
+
+			echo -e "\t[$AQUILA_PROFILE_NAME] \t=>\t[$VERLIHUB_CLASS - $VERLIHUB_PROFILE_NAME]"
+
+			# Create profiles map
+			PROFILES_MAP["$AQUILA_PROFILE_NAME"]="$VERLIHUB_CLASS"
+		done
+		yes_or_no "-- Is this correct?" && IS_NEW_MAP_OK=true || echo -e "Let's do it again\n\n"
+	done
+
+	yes_or_no "-- Do you want to continue with importing?" && CONTINUE=true
+	if [ $CONTINUE ]; then
+		echo "-- Importing users; this could take some times"
+		for I in $(seq 1 $NUMBER_OF_USERS)
+		do
+			local CHILD="$USER_NODE[$I]"
+			local NICKNAME=$(_xml_value $1 "$CHILD/Name")
+			if [ "$_NICKNAME" == "_" ]; then
+				continue;
+			fi
+			local PASSWORD=$(_xml_value $1 "$CHILD/Passwd")
+			local PROFILE=$(_xml_value $1 "$CHILD/Group")
+			if [ "$_PROFILE" == "_" ]; then
+				continue;
+			fi
+			# Get class
+			local CLASS=${PROFILES_MAP["$PROFILE"]}
+			if [ "$_CLASS" == "_" ]; then
+				continue;
+			fi
+			# Get other information
+			local REG_DATE=$(_xml_value $1 "$CHILD/RegDate")
+	 		local REG_OP=$(_xml_value $1 "$CHILD/Creator")
+   			local LAST_LOGIN=$(_xml_value $1 "$CHILD/LastLogin")
+			local LAST_IP=$(_xml_value $1 "$CHILD/LastIP")
+
+			
+			if ! _register "$NICKNAME" "$CLASS" "$PASSWORD" "encrypt" "$REG_DATE" "$REG_OP" "$LAST_LOGIN" "$LAST_IP" ; then
+				echo_s "-- Error importing user '$NICKNAME'\n" $RED
+			fi
+		done
+		echo "-- Done"
+	else
+		echo "-- Skipped"
+	fi
+	exit 0;
 }
 
 # Check libxml2
@@ -379,14 +480,13 @@ if [ -z "$XMLLINT" ]; then
 	exit 1;
 fi
 
-
 case "_$1" in
 	"_") 		help_me ;;
 	"_--help") 	help_me;;
 	"_--version")	version;;
 	"_--ptokax")	shift
 					convert_ptokax $*;;
-	"_--ynhub")	shift
+	"_--ynhub")		shift
 					convert_ynhub $*;;
 	"_--aquila")	shift
 					convert_aquila $*;;
