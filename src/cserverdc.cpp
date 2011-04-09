@@ -916,7 +916,7 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick, int &closeReason)
 		close=true;
 		if(vn == eVN_BANNED) {
 			errmsg << _("Do not reconnect too fast.") << " ";
-			closeReason = eCR_RECONNET;
+			closeReason = eCR_RECONNECT;
 		}
 		else
 			errmsg << _("Bad nickname") << ": ";

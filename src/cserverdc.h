@@ -131,7 +131,7 @@ enum
    eCR_LOGIN_ERR, //< error in login sequence
    eCR_SYNTAX, // < syntax error in some message
    eCR_INVALID_KEY,
-   eCR_RECONNET,
+   eCR_RECONNECT,
 };
 };
 
