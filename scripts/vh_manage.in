@@ -328,7 +328,7 @@ setup_hub() {
 	_mysql_update "hub_name" $VH_HUB_NAME
 	_mysql_update "hub_host" "$VH_HUB_HOST:$VH_HUB_PORT"
 	_mysql_update "listen_port" $VH_HUB_PORT
-	if ! _register $VH_MASTER_NAME "10" $VH_MASTER_PASSWORD ; then
+	if ! _register $VH_MASTER_NAME "10" $VH_MASTER_PASSWORD "plain" ; then
 		$DIALOG --title "Hub settings" --msgbox "A error occured with registering user '$VH_MASTER_NAME'. Please do it manually" 7 45
 	fi
 	if ! _mysql_import $DATADIR/sql/default_reglist.sql > /dev/null 2>&1  ; then
