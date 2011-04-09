@@ -74,13 +74,13 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 		conn->CloseNow();
 		return -1;
 	}
-	
+
 	#ifndef WITHOUT_PLUGINS
 	if (msg->mType != eMSG_UNPARSED)  {
 		if (!mS->mCallBacks.mOnParsedMsgAny.CallAll(conn, msg)) return 1;
 	}
 	#endif
-	
+
 	switch ( msg->mType )
 	{
 		case eDC_UNKNOWN: mS->mCallBacks.mOnUnknownMsg.CallAll(conn, msg); return 1;
@@ -135,8 +135,9 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		conn->LogStream() << "User " << nick << " tries to login" << endl;
 
 	// Check if nick is valid or close the connection
-	if(!mS->ValidateUser(conn, nick)) {
-		conn->CloseNice(1000,eCR_INVALID_USER);
+	int closeReason;
+	if(!mS->ValidateUser(conn, nick, closeReason)) {
+		conn->CloseNice(1000, closeReason);
 		return -1;
 	}
 	// User limit
@@ -158,7 +159,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 
 	limit += limit_extra;
 	limit_cc += limit_extra;
-		
+
 	// Check the max_users limit
 	if((conn->GetTheoricalClass() < eUC_OPERATOR) && ((mS->mUserCountTot >= limit) || (mS->mUserCount[conn->mGeoZone] >= limit_cc))) {
 		os << _("<<User limit exceeded, hub is full.>>") << "\r\n" << autosprintf(_("Online users: %d"),  mS->mUserCountTot);
@@ -190,11 +191,11 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	if (conn->NeedsPassword()) {
 		omsg="$GetPass";
 		conn->Send(omsg);
-	} else { 
+	} else {
 		mS->DCHello(nick, conn);
 		conn->SetLSFlag(eLS_PASSWD);
 	}
-	
+
 	try {
 		cUser *NewUser = new cUser(nick);
 		NewUser->mFloodPM.SetParams(0.0, 1. * mS->mC.int_flood_pm_period, mS->mC.int_flood_pm_limit);
@@ -202,14 +203,14 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 			conn->CloseNow();
 			return -1;
 		}
-		
+
 		#ifndef WITHOUT_PLUGINS
 		if (!mS->mCallBacks.mOnParsedMsgValidateNick.CallAll(conn, msg)) {
 			conn->CloseNice(1000, eCR_INVALID_USER);
 			return -2;
 		}
 		#endif
-		
+
 	} catch(...) {
 		if(mS->ErrLog(2))
 			mS->LogStream() << "Unhandled exception in cServerDC::DC_ValidateNick" << endl;
@@ -262,7 +263,7 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 	string &pwd=msg->ChunkString(eCH_1_PARAM);
 
 	string omsg;
-	
+
 	if(!conn->mpUser) {
 		omsg = _("Bad login sequence; you must provide a valid nick first.");
 		if(conn->Log(1))
@@ -292,7 +293,7 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 				mS->ReportUserToOpchat(conn,_("Wrong password"));
 			omsg = _("You provided an incorrect password and have been temporarily banned.");
 			mS->mBanList->AddNickTempBan(conn->mpUser->mNick, mS->mTime.Sec() + mS->mC.pwd_tmpban, omsg);
-		
+
 			mS->mR->LoginError(conn, conn->mpUser->mNick);
 			if(conn->Log(2))
 				conn->LogStream() << "Wrong password, banned for " << mS->mC.pwd_tmpban <<" seconds" << endl;
@@ -303,8 +304,8 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 				conn->LogStream() << "User sent password but he isn't regged" << endl;
 			return -1;
 		}
-		
-		
+
+
 	}
 	return 0;
 }
@@ -412,12 +413,12 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		return -1;
 	}
 
-	if( tag->mClientMode == nDirectConnect::nEnums::eCM_PASSIVE || 
+	if( tag->mClientMode == nDirectConnect::nEnums::eCM_PASSIVE ||
 			 tag->mClientMode == nDirectConnect::nEnums::eCM_SOCK5 )
 					conn->mpUser->IsPassive = true;
 	////////////////////// END TAG VERRIFICATION
 	delete tag;
-	
+
 	// Check min and max share conditions
 	string &str_share=msg->ChunkString(eCH_MI_SIZE);
 	// Share is too big
@@ -435,7 +436,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		__int64 min_share=mS->mC.min_share;
 		__int64 max_share=mS->mC.max_share;
 		__int64 min_share_p, min_share_a;
-		
+
 		if (conn->GetTheoricalClass() == eUC_PINGER) {
 			min_share = 0;
 		} else {
@@ -447,7 +448,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 				min_share = mS->mC.min_share_vip;
 				max_share = mS->mC.max_share_vip;
 			}
-	
+
 			if (conn->GetTheoricalClass() >= eUC_OPERATOR) {
 				min_share = mS->mC.min_share_ops;
 				max_share = mS->mC.max_share_ops;
@@ -458,16 +459,16 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		min_share_p = (__int64) (min_share * mS->mC.min_share_factor_passive);
 		if (conn->mpUser->IsPassive)
 			min_share = min_share_p;
-		
+
 		/*if (conn->mpUser->Can(eUR_NOSHARE, mS->mTime.Sec()))
 			min_share = 0;
 		*/
 		if((share < min_share) || (max_share && (share > max_share))) {
 			ostringstream message;
 			if(share < min_share)
-				message << autosprintf(_("You share %s, but the min share is %s. (active:%s / passive:%s)"), convertByte(share,false).c_str(), convertByte(min_share*1024,false).c_str(), convertByte(min_share_a*1024,false).c_str(), convertByte(min_share_p*1024,false).c_str());
+				message << autosprintf(_("You share %s, but the min share is %s. (active:%s / passive:%s)"), convertByte(share*1024*1024,false).c_str(), convertByte(min_share*1024*1024,false).c_str(), convertByte(min_share_a*1024*1024,false).c_str(), convertByte(min_share_p*1024*1024,false).c_str());
 			else
-				message << autosprintf(_("You share %s, but the max share is %s."), convertByte(share,false).c_str(), convertByte(max_share*1024,false).c_str());
+				message << autosprintf(_("You share %s, but the max share is %s."), convertByte(share*1024*1024,false).c_str(), convertByte(max_share*1024*1024,false).c_str());
 			if(conn->Log(2))
 				conn->LogStream() << "Share limit."<< endl;
 			mS->ConnCloseMsg(conn, message.str(), 4000, eCR_SHARE_LIMIT);
@@ -476,18 +477,18 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 
 		// this is a second share limit, (if NON-zero)
 		// under imit disables search and download
-		
+
 		if(conn->GetTheoricalClass() <= eUC_VIPUSER) {
 			__int64 temp_min_share = 0;
 			// TODO: Rename to min_share_use_hub_guest
 			if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
-				temp_min_share = mS->mC.min_share_use_hub;	
+				temp_min_share = mS->mC.min_share_use_hub;
 			} else if(mS->mC.min_share_use_hub_reg && conn->GetTheoricalClass() == eUC_REGUSER) {
 				temp_min_share = mS->mC.min_share_use_hub_reg;
 			} else if(mS->mC.min_share_use_hub_vip && conn->GetTheoricalClass() == eUC_VIPUSER) {
 				temp_min_share = mS->mC.min_share_use_hub_vip;
 			}
-			
+
 			// Found use hub limit
 			if(temp_min_share) {
 				if (conn->mpUser->IsPassive)
@@ -506,9 +507,9 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 			conn->mpUser->SetRight(eUR_SEARCH, 0);
 			conn->mpUser->SetRight(eUR_CTM, 0);
 		}
-		
+
 	}
-	
+
 	// update totalshare
 	mS->mTotalShare -= conn->mpUser->mShare;
 	conn->mpUser->mShare = shareB;
@@ -557,7 +558,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	if(mS->mC.show_desc_len >= 0) {
 		desc.assign(desc,0,mS->mC.show_desc_len);
 	}
-	
+
 	if(mS->mC.show_email == 0) {
 		email= " ";
 	} else {
@@ -569,7 +570,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	} else {
 		speed = msg->ChunkString(eCH_MI_SPEED);
 	}
-	
+
 	if(!conn->mpUser->mHideShare == false) {
 		sShare = "0";
 	} else {
@@ -603,12 +604,12 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 				conn->mpUser->mMyINFO = myinfo_full;
 				if(myinfo_basic != conn->mpUser->mMyINFO_basic) {
 					conn->mpUser->mMyINFO_basic = myinfo_basic;
-	
+
 					send_myinfo = GetMyInfo(conn->mpUser, eUC_NORMUSER);
 					mS->mUserList.SendToAll(send_myinfo, mS->mC.delayed_myinfo, true);
-	
+
 				}
-				if( mS->mC.show_tags >=1 ) 
+				if( mS->mC.show_tags >=1 )
 					mS->mOpchatList.SendToAll(myinfo_full, mS->mC.delayed_myinfo, true);
 			}
 
@@ -750,12 +751,12 @@ bool cDCProto::CheckChatMsg(const string &text, cConnDC *conn)
 {
 	if(!conn || !conn->mxServer)
 		return true;
-	
+
 	cServerDC *Server = conn->Server();
 	int count = text.size(), limit = Server->mC.max_chat_msg;
 	bool IsWrong = false;
-	
-	
+
+
 	ostringstream errorMessage;
 	if(count > limit) {
 		IsWrong = true;
@@ -766,7 +767,7 @@ bool cDCProto::CheckChatMsg(const string &text, cConnDC *conn)
 		IsWrong = true;
 	} else
 		return true;
-	
+
 	if(IsWrong) {
 		Server->DCPublicHS(errorMessage.str(),conn);
 		return false;
@@ -784,7 +785,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 		return -3;
 	if(!conn->mpUser->Can(eUR_CHAT, mS->mTime.Sec(), 0))
 		return -4;
-	
+
 	if(conn->mpUser->mClass < mS->mC.mainchat_class) {
 		mS->DCPublicHS(_("Mainchat is currently disabled for non registered users."),conn);
 		return 0;
@@ -800,7 +801,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	stringstream omsg;
 	bool send = false;
 	// Set minimum chat delay
-	long delay = mS->mC.int_chat_ms; 
+	long delay = mS->mC.int_chat_ms;
 	if(conn->mpUser->mClass >=  eUC_VIPUSER) delay=0;
 
 	// Check if nick is ok
@@ -826,10 +827,10 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	send = true;
 
 	if(ParseForCommands(text, conn)) return 0;
-	
+
 	////////// here is the part that finally distributes messages
 	// check message length only for less than vip regs
-	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text, conn)) 
+	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text, conn))
 		return 0;
 
 	// If this is a kick message, process it separately
@@ -895,7 +896,7 @@ bool cDCProto::CheckIP(cConnDC * conn, string &ip)
 
 bool cDCProto::isLanIP(string ip)
 {
-	
+
 	unsigned long senderIP = cBanList::Ip2Num(ip);
 	// see RFC 1918
 	if( (senderIP > 167772160UL && senderIP < 184549375UL) || (senderIP > 2886729728UL && senderIP < 2887778303UL) || (senderIP > 3232235520UL && senderIP < 3232301055UL)) return true;
@@ -927,16 +928,16 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 		mS->DCPrivateHS(ostr, conn);
 		return -4;
 	}
-	
+
 	string &nick = msg->ChunkString(eCH_CM_NICK);
-	
+
 	string ctm = msg->mStr;
 
 	cUser *other = mS->mUserList.GetUserByNick(nick);
 	// Check nick and connection
 	if(!other || !other->mxConn)
 		return -1;
-	
+
 	// Check if the user can download and also if the other user hides the share
 	if((conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) || other->mHideShare)
 		return -4;
@@ -948,20 +949,20 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 			else ip = conn->mAddrIP;
 		}
 		else ip = conn->mAddrIP;
-		
+
 		if(ip.empty()) {
 			os << _("You cannot connect to an external IP because you are in a LAN");
 			string toSend = os.str();
 			conn->Send(toSend);
 			return -1;
 		}
-		
+
 		os << "$ConnectToMe" << " " << nick << " " <<  ip << ":" << msg->ChunkString(eCH_CM_PORT);
 		ctm = os.str();
 		if(conn->Log(3))
 			LogStream() << "Fixed wrong IP in $ConnectToMe from " <<  msg->ChunkString(eCH_CM_IP) << " to " << ip << endl;
 	}
-	
+
 	#ifndef WITHOUT_PLUGINS
 	if (!mS->mCallBacks.mOnParsedMsgConnectToMe.CallAll(conn, msg))
 		return -2;
@@ -1037,7 +1038,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	if(!conn->mpUser->Can(eUR_SEARCH, mS->mTime.Sec(), 0)) {
 		unsigned long use_hub_share= 0;
 		if(mS->mC.min_share_use_hub && conn->GetTheoricalClass() == eUC_NORMUSER) {
-			use_hub_share = mS->mC.min_share_use_hub;	
+			use_hub_share = mS->mC.min_share_use_hub;
 		} else if(mS->mC.min_share_use_hub_reg && conn->GetTheoricalClass() == eUC_REGUSER) {
 			use_hub_share = mS->mC.min_share_use_hub_reg;
 		} else if(mS->mC.min_share_use_hub_vip && conn->GetTheoricalClass() == eUC_VIPUSER) {
@@ -1192,7 +1193,7 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 /**
   Redirect an user to another hub.
   If the user is found, send him a message and then he is redirected. The user may not be redirected because he is a protetect user
-	
+
   @param[in,out] msg The NMDC message
   @param[in,out] tr The user who sent the message
   @return The result
@@ -1240,7 +1241,7 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 	omsg += msg->ChunkString(eCH_FM_DEST);
 	omsg += "|";
 
-	
+
 	ostringstream redirectReason;
 	redirectReason << autosprintf(_("You are being redirected to %s because: %s"), msg->ChunkString(eCH_FM_DEST).c_str(), msg->ChunkString(eCH_FM_REASON).c_str());
 	Create_PM(omsg,conn->mpUser->mNick, msg->ChunkString(eCH_FM_NICK), conn->mpUser->mNick, redirectReason.str());
@@ -1309,7 +1310,7 @@ int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 	long period = 0;
 	// calculate time
 	if(msg->ChunkString(eCH_NB_TIME).size()) {
-		mS->Str2Period(msg->ChunkString(eCH_NB_TIME),os); 
+		mS->Str2Period(msg->ChunkString(eCH_NB_TIME),os);
 		if(!period) {
 			mS->DCPublicHS(os.str(),conn);
 			return -1;
@@ -1505,12 +1506,12 @@ int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 		<< mS->mC.hub_desc << S
 		<< mS->mC.max_users_total << S
 		<< StringFrom((__int64)(1024*1024)*hl_minshare) << S
-		<< ConnType->mTagMinSlots << S 
+		<< ConnType->mTagMinSlots << S
 		<< mS->mC.tag_max_hubs << S
 		<< "VerliHub" << S
 		<< mS->mC.hub_owner << S
 		<< mS->mC.hub_category;
-		
+
 	string str = os.str();
 	conn->Send(str);
 	return 0;
@@ -1703,7 +1704,7 @@ void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, char 
 	string start, end;
 	unsigned char c;
 	int i = 0;
-	
+
 	if(!WithDCN) {
 		start = "$#";
 		end =";";
@@ -1711,7 +1712,7 @@ void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, char 
 		start = "/%DCN";
 		end = "%/";
 	}
-	
+
 	pos = src.find(start);
 	while ((pos != src.npos) && (i < src.size())) {
 		if (pos > pos2) {
@@ -1767,7 +1768,7 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const char *buf, int len, 
 					os << "&#" << unsigned(c) << ";";
 				else {
 					if(c < 10) olen = 7;
-					else if(c > 10 && c < 100) olen = 6; 
+					else if(c > 10 && c < 100) olen = 6;
 					os.width(olen);
 					os.fill('0');
 					os << left << "/%DCN" << unsigned(c);
@@ -1787,19 +1788,19 @@ void nDirectConnect::nProtocol::cDCProto::Lock2Key(const string &Lock, string &f
 	char *key = 0;
 	char * lock = new char[len+1];
 	UnEscapeChars(Lock, lock, len, true);
-	
+
 	key = new char[len+1];
-	
+
 	key[0] = lock[0] ^ lock[len - 1] ^ lock[len - 2] ^ 5;
 	while(++count < len)
 		key[count] = lock[count] ^ lock[count - 1];
 	key[len]=0;
-	
+
 	count = 0;
 	while(count++ < len)
 		key[count - 1] = ((key[count - 1] << 4)) | ((key[count - 1] >> 4));
-	
-	
+
+
 	cDCProto::EscapeChars(key, len, fkey, true);
 	delete [] key;
 	delete [] lock;

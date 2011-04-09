@@ -42,13 +42,13 @@ namespace nDirectConnect {
 		mMySQLTable.mExtra = "PRIMARY KEY(address)";
 		SetBaseTo(&mModel);
 	}
-	
+
 	int cRedirects::MapTo(int Type)
 	{
 		switch(Type) {
 			case eCR_INVALID_USER:
 			case eCR_KICKED:
-				return eKick;	
+				return eKick;
 			break;
 			case eCR_USERLIMIT:
 				return eUserLimit;
@@ -60,7 +60,7 @@ namespace nDirectConnect {
 			case eCR_TAG_NONE:
 				return eTag;
 			break;
-			case eCR_PASSWORD:	
+			case eCR_PASSWORD:
 				return eWrongPasswd;
 			break;
 			case eCR_INVALID_KEY:
@@ -69,19 +69,21 @@ namespace nDirectConnect {
 			case eCR_HUB_LOAD:
 				return eHubBusy;
 			break;
+			case eCR_RECONNET:
+				return eReconnect;
 			default: return 0;
 		}
 	}
-	
+
 	/**
-	
+
 	Find a redirect address from a given type ID. If there is more than one address in the list...
-	
+
 	@param[in,out] os The stream where to store the description.
 	@param[in,out] tr The cRedirect object that describes the redirect
 	@return The stream
 	*/
-	
+
 	char *cRedirects::MatchByType(int Type)
 	{
 		iterator it;
@@ -109,7 +111,7 @@ namespace nDirectConnect {
 		Random(i);
 		return redirects[i];
 	}
-	
+
 	void cRedirects::Random(int &key)
 	{
 		srand (time(NULL));
@@ -136,10 +138,10 @@ namespace nDirectConnect {
 		string help_str;
 		switch(cmd)
 		{
-			case eLC_LST: 
-				help_str = "!lstredirect\r\nShow the list of redirects"; 
+			case eLC_LST:
+				help_str = "!lstredirect\r\nShow the list of redirects";
 				break;
-			case eLC_ADD: 
+			case eLC_ADD:
 			case eLC_MOD:
 				help_str = "!(add|mod)redirect <address>"
 						"[ -f <\"redirect flag\">]"
@@ -152,7 +154,7 @@ namespace nDirectConnect {
 		cDCProto::EscapeChars(help_str,help_str);
 		os << help_str;
 	}
-	
+
 	void cRedirectConsole::GetHelp(ostream &os)
 	{
 		string help;
@@ -165,12 +167,13 @@ namespace nDirectConnect {
 		help += "16\tWrong password\r\n";
 		help += "32\tInvalid key\r\n";
 		help += "64\tHub is busy\r\n";
-		
+		help += "128\tUser tries to reconnect too fast\r\n";
+
 		help += "\r\nRemember to make the sum of the selected flags above\r\n";
 		cDCProto::EscapeChars(help,help);
 		os << help;
 	}
-	
+
 	const char * cRedirectConsole::GetParamsRegex(int cmd)
 	{
 		switch(cmd)
@@ -190,7 +193,7 @@ namespace nDirectConnect {
 	bool cRedirectConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cRedirect &data)
 	{
 		enum {
-			eADD_ALL, 
+			eADD_ALL,
    			eADD_ADDRESS, eADD_CHOICE,
    			eADD_FLAGp, eADD_FLAG,
 			eADD_ENABLEp, eADD_ENABLE };
@@ -199,7 +202,7 @@ namespace nDirectConnect {
 		cmd->GetParInt(eADD_ENABLE, data.mEnable);
 		return true;
 	}
-		
+
 	cRedirects *cRedirectConsole::GetTheList()
 	{
 		return mOwner->mRedirects;
@@ -212,7 +215,7 @@ namespace nDirectConnect {
 	{
 		*os << _("Existing redirects are:") << "\r\n";
 	}
-		
+
 	bool cRedirectConsole::IsConnAllowed(cConnDC *conn,int cmd)
 	{
 		return (conn && conn->mpUser && conn->mpUser->mClass >= eUC_ADMIN);
@@ -220,4 +223,4 @@ namespace nDirectConnect {
 	};
 };
 
- 
+

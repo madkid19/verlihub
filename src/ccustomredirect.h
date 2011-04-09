@@ -35,7 +35,8 @@ namespace nDirectConnect {
 			eTag = 0x000008,
 			eWrongPasswd = 0x000010,
 			eInvalidKey = 0x000020,
-			eHubBusy = 0x000040
+			eHubBusy = 0x000040,
+			eReconnect =  0x000080
 		};
 	};
 	class cConnDC;
@@ -57,7 +58,7 @@ namespace nDirectConnect {
 				* Class constructor
 				*/
 				cRedirect();
-				
+
 				/**
 				* Class destructor
 				*/
@@ -67,7 +68,7 @@ namespace nDirectConnect {
 				* This function is called when cRedirect object is created. Here it is not useful so the body is empty
 				*/
 				virtual void OnLoad() {};
-				
+
 				/**
 				* Redefine << operator to print a redirect and show its status
 				* @param os The stream where to store the description.
@@ -75,13 +76,13 @@ namespace nDirectConnect {
 				* @return The stream
 				*/
 				friend ostream &operator << (ostream &, cRedirect &);
-				
+
 				// The flag to determinate the kind of the redirect
 				int mFlag;
-				
+
 				// The target
 				string mAddress;
-				
+
 				// Enable or disable redirect
 				int mEnable;
 		};
