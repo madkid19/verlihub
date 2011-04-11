@@ -2,14 +2,15 @@
 This file contains the text that will be displayed to users upon entering the hub.
 Change it to suit your needs or use the file trigger definition to store your motd.
 
-Welcome to Verlihub
-
+Welcome to VerliHub
 
 +rules		-- Display a list of hub rules.
 +faq		-- Display a list of helpful links if you are having trouble.
-+motd	-- Display this message.
++motd		-- Display this message.
 +help		-- Display a list of all available commands to you.
 
+Some usefull links for you:
 
-The VerliHub Project homepage is located at http://www.verlihub-project.org
-The VerliHub Forums are located at http://forums.verlihub-project.org
+* Verlihub homepage: http://www.verlihub-project.org
+* Verlihub forums: http://www.verlihub-project.org/discussions
+* Verlihub manual: http://www.verlihub-project.org/page

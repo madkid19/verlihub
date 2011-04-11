@@ -1,86 +1,154 @@
 
-As an OP(level 3), you have the following commands available to you:
+OPERATOR (class 3) [Some commands may not be available depending of hub configuration]
 
+!admins <msg>				Broadcast to administrators (class 5)
 
-Command		 Arguments		 Help		
+!ban_time <nick/ip> <reason>		Temporarily bans a nickname or IP for the specified time (_time). Valid entries for time are Ns, Nm, Nh, Nd, NM, Nw, Ny where N is a number. If you do not include a time, then the ban is permanent. Perform the same action of !ban command
 
+!banemail_time <email> <reason>		Bans a e-mail address. See !ban command to format _time string
 
-!kick            <nick> <reason>     Kick the user from command line and give a ban equal to the hub's specified tempban time. If you right-click in your client and kick, it does the same thing. If you include _ban_time in the reason, then the ban is extended to the time you specify. Valid entries for time are Ns, Nm, Nh, Nd, NM, Nw, Ny. The IP and the nick are both banned. This is the most reliable and easiest way to ban.
+!banhost1_time <hostname> <reason>	Bans the first level of the given DNS. See !ban command to format _time string
 
-!banip_time      <ip> <reason>      Bans an IP address _only_ from the hub. Valid entries for time are Ns, Nm, Nh, Nd, NM, Nw, Ny. If you do not include a time, then the ban is permanent. So, '!banip_1M <ip> <reason>' would ban an IP for one month with the reason, and '!banip <ip> <reason>' would perm-ban the IP with the reason. The best use for !banip is if you want to prevent a certain IP (no matter the nick) from entering the hub. If you wish to ban a user who is connected to the hub you should use !kick instead.
+!banhost2_time <hostname> <reason>	Bans the second level of the given DNS. See !ban command to format _time string
 
-!bannick_time    <ip> <reason>      Bans a nick _only_ from the hub. Valid entries for time are Ns, Nm, Nh, Nd, NM, Nw, Ny. If you do not include a time, then the ban is permanent. So, '!bannick_1M <nick> <reason>' would ban a nick for one month with the reason, and '!bannick <nick> <reason>' would perm-ban the nick with the reason The best use for !bannick is if you want to prevent a certain nick (no matter the IP) from entering the hub. If you wish to ban a user who is connected to the hub you should use !kick instead.
+!banhost3_time <hostname> <reason>	Bans the third level of the given DNS. See !ban command to format _time string
 
-!ban_time        <ip> <reason> 	This bans the IP for the specified time. If a nick with the <ip> has been previously kicked, then that nick is banned too and any user with the <ip> is dropped. If no nick with the <ip> was previously kicked then no nick is banned and no user is dropped. If a nick with the <ip> is later kicked, then that nick is banned for the same time as the <ip>. If you do not include a time, then the ban is permanent. Valid entries for time are Ns, Nm, Nh, Nd, NM, Nw, Ny. So '!ban_1M <ip> <reason>' would ban an ip for one month with the reason. The !kick command is the best way to do the same thing.
+!banhostr1_time <hostname> <reason>	Bans the leftmost part of the hostname. See !ban command to format _time string
 
-!banhost1_time   <host> <reason>    This bans the top level domain of the host specified. If a time is not included, then this ban is permanent. Be aware that this will ban a great deal of the public from your hub. For example, !banhost1 dynamichost.aol.com would permban the entire .com domain.  
+!banip_time <ip> <reason>		Bans IP address only. See !ban command to format _time string
 
-!banhost2_time   <host> <reason>    This bans the second level domain of the host specified. If a time is not included, then this ban is permanent. Be aware that this might ban a large portion of the public from your hub. For example, !banhost2 dynamichost.aol.com would permban the entire aol.com domain. 
+!bannick_time <nick> <reason>		Bans a nick only. See !ban command to format _time string
 
-!banhost3_time   <host> <reason>    This bans the subdomain of the host specified. Depending on the circumstances, this might be a single host or a large portion of the public. If a time is not included, then this ban is permanent. For example, !banhost3 dynamichost.aol.com would ban the single host "dynamichost", while !banhost3 dynamichost.dsl.aol.com would ban the entire dsl.aol.com domain.
+!banrange_time <range> <reason>		Bans a range of IP addresses. Use <start_ip-end_ip> or <CIDR> notation. See !ban command to format _time string
 
-!banhostr1_time  <host> <reason>    This bans the final subdomain of the host specified. This is almost always a single host. If a time is not included, then this ban is permanent. For example, !banhostr1 dynamichost.aol.com would permban the single host "dynamichost", as would !banhostr1 dynamichost.dsl.aol.com.
+!banprefix_time <prefix> <reason>	Bans a nick prefix. See !ban command to format _time string
 
-!banprefix_time  <prefix> <reason>  This bans any user with <prefix> at the beginning of their nick. If a time is not included, then this ban is permanent. So, !banprefix <OP> <reason> would ban users [OP]someguy and [op]someguy, but not someguy[OP] or someguy[op]. 
+!banshare_time <share> <reason>		Bans a share size; specify the exact share in bytes. See !ban command to format _time string
 
-!banrange_time   <range> <reason>   Bans a range of IP addresses. This may either be specified as <start_ip-end_ip> or <CIDR_notation>. If you are not familiar with CIDR, do not use it, as it may have unpredictable results if you do. If a time is not included, then this ban is permanent. As an example of proper usage, !banrange 207.46.236.0-207.46.236.255 <reason> and !banrange 207.46.236.0/24 <reason> would both permban the same range of addresses.
+!broadcast <msg>			Send broadcast message to all users
 
-!unban           <ip> or <nick>     Unban IP and nick for the user. If a nick is associated with an ip or an ip is associated with a nick, then both are removed. This also removes bans that were issued with !kick.
+!ccbroadcast <:CC:> <msg>		Sends a broadcast to users with the  specified country code(s) only
 
-!unbanhost1      <host> <reason>    Unbans the top level domain of the host specified.
+!cheefs <msg>				Broadcast to cheefs (class 4)
 
-!unbanhost2      <host> <reason>    Unbans the second level domain of the host specified.
+!class <nickname> <new_class>		Temporarily change the class (max to 5) of a user. Action will disappear at hub restarting
 
-!unbanhost3      <host> <reason>    Unbans the subdomain of the host specified.
+!drop <nick>				Disconnects user from hub without giving him a reason and without banning him
 
-!unbanhostr1     <host> <reason>    Unbans the final subdomain of the host specified.
+!gag <nickname> [time]			Mute a user in main chat for the time specified (default is 2 days)
 
-!unbanprefix     <prefix> <reason>  Unbans the prefix specified.
+!gc					Prints a list of all configuration variables
 
-!unbanrange      <range> <reason>   Unbans the IP address range. <range> may either be the range, or any IP within the range. For example, !unbanrange 192.168.0.0/16 <reason> and !unbanrange 192.168.0.1 <reason> will both do the the same thing.
+!getinfo <nickname>			Return IP address and hostname (if dns_lookup is set to 1)
 
-!hidekick        <nick> <reason>    Kicks a user and does not announce it to the hub.
+!gethost <nickname>			Return hostname (if dns_lookup is set to 1)
 
-!hideme          <class>            Hides yourself from users below the specified class. 
+!guests <msg>				Broadcast to guests (class 0)
 
-!infoban         <ip> or <nick>     Shows ban information of the given nick or IP.
+!hidekick <nick> <reason>		Kicks a user and does not announce it to the hub
 
-!infoban_ipban_                     Shows all current IP bans. Not very useful if you have thousands of them.
+!hideme <class>				Hides yourself from users below the specified class
 
-!infoban_nickban_                   Shows all current nickbans. Also not very helpful on a big hub.
+!hublist				Send your hub information to the public hublist
 
-!infoban_banrange_                  Shows all current banned ranges. Very good for showing the ranges you might have forgotten you banned. While you are learning how to rangeban, it is recommended that you use this command after !banrange to see what you did.
+!infoban <keyword>			Lists all possible matches for what you entered as keyword (nick, IP, range). 
 
-!lsban 100                          Shows the most recent 100 bans.
+!infobanip <ip>				Lists all bans for specifyed IP
 
-!getip           <nick>             Prints user's IP address.                                                                                                               
-!gethost         <nick>             Prints user's FQDN. This works only if dns_lookup = 1 in the hub config.
-                                                               
-!getinfo         <nick>             Prints user's IP and FQDN.
-                                                                            
-!reginfo         <nick>             Prints a registered user's full information.
+!infobannnick <nick>			Lists all bans for specifyed nickname
 
-!whoip           <ip>               Prints all users who have the specified IP.
+!infobanrange <ip>			Lists all bans for specifyed IP that belongs to a range
 
-!whorange        <range>            Prints all users and their IPs who have an IP in <range>. As with the !banrange command, <range> may either be <from_ip-to_ip> or <CIDR notation>. This command is useful before you ban a range, to see how many users it will affect.
+!infoban_banrange_			Shows all current banned ranges
 
-!regs            <message>          Sends the <message> to all registered users.                                                                                           
-!ccbroadcast     <:CC:> <msg>       Sends a broadcast to users os the specified country code(s) only. For example, !ccbroadcast :PL:SE:US: <msg> would send the message to all users of Sweden, Poland, and the US.
+!infoban_ipban_				Shows all current IP bans
 
-!flood           <nick>             Floods a user off of the hub.
+!infoban_nickban_			Shows all current nickbans
 
-!nosearch        <nick> <time>      Prevents the user from using the search function until he restarts his session or until <time> has expired. If you leave the <time> blank, then the time is set for one week. Valid entries for <time> are Ns, Nm, Nh, Nd, NM, Nw, Ny. So '!nosearch <nick> 5m would stop the user from searching for 5 minutes or until he reconnected.
+!kick <nick> <reason>			Kick a users temporarily, so user will not be able to rejoin until a number of seconds will expire
 
-!unnosearch      <nick>             Allows a user to use the search function of the hub when he has been forbidden previously by !nosearch.
+!lsban <limit>				Shows the most recent bans. Use <limit> to limit results
 
-!noctm           <nick>             Prevents the user from connecting to others until he restarts his session or until <time> has expired. If you leave the <time> blank, then the time is set for one week. Valid entries for <time> are Ns, Nm, Nh, Nd, NM, Nw, Ny. So '!gag <nick> 1h would stop the user from chatting for 1 hour or until he reconnected.
+!masters <msg>				Broadcast to masters (class 10)
 
-!unnoctm         <nick>             Allows a user to connect to others when he has been forbidden previously by !noctm.
+!nopm <nickname> [time])		Prevent a user from send private messages for the time specified (default is 2 days)
 
-!gag             <nick> <time>      Prevents the user from using the chat function until he restarts his session or until <time> has expired. If yo
-u leave the <time> blank, then the time is set for one week. Valid entries for <time> are Ns, Nm, Nh, Nd, NM, Nw, Ny. So '!gag <nick> 1h would stop the user from chatting for 1 hour or until he reconnected. 
+!nosearch <nickname> [time]		Prevent users from searching for the time specified (default is 2 days)
 
-!ungag           <nick>             Allows a user to use the chat function of the hub when he has been forbidden previously by !gag.
+!ops <msg>				Broadcast to operators (class 3)
 
-!help                               Gives a help on all available commands. 
+!regclass <nickname> <new_class>	Change the class of a user based on given nickname
 
+!regdelete <nickname>			Removing a registered user based on given nickname
+
+!regdisable <nickname>			Temporarily disable a registered nickname without permanently removing it from the database
+
+!regenable <nickname>			Enable a temporarily disabled user with !regdisable command
+
+!reginfo <nickname>			See all information about a registered user
+
+!regnewuser <nickname> <class>		Register a new user with given class
+
+!regpass <nickname> <password>		Set user password
+
+!regprotect <nickname> <class>		Protect a user from the class minor or equal of the given value
+
+!regs <msg>				Broadcast to registered users (class 1)
+
+!reload					Reloads verlihub's configuration
+
+!set <variable> <new_value>		Change value of variables
+
+!topic <topic>				Change the topic shown in the top of the client window
+
+!unban <ip_or_nick> <reason>		Removes ban(s) from nickname or IP
+
+!unbanemail <email> <reason>		Removes a e-mail ban
+
+!unbannick <nick> <reason>		Removes nickname ban(s)
+
+!unbanhost1 <hostname> <reason>		Removes a first level hostname ban
+
+!unbanhost2 <hostname> <reason>		Removes a second level hostname ban
+
+!unbanhost3 <hostname> <reason>		Removes a third level hostname ban
+
+!unbanhostr1 <hostname> <reason>	Removes the leftmost part of a hostname ban
+
+!unbanip <ip> <reason>			Removes only existing ban(s) for IP
+
+!unbanprefix <prefix> <reason>		Removes a nickname prefix ban
+
+!unbanshare <share> <reason>		Removes a share size ban. Specify the exact share in bytes
+
+!unbanrange <range> <reason>		Removes a range of IP bans. <range> may be the range, or any IP in the range
+
+!unban emailban <reason>		Removes ALL current e-mail bans
+
+!unban hostban <reason>			Removes ALL current host bans
+
+!unban ipban <reason>			Removes ALL current IP bans
+
+!unban nickban <reason>			Removes ALL current nick bans
+
+!unban rangeban <reason>		Removes ALL current range bans
+
+!unban shareban <reason>		Removes ALL current share bans
+
+!unban tempban <reason>			Removes ALL current temp bans
+
+!ungag <nickname>			Un-mute a gagged user
+
+!unhidekick <nickname_list		Show kick message again. Remove !hidekick action
+
+!unnopm <nickname>			Remove no-PM restriction
+
+!unnosearch <nickname>			Remove search restriction
+
+!vips <msg>				Broadcast to VIPs (class 2)
+
+!whoip <IP address>			Search users with given IP address
+
+!whorange <lower IP>-<upper IP>		Shows nicknames in the given range of IP addresses
+
+!whorange <IP>/<left mask bits>		Shows nicknames in the given subnet
