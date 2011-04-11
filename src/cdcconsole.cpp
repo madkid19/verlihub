@@ -39,6 +39,7 @@
 #include "config.h"
 #include "cdcclients.h"
 #include "i18n.h"
+#include <algorithm>
 #include <sys/resource.h>
 
 using nUtils::cTime;
@@ -344,9 +345,14 @@ bool cDCConsole::cfGetConfig::operator()()
 	cConfigBaseBase::tIVIt it;
 	const int width = 5;
 	GetParStr(2, file);
+	//sort(mS->mC.mvItems.begin(), mS->mC.mvItems.end(), sortConfig);
+	os << "\n ";
+	os << setw(34) << setiosflags(ios::left) << toUpper(_("Variable"));
+	os << toUpper(_("Value")) << "\n";
+	os << " " << string(34+35,'=') << endl;
 	if(!file.size())  {
 		for(it = mS->mC.mvItems.begin();it != mS->mC.mvItems.end();it++)
-			os << "\r\n[::]  " << setw(width) << setiosflags(ios::left) << mS->mC.mhItems.GetByHash(*it)->mName << setiosflags(ios::right) <<"    =   " << *(mS->mC.mhItems.GetByHash(*it)) << "\r\n";
+			os << " " << setw(35) << setiosflags(ios::left) << mS->mC.mhItems.GetByHash(*it)->mName << *(mS->mC.mhItems.GetByHash(*it)) << "\n";
 	} else {
 		mS->mSetupList.OutputFile(file.c_str(), os);
 	}
@@ -411,7 +417,7 @@ int cDCConsole::CmdMyInfo(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] " << _("Your info") << ": \r\n";
+	os << "\r\n*** " << _("Your info") << ": \r\n";
 	conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
@@ -480,15 +486,17 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	ostringstream os;
 	string omsg;
 	//This is here as manual values for true release info available to all
-	os << "\r\n[::] Release: Verlihub-" VERSION " (" __CURR_DATE_TIME__ ")" << endl;
-	os << "[::] " << _("Authors") << ": Davide Simoncelli (netcelli@verlihub-project.org)" << endl;
-	os << "[::] " << _("Authors") << ": chaosuk (chaos@dchublist.com)" << endl;
-	os << "[::] " << _("Translators") << ": Czech (Uhlik), Italian (netcelli), Russian (plugman)" << endl;
-	os << "[::] " << _("Contributors") << ": Stefano, Intruder, Rolex, Frog" << endl;
-	os << "[::] " << _("Credits") << ": We would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << endl;
-	os << "[::] " << _("Website") << ": http://www.verlihub-project.org" << endl;
-	os << "[::] " << _("Forums") << ": http://forums.verlihub-project.org" << endl;
-	os << "[::] " << _("Website/Forums design") << ": Stefano Simoncelli (netcelli@verlihub-project.org)" << endl;
+	os << "\r\nVerliHub-" VERSION " (" __CURR_DATE_TIME__ ")" << endl;
+	os << toUpper(_("Authors")) << "\n\tDavide Simoncelli (netcelli@verlihub-project.org)" << endl;
+	os << "\tchaosuk (chaos@dchublist.com)" << endl;
+	os << toUpper(_("Translators")) << "\n\tCzech (Uhlik), Italian (netcelli), Russian (plugman)" << endl;
+	os << toUpper(_("Contributors")) << "\n\tStefano, Intruder, Rolex, Frog" << endl;
+	os << toUpper(_("Website/Forums design")) << "\n\tStefano Simoncelli (netcelli@verlihub-project.org)" << endl;
+	os << toUpper(_("Credits")) << "\n\tWe would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << endl;
+	os << toUpper(_("Website")) << "\n\thttp://www.verlihub-project.org" << endl;
+	os << "\tForums: http://www.verlihub-project.org/discussions" << endl;
+	os << "\tManual: http://www.verlihub-project.org/page/index" << endl;
+
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;
@@ -1157,6 +1165,7 @@ bool cDCConsole::cfBan::operator()()
 
 	switch (BanAction) {
 		case BAN_UNBAN:
+		case BAN_INFO:
 			if (unban) {
 				if(!GetParStr(BAN_REASON,tmp)) {
 					(*mOS) << _("Please provide a valid reason.");
