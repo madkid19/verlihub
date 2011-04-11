@@ -1,11 +1,9 @@
 
 MASTER (class 10)
 
-!regset <nickname> hide_keys <0/1>	Hide key operator for the given nickname. 1 to hide, 0 to show
+!core_dump				Crash the hub so that stack trace can be examineted by debugger program like GDB
 
-!regset <nickname> hide_share <0/1>	Hide share of the given nickname. 1 to hide, 0 to show
-
-!regset <nickname> note_op <message>	Add a note for the registered user in the database
+!gdb_hash				Quit the hub and dump the content of the user list
 
 !restart				Restart the hub
 
