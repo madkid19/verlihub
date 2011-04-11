@@ -24,7 +24,9 @@
 #include "cserverdc.h"
 #include <time.h>
 #include "i18n.h"
+#include "stringutils.h"
 
+using namespace nStringUtils;
 namespace nDirectConnect {
 namespace nTables {
 
@@ -229,7 +231,8 @@ void cTriggerConsole::GetHelp(ostream &os)
 	help += "32\tAllow replacing of variables\r\n";
 	help += "64\tMessage is sent to everyone in the main chat window\r\n";
 		
-	help += "\r\nRemember to make the sum of the selected flags above\n(for more help please visit http://www.verlihub-project.org/doku.php?id=configuring_your_hub#faq_rules_help_motd_file_trigger_encoding )\r\n";
+	help += "\r\nRemember to make the sum of the selected flags above\n";
+	help += "For more help please visit http://dev.verlihub-project.org/page/index/Manage_the_hub#FileTriggers\r\n";
 	cDCProto::EscapeChars(help,help);
 	os << help;
 }
@@ -378,7 +381,14 @@ const char *cTriggerConsole::CmdSuffix(){ return "trigger";}
 
 void cTriggerConsole::ListHead(ostream *os)
 {
-	*os << _("Existing triggers are:") << "\r\n";
+	(*os) << "\n ";
+	(*os) << setw(30) << setiosflags(ios::left) << toUpper(_("Name"));
+	(*os) << setw(25) << setiosflags(ios::left) << toUpper(_("Definition"));
+	(*os) << setw(8) << setiosflags(ios::left) << toUpper(_("Flag"));
+	(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Send as"));
+	(*os) << setw(10) << setiosflags(ios::left) << toUpper(_("Min class"));
+	(*os) << toUpper(_("Max class")) << "\n";
+	(*os) << " " << string(30+25+8+10+10+15,'=') << endl;
 }
 
   /**

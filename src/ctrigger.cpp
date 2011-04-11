@@ -189,8 +189,8 @@ void cTrigger::OnLoad()
 {}
 
   /**
-
-  Redefine << operator to show and describe a trigger
+     	
+Redefine << operator to show and describe a trigger
 
   @param[in,out] ostream The stream where to write
   @param[in] tr Reference to cTrigger
@@ -199,7 +199,14 @@ void cTrigger::OnLoad()
 
 ostream &operator << (ostream &os, cTrigger &tr)
 {
-    	os << autosprintf(_("%s %s Flags: %d  SendAs: %s  Class: %d-%d") , tr.mCommand.c_str(), tr.mDefinition.substr(0,64).c_str(), tr.mFlags, tr.mSendAs.c_str(), tr.mMinClass, tr.mMaxClass);
+		os << " ";
+		os << setw(30) << setiosflags(ios::left) << tr.mCommand.c_str();
+		os << setw(25) << setiosflags(ios::left) << tr.mDefinition.substr(0,24).c_str();
+		os << setw(8) << setiosflags(ios::left) << tr.mFlags;
+		os << setw(15) << setiosflags(ios::left) << tr.mSendAs.c_str();
+		os << setw(10) << setiosflags(ios::left) << tr.mMinClass;
+		os << tr.mMaxClass;
+
 	if(tr.mSeconds) {
 		cTime timeout = cTime(tr.mSeconds);
 		os << " Timeout: " <<  timeout.AsPeriod();
