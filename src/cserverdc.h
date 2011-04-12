@@ -131,6 +131,7 @@ enum
    eCR_LOGIN_ERR, //< error in login sequence
    eCR_SYNTAX, // < syntax error in some message
    eCR_INVALID_KEY,
+   eCR_RECONNECT,
 };
 };
 
@@ -220,7 +221,7 @@ class cServerDC : public cAsyncSocketServer
 	* @param ExecPath Process name.
 	*/
 	cServerDC(string CfgBase = string("./.verlihub"), const string &ExecPath= "");
-	
+
 	/**
 	* Class destructor.
 	*/
@@ -228,7 +229,7 @@ class cServerDC : public cAsyncSocketServer
 
 	/**
 	* Add a robot to the robot and user lists.
-	* 
+	*
 	* User is automatically added to other lists like passive, active or op list.
 	* Robot user is also able to receive hub events that has been registered and manage them.
 	* @see AddToList()
@@ -236,16 +237,16 @@ class cServerDC : public cAsyncSocketServer
 	* @return True if robot is added or false otherwise.
 	*/
 	bool AddRobot(cUserRobot *robot);
-	
+
 	/**
 	* Add an user to userlist.
-	* 
+	*
 	* User is automatically added to other lists like passive, active or op list.
 	* @param usr The user to add.
 	* @return True if user is added or false otherwise.
 	*/
 	bool AddToList(cUser *usr);
-	
+
 	/**
 	* This method tells the server what the server can receive and what actions to perform depending on hub health.
 	* It is a kind of message filter.
@@ -258,7 +259,7 @@ class cServerDC : public cAsyncSocketServer
 	* @return The action to do or what the user can send.
 	*/
 	tMsgAct Filter( tDCMsg msg, cConnDC * conn );
-	
+
 	/**
 	* This method is called every period.
 	* It flushes messages in queue, updates hub health (aka frequency),
@@ -268,14 +269,14 @@ class cServerDC : public cAsyncSocketServer
 	* @return False if callbacks fails or true otherwise.
 	*/
 	virtual int OnTimer(cTime &now);
-	
+
 	/**
 	* Start the socket and listen on ports.
 	* @param OverrideDefaultPort The port to override.
 	* @return The result of the socket operation.
 	*/
 	virtual int StartListening(int OverrideDefaultPort=0);
-	
+
 	/**
 	* Kick an user and close his connection.
 	* @param use_os A valid pointer to a strem where to store the message to send to the user. If NULL message is directly sent to the user.
@@ -285,7 +286,7 @@ class cServerDC : public cAsyncSocketServer
 	* @param flags Change the behavior of the kick. For ex. also drop the user.
 	*/
 	void DCKickNick(ostream *, cUser *OP, const string &Nick, const string &Reason, int flags);
-	
+
 	/**
 	* Send a private message to an user as hub security.
 	* @param text The message to send.
@@ -294,7 +295,7 @@ class cServerDC : public cAsyncSocketServer
 	* @return A number greater than zero if message is sent.
 	*/
 	int DCPrivateHS(const string & text, cConnDC * conn,string *from = NULL);
-	
+
 	/**
 	* Send a message in mainchat for the given connection.
 	* @param from Sender nickname.
@@ -303,28 +304,28 @@ class cServerDC : public cAsyncSocketServer
 	* @return Zero if connection is not valid or one on success.
 	*/
 	int DCPublic(const string &from, const string &msg,class cConnDC *conn);
-	
+
 	/**
 	* Send a message in mainchat for the given connection as hub security.
-	* 
+	*
 	* This is the same of calling cServerDC::DCPublic(mC.hub_security, msg, conn);
 	* @param msg The message to send.
 	* @param conn The connection of the recipient.
 	* @return Zero if connection is not valid or one on success.
 	*/
 	int DCPublicHS(const string &text, cConnDC *conn);
-	
+
 	/**
 	* Send a public message to all users as hub security.
 	* @param text  The message to send
 	*/
 	void DCPublicHSToAll(const string &text);
-	
+
 	/**
 	* Send a message in mainchat to everyone.
-	* 
+	*
 	* This methos also allows to restrict the recipients on their classes.
-	* 
+	*
 	* @param from Sender nickname.
 	* @param msg The message to send.
 	* @param min_class Minimum class (default to 0).
@@ -332,7 +333,7 @@ class cServerDC : public cAsyncSocketServer
 	* @return Always one.
 	*/
 	int DCPublicToAll(const string &from, const string &txt, int min_class=1, int max_class=10);
-	
+
 	/**
 	* Remove a robot from lists.
 	* @see RemoveNick()
@@ -340,7 +341,7 @@ class cServerDC : public cAsyncSocketServer
 	* @return True if the robot is removed or false otherwise.
 	*/
 	bool DelRobot(cUserRobot *robot);
-	
+
 	/**
 	* Register the hub to the given hublist.
 	* @param host The address of hublist.
@@ -349,16 +350,16 @@ class cServerDC : public cAsyncSocketServer
 	* @return Always one.
 	*/
 	int DoRegisterInHublist(string host, int port, string NickForReply);
-	
+
 	/**
 	* Return the total share of the hub.
 	* @return The total share.
 	*/
 	__int64 GetTotalShareSize();
-	
+
 	/**
 	* Register the hub to the given hublist.
-	* 
+	*
 	* This method does the same thing of DoRegisterInHublist() but it is asynchronous.
 	* @param host The address of hublist.
 	* @param port The port.
@@ -366,7 +367,7 @@ class cServerDC : public cAsyncSocketServer
 	* @return One if the operation can be added and processed by thread or zero otherwise.
 	*/
 	int RegisterInHublist(string host, int port, cConnDC *conn);
-	
+
 	/**
 	* Report an user to opchat.
 	* @param conn User connection.
@@ -374,17 +375,17 @@ class cServerDC : public cAsyncSocketServer
 	* @param ToMain Send report to mainchat.
 	*/
 	void ReportUserToOpchat(cConnDC *, const string &Msg, bool ToMain = false);
-	
+
 	/**
 	* Remove an user from lists.
 	* @param usr The user to remove.
 	* @return True if the user is removed or false otherwise.
 	*/
 	bool RemoveNick(cUser *);
-	
+
 	/**
 	* Save a file.
-	* 
+	*
 	* Use %[CFG] variable in your path if you want to store the file in VerliHub config folder.
 	* For example: %[CFG]/plugin.cnf.
 	* @param file The filename.
@@ -392,17 +393,17 @@ class cServerDC : public cAsyncSocketServer
 	* @return One is the file has been saved or zero if the file cannot be created.
 	*/
 	int SaveFile(const string &file, const string &text);
-	
+
 	/**
 	* Send data to all users that are in userlist.
-	* 
+	*
 	* This methos also allows to restrict the recipients on their classes.
 	* @param str The data to send.
 	* @param cm Minimium class.
 	* @param CM Maximum class.
 	*/
 	void SendToAll(string &str, int cm,int cM);
-	
+
 	/**
 	* Send data to all users that are in userlist and belongs to the specified class range.
 	*
@@ -415,10 +416,10 @@ class cServerDC : public cAsyncSocketServer
 	* @return The number of users that receives the message.
 	*/
 	int SendToAllWithNick(const string &start,const string &end, int cm,int cM);
-	
+
 	/**
 	* Send data to all users that are in userlist and belongs to the specified class range and country.
-	* 
+	*
 	* Message to send is built in this way: start+nick+end.
 	* This methos also allows to restrict the recipients on their classes.
 	* @param start The data to send.
@@ -429,10 +430,10 @@ class cServerDC : public cAsyncSocketServer
 	* @return The number of users that receives the message.
 	*/
 	int SendToAllWithNickCC(const string &start,const string &end, int cm,int cM, const string &cc_zone);
-	
+
 	/**
 	* Notify all users of a new user.
-	* 
+	*
 	* The following operations are done in order:
 	* 1. Send $Hello to hello users.
 	* 2. Send MyInfo to all.
@@ -441,7 +442,7 @@ class cServerDC : public cAsyncSocketServer
 	* @return Always true.
 	*/
 	bool ShowUserToAll(cUserBase *user);
-	
+
 	/**
 	* Convert a string of time in seconds.
 	* @param str The string to convert.
@@ -449,7 +450,7 @@ class cServerDC : public cAsyncSocketServer
 	* @return Converted time in seconds.
 	*/
 	unsigned Str2Period(const string &, ostream &);
-	
+
 	/**
 	* Check if nickname is valid or not (nick length, valid characters, no prefix and temp ban on nick)
 	* @param nick The nickname of the user.
@@ -457,10 +458,10 @@ class cServerDC : public cAsyncSocketServer
 	* @return An integer that explains the error.
 	*/
 	tVAL_NICK ValidateNick(const string &nick, bool registered);
-	
+
 	/**
 	* Check if the user is allowed to enter the hub.
-	* 
+	*
 	* The following operations are done in order:
 	* 1. Check if the nick is valid.
 	* 2. Check if the user is banned or kicked.
@@ -470,8 +471,8 @@ class cServerDC : public cAsyncSocketServer
 	* @param nick The nickname of the user.
 	* @return Zero if an error occurs or one otherwise.
 	*/
-	int ValidateUser(cConnDC *conn, const string &nick);
-	
+	int ValidateUser(cConnDC *conn, const string &nick, int &closeReason);
+
 	/**
 	* Return the list of the users that belongs to a country.
 	* @param CC The country code.
@@ -480,7 +481,7 @@ class cServerDC : public cAsyncSocketServer
 	* @return The number of found users.
 	*/
 	int WhoCC(string CC, string &dest, const string&separator);
-	
+
 	/**
 	* Return the list of the users that belongs to the specified IP range.
 	* @param ip_min Min IP range or the exact IP address.
@@ -511,7 +512,7 @@ class cServerDC : public cAsyncSocketServer
 	#endif
 	// Frequency for all zones
 	cMeanFrequency<unsigned long, 10> mUploadZone[USER_ZONES+1];
-	
+
 	typedef int tDC_MsgFunc(cMessageDC * msg, cConnDC * conn);
 	typedef vector<cTempFunctionBase *> tTmpFunc;
 	typedef tTmpFunc::iterator tTFIt;
@@ -524,7 +525,7 @@ class cServerDC : public cAsyncSocketServer
 	cCompositeUserCollection mUserList;
 	// Userlist of users not logged in yet
 	cUserCollection mInProgresUsers;
-	
+
 	enum { eKCK_Drop = 1, eKCK_Reason = 2, eKCK_PM = 4, eKCK_TBAN = 8};
 
 
@@ -549,11 +550,11 @@ class cServerDC : public cAsyncSocketServer
 	// GeoIp object for country code support
 	static cGeoIP sGeoIP;
 	#endif
-	
+
 protected: // Protected methods
 	/**
 	* This method is called when user is logged in.
-	* 
+	*
 	* The following operations are done in order:
 	* 1. Send MOTD trigger.
 	* 2. Verify if the user has to change his password.
@@ -562,23 +563,23 @@ protected: // Protected methods
 	* @param conn User connection.
 	*/
 	void AfterUserLogin(cConnDC *conn);
-	
+
 	/**
 	* Return if the server is able to accept a new incoming connection.
 	* @return True if connection is accepted or false otherwise.
 	*/
 	bool AllowNewConn();
-	
+
 	/**
 	* This method is called before the user is logged in.
-	* 
+	*
 	* This method performs few checks on the user before adding him to userlist.
 	* It also checks for duplicated nick and establish when to send nicklist (before or after login).
 	* @param conn User connection.
 	* @return Return true if the user can login and connection is allowed; otherwise return false.
 	*/
 	bool BeginUserLogin(cConnDC *conn);
-	
+
 	/**
 	* Close a connection and send a message with the reason of why connection has been closed.
 	* It is also possible to specify a timeout in micro-second to wait before disconnecting
@@ -589,7 +590,7 @@ protected: // Protected methods
 	* @param Reason The reason used for redirect.
 	*/
 	void ConnCloseMsg(cConnDC *conn, const string &msg, int to_msec=4000, int Reason = eCR_DEFAULT);
-	
+
 	/**
 	* Send hello message to the user. Example: $Hello foobar.
 	* Extra information can be sent after hello message by passing
@@ -599,30 +600,30 @@ protected: // Protected methods
 	* @param info Extra information.
 	*/
 	int DCHello(const string & nick, cConnDC * conn, string *info=NULL);
-	
+
 	/**
 	* This methos is called when user is going to be added to userlist.
 	*
 	* This method is called after BeginUserLogin().
-	* 
+	*
 	* The following operations are done in order:
 	* 1. Verify unique nick again because the user is not added to userlist yet.
 	* 2. Apply user rights
-	* 3. Notify all users of new user 
+	* 3. Notify all users of new user
 	* It also checks for duplicated nick and establish when to send nicklist (before or after login).
 	* @see BeginUserLogin(), AfterUserLogin()
 	* @param conn User connection.
 	*/
 	void DoUserLogin(cConnDC *conn);
-	
+
 	/** create somehow a string to get line for given connection, ad return th pointer */
 	/**
-	* 
+	*
 	* @param conn User connection
 	* @return Allocated string.
 	*/
 	virtual string * FactoryString(cAsyncConn * );
-	
+
 	/**
 	* Check if timeout if expired (seconds resolution).
 	* @param what cTime object to check.
@@ -630,7 +631,7 @@ protected: // Protected methods
 	* @return True if timer is expired or false otherwise.
 	*/
 	bool MinDelay(cTime &what, int min);
-	
+
 	/**
 	* Check if timeout if expired (milli-seconds resolution).
 	* @param what cTime object to check.
@@ -638,29 +639,29 @@ protected: // Protected methods
 	* @return True if timer is expired or false otherwise.
 	*/
 	bool MinDelayMS(cTime &what, long unsigned int min);
-	
+
 	/**
 	* This method is triggered when there is a new incoming connection.
-	* 
+	*
 	* Send $Lock message and check if connection should be allowed
 	* depending on hub health.
 	* @param conn User connection.
 	* @return A negative number if connection is refused or zero otherwise.
 	*/
 	int OnNewConn(cAsyncConn *);
-	
+
 	/**
 	* This method is triggered when there is a new incoming message.
-	* 
+	*
 	* Treat a message and pass it to the protocol parser.
 	* @param conn User connection.
 	* @param msg The message.
 	*/
 	void OnNewMessage(cAsyncConn * , string * );
-	
+
 	/**
 	* Check if another user with same nick is already logged in.
-	* 
+	*
 	* Eventually decide if old connection (the one of the user logged in)
 	* shold be closed or not
 	* @param conn User connection.
@@ -722,7 +723,7 @@ private:
 			mOnHubName(mgr, "VH_OnHubName", &cVHPlugin::OnHubName),
 			mOnNewBan(mgr, "VH_OnNewBan", &cVHPlugin::OnNewBan),
 			mOnUnBan(mgr, "VH_OnUnBan", &cVHPlugin::OnUnBan)
-			
+
 		{};
 		cVHCBL_Connection	mOnNewConn;
 		cVHCBL_Connection	mOnCloseConn;

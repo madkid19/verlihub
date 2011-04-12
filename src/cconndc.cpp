@@ -67,7 +67,7 @@ bool cConnDC::SetUser(cUser *usr)
 		if(ErrLog(0)) LogStream() << "Trying to add a NULL user" << endl;
 		return false;
 	}
-	
+
 	if(mpUser) {
 		if(ErrLog(1)) LogStream() << "Trying to add user when it's actually done" << endl;
 		delete usr;
@@ -76,7 +76,7 @@ bool cConnDC::SetUser(cUser *usr)
 	mpUser = usr;
 	mpUser->mxConn = this;
 	mpUser->mxServer = (cServerDC *) mxServer;
-	if(Log(3)) LogStream() << "User " << usr->mNick << " connected ... " << endl;	
+	if(Log(3)) LogStream() << "User " << usr->mNick << " connected ... " << endl;
 	return true;
 }
 
@@ -92,14 +92,14 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 		data.resize(MAX_SEND_SIZE -1,' ');
 	}
 	if(Log(5)) LogStream() << "OUT: " << data.substr(0,100) << endl;
-	
+
 	if(msLogLevel >= 3)
 		Server()->mNetOutLog << data.size() << " "
 			<< data.size() << " "
 			<< 1 << " " << data.substr(0,10) << endl;
 
 	if(IsComplete) data.append("|");
-	
+
 	string dataToSend = data;
 	if((!Server()->mC.disable_zlib) && (mFeatures & eSF_ZLIB)) {
 		// If data should be buffered append content to zlib buffer
@@ -107,9 +107,13 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 			Server()->mZLib->AppendData(dataToSend.c_str(), dataToSend.size());
 			return 1;
 		}
+		// If the server is sending a message to more than one user, message is already compressed
 		size_t compressedDataLen = 0;
 		char *compressedData = Server()->mZLib->Compress(dataToSend.c_str(), dataToSend.size(), compressedDataLen);
+// 		if(Server()->isBroadcasting())
+// 			Server()->mZLib->alreadyInBuffer = true;
 		// Compression failed
+	//	cout << "Compressed " << compressedData << "  - size " << compressedDataLen << endl;
 		if(compressedData == NULL) {
 			if(Log(5))
 				LogStream() << "Error compressing data with ZLib. Fall back to uncompressed data" << endl;
@@ -235,7 +239,7 @@ int cConnDC::OnTimer(cTime &now)
 		mpUser->mQueueUL.erase(0,pos);
 		mpUser->mQueueUL.reserve(0);
 	}
-	
+
 	return 0;
 }
 

@@ -112,7 +112,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	for ( i = 0; i <= USER_ZONES; i++ ) mUploadZone[i].SetPeriod(60.);
 
 	SetClassName("cServerDC");
-	
+
 	mR->CreateTable();
 	if(mC.use_reglist_cache) mR->ReloadCache();
 	mBanList->CreateTable();
@@ -123,7 +123,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	mKickList->CreateTable();
 	mKickList->Cleanup();
 	mPenList->CreateTable();
-	mPenList->Cleanup();	
+	mPenList->Cleanup();
 	mConnTypes->OnStart();
 	if(mC.use_penlist_cache) mPenList->ReloadCache();
 
@@ -269,7 +269,7 @@ tMsgAct cServerDC::Filter( tDCMsg msg, cConnDC *conn )
 		case eSL_NORMAL: break; // normal mode
 		default: break;
 	}
-	return result; 
+	return result;
 }
 
 int cServerDC::DCPublic(const string &from, const string &txt, cConnDC *conn)
@@ -355,7 +355,7 @@ bool cServerDC::AddToList(cUser *usr)
 		usr->mInList = false;
 		return false;
 	}
-	
+
 	usr->mInList = true;
 	if(!usr->IsPassive)
 		mActiveUsers.AddWithHash(usr, Hash);
@@ -461,6 +461,7 @@ void cServerDC::SendToAll(string &data, int cm,int cM)
 			++count;
 		}
 	}
+
 	if(Log(5))
 		LogStream() << "ALL << " << data.substr(0,100) << endl;
 	if(msLogLevel >= 3)
@@ -527,7 +528,7 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	if(!mCallBacks.mOnNewConn.CallAll(conn))
 		return -1;
 	#endif
-		
+
 	stringstream errmsg,os;
 	if(!conn) return -1;
 	string omsg;
@@ -545,14 +546,14 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 		else
 			mStatus = _("Not available");
 	}
-	
+
 	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" VERSION "|";
 	if (mC.host_header == 1) {
 		if(mC.extended_welcome_message) {
 			os << HUB_VERSION_NAME "-" << VERSION << " " << HUB_VERSION_CLASS << "|";
 			os << "<" << mC.hub_security << ">" << " " << _("RunTime") << ": " << runtime.AsPeriod()<<"|";
 			os << "<" << mC.hub_security << ">" << " " << _("User Count") << ": " << mUserCountTot <<"|";
-			os << "<" << mC.hub_security << ">" << " " << _("System Status") << ": " << mStatus << "|";    
+			os << "<" << mC.hub_security << ">" << " " << _("System Status") << ": " << mStatus << "|";
 			if(!mC.hub_version_special.empty())
 				os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
 		} else {
@@ -638,7 +639,7 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 			return false;
 		}
 	}
-	return true;	
+	return true;
 }
 
 void cServerDC::AfterUserLogin(cConnDC *conn)
@@ -650,7 +651,7 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 
 	// The user has to change password
 	if(conn->mRegInfo && conn->mRegInfo->mPwdChange) {
-		
+
 		os << _("<< Please change your password NOW using command +passwd <new_passwd>! See +help >>");
 		DCPrivateHS(os.str(), conn);
 		DCPublicHS(os.str(), conn);
@@ -664,7 +665,7 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	conn->Send(topic, false);
 
 	if(mC.send_user_info) {
-		
+
 		os << "\r\n[::] " << _("Your info") << ": \r\n";
 		conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
 		DCPublicHS(os.str(),conn);
@@ -705,7 +706,7 @@ void cServerDC::DoUserLogin(cConnDC *conn)
 		mInProgresUsers.FlushForUser(conn->mpUser);
 		mInProgresUsers.Remove(conn->mpUser);
 	}
-	
+
 	// anti login flood temp bans
 	if (conn->GetTheoricalClass() <= mC.max_class_int_login) {
 		mBanList->AddNickTempBan(conn->mpUser->mNick, mTime.Sec() + mC.int_login, "login later");
@@ -725,7 +726,7 @@ void cServerDC::DoUserLogin(cConnDC *conn)
 
 	// display user to others
 	ShowUserToAll(conn->mpUser);
-	
+
 	if(mC.send_user_ip) {
 		if(conn->mpUser->mClass >= eUC_OPERATOR) {
  			conn->Send(mUserList.GetIPList(),true);
@@ -740,7 +741,7 @@ void cServerDC::DoUserLogin(cConnDC *conn)
 	}
 
 	AfterUserLogin(conn);
-	
+
 	conn->ClearTimeOut(eTO_LOGIN);
 	conn->mpUser->mT.login.Get();
 }
@@ -754,7 +755,7 @@ bool cServerDC::BeginUserLogin(cConnDC *conn)
 	 	WantedMask = eLS_LOGIN_DONE - eLS_NICKLST;
 	else
 		WantedMask = eLS_LOGIN_DONE;
-	
+
 	if(WantedMask == conn->GetLSFlag(WantedMask)) {
 		if(conn->Log(2))
 			conn->LogStream() << "Begin login" << endl;
@@ -765,7 +766,7 @@ bool cServerDC::BeginUserLogin(cConnDC *conn)
 			} else {
 				mInProgresUsers.Add(conn->mpUser);
 			}
-			
+
 			if (conn->mSendNickList) {
 				// this may won't send all data at once...
 				mP.NickList(conn);	// this will set mNickListInProgress
@@ -797,7 +798,7 @@ bool cServerDC::ShowUserToAll(cUserBase *user)
 	omsg+= user->mNick;
 	mHelloUsers.SendToAll(omsg, mC.delayed_myinfo);
 
-	// all users get myinfo, event hose in progress 
+	// all users get myinfo, event hose in progress
 	// (hello users in progres are ignored, they are obsolete btw)
 	omsg = mP.GetMyInfo(user, eUC_NORMUSER);
 	mUserList.SendToAll(omsg, mC.delayed_myinfo); // use cache -> so this can be after user is added
@@ -824,7 +825,7 @@ bool cServerDC::ShowUserToAll(cUserBase *user)
 	if(mC.show_tags == 1)	{
 		omsg = mP.GetMyInfo(user, eUC_OPERATOR);
 		mOpchatList.SendToAll(omsg, mC.delayed_myinfo); // must send after mUserList! Cached mUserList will be flushed after and will override this one!
-		mInProgresUsers.SendToAll(omsg, mC.delayed_myinfo); // send later, better more people see tags, then some ops not, 
+		mInProgresUsers.SendToAll(omsg, mC.delayed_myinfo); // send later, better more people see tags, then some ops not,
 		// ops are dangerous creatures, they may have idea to kick people for not seeing their tags
 	}
 	return true;
@@ -886,10 +887,12 @@ int cServerDC::SaveFile(const string &file, const string &text)
 	return 1;
 }
 
-int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
+int cServerDC::ValidateUser(cConnDC *conn, const string &nick, int &closeReason)
 {
 	// first validate the IP and host if any
 	stringstream errmsg,os;
+	// Default close reason
+	closeReason = eCR_INVALID_USER;
 	if(!conn)
 		return 0;
 	string omsg;
@@ -911,8 +914,10 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 	tVAL_NICK vn = ValidateNick(nick, (conn->GetTheoricalClass() >= eUC_REGUSER ));
 	if(vn != eVN_OK) {
 		close=true;
-		if(vn == eVN_BANNED)
+		if(vn == eVN_BANNED) {
 			errmsg << _("Do not reconnect too fast.") << " ";
+			closeReason = eCR_RECONNECT;
+		}
 		else
 			errmsg << _("Bad nickname") << ": ";
 		if (conn->Log(2))
@@ -970,7 +975,7 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick)
 	}
 
 	if(banned) {
-		errmsg << _("<<You are banned>>")<< endl;
+		errmsg << _("<<You are banned>>") << endl;
 		Ban.DisplayUser(errmsg);
 		DCPublicHS(errmsg.str(),conn);
 		if(conn->Log(1))
@@ -1003,7 +1008,7 @@ tVAL_NICK cServerDC::ValidateNick(const string &nick, bool registered)
 	cTime now;
 	string ProhibitedChars("$| ");
 	//ProhibitedChars.append("\0",1);
-	
+
 	if (!registered) {
 		if(nick.size() > mC.max_nick ) return eVN_LONG;
 		if(nick.size() < mC.min_nick ) return eVN_SHORT;
@@ -1027,11 +1032,11 @@ int cServerDC::OnTimer(cTime &now)
 	mPassiveUsers.FlushCache();
 	mChatUsers.FlushCache();
 	mInProgresUsers.FlushCache();
-	
+
 	mSysLoad = eSL_NORMAL;
 	if(mFrequency.mNumFill > 0) {
 		double freq = mFrequency.GetMean(mTime);
-	
+
 		if(freq < 1.2 * mC.min_frequency) mSysLoad = eSL_PROGRESSIVE;
 		if(freq < 1.0 * mC.min_frequency) mSysLoad = eSL_CAPACITY;
 		if(freq < 0.8 * mC.min_frequency) mSysLoad = eSL_RECOVERY;
@@ -1172,7 +1177,7 @@ int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 			lock = lock.substr(6,pos_space);
 			cDCProto::Lock2Key(lock, key);
 		}
-		
+
 		// Create the registration string
 		os.str(mEmpty);
 		os << "$Key " << key << pipe <<  mC.hub_name // removed pipe before name
@@ -1308,7 +1313,7 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 	cUser *user = mUserList.GetUserByNick(Nick);
 	string NewReason(Reason);
 	cKick OldKick;
-	
+
 	// Check if it is possible to kick the user
 	if(user && user->mxConn &&
 	    (user->mClass + (int) mC.classdif_kick <= OP->mClass) &&

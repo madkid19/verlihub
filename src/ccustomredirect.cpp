@@ -26,17 +26,17 @@
 namespace nDirectConnect {
 
 	using namespace nEnums;
-	
+
 	namespace nTables {
-		 
+
 		cRedirect::cRedirect()
 		{
 			mEnable = 1;
 			mFlag = 0;
 		}
-		
+
 		cRedirect::~cRedirect() {}
-		
+
 		ostream &operator << (ostream &os, cRedirect &tr)
 		{
 			string buff;
@@ -48,6 +48,9 @@ namespace nDirectConnect {
 			if(flag & eTag) buff += "invalid tag,";
 			if(flag & eWrongPasswd) buff += "wrong password,";
 			if(flag & eInvalidKey) buff += "invalid key,";
+			if(flag & eHubBusy) buff += "hub busy,";
+			if(flag & eReconnect) buff += "reconnect,";
+
 			if(buff.empty()) buff = "default";
 			else buff.erase(buff.end() -1);
 			os << buff << " (";
@@ -59,4 +62,4 @@ namespace nDirectConnect {
 
 	};
 };
- 
+
