@@ -417,7 +417,7 @@ int cDCConsole::CmdMyInfo(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg;
-	os << "\r\n*** " << _("Your info") << ": \r\n";
+	os << _("Your info") << ": \r\n";
 	conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
@@ -504,13 +504,17 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 
 int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 {
-	string uType, cType;
+	string uType, cType, hubOwner;
 	int sInt = 0;
 
 	if (mOwner->mC.disable_usr_cmds) {
 		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
 		return 1;
 	}
+	if(mOwner->mC.hub_owner == "")
+		hubOwner = mOwner->mC.hub_owner;
+	else
+		hubOwner = "--";
 	if(!conn->mpUser) {
 		return 0;
 	}
@@ -542,7 +546,7 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	}
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] " << autosprintf(_("Hub Owner: %s"), mOwner->mC.hub_owner.c_str()) <<endl;
+	os << "\r\n[::] " << autosprintf(_("Hub Owner: %s"), hubOwner.c_str()) <<endl;
 	os << "[::] " << autosprintf(_("Address: %s"), mOwner->mC.hub_host.c_str()) <<endl;
 	os << "[::] " << autosprintf(_("Total users: %d"), mServer->mUserCountTot) <<endl;
 	os << "[::] " << autosprintf(_("Total bots: %d"), mServer->mRobotList.size()) <<endl;
@@ -968,8 +972,8 @@ bool cDCConsole::cfReport::operator()()
 	if (user && user->mxConn)
 		os << autosprintf(_("REPORT: user '%s' IP='%s' Host='%s'"), nick.c_str(), user->mxConn->AddrIP().c_str(), user->mxConn->AddrHost().c_str());
 	else 
-		os << autosprintf(_("REPORT: user '%s' which is offline "), nick.c_str());
-	os << autosprintf(_("Reason='%s'."), reason.c_str());
+		os << autosprintf(_("REPORT: user '%s' which is offline"), nick.c_str());
+	os << " " << autosprintf(_("Reason='%s'."), reason.c_str());
 	mS->ReportUserToOpchat(mConn, os.str(), mS->mC.dest_report_chat);
 	//-- to sender
 	*mOS << _("Thank you, your report has been accepted.");
@@ -1932,7 +1936,7 @@ bool cDCConsole::cfRegUsr::operator()()
 		case eAC_SET:
 		break; // set
 		case eAC_INFO:
-			(*mOS) << ui << endl;
+			(*mOS) << "\n" << ui << endl;
 		break;
 		default:
 			mIdRex->Extract(1,mIdStr,par);
