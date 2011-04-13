@@ -23,7 +23,9 @@
 #include "cserverdc.h"
 #include "cdcconsole.h"
 #include "i18n.h"
+#include "stringutils.h"
 
+using namespace nStringUtils;
 namespace nDirectConnect
 {
 
@@ -42,9 +44,18 @@ void cConnType::OnLoad(){}
 
 ostream &operator << (ostream &os, cConnType &ct)
 {
-	os << ct.mIdentifier;
+	os << " ";
+	os << setw(15) << setiosflags(ios::left) << ct.mIdentifier;
+	os << setw(12) << setiosflags(ios::left) << ct.mTagMinSlots;
+	os << setw(10) << setiosflags(ios::left) << ct.mTagMaxSlots;
+	os << setw(15) << setiosflags(ios::left) << ct.mTagMinLimit;
+	os << setw(18) << setiosflags(ios::left) << ct.mTagMinLSRatio;
+	os << ct.mDescription.substr(0,20).c_str();
+
+
+/*	os << ct.mIdentifier;
 	os << ": ";
-	os << autosprintf(_("Slots: %d..%d Min limiter: %.2f, %.2f/slot - %s"), ct.mTagMinSlots, ct.mTagMaxSlots, ct.mTagMinLimit, ct.mTagMinLSRatio, ct.mDescription.c_str());
+	os << autosprintf(_("Slots: %d..%d Min limiter: %.2f, %.2f/slot - %s"), ct.mTagMinSlots, ct.mTagMaxSlots, ct.mTagMinLimit, ct.mTagMinLSRatio, ct.mDescription.c_str());*/
 	return os;
 }
 
@@ -172,7 +183,14 @@ const char *cConnTypeConsole::CmdPrefix(){ return "!";}
 
 void cConnTypeConsole::ListHead(ostream *os)
 {
-	*os << _("Existing connection types are:") << "\r\n";
+	(*os) << "\n ";
+	(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Name"));
+	(*os) << setw(12) << setiosflags(ios::left) << toUpper(_("Min slot"));
+	(*os) << setw(10) << setiosflags(ios::left) << toUpper(_("Max slot"));
+	(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Min upload"));
+	(*os) << setw(18) << setiosflags(ios::left) << toUpper(_("Min upload/slot"));
+	(*os) << toUpper(_("Description")) << "\n";
+	(*os) << " " << string(15+12+10+15+35,'=') << endl;
 }
 
 bool cConnTypeConsole::IsConnAllowed(cConnDC *conn,int cmd)

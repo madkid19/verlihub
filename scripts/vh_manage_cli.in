@@ -257,7 +257,7 @@ function add_user()
 		echo_s ": $CONFIG_DIR\n"
 	fi
 
-	if ! _register $USER_NICKNAME $USER_CLASS $USER_PASSWORD ; then
+	if ! _register $USER_NICKNAME $USER_CLASS $USER_PASSWORD "plain" ; then
 		echo_s "-- A error occured while trying to execute MySQL query. Is user '$USER_NICKNAME' already exists?\n" $RED
 		exit;
 	fi
@@ -611,7 +611,7 @@ echo "-- Creating settings; this could take some times..."
 _mysql_update "hub_name" $VH_HUB_NAME
 _mysql_update "hub_host" "$VH_HUB_HOST:$VH_HUB_PORT"
 _mysql_update "listen_port" $VH_HUB_PORT
-if ! _register $VH_MASTER_NAME "10" $VH_MASTER_PASSWORD ; then
+if ! _register $VH_MASTER_NAME "10" $VH_MASTER_PASSWORD "plain" ; then
 	echo_s "-- A error occured with registering user '$VH_MASTER_NAME'. Please do it manually\n" $RED_BOLD
 fi
 if ! _mysql_import $DATADIR/sql/default_reglist.sql > /dev/null 2>&1 ; then

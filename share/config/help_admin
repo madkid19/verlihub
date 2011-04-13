@@ -1,29 +1,46 @@
 
-As an ADMIN(level 5), you have all of the commands listed hereafter available to you. Also, you may manipulate the configuration of the hub from the command line. Please proceed with caution. If you don't know what a configuration variable does, don't touch it.
+ADMIN (class 5)
 
-Command  Arguments	              Help
+!addconntype <connection_type> <params>	Add the <connection_type> with their restrictions
 
-!gc                                   Prints a list of all configuration variables that can be inserted into the database.
+!addplug <params>			Register new plugin
 
-!set     <variable> <new_value>       Allows manipulation (through the hub) of all configuration variables. As an example, '!set tban_kick 86400' would set the variable tban_kick to 86400 seconds.  
+!addtag <name> <params>			Adds a rule for the client
 
-!ul      <limit> <time_in_minutes>    Temporarily change the user limit to <limit>. If <time_in_minutes> is not specified, 60 minutes is assumed.
+!addtrigger <trigger> <params>		Adds a new trigger
 
-!hublist                              Send your hub information to the public hublist.
+!delconntype <connection_type>		Remove specified <connection_type>
 
-!reload                               Reloads verlihub's configuration. NOTE: Some configuration changes require the hub to be restarted!
+!delplug <nick>				Unregisters the plugin
 
-!protoall_hubname                     This sends a new hubname to all currently connected users.
+!deltag <name>				Remove a client
 
-!protoall_pm    <msg>                 This sends a pm from your nick to everyone in the hub.
+!deltrigger <trigger>			Remove a trigger
 
-!protoall_chat  <msg>                 Sends <msg> to main chat from your nick.
+!htag					Shows help
 
-!protoall_redir <hub_address>         This forces a hub redirection for all users to <hub_address>.
+!htrigger				Show an help and available trigger flags
 
-!protoall_any   <msg>                 Sends <msg> to main chat, without showing that it was you who sent it.
+!lstconntype				Shows the current connection type and their restrictions
 
-!protoactive_*                        This sends any of the protoall_* commands above to active users only. As an example, !protoactive_any <msg> would send a message to main chat that only active users could see.
+!lstplug				List the registered plugins
 
-!protohello_*                         This sends any of the protoall_* above to users whose clients don't support the NoHello feature only. As an example, !protohello_any <msg> would send a message to main chat that only clients that require $Hello could see.
+!lsttag					Lists available clients
 
+!lsttrigger				Lists available triggers
+
+!modconntype <conn_type> <params>	Update the <connection_type> with their restrictions
+
+!modtrigger <trigger> <params>		Change a trigger
+
+!offplug <nick>				Turns the plugin off
+
+!onplug <nick>				Turns the plugin on
+
+!regset <nickname> hide_keys <0/1>	Hide key operator for the given nickname. 1 to hide, 0 to show
+
+!regset <nickname> hide_share <0/1>	Hide share of the given nickname. 1 to hide, 0 to show
+
+!regset <nickname> note_op <message>	Add a note for the registered user in the database
+
+!replug <nick>				Reloads the plugin, turning it off then on

@@ -1,12 +1,15 @@
 
-As a regular user, you may use these commands in the hub:
+You may use these commands in the hub (in alphabetical order):
 
-+rules                   -- Displays a listing of the hub rules.
-+faq                     -- Displays a list of helpful links if you are having trouble.
-+motd                    -- Displays the Message of the Day.
-+help                    -- Displays a list of all commands available to you.
-+regme                   -- Send a message to all OPs, asking them to register your nick.
-+myip                    -- Shows you your IP address.
-+myinfo                  -- Shows you information about yourself.
-+me                      -- Replaces +me with your nick, and then sends a message to main chat.
-+report <user> <reason>  -- Report a user to opchat for breaking the rules.
++chat			Active main chat for you
++faq                    Displays a list of helpful links if you are having trouble
++info			Show information about the hub
++me                     Replaces +me with your nick, and then sends a message to main chat
++motd                   Displays the Message of the Day (MOTD)
++myinfo                 Shows you information about yourself
++myip                   Shows you your IP address
++nochat			Disable main chat for you
++regme                  Send a message to all OPs, asking them to register your nick
++release		Show information about VerliHub development team
++report <user> <reason> Report a user to opchat for breaking the rules
++rules                  Displays a listing of the hub rules

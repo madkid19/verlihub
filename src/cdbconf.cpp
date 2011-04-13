@@ -32,8 +32,6 @@ cDBConf::cDBConf(const string &file):cConfigFile(file,false)
 	Add("db_data",db_data,string("verlihub"));
 	Add("config_name",config_name,string("config"));
 	Add("locale",locale,string(""));
-	Add("allow_exec",allow_exec, false);
-	Add("allow_exec_mod",allow_exec_mod, true);
 	Load();
 }
 

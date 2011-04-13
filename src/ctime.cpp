@@ -60,7 +60,7 @@ std::ostream & operator<< (std::ostream &os, const cTime &t)
 			#ifdef WIN32
 				buf = ctime( (const time_t*)&(t.tv_sec) );
 			#else
-				ctime_r((time_t*)&t.tv_sec, buf);
+				strftime (buf,CTIME_BUFFSIZE+1,"%m/%d/%Y %H:%M::%S",localtime((const time_t*)&(t.tv_sec)));				
 			#endif
 			buf[strlen(buf)-1]=0;
 			os << buf;

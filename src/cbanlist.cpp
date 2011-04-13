@@ -24,7 +24,9 @@
 #include "cbanlist.h"
 #include "i18n.h"
 #include <stdio.h>
+#include "stringutils.h"
 
+using namespace nStringUtils;
 namespace nDirectConnect {
 namespace nTables {
 
@@ -477,7 +479,13 @@ void nDirectConnect::nTables::cBanList::List(ostream &os, int count)
 	mQuery.OStream() << " order by date_start desc limit " << count;
 	db_iterator it;
 	SetBaseTo(&mModel);
-	os << autosprintf(_("Last %d bans:"), count) << "\r\n";
+
+	os << "\n ";
+	os << setw(30) << setiosflags(ios::left) << toUpper(_("Entry"));
+	os << setw(25) << setiosflags(ios::left) << toUpper(_("OP"));
+	os << setw(20) << setiosflags(ios::left) << toUpper(_("Time"));
+	os << toUpper(_("Ban on")) << "\n";
+	os << " " << string(30+25+8+25,'=') << endl;
 
 	for(it = db_begin() ; it != db_end(); ++it) {
 		mModel.DisplayInline(os);

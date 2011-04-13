@@ -42,23 +42,58 @@ function check_class() #class
 	fi
 }
 
-# Build SQL to insert new user in the DB
-function _register() # nickname, class, password
+# Register a new user in the database
+# input_password_crypt => The ecryption of the given password. encrypt, plain or md5.
+# reg_date => unix timestamp
+# login_ip => string
+function _register() # nickname, class, password, input_password_crypt, reg_date, reg_op, login_last, login_ip
 {
-	SQL_FIELDS="reg_date,reg_op,nick,class"
-	SQL_VALUES="unix_timestamp(now()),'vh_regnick','$1','$2'"
+	SQL_FIELDS="nick,class"
+	SQL_VALUES="'$1',$2"
 
-	if [ "$3" != "" ]; then
-		local ENCRYPTION=$(_mysql_value "default_password_encryption")
-		local PASSWORD=""
-		case "$ENCRYPTION" in
-			0) PASSWORD=$3;;
-			1) PASSWORD="ENCRYPT('$3')";;
-			2) PASSWORD="MD5('$3')";;
-			*) PASSWORD="ENCRYPT('$3')";;
-		esac;
+	if [ "_$3" != "_" ]; then
 		SQL_FIELDS="$SQL_FIELDS,login_pwd,pwd_change,pwd_crypt"
-		SQL_VALUES="$SQL_VALUES,$PASSWORD,0,1"
+		if [ "$4" != "encrypt" ] || [ "$4" != "md5" ]; then
+			local ENCRYPTION=$(_mysql_value "default_password_encryption")
+			local PASSWORD=""
+			case "$ENCRYPTION" in
+				0) PASSWORD="'$3'" && ENCRYPTION=0;;
+				1) PASSWORD="ENCRYPT('$3')" && ENCRYPTION=1;;
+				2) PASSWORD="MD5('$3')" && ENCRYPTION=2;;
+				*) PASSWORD="ENCRYPT('$3')" && ENCRYPTION=1;;
+			esac;
+			SQL_VALUES="$SQL_VALUES,$PASSWORD,'0','$ENCRYPTION'"
+		else
+			case "$4" in
+				"encrypt") PWD_CRYPT="1";;
+				"md5") PWD_CRYPT="2";;
+				*) PWD_CRYPT="1";;
+			esac;
+			SQL_VALUES="$SQL_VALUES,'$3','0','$PWD_CRYPT'"
+		fi;
+	fi;
+
+	# Registration date
+	if [ "_$5" != "_" ]; then	
+		SQL_FIELDS="$SQL_FIELDS,reg_date"
+		SQL_VALUES="$SQL_VALUES,'$5'"
+	fi;
+	# OP creator
+	if [ "_$6" != "_" ]; then	
+		SQL_FIELDS="$SQL_FIELDS,reg_op"
+		SQL_VALUES="$SQL_VALUES,'$6'"
+	fi;
+	# Last login
+	SQL_FIELDS="$SQL_FIELDS,login_last"
+	if [ "_$7" != "_" ]; then	
+		SQL_VALUES="$SQL_VALUES,'$7'"
+	else
+		SQL_VALUES="$SQL_VALUES,unix_timestamp(now())"
+	fi;
+	# Last IP
+	if [ "_$8" != "_" ]; then	
+		SQL_FIELDS="$SQL_FIELDS,login_ip"
+		SQL_VALUES="$SQL_VALUES,'$8'"
 	fi;
 
 	MYSQL_QUERY="INSERT INTO reglist ($SQL_FIELDS) VALUES ($SQL_VALUES)";
@@ -147,7 +182,7 @@ function mysql_connect() {
 }
 
 # Run given query
-function _mysql_query() { mysql_connect "--execute=\"$1\"" &>/dev/null && return 0 || return 1; }
+function _mysql_query() { mysql_connect "--execute=\"$1\""  && return 0 || return 1; }
 
 # Update var in setuplist
 function _mysql_update() # variable, value
