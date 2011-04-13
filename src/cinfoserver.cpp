@@ -31,6 +31,9 @@
 #endif
 
 #include "i18n.h"
+
+#define PADDING 25
+
 using namespace nStringUtils;
 namespace nDirectConnect {
 namespace nInfo {
@@ -45,25 +48,22 @@ void cInfoServer::SystemInfo(ostream &os)
 	#if ! defined _WIN32 && ! defined HAVE_FREEBSD && ! defined HAVE_APPLE
 	struct sysinfo serverInfo;
 	if(sysinfo(&serverInfo)) {
-		os << "Cannot retrive system information";
+		os << _("Cannot retrive system information");
 		return;
 	}
 	cTime uptime(serverInfo.uptime);
 	utsname osname;
 	if(uname(&osname) == 0) { 
-		os << "\r\n[::] OS: " << osname.sysname << " " << osname.release << " (" << osname.machine << ") ";
+		os << "\r\n[*] " << setw(PADDING) << setiosflags(ios::left) << "OS" << osname.sysname << " " << osname.release << " (" << osname.machine << ") ";
 	}
-	os << "\r\n[::] " << autosprintf(_("System uptime: %s"), uptime.AsPeriod().AsString().c_str()) << endl;
-	os << "[::] " << autosprintf(_("Load averages: %.2f %.2f %.2f"), serverInfo.loads[0]/65536.0, serverInfo.loads[1]/65536.0, serverInfo.loads[2]/65536.0) << endl;
-	os << "[::] " << autosprintf(_("Used RAM: %s"), convertByte((long long int) serverInfo.totalram,false).c_str()) << endl;
-	os << "[::] " << autosprintf(_("Free RAM: %s"), convertByte((long long int) serverInfo.freeram,false).c_str()) << endl;
-	os << "[::] " << autosprintf(_("Shared RAM: %s"), convertByte((long long int) serverInfo.sharedram,false).c_str()) << endl;
-	os << "[::] " << autosprintf(_("Memory in buffers: %s"), convertByte((long long int) serverInfo.bufferram,false).c_str()) << endl;
-	os << "[::] " << autosprintf(_("Total swap: %s"), convertByte((long long int) serverInfo.totalswap,false).c_str()) << endl;
-	os << "[::] " << autosprintf(_("Free swap: %s"), convertByte((long long int) serverInfo.freeswap,false).c_str()) << endl;
-	os << "[::] " << autosprintf(_("Number of processes: %d"), serverInfo.procs) << endl;
-
-
+	os << "\r\n[*] " << setw(PADDING) << setiosflags(ios::left) << _("System uptime") << uptime.AsPeriod().AsString().c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Load averages") << autosprintf("%.2f %.2f %.2f", serverInfo.loads[0]/65536.0, serverInfo.loads[1]/65536.0, serverInfo.loads[2]/65536.0) << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Used RAM") << convertByte((long long int) serverInfo.totalram,false).c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Free RAM") << convertByte((long long int) serverInfo.freeram,false).c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Shared RAM") << convertByte((long long int) serverInfo.sharedram,false).c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Memory in buffers") << convertByte((long long int) serverInfo.bufferram,false).c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Frew swap") << convertByte((long long int) serverInfo.freeswap,false).c_str() << "/" << convertByte((long long int) serverInfo.totalswap,false).c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Number of processes") << serverInfo.procs << endl;
 
         struct rusage resourceUsage; 
 
@@ -77,28 +77,17 @@ void cInfoServer::SystemInfo(ostream &os)
 void cInfoServer::SetServer(cServerDC *Server)
 {
 	mServer = Server;
-	ostringstream description;
-	description << "[::] " << _("Hub name");
-	Add(description.str(), mServer->mC.hub_name);
-	description.str("");
-	description << "[::] " << _("Hub owner");
-	Add(description.str(), mServer->mC.hub_owner);
-	description.str("");
-	description << "[::] " << _("Hub category");
-	Add(description.str(), mServer->mC.hub_category);
-	description.str("");
-	description << "[::] " << _("Total user limit");
-	Add(description.str(),mServer->mC.max_users_total);
+
 }
 
 void cInfoServer::Output(ostream &os, int Class)
 {
 	iterator it;
 	cTime theTime;
-	os << "\r\n""[::] " << autosprintf(_("Version date: %s"), __CURR_DATE_TIME__) << endl;
+	os << "\r\n[*] " << setw(PADDING) << setiosflags(ios::left) << _("Version date") << __CURR_DATE_TIME__ << endl;
 	theTime = mServer->mTime;
 	theTime -= mServer->mStartTime;
-	os << "[::] " << autosprintf(_("Uptime: %s"), theTime.AsPeriod().AsString().c_str()) << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Uptime") << theTime.AsPeriod().AsString().c_str() << endl;
 	string loadType;
 	if(mServer->mSysLoad >= eSL_RECOVERY)
 		loadType = _("Recovery mode");
@@ -108,37 +97,55 @@ void cInfoServer::Output(ostream &os, int Class)
 		loadType = _("Progressive mode");
 	if(mServer->mSysLoad >= eSL_NORMAL)
 		loadType = _("Normal mode");
-	os << "[::] " << autosprintf(_("Server frequency: %.4f (%s)"), mServer->mFrequency.GetMean(mServer->mTime), loadType.c_str()) << endl;
-	
-	for(it = begin(); it != end(); ++it)
-		os << (*it)->mName << " : " << *(*it) << endl;
-	os << "[::] " << autosprintf(_("Current online users: %d") ,mServer->mUserCountTot) << endl;
-	os << "[::] " << autosprintf(_("Current share total: %s"), convertByte(mServer->mTotalShare, false).c_str()) << endl;
-	os << "[::] " << autosprintf(_("User list count: %d"), mServer->mUserList.size()) << endl;
-	os << "[::] " << autosprintf(_("Hello user count: %d"), mServer->mHelloUsers.size()) << endl;
-	os << "[::] " << autosprintf(_("In Progress users: %d"), mServer->mInProgresUsers.size()) << endl;
-	os << "[::] " << autosprintf(_("Active user count: %d"), mServer->mActiveUsers.size()) << endl;
-	os << "[::] " << autosprintf(_("Passive user count: %d"), mServer->mPassiveUsers.size()) << endl;
-	os << "[::] " << autosprintf(_("Op user count: %d"), mServer->mOpchatList.size()) << endl;
-	os << "[::] " << autosprintf(_("Bot user count: %d"), mServer->mRobotList.size()) << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Server frequency") << mServer->mFrequency.GetMean(mServer->mTime) << " " << "(" << loadType.c_str() << ")" << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub name") << mServer->mC.hub_name << endl;
+
+	string hubOwner;
+		if(!mServer->mC.hub_owner.empty())
+		hubOwner = mServer->mC.hub_owner;
+	else
+		hubOwner = "--";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub owner") << hubOwner << endl;
+
+	string hubCategory;
+		if(!mServer->mC.hub_category.empty())
+		hubCategory = mServer->mC.hub_category;
+	else
+		hubCategory = "--";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub category") << hubCategory << endl;
+	os << "    " << string(30,'=') << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Current online users") << mServer->mUserCountTot << "/" << mServer->mC.max_users_total << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Current share total") << convertByte(mServer->mTotalShare, false).c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("User list count") << mServer->mUserList.size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hello user count") << mServer->mHelloUsers.size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("In Progress users") << mServer->mInProgresUsers.size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Active user count") << mServer->mActiveUsers.size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Passive user count") << mServer->mPassiveUsers.size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("OP user count") << mServer->mOpchatList.size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) <<_("Bot user count") << mServer->mRobotList.size() << endl;
+	os << "    " << string(30,'=') << endl;
 	double total = 0, curr;
-	int i = 0;
-	for( i =0; i <= USER_ZONES; i++)
-	{
-		curr = mServer->mUploadZone[i].GetMean(mServer->mTime);
-		os << "[::] " << autosprintf(_("Upload zone %d: %s"), i, convertByte(curr,true).c_str()) << endl;
+
+	// Print zone from 1->6
+ 	for(int i =1; i < 4; i++) {
+		if(!mServer->mC.cc_zone[i-1].empty()) {
+			string zone = mServer->mC.cc_zone[i-1];
+			replace(zone.begin(), zone.end(), ':', ',');
+			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << mServer->mUserCount[i] << "/" << mServer->mC.max_users[i];
+			curr = mServer->mUploadZone[i-1].GetMean(mServer->mTime);
+			total += curr;
+			os << " (" << convertByte(curr,true).c_str() << ")" << " [" << zone.c_str() << "]" << endl;
+		} else
+			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << _("not set") << endl;
+	}
+	for (int i=4; i <= USER_ZONES; i++) {
+		curr = mServer->mUploadZone[i-1].GetMean(mServer->mTime);
 		total += curr;
+		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << mServer->mUserCount[i] << "/" << mServer->mC.max_users[i];
+		os << " (" << convertByte(curr,true).c_str() << ")" << " [IP-range]" << endl;
 	}
-	os << "[::] " << autosprintf(_("Current total upload for all zones: %s"), convertByte(total,true).c_str()) << endl;
-	os << "[::] " << autosprintf(_("Zone (%d) all users: %d / %d"), 0, mServer->mUserCount[0], mServer->mC.max_users[0]) << endl;
- 	for(i =1; i < 4; i++) {
-		if(!mServer->mC.cc_zone[i-1].empty())
-			os << "[::] " << autosprintf(_("Zone (%d) %s users: %d / %d"), i, mServer->mC.cc_zone[i-1].c_str(), mServer->mUserCount[i], mServer->mC.max_users[i]) << endl;
-		else
-			os << "[::] " << autosprintf(_("Zone (%d) not set"), i) << endl;
-	}
-	for (i=4; i <= USER_ZONES; i++)
-		os << "[::] " << autosprintf(_("Zone (%d) IP-Range: %d / %d"), i, mServer->mUserCount[i], mServer->mC.max_users[i]) << endl;
+	// Print zone 0
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("All other users") << mServer->mUserCount[0] << "/" << mServer->mC.max_users[0] << " (" << convertByte(total,true).c_str() << ")" << endl;
 }
 
 cInfoServer::~cInfoServer(){}
