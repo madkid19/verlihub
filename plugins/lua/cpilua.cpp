@@ -35,7 +35,7 @@ int	  cpiLua::log_level = 1;
 cpiLua::cpiLua() : mConsole(this), mQuery(NULL)
 {
 	mName = LUA_PI_IDENTIFIER;
-	mVersion = LUA_VERSION;
+	mVersion = LUA_PI_VERSION;
 	me = this;
 }
 

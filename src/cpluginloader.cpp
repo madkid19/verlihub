@@ -20,7 +20,6 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cpluginloader.h"
-#include "i18n.h"
 
 namespace nPlugin {
 
@@ -71,7 +70,7 @@ bool nPlugin::cPluginLoader::Open()
 	{
 		if (!mHandle) IsError(); // Call it again
 	#endif
-		if(ErrLog(1)) LogStream() << autosprintf(_("Cannot open plugin '%s' beacause: %s"),mFileName.c_str(),Error().c_str()) << endl;
+		if(ErrLog(1)) LogStream() << "Cannot open plugin '" << mFileName << "': " << Error() << endl;
 		return false;
 	}
 	return true;
@@ -92,7 +91,7 @@ bool nPlugin::cPluginLoader::Close()
 	if(IsError())
 	#endif
 	{
-		if(ErrLog(1)) LogStream() << autosprintf(_("Cannot close plugin because: %s"),Error().c_str()) << endl;
+		if(ErrLog(1)) LogStream() << "Cannot close plugin:" << Error() << endl;
 		return false;
 	}
 	mHandle = NULL;
@@ -139,14 +138,14 @@ void * nPlugin::cPluginLoader::LoadSym(const char *name)
 	#ifdef _WIN32
 	void *func = (void *) GetProcAddress(mHandle, name);
 	if(func == NULL) {
-		if(ErrLog(1)) LogStream() << autosprintf(_("Cannot load '%s' exported interface because: %s"),name,GetLastError()) << endl;
+		if(ErrLog(1)) LogStream() << "Can't load " << name <<" exported interface :" << GetLastError() << endl;
 		return NULL;
 	}
 	#else
 	void *func = dlsym( mHandle, name);
 	if(IsError())
 	{
-		if(ErrLog(1)) LogStream() <<  autosprintf(_("Cannot load '%s' exported interface because: %s"),name,Error().c_str()) << endl;
+		if(ErrLog(1)) LogStream() << "Can't load " << name <<" exported interface :" << Error() << endl;
 		return NULL;
 	}
 	#endif
