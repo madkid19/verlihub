@@ -85,7 +85,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mTriggers = new cTriggers(mServer);
 	mTriggers->OnStart();
 	mTriggerConsole = new cTriggerConsole(this);
-	
+
 	mDCClients = new cDCClients(mServer);
 	mDCClients->OnStart();
 	mDCClientConsole = new cDCClientConsole(this);
@@ -93,7 +93,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mRedirects = new cRedirects(mServer);
 	mRedirects->OnStart();
 	mRedirectConsole = new cRedirectConsole(this);
-	
+
 	mFunRedirConnType.mConsole = &mConnTypeConsole;
 	mFunRedirTrigger.mConsole = mTriggerConsole;
 	mFunCustomRedir.mConsole = mRedirectConsole;
@@ -194,7 +194,7 @@ int cDCConsole::OpCommand(const string &str, cConnDC * conn)
 		default: return 0;
 		break;
 	}
-	if (mTriggers->DoCommand(conn,cmd, cmd_line, *mOwner)) 
+	if (mTriggers->DoCommand(conn,cmd, cmd_line, *mOwner))
 		return 1;
 	return 0;
 }
@@ -384,17 +384,17 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 	string start, end, str, cc_zone;
 	ostringstream ostr;
 	string tmpline;
-	
+
 	// test for existence of parameter
 	cmd_line >> cc_zone;
-	
+
 	getline(cmd_line,str);
 	while(cmd_line.good()) {
 		tmpline="";
 		getline(cmd_line,tmpline);
 		str += "\r\n" + tmpline;
 	}
-	
+
 	if(! str.size()) {
 		ostr << _("Usage example: !ccbc :US:GB: <message>.") << " " << _("Please type !help for more info") << endl;
                 mOwner->DCPublicHS(ostr.str(), conn);
@@ -402,7 +402,7 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 	}
 	cc_zone = toUpper(cc_zone);
 	mOwner->mP.Create_PMForBroadcast(start,end,mOwner->mC.hub_security, conn->mpUser->mNick ,str);
-	
+
 	cTime TimeBefore, TimeAfter;
 	if ( mOwner->LastBCNick != "disable")
 		mOwner->LastBCNick = conn->mpUser->mNick;
@@ -439,7 +439,7 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 	ostringstream os;
 	string query,text;
 	string tmpline;
-	
+
 	getline(cmd_line,text);
 	if ((mOwner->mC.disable_me_cmd) || (mOwner->mC.mainchat_class > 0 && conn->mpUser->mClass < eUC_REGUSER)) {
 		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
@@ -450,10 +450,10 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 		getline(cmd_line,tmpline);
 		text += "\r\n" + tmpline;
 	}
-	
-	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text,conn)) 
+
+	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text,conn))
 		return 0;
-	
+
 	os << "** " <<  conn->mpUser->mNick<< text;
 	string msg = os.str();
 	mOwner->mUserList.SendToAll(msg, true);
@@ -526,7 +526,7 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	}
 	if (conn->GetTheoricalClass() == eUC_VIPUSER) {
 		uType = _("VIP"); sInt = mOwner->mC.int_search_vip;
-	} 
+	}
 	if (conn->GetTheoricalClass() == eUC_OPERATOR) {
 		uType = _("Operator"); sInt = mOwner->mC.int_search_op;
 	}
@@ -535,7 +535,7 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	}
 	if (conn->GetTheoricalClass() == eUC_ADMIN) {
 		uType = _("Admin"); sInt = mOwner->mC.int_search_op;
-	} 
+	}
 	if (conn->GetTheoricalClass() == eUC_MASTER) {
 		uType = _("Master"); sInt = mOwner->mC.int_search_op;
 	}
@@ -573,57 +573,57 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		mOwner->DCPublicHS(_("Registration failed; please contact an operator for more help."),conn);
 		return 1;
 	}
-	__int64 user_share, min_share;	
-	
+	__int64 user_share, min_share;
+
 	if(mOwner->mC.autoreg_class >= 0) {
 		if(!conn->mpUser) {
 			return 0;
 		}
-		
+
 		// reg user's online nick
 		regnick = conn->mpUser->mNick;
 		prefix= mOwner->mC.nick_prefix_autoreg;
 		ReplaceVarInString(prefix,"CC",prefix, conn->mCC);
-		
+
 		if( prefix.size() && StrCompare(regnick,0,prefix.size(),prefix) !=0 ) {
 			os << autosprintf(_("Your nick must start with %s"), prefix.c_str());
 			mOwner->DCPublicHS(os.str(),conn);
 			return 1;
 		}
-		
+
 		user_share = conn->mpUser->mShare / (1024*1024);
 		min_share = mOwner->mC.min_share_reg;
 		if(mOwner->mC.autoreg_class == 2)
 			min_share = mOwner->mC.min_share_vip;
 		if(mOwner->mC.autoreg_class >= 3)
 			min_share = mOwner->mC.min_share_ops;
-		
+
 		if(user_share < min_share) {
 			os << autosprintf(_("You need to share at least %s"), convertByte(min_share*1024, false).c_str());
 			mOwner->DCPublicHS(os.str(),conn);
 			return 0;
 		}
-		
+
 		cUser *user = mServer->mUserList.GetUserByNick(regnick);
 		cRegUserInfo ui;
 		bool RegFound = mOwner->mR->FindRegInfo(ui, regnick);
-		
+
 		if (RegFound) {
 			os << _("You are already registered");
 			mOwner->DCPublicHS(os.str(),conn);
 			return 0;
 		}
-		
+
 		if(user && user->mxConn) {
 			string text;
 			getline(cmd_line,text);
-		
+
 			if(text.size() < (unsigned int) mOwner->mC.password_min_len) {
 				os << autosprintf(_("Minimum password length is %d characters, please retry."), mOwner->mC.password_min_len);
 				mOwner->DCPublicHS(os.str(),conn);
 				return 0;
 			}
-			
+
 			// Strip space
 			text = text.substr(1);
 			if (mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text.c_str()) ) {
@@ -639,10 +639,10 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 				return false;
 			}
 		}
-		
+
 		mOwner->DCPublicHS(os.str(),conn);
 		return 1;
-		
+
 	} else {
 		string text, tmpline;
 		getline(cmd_line,text);
@@ -658,7 +658,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		mOwner->DCPublicHS(_("Thank you, your request has been sent to operators."),conn);
 		return 1;
 	}
-	
+
 }
 
 int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
@@ -669,7 +669,7 @@ int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 	if(conn->mpUser->mClass < mOwner->mC.topic_mod_class) {
 		mOwner->DCPublicHS(_("You do not have permissions to change the topic."),conn);
 		return 1;
-	}	
+	}
 	if(topic[0] == ' ')
 		topic = topic.substr(1);
 	if(topic.length() > 255) {
@@ -694,14 +694,14 @@ int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 		os << autosprintf(_("%s resetted the topic"), conn->mpUser->mNick.c_str());
 	mOwner->DCPublicHSToAll(os.str());
 	return 1;
-} 
+}
 
 int cDCConsole::CmdKick(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg, OtherNick, Reason;
 	string tmpline;
-	
+
 	if(conn && conn->mpUser && conn->mpUser->Can(eUR_KICK, mOwner->mTime.Sec())) {
 		cmd_line >> OtherNick;
 		getline(cmd_line,Reason);
@@ -868,7 +868,7 @@ int cDCConsole::CmdHideKick(istringstream &cmd_line, cConnDC *conn)
 				user->mHideKick = true;
 			} else {
 				os << autosprintf(_("You have no rights to do this.")) << endl;
-			}  
+			}
 		} else {
 			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 		}
@@ -995,7 +995,7 @@ bool cDCConsole::cfRaw::operator()()
 
 	string tmp;
 
-  
+
 	if (this->mConn->mpUser->mClass < eUC_ADMIN)
 		return false;
 	mIdRex->Extract(1,mIdStr,tmp);
@@ -1064,10 +1064,10 @@ bool cDCConsole::cfClean::operator()()
 	static const char *cleanames[] = { "banlist", "unbanlist", "kicklist", "temprights" };
 	enum { CLEAN_BAN, CLEAN_UNBAN, CLEAN_KICK, CLEAN_TRIGHTS };
 	static const int cleanids[]= { CLEAN_BAN, CLEAN_UNBAN, CLEAN_KICK, CLEAN_TRIGHTS };
-	
+
 	if(!mConn->mpUser) return false;
 	if(mConn->mpUser->mClass < eUC_OPERATOR) return false;
-	
+
 	string tmp;
 	int CleanType = cBan::eBF_NICKIP;
 	if(mIdRex->PartFound(1)) {
@@ -1095,14 +1095,14 @@ bool cDCConsole::cfClean::operator()()
 		break;
 		default:
 			(*mOS) << _("This command is not implemented.") << "\r\n" << _("Available command are: ") << endl;
-			return false; 
+			return false;
 		break;
 	}
 	return true;
 }
 
 bool cDCConsole::cfBan::operator()()
-{      
+{
 	static const char *bannames[]={"nick", "ip", "nickip", "", "range", "host1", "host2" , "host3", "hostr1",  "share", "prefix"};
 	static const int banids[]= {cBan::eBF_NICK, cBan::eBF_IP, cBan::eBF_NICKIP, cBan::eBF_NICKIP, cBan::eBF_RANGE,
       cBan::eBF_HOST1, cBan::eBF_HOST2, cBan::eBF_HOST3, cBan::eBF_HOSTR1, cBan::eBF_SHARE, cBan::eBF_PREFIX};
@@ -1110,7 +1110,7 @@ bool cDCConsole::cfBan::operator()()
 	enum { BAN_BAN, BAN_UNBAN, BAN_INFO, BAN_LIST };
 	static const char *prefixnames[]={"add", "new", "rm", "del", "un", "info", "check", "list", "ls"};
 	static const int prefixids[]= { BAN_BAN, BAN_BAN, BAN_UNBAN, BAN_UNBAN, BAN_UNBAN, BAN_INFO, BAN_INFO, BAN_LIST, BAN_LIST };
-	
+
 	cBan Ban(mS);
 	int BanType = cBan::eBF_NICKIP;
 	cKick Kick;
@@ -1181,7 +1181,7 @@ bool cDCConsole::cfBan::operator()()
 					return false;
 				}
 				#endif
-				(*mOS) << _("User %s unbanned.") << "\r\n";
+				(*mOS) << autosprintf(_("User %s unbanned."), mConn->mpUser->mNick.c_str()) << "\r\n";
 			}
 
 			if(BanType == cBan::eBF_NICKIP) {
@@ -1299,7 +1299,7 @@ bool cDCConsole::cfBan::operator()()
 		#ifndef WITHOUT_PLUGINS
 		if(!mS->mCallBacks.mOnNewBan.CallAll(&Ban)) {
 			(*mOS) << _("Action has been discarded by plugin");
-			return false;	
+			return false;
 		}
 		#endif
 		user = mS->mUserList.GetUserByNick(Ban.mNick);
@@ -1316,7 +1316,7 @@ bool cDCConsole::cfBan::operator()()
 		mS->mBanList->List(*mOS,BanCount);
 	break;
 	default:(*mOS) << _("This command is not implemented.") << "\r\n" << _("Available command are: ") << endl;
-		return false; 
+		return false;
 		break;
 	}
 	return true;
@@ -1414,14 +1414,14 @@ bool cDCConsole::cfSetVar::operator()()
 {
 	string file(mS->mDBConf.config_name),var,val, fake_val;
 	bool DeleteItem = false;
-	
+
 	if(mConn->mpUser->mClass < eUC_ADMIN)
 		return false;
 
 	// [file] variable value style
 	if (mParRex->PartFound(2))
 		mParRex->Extract(2,mParStr,file);
-	
+
 	mParRex->Extract(3,mParStr,var);
 	// file.variable value style
 	size_t pos  = var.find('.');
@@ -1456,7 +1456,7 @@ bool cDCConsole::cfSetVar::operator()()
 			delete ci;
 		ci = NULL;
 	}
-	
+
 	struct rlimit userLimit;
 	// Get maximum file descriptor number
 	if(!getrlimit(RLIMIT_NOFILE, &userLimit) && userLimit.rlim_cur < mS->mC.max_users_total)
@@ -1549,7 +1549,7 @@ bool cDCConsole::cfCmd::operator()()
 	if(Action < 0)
 		return false;
 
-	
+
 	switch(Action) {
 //		case eAC_LIST: this->mS->mCo.mCmdr.List(mOS); break;
 		default: return false;
@@ -1598,7 +1598,7 @@ bool cDCConsole::cfWho::operator()()
 				(*mOS) << _("Country code must be 2 characters long (for ex. US)");
 				return false;
 			}
-			
+
 			tmp = toUpper(tmp);
 			cnt = mS->WhoCC(tmp, userlist, separator);
 			if(cnt)
@@ -1714,8 +1714,8 @@ bool cDCConsole::cfRegUsr::operator()()
 	static const char * actionnames [] = { "n","new","newuser", "del","delete", "pass","passwd", "enable",
 		"disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set","=", "info", "list" };
 	static const int actionids [] = { eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET, eAC_INFO, eAC_LIST };
-	
-	
+
+
 	if(this->mConn->mpUser->mClass < eUC_OPERATOR)
 		return false;
 
@@ -1736,7 +1736,7 @@ bool cDCConsole::cfRegUsr::operator()()
 		if(!nClass) {
 			this->GetParStr(1,nick);
 		} else {
-		  
+
 		}
 //		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick, nClass);
 	}
@@ -1779,7 +1779,7 @@ bool cDCConsole::cfRegUsr::operator()()
 	}
 	// check rights
 	if(RegFound) {
-		
+
 		if ((MyClass < eUC_MASTER) && !(
 			(MyClass >= (int) (ui.mClass+mS->mC.classdif_reg) &&
 			MyClass >= (ui.mClassProtect)) ||
@@ -1845,7 +1845,7 @@ bool cDCConsole::cfRegUsr::operator()()
 				return false;
 			}
 			#endif
-			
+
 			if (mS->mR->AddRegUser(nick, mConn, ParClass)) {
 				if(user && user->mxConn) {
 					ostr.str(mS->mEmpty);
@@ -1978,9 +1978,9 @@ bool cDCConsole::cfBc::operator()()
 	const int nums[] = {eBC_BC,eBC_BC, eBC_OC, eBC_OC, eBC_GUEST, eBC_REG, eBC_VIP, eBC_CHEEF, eBC_ADMIN, eBC_MASTER, eBC_CC, eBC_CC };
 	string message;
 	int cmdid;
-	
+
 	if (!GetIDEnum(1,cmdid, cmds, nums)) return false;
-	
+
 	GetParStr(eBC_MSG, message);
 	//rights to broadcast
 	int MinClass = mS->mC.min_class_bc;
@@ -1995,37 +1995,37 @@ bool cDCConsole::cfBc::operator()()
 			AllowedClass = mS->mC.min_class_bc;
 		break;
 		case eBC_GUEST:
-			MinClass = eUC_NORMUSER; 
+			MinClass = eUC_NORMUSER;
 			MaxClass = eUC_NORMUSER;
 			AllowedClass = mS->mC.min_class_bc_guests;
 		break;
-		case eBC_REG: 
+		case eBC_REG:
 			MinClass = eUC_REGUSER;
 			MaxClass = eUC_REGUSER;
 			AllowedClass = mS->mC.min_class_bc_regs;
 		break;
-		case eBC_VIP: 
+		case eBC_VIP:
 			MinClass = eUC_VIPUSER;
 			MaxClass = eUC_VIPUSER;
 			AllowedClass = mS->mC.min_class_bc_vips;
 		break;
-		case eBC_OC: 
+		case eBC_OC:
 			MinClass = eUC_OPERATOR;
 			MaxClass = eUC_MASTER;
 			AllowedClass = eUC_OPERATOR;
-		break; 
+		break;
 		case eBC_CHEEF:
-			MinClass = eUC_CHEEF; 
+			MinClass = eUC_CHEEF;
 			MaxClass = eUC_ADMIN;
 			AllowedClass = eUC_OPERATOR;
 		break;
-		case eBC_ADMIN: 
-			MinClass = eUC_ADMIN; 
+		case eBC_ADMIN:
+			MinClass = eUC_ADMIN;
 			MaxClass = eUC_MASTER;
 			AllowedClass = eUC_ADMIN;
 		break;
 		case eBC_MASTER:
-			MinClass = eUC_MASTER; 
+			MinClass = eUC_MASTER;
 			MaxClass = eUC_MASTER;
 			AllowedClass = eUC_ADMIN;
 		break;
@@ -2033,13 +2033,13 @@ bool cDCConsole::cfBc::operator()()
 		break;
 		default: break;
 	}
-	
+
 	if (MyClass < AllowedClass)
 	{
 		*mOS << _("You have no rights to do this.");
 		return false;
 	}
-	
+
 	string start, end;
 	mS->mP.Create_PMForBroadcast(start,end,mS->mC.hub_security, this->mConn->mpUser->mNick ,message);
 	cTime TimeBefore, TimeAfter;

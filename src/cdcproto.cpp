@@ -1178,7 +1178,7 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	string ostr(msg->mStr,0 ,msg->mChunks[eCH_SR_TO].first - 1);
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgSR.CallAll(conn, (string *)&ostr)) {
+	if (!mS->mCallBacks.mOnParsedMsgSR.CallAll(conn, msg)) {
 		return -2;
 	}
 	#endif

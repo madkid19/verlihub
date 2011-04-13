@@ -27,9 +27,9 @@ VH_OnHubName(nick, hubname) DONE
 VH_OnUpdateClass (nick, oldclass, newclass) DONE
 VH_OnBan(banwhat, op, reason, //time --or nil if ban is permanent--) DONE
 VH_OnUnban(unbanwhat, op, reason) DONE
- 
+
  */
- 
+
 #ifndef NDIRECTCONNECT_NPLUGINCVHPLUGIN_H
 #define NDIRECTCONNECT_NPLUGINCVHPLUGIN_H
 #include "cpluginbase.h"
@@ -66,7 +66,7 @@ using ::nDirectConnect::cConnDC;
 class cPluginUserData
 {
 	public:
-		cPluginUserData() 
+		cPluginUserData()
 		{
 			mxUser = NULL;
 		}
@@ -121,7 +121,7 @@ public:
 	\param conn The connection is going to be closed
 	 */
 	virtual bool OnCloseConn( cConnDC* conn){ return true; }
-	
+
 	//! Event handler function that is called when an unknown message is sent from a connection
 	/*!
 	 * 	Use RegisterCallBack("VH_OnUnknownMsg") to register it. This event cannot be discardable.
@@ -129,7 +129,7 @@ public:
 	\param msg The pointer to cMessageDC object
 	 */
 	virtual bool OnUnknownMsg     ( cConnDC* conn, cMessageDC * msg){ return true; }
-	
+
 	//! Event handler function that is called when a parsed message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgAny") to register it. This event can be discardable.
@@ -140,7 +140,7 @@ public:
 	\param msg The pointer to cMessageDC object
 	 */
 	virtual bool OnParsedMsgAny     ( cConnDC* conn, cMessageDC *msg){ return true; }
-	
+
 	//! Event handler function that is called when $Support message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgSupport") to register it. This event cannot be discardable.
@@ -149,7 +149,7 @@ public:
 	\todo Add it in cdcproto.cpp
 	 */
 	virtual bool OnParsedMsgSupport ( cConnDC* conn, cMessageDC *msg){ return true; }
-	
+
 	//! Event handler function that is called when $ValidateNick message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgValidateNick") to register it. This event can be discardable.
@@ -158,7 +158,7 @@ public:
 	\param msg The pointer to cMessageDC object
 	 */
 	virtual bool OnParsedMsgValidateNick  ( cConnDC* , cMessageDC *){ return true; }
-	
+
 	//! Event handler function that is called when $MyPass message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgValidateNick") to register it. This event can be discardable.
@@ -177,7 +177,7 @@ public:
 	\param msg The pointer to cMessageDC object
 	 */
 	virtual bool OnParsedMsgMyINFO  ( cConnDC* , cMessageDC *){ return true; }
-	
+
 	//! Event handler function that is called when $Search message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgSearch") to register it. This event can be discardable.
@@ -186,7 +186,7 @@ public:
 	\param msg The pointer to cMessageDC object
 	 */
 	virtual bool OnParsedMsgSearch  ( cConnDC* , cMessageDC *){ return true; }
-	
+
 	//! Event handler function that is called when $SR message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgSR") to register it. This event can be discardable.
@@ -196,7 +196,7 @@ public:
 	\todo Add it in cdcproto.cpp
 	 */
 	virtual bool OnParsedMsgSR      ( cConnDC* , cMessageDC *){ return true; }
-	
+
 	//! Event handler function that is called when a chat message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgChat") to register it. This event can be discardable.
@@ -205,16 +205,16 @@ public:
 	\param msg The pointer to cMessageDC object
 	 */
 	virtual bool OnParsedMsgChat    ( cConnDC* , cMessageDC *){ return true; }
-	
+
 	//! Event handler function that is called when a pm message ($To) is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgPM") to register it. This event can be discardable.
 	\return Return false to ignore the protocol message and not to send it to all users, otherwise return true.
 	\param conn The pointer to the connection that sent the message
-	\param msg The pointer to cMessageDC object	
+	\param msg The pointer to cMessageDC object
 	 */
 	virtual bool OnParsedMsgPM      ( cConnDC* , cMessageDC *){ return true; }
-	
+
 	//! Event handler function that is called when $ConnectToMe message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgConnectToMe") to register it. This event can be discardable.
@@ -223,7 +223,7 @@ public:
 	\param msg The pointer to cMessageDC object
 	 */
 	virtual bool OnParsedMsgConnectToMe ( cConnDC* , cMessageDC *){ return true; }
-	
+
 	//! Event handler function that is called when $RevConnectToMe message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgRevConnectToMe") to register it. This event can be discardable.
@@ -232,7 +232,7 @@ public:
 	\param msg The pointer to cMessageDC object
 	 */
 	virtual bool OnParsedMsgRevConnectToMe ( cConnDC* , cMessageDC *){ return true; }
-	
+
 	//! Event handler function that is called when tag is parsed and validated
 	/*!
 	 * 	Use RegisterCallBack("VH_OnValidateTag") to register it. This event can be discardable.
@@ -241,24 +241,15 @@ public:
 	\param msg The pointer to cDCTag object
 	 */
 	virtual bool OnValidateTag      ( cConnDC* , cDCTag *){ return true; }
-	
+
 	//! Event handler function that is called when an operator command is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnOperatorCommand") to register it. This event can be discardable.
 	\return Return false to ignore the command, otherwise return true.
 	\param conn The pointer to the connection that sent the message
-	\param msg The command 
+	\param msg The command
 	 */
 	virtual bool OnOperatorCommand  ( cConnDC* , std::string *){ return true; }
-	
-	//! Event handler function that is called when a search result is received
-	/*!
-	 * 	Use RegisterCallBack("OnParsedMsgSR") to register it. This event can be discardable.
-	\return Return false to ignore the search result, otherwise return true.
-	\param conn The pointer to the connection that sent the message
-	\param msg The search result 
-	 */
-	virtual bool OnParsedMsgSR  ( cConnDC* , std::string *){ return true; }
 
 	//! Event handler function that is called when an user command is received
 	/*!
@@ -268,7 +259,7 @@ public:
 	\param msg The command
 	 */
 	virtual bool OnUserCommand      ( cConnDC* , std::string *){ return true; }
-	
+
 	//! Event handler function that is called when an operator kicks an user
 	/*!
 	 * 	Use RegisterCallBack("VH_OnUserCommand") to register it. This event can be discardable.
@@ -279,7 +270,7 @@ public:
 	 */
 
 	virtual bool OnOperatorKicks    ( cUser* OP, cUser *User , std::string *Reason){ return true; }
-	
+
 	//! Event handler function that is called when an operator drop an user
 	/*!
 	 * 	Use RegisterCallBack("VH_OnOperatorDrops") to register it. This event can be discardable.
@@ -296,21 +287,21 @@ public:
 	\param User The dropped user
 	 */
 	virtual bool OnUserLogin        ( cUser* User){ return true; }
-	
+
 	//! Event handler function that is called when user logout is completed
 	/*!
 	 * 	Use RegisterCallBack("VH_OnUserLogout") to register it. This event cannot be discardable.
 	\param User The user
 	 */
 	virtual bool OnUserLogout       ( cUser* User){ return true; }
-	
+
 	//! Event handler function that is called when a new ban is done
 	/*!
 	 * 	Use RegisterCallBack("VH_OnNewBan") to register it. This event can be discardable.
 	\param Ban cBan object
 	 */
 	virtual bool OnNewBan           ( cBan * Ban){ return true; }
-	
+
 	//! Event handler function that is called when unban is done
 	/*!
 	 * 	Use RegisterCallBack("VH_OnUnBan") to register it. This event can be discardable.
@@ -319,13 +310,13 @@ public:
 	\param reason Th reason of the unban
 	 */
 	virtual bool OnUnBan           ( string nick, string op, string reason){ return true; }
-	
+
 	//! Event handler function that is called when timer is called
 	/*!
 	 * 	Use RegisterCallBack("VH_OnTimer") to register it. This event cannot be discardable.
 	 */
 	virtual bool OnTimer         	( ){ return true; }
-	
+
 	/// Called when loading and  when it's the correct time to register for callbacks
 	virtual bool RegisterAll() = 0;
 
@@ -339,7 +330,7 @@ public:
 	virtual bool OnCreateUserNickList (string *NickList) {return true;};
 	virtual bool OnCreateUserInfoList (string *InfoList) {return true;};
 	virtual bool OnCreateOpList (string *OpList) {return true;};
-	
+
 	//! Event handler function that is called when $HubName is sent to an user
 	/*!
 	*	This event can be discardable
@@ -347,7 +338,7 @@ public:
 		\param hubname the current hub name
 	 */
 	virtual bool OnHubName(string nick, string hubname) {return true;};
-	
+
 	//! Event handler function that is called when an operator wants to delete an user
 	/*!
 	 * 	This event can be discardable
@@ -355,7 +346,7 @@ public:
 		\param mClass the user's class
 	*/
 	virtual bool OnDelReg(std::string mNick, int mClass) {return true;};
-	
+
 	//! Event handler function that is called when an operator wants to register a new user
 	/*!
 	 * 	This event can be discardable
@@ -363,7 +354,7 @@ public:
 	\param mClass the user's class
 	 */
 	virtual bool OnNewReg(std::string mNick, int mClass) {return true;};
-	
+
 	//! Event handler function that is called when an operator update user's class
 	/*!
 	 * 	This event can be discardable
@@ -375,7 +366,7 @@ public:
 	/// per-user data of the plugin
 	virtual cPluginUserData *GetPluginUserData( cUser * );
 	virtual cPluginUserData *SetPluginUserData( cUser *, cPluginUserData *NewData );
-	
+
 	/// Pointer for the verlihub server
 	cServerDC *mServer;
 	cUserCollection mRobots;
