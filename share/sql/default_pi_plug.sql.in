@@ -1,12 +1,11 @@
 INSERT IGNORE INTO pi_plug (nick,autoload,path,detail) VALUES
-	("isp"    ,0,"@prefix@/lib/libisp_pi.so"   ,"Internet Service Provider settings, country codes, nick prefix, desc tag,..."),
-	("lua"    ,0,"@prefix@/lib/liblua_pi.so"   ,"Support for lua scripts"),
-	("perl"   ,0,"@prefix@/lib/libperl_pi.so"  ,"Support for perl scripts"),
-	("python"   ,0,"@prefix@/lib/libpython_pi.so"  ,"Support for python scripts"),
-	("msg"    ,0,"@prefix@/lib/libmessanger_pi.so","Offline messages system"),
-	("flood"  ,0,"@prefix@/lib/libfloodprot_pi.so","Advanced flood protection"),
-	("log"    ,0,"@prefix@/lib/libiplog_pi.so","Log ip's, nicks; history commands"),
-	("forbid" ,0,"@prefix@/lib/libforbid_pi.so","Filter chat from forbidden words"),
-	("chat"   ,0,"@prefix@/lib/libchatroom_pi.so","Multiple chatrooms to separate chat topics"),
+	("chat"   ,0,"@prefix@/lib/libchatroom_pi.so","Set up individual chatrooms for users"),
+	("flood"  ,0,"@prefix@/lib/libfloodprot_pi.so","Offers more control from users flooding the hub"),
+	("forbid" ,0,"@prefix@/lib/libforbid_pi.so","Allows you to filter main chat and private messages with forbidden words"),
+	("log"    ,0,"@prefix@/lib/libiplog_pi.so","Logs IP addresses as users join and leave the hub"),
+	("isp"    ,0,"@prefix@/lib/libisp_pi.so"   ,"Allows you to check connection types, nickname prefixes, and minimum shares, among other things"),
+	("lua"    ,0,"@prefix@/lib/liblua_pi.so"   ,"Allows you to use simple scripts written in LUA language (http://www.lua.org)"),
+	("msg"    ,0,"@prefix@/lib/libmessanger_pi.so","Send messages to offline users"),
+	("python"   ,0,"@prefix@/lib/libpython_pi.so"  ,"Allows you to use scripts written with Python (http://www.python.org)"),
 	("replace",0,"@prefix@/lib/libreplace_pi.so","Replace some words by other"),
-	("stats"  ,0,"@prefix@/lib/libstats_pi.so","Statistics plugin, trace diverse value sin the database")
+	("stats"  ,0,"@prefix@/lib/libstats_pi.so","Periodically saves statistics in the database (i.e. users, share, upload, searching, etc...)")

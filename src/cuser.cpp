@@ -391,7 +391,7 @@ bool nDirectConnect::cChatRoom::ReceiveMsg(cConnDC *conn, cMessageDC *msg)
 				if (chat[0]=='+')
 				{
 					if (!mConsole->DoCommand(chat, conn))
-						SendPMTo(conn, "Unknown ChatRoom command.");
+						SendPMTo(conn, "Unknown Chatroom command.");
 
 				}
 				else SendPMToAll(chat, conn);

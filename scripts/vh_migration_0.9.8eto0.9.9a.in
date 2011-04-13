@@ -6,16 +6,14 @@ source $(dirname $0)/vh_lib
 function _delete_config_var() #var
 {
 	if ! _mysql_query "DELETE FROM SetupList WHERE var='$1' and file='config'" ; then
-		echo_s "-- Error executing query to delete config variables" $RED
-		exit 1;
+		echo_s "-- Error deleting '$1' variable\n" $RED
 	fi
 }
 
 function _delete_lang_var() #var
 {
 	if ! _mysql_query "DELETE FROM SetupList WHERE var='$1' and file!='config'" ; then
-		echo_s "-- Error executing query to delete lang variables" $RED
-		exit 1;
+		echo_s "-- Error deleting '$1' variable\n" $RED
 	fi
 }
 
@@ -83,13 +81,19 @@ if $(yes_or_no "Do you want to continue with migration?") ; then
 
 	echo "-- Copying new help file for commands"
 	if ! cp $DATADIR/config/help_* $CHOOSEN_FOLDER 	; then
-		echo_s "-- Error copying help_* files from " $RED
+		echo_s "-- Error copying help_* files from $DATADIR\n" $RED
+	fi
+
+	QUERY='TRUNCATE TABLE pi_plug';
+	echo "-- Truncating pi_plug table; it will updated with verlihub"
+	if ! _mysql_query "$QUERY" ; then
+		echo_s "-- Error truncating 'pi_plugin' table; make it manually using '$QUERY'\n" $RED
 	fi
 	
 	echo "-- Renaming variable 'lang_name' to 'locale' in dbconfig file"
 	sed -i "s/lang_name/locale/g" "$CONFIG_DIR/dbconfig"  > /dev/null 2>&1
 
-	echo "-- Done"
+	echo "-- Done. Restart VerliHub now."
 else
 	echo "-- Skipped migration"
 fi
