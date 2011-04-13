@@ -23,11 +23,13 @@
 #include <config.h>
 #endif
 #include <sys/types.h>
+#include <iomanip>
 #include <dirent.h>
 #include "cpluginmanager.h"
 #include "cpluginloader.h"
 #include "ccallbacklist.h"
 #include "stringutils.h"
+#include "i18n.h"
 
 using namespace nStringUtils;
 
@@ -190,9 +192,12 @@ bool nPlugin::cPluginManager::UnregisterCallBack(string id, cPluginBase *pi)
 
 void nPlugin::cPluginManager::List(ostream &os)
 {
+	os << " " << setw(40) << setiosflags(ios::left) << toUpper(_("Name"));
+	os << toUpper(_("Version")) << "\n";
+	os << " " << string(40+25,'=') << endl;
 	tPlugins::iterator it;
 	for (it = mPlugins.begin(); it != mPlugins.end(); ++it) {
-		os << (*it)->mPlugin->Name() << " " << (*it)->mPlugin->Version() << "\r\n";
+		os << " " << setw(40) << setiosflags(ios::left) << (*it)->mPlugin->Name() << (*it)->mPlugin->Version() << "\r\n";
 	}
 }
 
