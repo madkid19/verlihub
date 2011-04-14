@@ -41,6 +41,7 @@ cPlugs *cPlugConsole::GetTheList()
 
 void cPlugConsole::ListHead(ostream *os)
 {
+	(*os) << "\r\n";
 	(*os) << "\n[*] " << setw(PADDING) << setiosflags(ios::left) << _("Plugman version") << mOwner->Version().c_str() << endl;
 	(*os) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Verlihub executable") << mOwner->mServer->mExecPath.c_str() << endl;
 	(*os) << "[*] " << setw(PADDING) << setiosflags(ios::left) << "Verlihub make-time" << cTime(mOwner->mList->mVHTime,0).AsDate() << "\n" << endl;
