@@ -187,7 +187,7 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 	IS_NEW_MAP_OK=false
 	until $IS_NEW_MAP_OK;
 	do
-		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		for ((J=1;J<=$NUMBER_OF_PROFILES;J++))
 		do
 			local PTOKAX_PROFILE_NAME=$(_xml_value $2 "$PROFILE_NODE[$J]/Name")
 			local IS_SINGLE_MAPPING_OK=false
@@ -209,7 +209,7 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 		echo
 		echo "-- This is the map of profiles:"
 		echo_s "\t[Ptokax profile] " $BOLD && echo_s "=>\t" && echo_s "[Verlihub profile]\n" $BOLD
-		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		for ((J=1;J<=$NUMBER_OF_PROFILES;J++))
 		do
 			local PTOKAX_CLASS=$(_get_profile_key "${PROFILES[$J]}")
 			local PTOKAX_PROFILE_NAME=$(_get_profile_name "${PROFILES[$J]}")
@@ -231,7 +231,7 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 	local ENCRYPTION=$(_mysql_value "default_password_encryption")
 	if [ $CONTINUE ]; then
 		echo "-- Importing users; this could take some times"
-		for I in $(seq 1 $NUMBER_OF_USERS)
+		for ((I=1;I<=$NUMBER_OF_USERS;I++))
 		do
 			local CHILD="$USER_NODE[$I]"
 			local NICKNAME=$(_xml_value $1 "$CHILD/Nick")
@@ -292,7 +292,7 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 	IS_NEW_MAP_OK=false
 	until $IS_NEW_MAP_OK;
 	do
-		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		for ((J=1;J<=$NUMBER_OF_PROFILES;J++))
 		do
 			local YNHUB_PROFILE_NAME=$(_xml_value $2 "$PROFILE_NODE[$J]/Name")
 			local YNHUB_PROFILE_KEY=$(_xml_value $2 "$PROFILE_NODE[$J]/ProfileLevel")
@@ -315,7 +315,7 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 		echo
 		echo "-- This is the map of profiles:"
 		echo_s "\t[YnHub profile] " $BOLD && echo_s "=> \t" && echo_s "[Verlihub profile]\n" $BOLD
-		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		for ((J=1;J<=$NUMBER_OF_PROFILES;J++))
 		do
 			local YNHUB_PROFILE_NAME=$(_get_profile_name "${PROFILES[$J]}")
 			local YNHUB_PROFILE_KEY=$(_get_profile_key "${PROFILES[$J]}")
@@ -334,7 +334,7 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 	if [ $CONTINUE ]; then
 		echo "-- Importing users; this could take some times"
 
-		for I in $(seq 1 $NUMBER_OF_USERS)
+		for ((I=1;I<=$NUMBER_OF_USERS;I++))
 		do
 			local CHILD="$USER_NODE[$I]"
 			local NICKNAME=$(_xml_value $1 "$CHILD/Nick")
@@ -399,7 +399,7 @@ function convert_aquila #Aquila.xml, path_to_dbconfig
 	IS_NEW_MAP_OK=false
 	until $IS_NEW_MAP_OK;
 	do
-		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		for ((J=1;J<=$NUMBER_OF_PROFILES;J++))
 		do
 			local AQUILA_PROFILE_NAME=$(_xml_value $1 "$PROFILE_NODE[$J]/Name")
 			local IS_SINGLE_MAPPING_OK=false
@@ -421,7 +421,7 @@ function convert_aquila #Aquila.xml, path_to_dbconfig
 		echo
 		echo "-- This is the map of profiles:"
 		echo_s "\t[Aquila profile] " $BOLD && echo_s "=> \t" && echo_s "[Verlihub profile]\n" $BOLD
-		for J in $( seq 1 $NUMBER_OF_PROFILES )
+		for ((J=1;J<=$NUMBER_OF_PROFILES;J++))
 		do
 			local AQUILA_PROFILE_NAME=$(_get_profile_name "${PROFILES[$J]}")
 			local VERLIHUB_CLASS=$(_get_profile_map_key "${PROFILES[$J]}")
@@ -438,7 +438,7 @@ function convert_aquila #Aquila.xml, path_to_dbconfig
 	yes_or_no "-- Do you want to continue with importing?" && CONTINUE=true
 	if [ $CONTINUE ]; then
 		echo "-- Importing users; this could take some times"
-		for I in $(seq 1 $NUMBER_OF_USERS)
+		for ((I=1;I<=$NUMBER_OF_USERS;I++))
 		do
 			local CHILD="$USER_NODE[$I]"
 			local NICKNAME=$(_xml_value $1 "$CHILD/Name")
