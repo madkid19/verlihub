@@ -164,6 +164,13 @@ function _is_hub_running() # path_to_dbconfig
 	return 1;
 }
 
+# Get plugin name
+function _get_plugin_name() #path_to_plugin
+{
+		local PLUGIN_PATH="$PREFIX/lib/"
+		echo ${1#$PLUGIN_PATH}
+}
+
 # Return db_host
 function get_db_host() { echo $(get_var_from_conf "db_host" "localhost"); }
 

@@ -219,7 +219,7 @@ function version()
 
 function list()
 { 
-	echo "-- This is a list of available  hubs"
+	echo "-- This is a list of available hubs"
 	echo
 	_get_hubs_list "legend"
 	exit 0
