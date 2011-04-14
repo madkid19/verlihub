@@ -377,7 +377,7 @@ function autoload() # params
 			"--off")	ACTION="off";;
 			"--configdir")	shift
 							CONF_DIR=$1;;
-			*)			echo_s "Unknown parameter $1\n" $RED;;
+			*)			echo_s "Unknown parameter $1\n" $RED && exit;;
 		esac;
 		shift;
 	done;
