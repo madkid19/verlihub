@@ -588,7 +588,16 @@ function install_cli()
 		echo_s "\t[3] " $BOLD && echo "$PREFIX/etc/verlihub"
 		echo_s "\t[4] " $BOLD && echo "Other, choose path where put config file"
 
-		CHOOSEN_FOLDER=$(ask "Select number")
+		local VALIDATE=false
+		until $VALIDATE
+		do	
+			local CHOOSEN_FOLDER=$(ask "Select number")
+			if [ "$CHOOSEN_FOLDER" == 1 ] || [ "$CHOOSEN_FOLDER" == 2 ] || [ "$CHOOSEN_FOLDER" == 3 ] || [ "$CHOOSEN_FOLDER" == 4 ]; then
+				VALIDATE=true
+			else
+				echo_s "-- Insert a valid number from the list\n" $RED
+			fi
+		done
 
 		# Get selected folder
 		case $CHOOSEN_FOLDER in
@@ -608,7 +617,7 @@ function install_cli()
 				echo -e "Ok, let's try again.\n\n"
 			fi
 		else
-			ANSWER=$(ask "-- The config folder '$CHOOSEN_FOLDER' does not exist and will be created.\n   Do you want to continue? [y/N]");
+			ANSWER=$(ask "-- The config folder '$CHOOSEN_FOLDER' does not exist and will be created. Do you want to continue? [y/N]");
 			if [ $ANSWER == 'y' ]; then
 				IS_CHOOSEN_FOLDER_OK=true
 				CHOOSEN_FOLDER_NOT_EXISTS=true
