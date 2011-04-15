@@ -104,7 +104,6 @@ bool cConsole::cfInfoLuaScript::operator()()
 bool cConsole::cfGetLuaScript::operator()()
 {
 	(*mOS) << _("Running LUA scripts:") << "\r\n";
-
 	(*mOS) << "\n ";
 	(*mOS) << setw(6) << setiosflags(ios::left) << "ID";
 	(*mOS) << toUpper(_("Script")) << "\n";

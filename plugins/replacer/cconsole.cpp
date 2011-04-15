@@ -26,7 +26,9 @@
 #include "cconsole.h"
 #include "cpireplace.h"
 #include "creplacer.h"
+#include "src/stringutils.h"
 
+using namespace nStringUtils;
 using namespace nDirectConnect;
 
 namespace nReplace
@@ -65,11 +67,19 @@ bool cConsole::cfGetReplacer::operator ( )()
 	string rep_word;
 	cReplacerWorker *fw;
 	(*mOS) << _("Replaced words:") << "\r\n";
+
+	(*mOS) << "\n ";
+	(*mOS) << setw(20) << setiosflags(ios::left) << "Word";
+	(*mOS) << setw(20) << setiosflags(ios::left) << toUpper(_("Replace with"));
+	(*mOS) << toUpper(_("Affected class")) << "\n";
+	(*mOS) << " " << string(20+20+15,'=') << endl;
 	for(int i = 0; i < GetPI()->mReplacer->Size(); i++) {
 		fw = (*GetPI()->mReplacer)[i];
 		cDCProto::EscapeChars(fw->mWord, word);
 		cDCProto::EscapeChars(fw->mRepWord, rep_word);
-		(*mOS) << autosprintf(_("%s ---> %s Affected class: %d"), word.c_str(), rep_word.c_str(), fw->mAfClass) <<  "\r\n";
+		(*mOS) << " " << setw(20) << setiosflags(ios::left) << word.c_str();
+		(*mOS) << setw(20) << setiosflags(ios::left) << rep_word.c_str();
+		(*mOS) << fw->mAfClass << endl;
 	}
 
 	return true;

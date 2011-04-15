@@ -71,8 +71,14 @@ bool cConsole::cfGetPythonScript::operator()()
 		return true;
 	}
 	(*mOS) << _("Loaded Python scripts:") << "\r\n";
+
+	(*mOS) << "\n ";
+	(*mOS) << setw(6) << setiosflags(ios::left) << "ID";
+	(*mOS) << toUpper(_("Script")) << "\n";
+	(*mOS) << " " << string(6+20,'=') << endl;
+
 	for(int i = 0; i < GetPI()->Size(); i++) {
-		(*mOS) << " [ " << GetPI()->mPython[i]->id << " ] " << GetPI()->mPython[i]->mScriptName << "\r\n";
+		(*mOS) << " " << setw(6) << setiosflags(ios::left) << GetPI()->mPython[i]->id << GetPI()->mPython[i]->mScriptName << "\r\n";
 	}
 	return true;
 }
