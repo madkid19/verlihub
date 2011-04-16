@@ -28,10 +28,13 @@ using namespace std;
 #define _XOPEN_SOURCE
 #include <unistd.h>
 #include <string.h>
+#include <iomanip>
 #include <openssl/md5.h>
 #include "creguserinfo.h"
 #include "ctime.h"
 #include "i18n.h"
+
+#define PADDING 25
 
 using namespace ::nUtils;
 
@@ -90,22 +93,31 @@ istream & operator >> (istream &is, cRegUserInfo &ui)
 
 ostream & operator << (ostream &os, cRegUserInfo &ui)
 {
-	os << "[::] " << _("Nick") << ": " << ui.mNick << "\r\n";
-	os << "[::] " << _("Class") << ": " << ui.mClass << "\r\n";
-	os << "[::] " << _("Password set") << ":" << ((ui.mPasswd.size() != 0) ? _("Yes") : _("No")) << "\r\n";
-	os << "[::] " << _("Last login") << ": " << cTime(ui.mLoginLast,0).AsDate() << "\r\n";
-	os << "[::] " << _("Last IP") << ": " << ui.mLoginIP << "\r\n";
-	os << "[::] " << _("Last error") << ": " << cTime(ui.mErrorLast).AsDate() << "\r\n"; 
-	os << "[::] " << _("Error IP") << ": " << ui.mErrorIP << "\r\n";
-	os << "[::] " << _("Login count") << ": " << ui.mLoginCount << "\r\n";
-	os << "[::] " << _("Login errors") << ": " << ui.mErrorCount << "\r\n";
-	os << "[::] " << _("Protected") << ": " << ((ui.mClassProtect != 0) ? _("Yes") : _("No")) << "\r\n";
-	os << "[::] " << _("Hidden kicks") << ": " << ((ui.mHideKick != 0) ? _("Yes") : _("No")) << "\r\n";
-	os << "[::] " << _("Hidden key") << ": " << ((ui.mHideKeys != 0) ? _("Yes") : _("No")) << "\r\n";
-	os << "[::] " << _("Hidden share") << ": " << ((ui.mHideShare != 0) ? _("Yes") : _("No")) << "\r\n";
-	os << "[::] " << _("Registered since") << ": " << cTime(ui.mRegDate,0).AsDate() << "\r\n";
-	os << "[::] " << _("Registered by") << ": " << ui.mRegOp << "\r\n";
-	os << "[::] " << _("Alternate IP") << ": " << ui.mAlternateIP;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Last login") << cTime(ui.mLoginLast,0).AsDate() << "  [" << ui.mLoginIP << "]\r\n";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Registered since");
+	if(ui.mRegDate)
+		os << cTime(ui.mRegDate,0).AsDate() << " " << autosprintf(_("by %s"),ui.mRegOp.c_str());
+	else
+		os <<  _("No information");
+	os << "\r\n";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Last error");
+	if(ui.mErrorLast)
+		os << cTime(ui.mErrorLast).AsDate() << "  [" << ui.mErrorIP << "]"; 
+	else
+		os <<  _("No information");
+	os << "\r\n";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Login (errors/total)") << ui.mErrorCount << "/" << ui.mLoginCount << "\r\n";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Password set") << ((ui.mPasswd.size() != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Protected") << ((ui.mClassProtect != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hidden kicks") << ((ui.mHideKick != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hidden key") << ((ui.mHideKeys != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hidden share") << ((ui.mHideShare != 0) ? _("Yes") : _("No")) << "\r\n";
+	string alternateIP;
+	if(ui.mAlternateIP.empty())
+		alternateIP = "--";
+	else
+		alternateIP = ui.mAlternateIP;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Alternate IP") << alternateIP;
 	return os;
 }
 

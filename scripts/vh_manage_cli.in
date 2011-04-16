@@ -22,9 +22,6 @@
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 ###########################################################################
 
-
-### check int
-
 SCRIPT=$0
 # Include library
 source $(dirname $0)/vh_lib
@@ -37,15 +34,21 @@ help_me()
 	echo_s "   --run" $RED && echo -e "\t<path_to_dbconfig> \tRun the hub from the given dbconfig path"
 	echo_s "   --restart" $RED && echo -e "\t<path_to_dbconfig> \tRestart the hub from the given dbconfig path"
 	echo_s "   --stop" $RED && echo -e "\t<path_to_dbconfig> \tStop the hub from the given dbconfig path"
+	echo_s "   --geoip" $RED && echo -e "\t[path_to_dbconfig] \tUpdate GeoIP"
 	echo_s "   --adduser" $RED && echo -e "\t\t\t\tRegister a new user in the database"
 		echo_s "\t--nickname" $BLUE && echo -e " \t<nickname> \t\tNickname of the user"
 		echo_s "\t--password" $BLUE && echo -e " \t<password> \t\tThe password of the user (optional)"
 		echo_s "\t--class" $BLUE && echo -e " \t<class> \t\tClass of the user (-1, 0, 1, 2, 3, 4, 5, 10)"
 		echo_s "\t--configdir" $BLUE && echo -e " \t<path_to_dbconfig> \tSpecify the hub with location of dbconfig file. Optional"
-		echo_s "   --geoip" $RED && echo -e "\t[path_to_dbconfig] \t\tUpdate GeoIP"
+	echo_s "   --autoload" $RED && echo -e "\t\t\t\tLoad plugin automatically when start the hub"
+		echo_s "\t--list" $BLUE && echo -e "\t\t\t\t\tShow list of available plugins"
+		echo_s "\t--on" $BLUE && echo -e "\t\t\t\t\tRun plugin automatically with hub"
+		echo_s "\t--off" $BLUE && echo -e "\t\t\t\t\tDisable auto load of plugin"
+		echo_s "\t--configdir" $BLUE && echo -e " \t<path_to_dbconfig> \tSpecify the hub with location of dbconfig file. Optional"
 	echo_s "   --backup" $RED && echo -e "\t<destination_path> [path_to_dbconfig] \tMake backup of database from the given dbconfig path"
 	echo_s "   --restore" $RED && echo -e "\t<path_to_sql>      [path_to_dbconfig] \tImport the given SQL file in the database for given dbconfig path"
 	echo_s "   --clean" $RED && echo -e "\t[path_to_dbconfig] \t\t\tClean kicklist, banlist, unbanlist, iplog, stats and messages tables"
+
 	echo_s "   --version" $RED && echo -e "\t\t\t\tPrint version information"
 	echo_s "   --help" $RED && echo -e "\t\t\t\tShow this help"
 	echo ""
@@ -363,6 +366,106 @@ function clean() #path_to_config
 	exit 0;
 }
 
+# Manage of autoload plugins
+function autoload() # params
+{
+	# Read options
+	while [ "_$1" != "_" ]; do
+		case "$1" in
+			"--list")	ACTION="list";;
+			"--on")		ACTION="on";;	
+			"--off")	ACTION="off";;
+			"--configdir")	shift
+							CONF_DIR=$1;;
+			*)			echo_s "Unknown parameter $1\n" $RED && exit;;
+		esac;
+		shift;
+	done;
+	# Check config path
+	if ! set_path "$CONF_DIR" ; then
+		exit 1;
+	fi
+
+	local PLUGIN_MAP
+	local PLUGINS_PATH="$PREFIX/lib"	
+
+	
+	if [ "_$ACTION" == "_list" ]; then
+		echo "-- This is a list of available  plugins"
+	fi;
+
+	echo ""
+	echo_s "ID  " $BOLD
+	echo_s "Plugin path" $BOLD
+	echo ""
+
+	local INDEX=1
+	for PLUGIN in $(ls $PLUGINS_PATH/lib*_pi.so)
+	do
+		# Check if symbolic link exists
+		local PLUGIN_NAME=$(_get_plugin_name $PLUGIN);
+		if [ -L "$VERLIHUB_CFG/plugins/$PLUGIN_NAME" > /dev/null 2>&1 ]; then
+			COLOR=$GREEN_BOLD
+		else
+			COLOR=$RED_BOLD
+		fi
+
+		echo_s "[$INDEX] " $COLOR
+		echo "$PLUGIN"
+		PLUGIN_MAP[$INDEX]=$PLUGIN
+		INDEX=$(($INDEX+1))
+	done
+
+	if [ "_$ACTION" == "_list" ]; then
+		echo ""
+		echo -n "Status: "
+		echo_s "Start automatically" $GREEN_BOLD
+		echo -n " | "
+		echo_s "Manually\n\n" $RED_BOLD
+		exit 0;
+	else
+		echo ""
+
+		# Ask ID
+		local VALIDATE=false
+		until $VALIDATE
+		do	
+			local CHOOSEN_PLUGIN=$(ask "Select number")
+			if $(echo "$CHOOSEN_PLUGIN" | grep -E "^[0-9]+$" > /dev/null 2>&1 ) ; then
+				VALIDATE=true
+			else
+				echo_s "-- Insert a ID from the list below\n" $RED
+			fi
+		done
+
+		# Check and execute on/off action		
+		local PLUGIN_NAME=$(_get_plugin_name ${PLUGIN_MAP[$CHOOSEN_PLUGIN]});
+		local PLUGIN_IN_CONFIG="$VERLIHUB_CFG/plugins/$PLUGIN_NAME"
+		if [ -L "$PLUGIN_IN_CONFIG" > /dev/null 2>&1 ]; then
+			if [ "_$ACTION" == "_on" ]; then
+				echo_s "-- Plugin already starts automatically\n" $RED
+			else
+				if rm -f "$PLUGIN_IN_CONFIG" > /dev/null 2>&1 ; then
+					echo "-- Done"
+				else
+					echo_s "-- Cannot remove symbolic link in '$VERLIHUB_CFG/plugins/'; please check permission\n" $RED
+				fi
+			fi
+		else
+			if [ "_$ACTION" == "_on" ]; then
+				if ln -s "$PREFIX/lib/$PLUGIN_NAME" "$VERLIHUB_CFG/plugins/" > /dev/null 2>&1 ; then 
+					echo "-- Done"
+				else
+					echo_s "-- Cannot create symbolic link in '$VERLIHUB_CFG/plugins/'; please check permission\n" $RED
+				fi
+			else
+				echo_s "-- Plugin is already disabled from autoload\n" $RED
+			fi
+		fi
+	fi;
+	exit 0;
+}
+
 # Install verlihub
 function install_cli() 
 {
@@ -485,7 +588,16 @@ function install_cli()
 		echo_s "\t[3] " $BOLD && echo "$PREFIX/etc/verlihub"
 		echo_s "\t[4] " $BOLD && echo "Other, choose path where put config file"
 
-		CHOOSEN_FOLDER=$(ask "Select number")
+		local VALIDATE=false
+		until $VALIDATE
+		do	
+			local CHOOSEN_FOLDER=$(ask "Select number")
+			if [ "$CHOOSEN_FOLDER" == 1 ] || [ "$CHOOSEN_FOLDER" == 2 ] || [ "$CHOOSEN_FOLDER" == 3 ] || [ "$CHOOSEN_FOLDER" == 4 ]; then
+				VALIDATE=true
+			else
+				echo_s "-- Insert a valid number from the list\n" $RED
+			fi
+		done
 
 		# Get selected folder
 		case $CHOOSEN_FOLDER in
@@ -505,7 +617,7 @@ function install_cli()
 				echo -e "Ok, let's try again.\n\n"
 			fi
 		else
-			ANSWER=$(ask "-- The config folder '$CHOOSEN_FOLDER' does not exist and will be created.\n   Do you want to continue? [y/N]");
+			ANSWER=$(ask "-- The config folder '$CHOOSEN_FOLDER' does not exist and will be created. Do you want to continue? [y/N]");
 			if [ $ANSWER == 'y' ]; then
 				IS_CHOOSEN_FOLDER_OK=true
 				CHOOSEN_FOLDER_NOT_EXISTS=true
@@ -644,6 +756,8 @@ case "_$1" in
 					backup $1 $2;;
 	"_--clean")	shift
 				clean $1;;
+	"_--autoload")	shift
+					autoload $@;;
 	"_--adduser") 	shift
 					add_user $@;;
 	*)

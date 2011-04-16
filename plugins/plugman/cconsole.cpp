@@ -29,6 +29,8 @@
 #include "cplugs.h"
 #include "src/i18n.h"
 
+#define PADDING 30
+
 using namespace nDirectConnect;
 
 
@@ -39,10 +41,10 @@ cPlugs *cPlugConsole::GetTheList()
 
 void cPlugConsole::ListHead(ostream *os)
 {
-	(*os) << "\r\n[::] " << autosprintf(_("Plugman version %s"), mOwner->Version().c_str()) << "\r\n"
-		"[::] " << autosprintf(_("Verlihub executable: %s"), mOwner->mServer->mExecPath.c_str()) << "\r\n"
-		"[::] Verlihub make-time: " << cTime(mOwner->mList->mVHTime,0).AsDate() << "\r\n"
-		"\r\n";
+	(*os) << "\r\n";
+	(*os) << "\n[*] " << setw(PADDING) << setiosflags(ios::left) << _("Plugman version") << mOwner->Version().c_str() << endl;
+	(*os) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Verlihub executable") << mOwner->mServer->mExecPath.c_str() << endl;
+	(*os) << "[*] " << setw(PADDING) << setiosflags(ios::left) << "Verlihub make-time" << cTime(mOwner->mList->mVHTime,0).AsDate() << "\n" << endl;
 }
 
 const char *cPlugConsole::CmdSuffix()

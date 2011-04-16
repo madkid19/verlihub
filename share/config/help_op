@@ -33,9 +33,9 @@ OPERATOR (class 3) [Some commands may not be available depending of hub configur
 
 !class <nickname> <new_class>		Temporarily change the class (max to 5) of a user. Action will disappear at hub restarting
 
-!drop <nick>				Disconnects user from hub without giving him a reason and without banning him
+!drop <nick>				Disconnects user from hub without kicking him
 
-!gag <nickname> [time]			Mute a user in main chat for the time specified (default is 2 days)
+!gag <nickname> [time]			Mute a user in main chat for the time specified (default is 7 days)
 
 !gc					Prints a list of all configuration variables
 
@@ -69,13 +69,19 @@ hubinfo					Show information about the hub
 
 !kick <nick> <reason>			Kick a users temporarily, so user will not be able to rejoin until a number of seconds will expire
 
+!kvip <nickname> [time] 	Let user to kick other usersfor the time specified (default is 7 days)
+
 !lsban <limit>				Shows the most recent bans. Use <limit> to limit results
 
 !masters <msg>				Broadcast to masters (class 10)
 
-!nopm <nickname> [time])		Prevent a user from send private messages for the time specified (default is 2 days)
+!mayopchat <nick> [time]		Allows user to enter in the OPChat for the time specified (default is 7 days)
 
-!nosearch <nickname> [time]		Prevent users from searching for the time specified (default is 2 days)
+!mayreg <nickname> [time]		Allow user to register other users for the time specified (default is 7 days)
+
+!nopm <nickname> [time])		Prevent a user from send private messages for the time specified (default is 7 days)
+
+!nosearch <nickname> [time]		Prevent users from searching for the time specified (default is 7 days)
 
 !ops <msg>				Broadcast to operators (class 3)
 
@@ -142,6 +148,12 @@ hubinfo					Show information about the hub
 !ungag <nickname>			Un-mute a gagged user
 
 !unhidekick <nickname_list		Show kick message again. Remove !hidekick action
+
+!unkvip  <nickname>			Remove kick privilege from the user
+
+!unmayopchat <nickname>			Revoke privilege to enter in the OPChat
+
+!unmayreg <nickname>			Remove registration privilege from the user
 
 !unnopm <nickname>			Remove no-PM restriction
 

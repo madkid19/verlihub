@@ -21,6 +21,7 @@
 ***************************************************************************/
 
 #include "ccustomredirect.h"
+#include <iomanip>
 #include "i18n.h"
 
 namespace nDirectConnect {
@@ -40,7 +41,9 @@ namespace nDirectConnect {
 		ostream &operator << (ostream &os, cRedirect &tr)
 		{
 			string buff;
-			os << "\r" << tr.mAddress << " for ";
+			os << " ";
+			os << setw(30) << setiosflags(ios::left) << tr.mAddress;
+			os << setw(35) << setiosflags(ios::left);
 			int flag = tr.mFlag;
 			if(flag & eKick) buff += "ban and kick,";
 			if(flag & eUserLimit) buff += "hub full,";
@@ -53,10 +56,9 @@ namespace nDirectConnect {
 
 			if(buff.empty()) buff = "default";
 			else buff.erase(buff.end() -1);
-			os << buff << " (";
+			os << buff;
 			if(tr.mEnable) os << _("Enable");
 			else os << _("Disable");
-			os << ")";
 			return os;
 		}
 

@@ -26,7 +26,9 @@
 #include "src/cserverdc.h"
 #include "src/cbanlist.h"
 #include "src/i18n.h"
+#include "stringutils.h"
 
+using namespace nStringUtils;
 using namespace nDirectConnect;
 using namespace nDirectConnect::nTables;
 using namespace nUtils;
@@ -97,7 +99,7 @@ void cIPLog::GetHistory(const string &who, bool isNick, int limit, ostream &os)
 
 	const char *Actions[]={_("connect"),_("login"),_("logout"),_("disconnect")};
 	const char *Infos[]={
-	    	"",
+	    "--",
 		_("bad nick or nick temporarily banned"),
 		_("used different nick in chat"),
 		_("kicked"),
@@ -115,20 +117,30 @@ void cIPLog::GetHistory(const string &who, bool isNick, int limit, ostream &os)
 		_("syntax error in some messages"),
 		_("invalid key")
 	};
+
+	os << "\n ";
+	os << setw(20) << setiosflags(ios::left) << toUpper(_("Date"));
+	os << setw(20) << setiosflags(ios::left) << toUpper(_("Action"));
+	os << setw(15) << setiosflags(ios::left) << (isNick ? "IP" : toUpper(_("Nickname")));
+	os << toUpper(_("Info")) << "\n";
+	os << " " << string(20+20+15+25,'=') << endl;
+
 	db_iterator it;
 	for(it = db_begin(); it != db_end(); ++it) {
 		cBanList::Num2Ip(mModel.mIP, ip);
+		os << " " <<  setw(20) << setiosflags(ios::left) << cTime(mModel.mDate,0).AsDate();
+		os << setw(20) << setiosflags(ios::left);
 		if(mModel.mType < 4)
 			os << Actions[mModel.mType];
 		else
 			os << mModel.mType;
-		os << " : " << cTime(mModel.mDate,0).AsDate() << " - " << (isNick?ip:mModel.mNick);
+		os << setw(15) << setiosflags(ios::left) << (isNick ? ip : mModel.mNick.substr(0,14));
 		if(mModel.mInfo < 16) {
 			if(strlen(Infos[mModel.mInfo]) > 0)
-				os << " - " << Infos[mModel.mInfo];
+				os << Infos[mModel.mInfo];
 		} else
-			os << " - " << mModel.mInfo;
-		os << "\r\n";
+			os << mModel.mInfo;
+		os << endl;
 	}
 
 	mQuery.Clear();
@@ -145,10 +157,16 @@ void cIPLog::GetLastLogin(const string &who, bool isNick, int limit, ostream &os
 	MakeSearchQuery(who, isNick, 1, limit);
 	SetBaseTo(&mModel);
 
+	os << "\n ";
+	os << setw(25) << setiosflags(ios::left) << toUpper(_("Date"));
+	os << (isNick ? "IP" : toUpper(_("Nickname"))) << "\n";
+	os << " " << string(25+20,'=') << endl;
+
 	db_iterator it;
 	for(it = db_begin(); it != db_end(); ++it) {
 		cBanList::Num2Ip(mModel.mIP, ip);
-		os << cTime(mModel.mDate,0).AsDate() << " - " << (isNick ? ip : mModel.mNick) << "\r\n";
+		os << " " << setw(25) << setiosflags(ios::left) << cTime(mModel.mDate,0).AsDate();
+		os << (isNick ? ip : mModel.mNick) << endl;
 	}
 
 	mQuery.Clear();

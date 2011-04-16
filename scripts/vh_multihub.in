@@ -90,7 +90,7 @@ function _format_row() # string, width, style
 	echo_s "$1" $STYLE
 	local DIFF=$(($WIDTH-$COUNT))
 	if [ $DIFF -gt 0 ]; then
-		for i in $(seq 1 $DIFF); do 
+		for ((I=1;I<=$DIFF;I++)); do
 			echo -n " "
 		done
 
@@ -219,7 +219,7 @@ function version()
 
 function list()
 { 
-	echo "-- This is a list of available  hubs"
+	echo "-- This is a list of available hubs"
 	echo
 	_get_hubs_list "legend"
 	exit 0

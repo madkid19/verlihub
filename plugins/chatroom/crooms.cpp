@@ -112,9 +112,25 @@ bool cRoom::IsUserAutoJoin(cUser *user)
 
 ostream& operator << (ostream &os, const cRoom &room)
 {
-	os << autosprintf(_("%s - %s - By %s Auto: %d-%d/CC: %s Min class: %d"), room.mNick.c_str(), room.mTopic.c_str(), room.mCreator.c_str(), room.mAutoClassMin, room.mAutoClassMax, room.mAutoCC.c_str(), room.mMinClass);
-	if(room.mUsers)
-		os << " -- " << autosprintf(_("Online %d users"), room.mUsers->size());
+	string roomTopic, roomCreator;
+	os << " ";
+		os << setw(20) << setiosflags(ios::left) << room.mNick.c_str();
+		if(room.mTopic.empty())
+			roomTopic = "--";
+		else
+			roomTopic = room.mTopic.substr(0,18).c_str();
+		os << setw(20) << setiosflags(ios::left) << roomTopic;
+		if(room.mCreator.empty())
+			roomCreator = "--";
+		else
+			roomCreator = room.mCreator.substr(0,18).c_str();
+		os << setw(20) << setiosflags(ios::left) << roomCreator;
+		os << setw(10) << setiosflags(ios::left) << room.mAutoClassMin << "->" << room.mAutoClassMax;
+		os << setw(10) << setiosflags(ios::left) <<  room.mAutoCC.c_str();
+		os << setw(10) << setiosflags(ios::left) << room.mMinClass;
+		if(room.mUsers)
+			os << room.mUsers->size();
+
 	return os;
 }
 

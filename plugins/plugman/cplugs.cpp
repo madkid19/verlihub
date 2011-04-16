@@ -26,6 +26,8 @@
 #include "src/i18n.h"
 #include <sys/stat.h>
 
+#define PADDING 15
+
 using namespace nDirectConnect;
 using namespace nDirectConnect::nPlugin;
 
@@ -198,14 +200,13 @@ void cPlug::SaveMe()
 
 ostream& operator << (ostream &os, const cPlug &plug)
 {
-	os << "[::] " << autosprintf(_("Name: %s"), plug.mNick.c_str()) << endl;
-	if (plug.IsScript())
-		os << " " << plug.mDest << endl;
-	os << "[::] " << autosprintf(_("Status: %s"), (plug.IsLoaded() ? _("On") : _("Off"))) << endl;
-	os << "[::] " << autosprintf(_("Running mode: %s"), (plug.mLoadOnStartup ? _("Auto") : _("Manual"))) << endl;
-	os << "[::] " << autosprintf(_("Path: %s"), plug.mPath.c_str()) << endl;
-	os << "[::] " << autosprintf(_("Description: %s"), plug.mDesc.c_str()) <<endl;
-	os << "[::] " << autosprintf(_("Last Error: %s"), plug.mLastError.c_str()) <<endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Name") << plug.mNick.c_str() << " [" << (plug.IsLoaded() ? toUpper(_("On")) : toUpper(_("Off"))) << "]" ;
+	os << "  [" << (plug.mLoadOnStartup ? toUpper(_("Auto")) : toUpper(_("Manual"))) << "]" << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Path") << plug.mPath.c_str() << endl;
+	if(!plug.mDesc.empty())
+		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Description") << plug.mDesc.c_str() << endl;
+	if(!plug.mLastError.empty())
+		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Last Error") << plug.mLastError.c_str() << endl;
 	return os;
 }
 

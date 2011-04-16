@@ -36,6 +36,8 @@ extern "C"
 #include "src/stringutils.h"
 #include <dirent.h>
 
+#define PADDING 25
+
 using namespace nDirectConnect;
 using namespace nStringUtils;
 
@@ -80,10 +82,10 @@ int cConsole::DoCommand(const string &str, cConnDC * conn)
 
 bool cConsole::cfVersionLuaScript::operator()()
 {
-	(*mOS) << "\r\n[::] " << autosprintf(_("Lua version: %s"), LUA_VERSION) << "\r\n";
-	(*mOS) << "[::] " << autosprintf(_("Lua library version: %s"), LUA_RELEASE) << "\r\n";
-	(*mOS) << "[::] " << autosprintf(_("Copyright: %s"), LUA_COPYRIGHT) << "\r\n";
-	(*mOS) << "[::] " << autosprintf(_("Authors: %s"), LUA_AUTHORS) << "\r\n";
+	(*mOS) << "\r\n[*] " << setw(PADDING) << setiosflags(ios::left) << _("Lua version") << LUA_VERSION << endl;
+	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Lua library version") << LUA_RELEASE << endl;
+	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Copyright") << LUA_COPYRIGHT << endl;
+	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Authors") << LUA_AUTHORS << endl;
 	
 	return true;
 }
@@ -93,17 +95,21 @@ bool cConsole::cfInfoLuaScript::operator()()
 	int size = 0;
 	if(GetPI()->Size() > 0) size = lua_getgccount(GetPI()->mLua[0]->mL);
 	
-	(*mOS) << "\n" << "[::] " << autosprintf(_("Version date: %s"), __CURR_DATE_TIME__) << "\r\n";
-	(*mOS) << "[::] " << autosprintf(_("Running scripts: %d"), GetPI()->Size()) << "\r\n";
-	(*mOS) << "[::] " << autosprintf(_("Memory used: %s"), convertByte(size*1024, false).c_str()) << "\r\n";
+	(*mOS) << "\n" << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Version date") << __CURR_DATE_TIME__ << endl;
+	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Running scripts") << GetPI()->Size() << endl;
+	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Memory used") << convertByte(size*1024, false).c_str() << endl;
 	return true;
 }
 
 bool cConsole::cfGetLuaScript::operator()()
 {
 	(*mOS) << _("Running LUA scripts:") << "\r\n";
+	(*mOS) << "\n ";
+	(*mOS) << setw(6) << setiosflags(ios::left) << "ID";
+	(*mOS) << toUpper(_("Script")) << "\n";
+	(*mOS) << " " << string(6+20,'=') << endl;
 	for(int i = 0; i < GetPI()->Size(); i++) {
-		(*mOS) << "[ " << i << " ] " << GetPI()->mLua[i]->mScriptName << "\r\n";
+		(*mOS) << " " << setw(6) << setiosflags(ios::left) << i << GetPI()->mLua[i]->mScriptName << "\r\n";
 	}
 	return true;
 }
