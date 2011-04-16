@@ -81,7 +81,11 @@ void nDirectConnect::nTables::cBan::DisplayUser(ostream &os)
 		os << autosprintf(_("Nick: %s"), mNick.c_str()) << "\r\n";
 	if(mIP.size() && mIP[0] != '_')
 		os << autosprintf(_("IP: %s"), mIP.c_str()) << "\r\n";
-	os << autosprintf(_("Reason: %s"), mReason.c_str()) << "\r\n";
+	os << autosprintf(_("Reason: %s"), mReason.c_str());
+	// Append extra ban message
+	if(!mS->mC.ban_extra_message.empty())
+		os << " " << mS->mC.ban_extra_message.empty();
+	os << "\r\n";
 	if(mDateEnd) {
 		cTime HowLong(mDateEnd - cTime().Sec());
 		os << autosprintf(_("Remaining: %s"), HowLong.AsPeriod().AsString().c_str()) << "\r\n";

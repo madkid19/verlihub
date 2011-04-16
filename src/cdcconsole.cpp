@@ -364,7 +364,7 @@ int cDCConsole::CmdGetconfig(istringstream & , cConnDC * conn)
 {
 	ostringstream os;
 	cConfigBaseBase::tIVIt it;
-	for(it = mOwner->mC.mvItems.begin();it != mOwner->mC.mvItems.end(); it++)
+	for(it = mOwner->mC.mvItems.begin(); it != mOwner->mC.mvItems.end(); it++)
 		os << setw(20) << mOwner->mC.mhItems.GetByHash(*it)->mName << " = " << *(mOwner->mC.mhItems.GetByHash(*it)) << "\r\n";
 	mOwner->DCPrivateHS(os.str(),conn);
 	return 1;
@@ -1204,6 +1204,8 @@ bool cDCConsole::cfBan::operator()()
 	case BAN_BAN:
 		Ban.mNickOp = mConn->mpUser->mNick;
 		mParRex->Extract(BAN_REASON, mParStr,Ban.mReason);
+		if(Ban.mReason.empty())
+			Ban.mReason = _("No reason specified");
 		Ban.mDateStart = cTime().Sec();
 		if(BanTime)
 			Ban.mDateEnd = Ban.mDateStart+BanTime;
@@ -1223,13 +1225,9 @@ bool cDCConsole::cfBan::operator()()
 					Ban.mReason += tmp;
 				}
 			} else {
-				if(!mParRex->PartFound(BAN_REASON)) {
-					(*mOS) << _("Please provide a valid reason.");
-					return false;
-				}
 				if (BanType == cBan::eBF_NICKIP)
 					BanType = cBan::eBF_IP;
-				mParRex->Extract(BAN_REASON, mParStr,Kick.mReason);
+				mParRex->Extract(BAN_REASON, mParStr, Kick.mReason);
 				Kick.mOp = mConn->mpUser->mNick;
 				Kick.mTime = cTime().Sec();
 
@@ -1237,9 +1235,6 @@ bool cDCConsole::cfBan::operator()()
 					Kick.mNick = Who;
 				else
 					Kick.mIP = Who;
-				// Append extra ban message
-				if(!mS->mC.ban_extra_message.empty())
-					Kick.mReason += " " + mS->mC.ban_extra_message;
 				mS->mBanList->NewBan(Ban, Kick, BanTime, BanType);
 			}
 			break;
@@ -1248,13 +1243,7 @@ bool cDCConsole::cfBan::operator()()
 		case cBan::eBF_HOST2:
 		case cBan::eBF_HOST3:
 		case cBan::eBF_HOSTR1:
-			if ( !mParRex->PartFound(BAN_REASON) )
-			{
-				(*mOS) << _("Please provide a valid reason.");
-				return false;
-			}
-			if ( MyClass < (eUC_ADMIN - (BanType - cBan::eBF_HOST1) ) ) //@todo rights
-			{
+			if(MyClass < (eUC_ADMIN - (BanType - cBan::eBF_HOST1))) { //@todo rights
 				(*mOS) << _("You have no rights to do this.");
 				return false;
 			}
@@ -1262,28 +1251,17 @@ bool cDCConsole::cfBan::operator()()
 			Ban.mIP = Who;
 			break;
 		case cBan::eBF_RANGE:
-			if(! cDCConsole::GetIPRange(Who, Ban.mRangeMin, Ban.mRangeMax) )
-			{
+			if(!cDCConsole::GetIPRange(Who, Ban.mRangeMin, Ban.mRangeMax)) {
 				(*mOS) << autosprintf(_("Unknown range format '%s'."), Who.c_str());
 				return false;
 			}
-			Ban.mIP=Who;
+			Ban.mIP = Who;
 			break;
 		case cBan::eBF_PREFIX:
-			if ( !mParRex->PartFound(BAN_REASON) )
-			{
-				(*mOS) << _("Please provide a valid reason.");
-				return false;
-			}
 			Ban.mNick = Who;
 		break;
 		case cBan::eBF_SHARE:
 		{
-			if ( !mParRex->PartFound(BAN_REASON) )
-			{
-				(*mOS) << _("Please provide a valid reason.");
-				return false;
-			}
 			istringstream is(Who);
 			__int64 share;
 			is >> share;
