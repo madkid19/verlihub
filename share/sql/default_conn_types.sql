@@ -10,5 +10,5 @@ INSERT IGNORE INTO conn_types (identifier, description) VALUES
 	('Satellite','Sattelite connections'),
 	('Microwave','Microwave'),
 	('Wireless','WiFi connection'),
-	('LAN(T1)','Local Area Network T1 ~ 10Mbps'),
+	('LAN(T1)','Local Area Network T1 ~10Mbps'),
 	('LAN(T3)','Local Area Network T3 ~100Mbps')

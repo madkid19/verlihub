@@ -9,6 +9,14 @@ ADMIN (class 5)
 
 !addtrigger <trigger> <params>		Adds a new trigger
 
+!cleanbanlist				Truncate ban table
+
+!cleankicklist				Truncate kick table
+
+!cleantemprights			Truncate temp rights table
+
+!cleanunbanlist				Truncate unban table
+
 !delconntype <connection_type>		Remove specified <connection_type>
 
 !delplug <nick>				Unregisters the plugin

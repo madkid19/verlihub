@@ -112,7 +112,7 @@ bool cRoom::IsUserAutoJoin(cUser *user)
 
 ostream& operator << (ostream &os, const cRoom &room)
 {
-	string roomTopic, roomCreator;
+	string roomTopic;
 	os << " ";
 		os << setw(20) << setiosflags(ios::left) << room.mNick.c_str();
 		if(room.mTopic.empty())
@@ -120,11 +120,6 @@ ostream& operator << (ostream &os, const cRoom &room)
 		else
 			roomTopic = room.mTopic.substr(0,18).c_str();
 		os << setw(20) << setiosflags(ios::left) << roomTopic;
-		if(room.mCreator.empty())
-			roomCreator = "--";
-		else
-			roomCreator = room.mCreator.substr(0,18).c_str();
-		os << setw(20) << setiosflags(ios::left) << roomCreator;
 		os << setw(10) << setiosflags(ios::left) << room.mAutoClassMin << "->" << room.mAutoClassMax;
 		os << setw(10) << setiosflags(ios::left) <<  room.mAutoCC.c_str();
 		os << setw(10) << setiosflags(ios::left) << room.mMinClass;
@@ -155,7 +150,6 @@ void cRooms::AddFields()
 	AddCol("nick","varchar(32)","",false, mModel.mNick);
 	AddPrimaryKey("nick");
 	AddCol("topic","text","",true, mModel.mTopic);
-	AddCol("creator","varchar(32)","",true, mModel.mCreator);
 	AddCol("min_class","tinyint(4)","0",true, mModel.mMinClass);
 	AddCol("auto_class_min","tinyint(4)","11",true, mModel.mAutoClassMin );
 	AddCol("auto_class_max","tinyint(4)","4" ,true, mModel.mAutoClassMax );
