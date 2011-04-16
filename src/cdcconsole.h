@@ -70,12 +70,12 @@ public:
 	* @param mysql The connection object to MySQL database.
 	*/
 	cDCConsole(cServerDC *s, cMySQL &mysql);
-	
+
 	/**
 	* Class destructor.
 	*/
 	virtual ~cDCConsole();
-	
+
 	/**
 	* Handle operator's commands like !restart, !quit, etc.
 	* In case the command does not exist, it is passed to Trigger console
@@ -84,7 +84,7 @@ public:
 	* @return Zero if an error occurred, 1 otherwise.
 	*/
 	virtual int OpCommand(const string &, cConnDC*);
-	
+
 	/**
 	* Handle user's commands like +myinfo, +chat, +report, etc.
 	* In case the command does not exist, it is passed to Trigger console
@@ -93,7 +93,7 @@ public:
 	 @return Zero if an error occurred, 1 otherwise.
 	*/
 	virtual int UsrCommand(const string & , cConnDC * );
-	
+
 	/**
 	* Handle !getip or !gi hub command.
 	* This command sends to the user his IP address.
@@ -102,7 +102,7 @@ public:
 	* @return Always 1.
 	*/
 	int  CmdGetip(istringstream &, cConnDC *);
-	
+
 	/**
 	* Handle !gethost <user1> <user2>.. or !gh hub command.
 	* These commands send users' hostname.
@@ -111,7 +111,7 @@ public:
 	* @return Always 1.
 	*/
 	int CmdGethost(istringstream & , cConnDC * );
-	
+
 	/**
 	* Handle !getinfo <user1> <user2>.. or !gi hub command.
 	* These commands send users' information like Country Code, IP address and host.
@@ -131,15 +131,6 @@ public:
 	int CmdQuit(istringstream &, cConnDC * conn,int code);
 
 	/**
-	* Handle !getconfig or !gc hub command.
-	* These commands returns the list of available config variables with values.
-	* @param cmd_line The stream. Not used.
-	* @param conn Pointer to user's connection which to send the result message.
-	* @return Always 1.
-	*/
-	int CmdGetconfig(istringstream & cmd_line, cConnDC * conn);
-
-	/**
 	* Handle !help hub command.
 	* This command sends the available help message depending on user class.
 	* Command is handled by Trigger console.
@@ -148,7 +139,7 @@ public:
 	* @return Always 1.
 	*/
 	int CmdHelp(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle !ccbroadcast <CC list> <message> or !ccbc  hub command.
 	* This command sends a message to all users that belong to a Country in CC list.
@@ -157,7 +148,7 @@ public:
 	* @return Always 1.
 	*/
 	int CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn,int cl_min, int cl_max);
-	
+
 	/**
 	* Handle +password <password> hub command.
 	* This command is used by the user to set his password when he has been registered for the first time.
@@ -166,7 +157,7 @@ public:
 	* @return 0 if an error occurred, 1 otherwise.
 	*/
 	int CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle +info  hub command.
 	* This command sends to the user information about himself and the hub.
@@ -174,10 +165,10 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return 0 if an error occurred, 1 otherwise.
 	*/
-	
+
 	int CmdUInfo(istringstream & cmd_line, cConnDC * conn);
 	int CmdRInfo(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle +myinfo  hub command.
 	* This command returns the information about the user.
@@ -186,7 +177,7 @@ public:
 	* @return Always 1.
 	*/
 	int CmdMyInfo(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle +myip hub command.
 	* This command returns the IP address of the user.
@@ -195,16 +186,16 @@ public:
 	* @return Always 1.
 	*/
 	int CmdMyIp(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle +me <message> hub command.
 	* This command lets an user to talk in 3rd person.
 	* @param cmd_line The stream that contains the message.
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return 0 if an error occured or 1 otherwise.
-	*/	
+	*/
 	int CmdMe(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle +regme <password> hub command.
 	* This command sends a report to OpChat in order to ask registration to Hub Operator or register an user automatically if autoreg_class config variable is set properly.
@@ -213,7 +204,7 @@ public:
 	* @return 0 if an error occured or 1 otherwise.
 	*/
 	int CmdRegMe(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle +kick <user> <reason>.
 	* This command will kick an user with the given reason.
@@ -222,7 +213,7 @@ public:
 	* @return Always 1.
 	*/
 	int CmdKick(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle +chat and +nochat hub command.
 	* These two commands are used to talk in mainchat.
@@ -232,7 +223,7 @@ public:
 	* @return 0 if the user does not exist or 1 otherwise.
 	*/
 	int CmdChat(istringstream & cmd_line, cConnDC * conn, bool switchon);
-	
+
 	/**
 	* Handle !hideme or !hm <class> hub command.
 	* This command will hide any commands for users with class lower than <class>.
@@ -241,7 +232,7 @@ public:
 	* @return Always 1
 	*/
 	int CmdHideMe(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle !ul(imit) <users> <time>  hub command.
 	* This command will progressively increase the max allowed users in the hub in <time>. The time must be speficied in minutes; this value can be ommited and default value is 60 minutes.
@@ -250,7 +241,7 @@ public:
 	* @return Always 1
 	*/
 	int CmdUserLimit(istringstream & cmd_line, cConnDC * conn);
-	
+
 	/**
 	* Handle !unhidekick <user> hub command.
 	* This command will un-hide kick made by <user>, previously hidden by using !hidekick <user> command.
@@ -259,7 +250,7 @@ public:
 	* @return Always 1
 	*/
 	int CmdUnHideKick(istringstream &cmd_line, cConnDC *conn);
-	
+
 	/**
 	* Handle !hidekick <user> hub command.
 	* This command will hide kick made by <user> until he reconnects to the hub.
@@ -277,8 +268,8 @@ public:
 	* @return Always 1
 	*/
 	int CmdClass(istringstream &cmd_line, cConnDC *conn);
-	
-	
+
+
 	/**
 	* Handle !protect <user> <class>  hub command.
 	* This command protects an user against another one with lower class than <class>.
@@ -287,7 +278,7 @@ public:
 	* @return Always 1
 	*/
 	int CmdProtect(istringstream &cmd_line, cConnDC *conn);
-	
+
 	/**
 	* Handle !reload command to reload VerliHub cache like triggers, custom redirects, configuration and reglist.
 	* @param cmd_line The stream. Not used
@@ -295,7 +286,7 @@ public:
 	* @return Always 1
 	*/
 	int CmdReload (istringstream &cmd_line, cConnDC *conn);
-	
+
 	/**
 	* Handle !commands or !cmds to show the list of available and register commands in VerliHub console.
 	* @param cmd_line The stream. Not used
@@ -303,14 +294,14 @@ public:
 	* @return Always 1
 	*/
 	int CmdCmds (istringstream &cmd_line, cConnDC *conn);
-	
+
 	/**
 	* Handle !topic <msg> command to set the hub topic for the hub. The topic will be appended after the hub name and look like this: <HUB NAME> - <TOPIC>
 	* @param cmd_line The stream the contains the topic.
 	* @param conn Pointer to user's connection which set the hub topic. It is used to send error message.
 	* @return Always 1
 	*/
-	int CmdTopic(istringstream & cmd_line, cConnDC * conn); 
+	int CmdTopic(istringstream & cmd_line, cConnDC * conn);
 
 	static cPCRE mIPRangeRex;
 	static bool GetIPRange(const string &range, unsigned long &from, unsigned long &to);
@@ -319,16 +310,16 @@ public:
 	typedef cDCCommand cDCCmdBase;
 
 	enum{ eCM_CMD, eCM_BAN, eCM_GAG, eCM_TRIGGER, eCM_CUSTOMREDIR, eCM_DCCLIENT, eCM_SET, eCM_REG, eCM_INFO, eCM_RAW, eCM_WHO, eCM_KICK, eCM_PLUG, eCM_REPORT, eCM_BROADCAST, eCM_CONNTYPE, eCM_TRIGGERS, eCM_GETCONFIG, eCM_CLEAN };
-	
+
 	// Pointr to VerliHub server
 	cServerDC *mServer;
 
 	// Pointer to Trigger console to handle custom commands not defined here
 	cTriggers *mTriggers;
-	
+
 	// Pointer to Redirect console to handle custom redirect commands
 	cRedirects *mRedirects;
-	
+
 	// Pointer to Client console to handle custom client TAG
 	cDCClients *mDCClients;
 private:
@@ -363,11 +354,16 @@ private:
 	cDCCmdBase mCmdReport;
 	struct cfBc : cfDCCmdBase { virtual bool operator()(); } mFunBc;
 	cDCCmdBase mCmdBc;
+
+	/**
+	 * Handle !getconfig or !gc hub command.
+	 * These structure is used to return the list of available config variables with values.
+	 */
 	struct cfGetConfig : cfDCCmdBase { virtual bool operator()(); } mFunGetConfig;
 	cDCCmdBase mCmdGetConfig;
 	struct cfClean : cfDCCmdBase { virtual bool operator()(); } mFunClean;
 	cDCCmdBase mCmdClean;
-	
+
 	// Redirect commands to other console
 	struct cfRedirToConsole : cfDCCmdBase {
 		virtual bool operator()();

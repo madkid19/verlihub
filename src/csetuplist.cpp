@@ -59,26 +59,33 @@ void nDirectConnect::nTables::cSetupList::LoadFileTo(cConfigBaseBase *Config, co
 	SelectFields(mQuery.OStream());
 	mQuery.OStream() << " WHERE file='" << file << "'";
 
-	for(it = db_begin(); it != db_end(); ++it)
-	{
+	for(it = db_begin(); it != db_end(); ++it) {
 		item = (*Config)[mModel.mVarName];
 		if (item) item->ConvertFrom(mModel.mVarValue);
 	}
 	mQuery.Clear();
 }
 
-void nDirectConnect::nTables::cSetupList::OutputFile(const char*file, ostream &os)
+void nDirectConnect::nTables::cSetupList::OutputFile(const string &file, ostream &os)
 {
 	const int width = 5;
 	db_iterator it;
 	SelectFields(mQuery.OStream());
-	mQuery.OStream() << " WHERE file='" << file << "'";
+	if(file == "plugins")
+		mQuery.OStream() << " WHERE file LIKE 'pi_%'";
+	else
+		mQuery.OStream() << " WHERE file='" << file << "'";
+
+	mQuery.OStream() << " ORDER BY `var` ASC";
 	string val;
 
-	for(it = db_begin(); it != db_end(); ++it)
-	{
+	for(it = db_begin(); it != db_end(); ++it) {
 		cDCProto::EscapeChars(mModel.mVarValue, val);
-		os << "\r[::]  " << setw(width) << setiosflags(ios::left) << mModel.mVarName << setiosflags(ios::right) <<"    =   " << val << "\r\n";
+		string varName = mModel.mVarName;
+		if(file == "plugins")
+			varName = mModel.mFile + "." + varName;
+
+		os << " " << setw(35) << setiosflags(ios::left) << varName << val << "\n";
 	}
 	mQuery.Clear();
 }
@@ -90,8 +97,7 @@ void nDirectConnect::nTables::cSetupList::SaveFileTo(cConfigBaseBase *Config, co
 	cConfigBaseBase::iterator it;
 	mModel.mFile = file;
 	SetBaseTo(&mModel);
-	for(it = Config->begin(); it != Config->end(); ++it)
-	{
+	for(it = Config->begin(); it != Config->end(); ++it) {
 		mModel.mVarName = (*it)->mName;
 		(*it)->ConvertTo(mModel.mVarValue);
 		SavePK();
@@ -108,7 +114,7 @@ bool nDirectConnect::nTables::cSetupList::SaveItem(const char *InFile, cConfigIt
 	ci->ConvertTo(mModel.mVarValue);
 	DeletePK();
 	SavePK(false);
-   return true;
+	return true;
 }
 
 /*!

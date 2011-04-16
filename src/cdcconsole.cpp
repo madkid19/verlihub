@@ -71,7 +71,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdPlug(int(eCM_PLUG),".plug(in|out|list|reg|reload) ","(\\S+)( (.*)$)?", &mFunPlug),
 	mCmdReport(int(eCM_REPORT),"\\+report ","(\\S+)( (.*)$)?", &mFunReport),
 	mCmdBc(int(eCM_BROADCAST),".(bc|broadcast|oc|ops|regs|guests|vips|cheefs|admins|masters)( |\\r\\n)","(.*)$", &mFunBc), // |ccbc|ccbroadcast
-	mCmdGetConfig(int(eCM_GETCONFIG),".(gc|getconfig) ?","(\\[(\\S+)\\])?", &mFunGetConfig),
+	mCmdGetConfig(int(eCM_GETCONFIG),".(gc|getconfig) ?","(\\S+)?", &mFunGetConfig),
 	mCmdClean(int(eCM_CLEAN),".clean(\\S+) ?", "(\\S+)?", &mFunClean),
 	mCmdRedirConnType(int(eCM_CONNTYPE),".(\\S+)conntype ?","(.*)$",&mFunRedirConnType),
 	mCmdRedirTrigger(int(eCM_TRIGGERS),".(\\S+)trigger ?","(.*)$",&mFunRedirTrigger),
@@ -344,30 +344,18 @@ bool cDCConsole::cfGetConfig::operator()()
 	string file;
 	cConfigBaseBase::tIVIt it;
 	const int width = 5;
-	GetParStr(2, file);
-	//sort(mS->mC.mvItems.begin(), mS->mC.mvItems.end(), sortConfig);
+	GetParStr(1, file);
+
 	os << "\n ";
 	os << setw(34) << setiosflags(ios::left) << toUpper(_("Variable"));
 	os << toUpper(_("Value")) << "\n";
-	os << " " << string(34+35,'=') << endl;
-	if(!file.size())  {
-		for(it = mS->mC.mvItems.begin();it != mS->mC.mvItems.end();it++)
-			os << " " << setw(35) << setiosflags(ios::left) << mS->mC.mhItems.GetByHash(*it)->mName << *(mS->mC.mhItems.GetByHash(*it)) << "\n";
-	} else {
-		mS->mSetupList.OutputFile(file.c_str(), os);
-	}
+	os << " " << string(34+35, '=') << endl;
+	if(file.empty())
+		file = mS->mDBConf.config_name;
+
+	mS->mSetupList.OutputFile(file.c_str(), os);
 	mS->DCPrivateHS(os.str(),mConn);
 	return true;
-}
-
-int cDCConsole::CmdGetconfig(istringstream & , cConnDC * conn)
-{
-	ostringstream os;
-	cConfigBaseBase::tIVIt it;
-	for(it = mOwner->mC.mvItems.begin(); it != mOwner->mC.mvItems.end(); it++)
-		os << setw(20) << mOwner->mC.mhItems.GetByHash(*it)->mName << " = " << *(mOwner->mC.mhItems.GetByHash(*it)) << "\r\n";
-	mOwner->DCPrivateHS(os.str(),conn);
-	return 1;
 }
 
 int cDCConsole::CmdHelp(istringstream &, cConnDC * conn)
