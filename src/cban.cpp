@@ -84,7 +84,11 @@ void nDirectConnect::nTables::cBan::DisplayUser(ostream &os)
 	if(mIP.size() && mIP[0] != '_')
 		os << setw(20) << setiosflags(ios::left) << toUpper(_("IP")) << mIP.c_str() << "\r\n";
 	os << setw(20) << setiosflags(ios::left) << toUpper(_("Reason")) << mReason.c_str() << "\r\n";
-	os << setw(20) << setiosflags(ios::left) << toUpper(_("Left")) ;
+	os << setw(20) << setiosflags(ios::left) << toUpper(_("Left")) ;	
+	// Append extra ban message
+	if(!mS->mC.ban_extra_message.empty())
+		os << " " << mS->mC.ban_extra_message.empty();
+	os << "\r\n";
 	if(mDateEnd) {
 		cTime HowLong(mDateEnd - cTime().Sec());
 		os << toLower(_("Remaining")) << " " << HowLong.AsPeriod().AsString().c_str();
