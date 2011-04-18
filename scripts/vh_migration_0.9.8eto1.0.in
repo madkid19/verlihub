@@ -73,7 +73,7 @@ if $(yes_or_no "Do you want to continue with migration?") ; then
 	sleep 2
 
 	echo "-- Deleting other variables"
-	OTHER_MESSAGES=(save_lang chat_msg_long chat_msg_lines pwd_cannot pwd_can pwd_min pwd_success pwd_set_error pwd_setup ip nick user host ip_range because op type not_in_userlist error success wrong_dc_tag tag_max_hubs tag_max_slots tag_min_slots tag_max_hs_ratio tag_min_limit tag_min_ls_ratio tag_no_sock msg_downgrade msg_upgrade msg_topic_set msg_topic_reset autoreg_nick_prefix autoreg_already_reg autoreg_success autoreg_error timeout_any operation_timeout msg_chat_onoff msg_change_pwd msg_banned msg_hub_full msg_nick_prefix msg_downgrade msg_upgrade msg_replace_ban login_share_min login_share_max autoreg_min_share search_share_min ctm_share_min)
+	OTHER_MESSAGES=(save_lang chat_msg_long chat_msg_lines pwd_cannot pwd_can pwd_min pwd_success pwd_set_error pwd_setup ip nick user host ip_range because op type not_in_userlist error success wrong_dc_tag tag_max_hubs tag_max_slots tag_min_slots tag_max_hs_ratio tag_min_limit tag_min_ls_ratio tag_no_sock msg_downgrade msg_upgrade msg_topic_set msg_topic_reset autoreg_nick_prefix autoreg_already_reg autoreg_success autoreg_error timeout_any operation_timeout msg_chat_onoff msg_change_pwd msg_banned msg_hub_full msg_nick_prefix msg_downgrade msg_upgrade msg_replace_ban login_share_min login_share_max autoreg_min_share search_share_min ctm_share_min max_attempts_threshold)
 	for VAR in ${OTHER_MESSAGES[@]}; do
 		_delete_lang_var $VAR
 	done
