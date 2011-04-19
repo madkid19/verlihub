@@ -153,3 +153,4 @@ BUGFIXES:
  * Fixed a possible crash 
  * Fixed wrong query
  * Sorted few compiler warnings, fixed new gcc 4.3 errors
+ * Completly rewrite manual (http://www.verlihub-project.org/page/index)
