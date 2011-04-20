@@ -100,8 +100,10 @@ if(Path.substr(0,2) == "./") {
 #ifdef _WIN32
 		char * cPath = new char[35];
 		int size = GetCurrentDirectory(35, cPath);
-		if(!size)
+		if(!size) {
+			delete cPath;
 			return;
+		}
 		else if(size > 35) {
 			delete cPath;
 			cPath = new char[size];
