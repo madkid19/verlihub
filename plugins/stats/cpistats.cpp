@@ -23,7 +23,7 @@
 #include "cpistats.h"
 #include "src/cserverdc.h"
 
-using namespace nDirectConnect;
+using namespace ;
 
 cpiStats::cpiStats() : 
 	mStats(NULL),

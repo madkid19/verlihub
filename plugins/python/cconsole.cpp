@@ -27,7 +27,7 @@
 #include "src/stringutils.h"
 #include "src/i18n.h"
 
-using namespace nDirectConnect;
+using namespace ;
 using namespace nStringUtils;
 
 namespace nScripts

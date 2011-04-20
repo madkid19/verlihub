@@ -35,7 +35,7 @@ using nConfig::tMySQLMemoryList;
 
 class cpiForbid;
 
-namespace nDirectConnect {
+namespace  {
 	class cConnDC;
 	class cServerDC;
 

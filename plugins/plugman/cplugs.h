@@ -29,12 +29,12 @@
 
 using namespace std;
 
-namespace nDirectConnect {
+namespace  {
 	namespace nPlugin {
 		class cVHPluginMgr;
 	};
 };
-using namespace nDirectConnect::nPlugin;
+using namespace ::nPlugin;
 class cpiPlug;
 class cPlugs;
 

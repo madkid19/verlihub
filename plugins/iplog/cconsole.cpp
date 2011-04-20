@@ -25,7 +25,7 @@
 #include "cpiiplog.h"
 #include "ciplog.h"
 
-using namespace nDirectConnect;
+using namespace ;
 
 namespace nIPLog
 {

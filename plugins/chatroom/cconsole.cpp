@@ -26,7 +26,7 @@
 #include "cpichatroom.h"
 #include "crooms.h"
 
-using namespace nDirectConnect;
+using namespace ;
 
 
 cRooms *cRoomConsole::GetTheList()

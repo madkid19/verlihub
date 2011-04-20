@@ -23,7 +23,7 @@
 #include "cpiiplog.h"
 #include "src/cserverdc.h"
 
-using namespace nDirectConnect;
+using namespace ;
 
 cpiIPLog::cpiIPLog() :  mConsole(this),	mIPLog(NULL)
 {

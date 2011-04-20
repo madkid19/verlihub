@@ -26,9 +26,9 @@
 #include "cisps.h"
 #include "cpiisp.h"
 
-using namespace nDirectConnect::nTables;
-using namespace nDirectConnect::nEnums;
-using namespace nDirectConnect::nProtocol;
+using namespace ::nTables;
+using namespace ::nEnums;
+using namespace ::nProtocol;
 using namespace nStringUtils;
 
 cISP::cISP() : 

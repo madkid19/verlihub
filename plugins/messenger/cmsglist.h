@@ -27,8 +27,8 @@
 #include "src/tcache.h"
 
 using namespace nConfig;
-namespace nDirectConnect { class cUser; class cServerDC; };
-using namespace nDirectConnect;
+namespace  { class cUser; class cServerDC; };
+using namespace ;
 
 namespace nMessanger
 {

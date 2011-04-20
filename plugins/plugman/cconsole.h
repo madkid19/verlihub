@@ -34,14 +34,14 @@ class cPlugs;
 class cPlug;
 using namespace nCmdr;
 
-namespace nDirectConnect {
+namespace  {
 	class cConnDC;
 	namespace nPlugin{
 		class cVHPlugin;
 	};
 };
-using namespace nDirectConnect;
-using namespace nDirectConnect::nPlugin;
+using namespace ;
+using namespace ::nPlugin;
 
 typedef class tListConsole<cPlug, cPlugs, cpiPlug> tPlugConsoleBase;
 

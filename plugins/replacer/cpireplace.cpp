@@ -23,7 +23,7 @@
 #include "cpireplace.h"
 #include "src/cserverdc.h"
 
-using namespace nDirectConnect;
+using namespace ;
 
 cpiReplace::cpiReplace() : mConsole(this), mReplacer(NULL), mCfg(NULL)
 {

@@ -32,7 +32,7 @@
 #include <string>
 
 using namespace std;
-using namespace nDirectConnect;
+using namespace ;
 
 namespace nScripts
 {

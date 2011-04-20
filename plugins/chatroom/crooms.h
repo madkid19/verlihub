@@ -27,13 +27,13 @@
 #include "src/cusercollection.h"
 
 using namespace nConfig;
-namespace nDirectConnect { class cUser; class cServerDC; };
-using namespace nDirectConnect;
+namespace  { class cUser; class cServerDC; };
+using namespace ;
 class cpiChatroom;
 
 class cRoom;
 
-class cXChatRoom : public nDirectConnect::cChatRoom::cChatRoom
+class cXChatRoom : public ::cChatRoom::cChatRoom
 {
 public:
 	cXChatRoom(const string &nick, cRoom *room);

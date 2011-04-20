@@ -20,81 +20,29 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 
-#include "cpichatroom.h"
-#include "crooms.h"
-#include "src/cserverdc.h"
-#include "src/cdcproto.h"
+#ifndef CPIPISG_H
+#define CPIPISG_H
 
+#include "src/cvhplugin.h"
+#include "src/ctimeout.h"
+#include "src/cmeanfrequency.h"
+#include <fstream>
 
-using namespace ;
-using namespace nConfig;
+using namespace std;
+using namespace nVerliHub::nPlugin;
+using namespace nVerliHub;
+using namespace nUtils;
 
-cpiChatroom::cpiChatroom()
+class cpiPisg : public cVHPlugin
 {
-	mName = "Chatroom";
-	mVersion = CHATROOM_VERSION;
-	mCfg = NULL;
-}
+public:
+	cpiPisg();
+	virtual ~cpiPisg();
+	virtual bool RegisterAll();
+	bool OnParsedMsgChat(cConnDC *conn, cMessageDC *msg);
+private:
+	ofstream logFile;
+};
 
-cpiChatroom::~cpiChatroom()
-{
-	if (mCfg != NULL) delete mCfg;
-	mCfg = NULL;
-}
 
-void cpiChatroom::OnLoad(cServerDC *server)
-{
-	cUserCollection::iterator it;
-	cUser *user;
-	
-	if (!mCfg) mCfg = new cRoomCfg(server);
-	mCfg->Load();
-	mCfg->Save();
-	
-	tpiChatroomBase::OnLoad(server);
-	for (it = mServer->mUserList.begin(); it !=  mServer->mUserList.end() ; ++it) {
-		user =(cUser*)*it;
-		if(user && user->mxConn)
-			mList->AutoJoin(user);
-	}
-}
-
-bool cpiChatroom::OnUserLogin(cUser *user)
-{
-	mList->AutoJoin(user);
-	return true;
-}
-
-bool cpiChatroom::OnUserLogout(cUser *user)
-{
-	cRooms::iterator it;
-	for (it = mList->begin(); it != mList->end(); ++it) {
-		if(*it) (*it)->DelUser(user);
-	}
-	return true;
-}
-
-bool cpiChatroom::RegisterAll()
-{
-	RegisterCallBack("VH_OnUserLogin");
-	RegisterCallBack("VH_OnUserLogout");
-	RegisterCallBack("VH_OnOperatorCommand");
-	return true;
-}
-
-bool cpiChatroom::OnUserCommand(cConnDC *conn, string *str)
-{
-	if(mConsole.DoCommand(*str, conn))
-		return false;
-	return true;
-}
-
-bool cpiChatroom::OnOperatorCommand(cConnDC *conn, string *str)
-{
-	if(mConsole.DoCommand(*str, conn))
-		return false;
-	return true;
-}
-
-REGISTER_PLUGIN(cpiChatroom);
-
+#endif

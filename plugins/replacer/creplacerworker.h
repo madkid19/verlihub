@@ -29,7 +29,7 @@
 using namespace std;
 using namespace nUtils;
 
-namespace nDirectConnect {
+namespace  {
 
 class cConnDC;
 class cServerDC;

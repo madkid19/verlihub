@@ -78,7 +78,7 @@ void cRoom::OnLoad()
 		mChatRoom=new cXChatRoom(mNick, this);
 		mChatRoom->mClass = tUserCl(10);
 		desc += mTopic;
-		::nDirectConnect::nProtocol::cDCProto::Create_MyINFO(mChatRoom->mMyINFO, mNick,desc,speed,mail,share);
+		::::nProtocol::cDCProto::Create_MyINFO(mChatRoom->mMyINFO, mNick,desc,speed,mail,share);
 		mChatRoom->mMyINFO_basic = mChatRoom->mMyINFO;
 
 		mPlugin->AddRobot(mChatRoom);

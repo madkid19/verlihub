@@ -23,7 +23,7 @@
 #include <stringutils.h>
 
 using namespace nStringUtils;
-using namespace nDirectConnect::nProtocol::nEnums;
+using namespace ::nProtocol::nEnums;
 
 cpiISP::cpiISP()
 {

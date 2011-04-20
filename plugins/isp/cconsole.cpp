@@ -25,7 +25,7 @@
 #include "cpiisp.h"
 #include "cisps.h"
 
-using namespace nDirectConnect;
+using namespace ;
 
 
 cISPs *cISPConsole::GetTheList()

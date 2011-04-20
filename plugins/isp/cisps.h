@@ -27,11 +27,11 @@
 #include "src/tlistplugin.h"
 
 using namespace std;
-using namespace nDirectConnect::nEnums;
-using namespace nDirectConnect::nPlugin;
+using namespace ::nEnums;
+using namespace ::nPlugin;
 
-namespace nDirectConnect{ class cServerDC;};
-using namespace nDirectConnect;
+namespace { class cServerDC;};
+using namespace ;
 
 class cpiISP;
 class cISPs;

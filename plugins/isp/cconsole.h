@@ -28,8 +28,8 @@
 class cpiISP;
 using namespace nCmdr;
 
-namespace nDirectConnect { class cConnDC; };
-using namespace nDirectConnect;
+namespace  { class cConnDC; };
+using namespace ;
 
 typedef class tListConsole<cISP, cISPs, cpiISP> tISPConsoleBase;
 /**

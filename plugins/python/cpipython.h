@@ -38,8 +38,8 @@
 
 using std::vector;
 using namespace nScripts;
-using namespace nDirectConnect;
-using namespace nDirectConnect::nPlugin;
+using namespace ;
+using namespace ::nPlugin;
 
 
 class cpiPython : public cVHPlugin

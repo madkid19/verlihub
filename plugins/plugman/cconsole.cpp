@@ -31,7 +31,7 @@
 
 #define PADDING 30
 
-using namespace nDirectConnect;
+using namespace ;
 
 
 cPlugs *cPlugConsole::GetTheList()

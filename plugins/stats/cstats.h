@@ -27,8 +27,8 @@
 
 using namespace nConfig;
 
-namespace nDirectConnect { class cServerDC; };
-using namespace nDirectConnect;
+namespace  { class cServerDC; };
+using namespace ;
 namespace nStats
 {
 

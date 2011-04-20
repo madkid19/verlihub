@@ -29,8 +29,8 @@
 #include "stringutils.h"
 
 using namespace nStringUtils;
-using namespace nDirectConnect;
-using namespace nDirectConnect::nTables;
+using namespace ;
+using namespace ::nTables;
 using namespace nUtils;
 
 

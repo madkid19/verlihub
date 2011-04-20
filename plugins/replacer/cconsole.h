@@ -28,8 +28,8 @@
 class cpiReplace;
 using namespace nCmdr;
 
-namespace nDirectConnect { class cConnDC; };
-using namespace nDirectConnect;
+namespace  { class cConnDC; };
+using namespace ;
 
 namespace nReplace
 {

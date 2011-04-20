@@ -26,7 +26,7 @@
 #include "src/cdcproto.h"
 
 
-using namespace nDirectConnect;
+using namespace ;
 
 cpiMessanger::cpiMessanger() : mConsole(this), mMsgs(NULL), mReloadTimer(30., 0., cTime())
 {

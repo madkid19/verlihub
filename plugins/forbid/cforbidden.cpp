@@ -25,7 +25,7 @@
 #include "i18n.h"
 #include "cpiforbid.h"
 
-namespace nDirectConnect {
+namespace  {
 namespace nTables {
 
 cForbiddenWorker::cForbiddenWorker() : mpRegex(NULL)

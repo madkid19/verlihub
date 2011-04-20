@@ -28,8 +28,8 @@
 #include "crooms.h"
 #include "cconsole.h"
 
-using namespace nDirectConnect::nPlugin;
-using namespace nDirectConnect;
+using namespace ::nPlugin;
+using namespace ;
 using namespace nUtils;
 
 typedef tpiListPlugin<cRooms,cRoomConsole> tpiChatroomBase;

@@ -29,12 +29,12 @@
 
 using namespace nConfig;
 
-namespace nDirectConnect { 
+namespace  { 
 	class cConnDC;
 	class cServerDC;
 };
 
-using namespace nDirectConnect;
+using namespace ;
 namespace nIPLog
 {
 

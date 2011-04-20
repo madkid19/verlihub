@@ -26,7 +26,7 @@
 #include "src/ctime.h"
 #include "src/cserverdc.h"
 
-using namespace nDirectConnect;
+using namespace ;
 using namespace nUtils;
 namespace nStats
 {

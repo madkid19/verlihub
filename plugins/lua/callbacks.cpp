@@ -40,7 +40,7 @@ extern "C"
 #define lua_tablepush(L, key, value) lua_pushstring(L, key); lua_pushnumber(L, value); lua_settable(L, -3);
 
 using namespace std;
-using namespace nDirectConnect;
+using namespace ;
 
 cServerDC * GetCurrentVerlihub()
 {

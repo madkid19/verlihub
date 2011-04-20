@@ -33,7 +33,7 @@
 using namespace nStringUtils;
 using namespace nUtils;
 using namespace nTables;
-using namespace nDirectConnect;
+using namespace ;
 
 // initializing static members
 void*         cpiPython::lib_handle = NULL;

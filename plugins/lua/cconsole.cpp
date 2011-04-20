@@ -38,7 +38,7 @@ extern "C"
 
 #define PADDING 25
 
-using namespace nDirectConnect;
+using namespace ;
 using namespace nStringUtils;
 
 namespace nScripts

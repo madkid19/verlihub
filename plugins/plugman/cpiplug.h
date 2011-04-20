@@ -28,12 +28,12 @@
 
 class cPlug;
 class cPlugs;
-namespace nDirectConnect{
+namespace {
 	class cConnDC;
 };
 
-using namespace nDirectConnect;
-using namespace nDirectConnect::nPlugin;
+using namespace ;
+using namespace ::nPlugin;
 
 typedef tpiListPlugin<cPlugs,cPlugConsole> tpiPlugBase;
 

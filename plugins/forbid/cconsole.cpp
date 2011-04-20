@@ -25,7 +25,7 @@
 #include "cforbidden.h"
 #include "src/i18n.h"
 
-using namespace nDirectConnect;
+using namespace ;
 
 namespace nForbid
 {

@@ -26,9 +26,9 @@
 #include "cconsole.h"
 #include "cforbidden.h"
 
-using namespace nDirectConnect::nPlugin;
-using namespace nDirectConnect::nTables;
-using namespace nDirectConnect;
+using namespace ::nPlugin;
+using namespace ::nTables;
+using namespace ;
 using namespace nForbid;
 using namespace nConfig;
 

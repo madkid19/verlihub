@@ -24,7 +24,7 @@
 #include "src/cconndc.h"
 #include "src/cserverdc.h"
 
-namespace nDirectConnect {
+namespace  {
 
 cReplacerWorker::cReplacerWorker()
 {

@@ -28,8 +28,8 @@
 #include "src/cmeanfrequency.h"
 #include "cstats.h"
 
-using namespace nDirectConnect::nPlugin;
-using namespace nDirectConnect;
+using namespace ::nPlugin;
+using namespace ;
 using namespace nUtils;
 using namespace nStats;
 

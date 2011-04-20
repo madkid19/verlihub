@@ -30,7 +30,7 @@
 using std::vector;
 using nConfig::cConfMySQL;
 
-namespace nDirectConnect {
+namespace  {
 namespace nTables {
 
 /**

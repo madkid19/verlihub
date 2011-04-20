@@ -29,7 +29,7 @@
 #include "src/stringutils.h"
 
 using namespace nStringUtils;
-using namespace nDirectConnect;
+using namespace ;
 
 namespace nReplace
 {

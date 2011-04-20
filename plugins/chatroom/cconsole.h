@@ -28,8 +28,8 @@
 class cpiChatroom;
 using namespace nCmdr;
 
-namespace nDirectConnect { class cConnDC; };
-using namespace nDirectConnect;
+namespace  { class cConnDC; };
+using namespace ;
 
 typedef class tListConsole<cRoom, cRooms, cpiChatroom> tRoomConsoleBase;
 

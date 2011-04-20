@@ -26,8 +26,8 @@
 #include "cisps.h"
 #include "cconsole.h"
 
-using namespace nDirectConnect;
-using namespace nDirectConnect::nPlugin;
+using namespace ;
+using namespace ::nPlugin;
 
 typedef tpiListPlugin<cISPs,cISPConsole> tpiISPBase;
 

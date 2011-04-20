@@ -24,7 +24,7 @@
 #include "cplugs.h"
 #include "cserverdc.h"
 
-using namespace nDirectConnect;
+using namespace ;
 
 cpiPlug::cpiPlug()
 {

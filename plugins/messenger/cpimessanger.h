@@ -29,8 +29,8 @@
 #include "cconsole.h"
 #include "cmsglist.h"
 
-using namespace nDirectConnect::nPlugin;
-using namespace nDirectConnect;
+using namespace ::nPlugin;
+using namespace ;
 using namespace nUtils;
 using namespace nMessanger;
 

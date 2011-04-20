@@ -20,81 +20,53 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 
-#include "cpichatroom.h"
-#include "crooms.h"
+#include "cpipisg.h"
 #include "src/cserverdc.h"
-#include "src/cdcproto.h"
+#include <time.h>
 
+using namespace nVerliHub;
 
-using namespace ;
-using namespace nConfig;
-
-cpiChatroom::cpiChatroom()
+cpiPisg::cpiPisg() : 
+	mStats(NULL),
+	mStatsTimer(300.0,0.0,cTime().Sec()),
+	mFreqSearchA(cTime(), 300.0, 10),
+	mFreqSearchP(cTime(), 300.0, 10)
 {
-	mName = "Chatroom";
-	mVersion = CHATROOM_VERSION;
-	mCfg = NULL;
+	mName = "Pisg";
+	mVersion = PISG_VERSION;
 }
 
-cpiChatroom::~cpiChatroom()
+cpiPisg::~cpiPisg()
 {
-	if (mCfg != NULL) delete mCfg;
-	mCfg = NULL;
+	logFile.close();
 }
 
-void cpiChatroom::OnLoad(cServerDC *server)
+
+void cpiPisg::OnLoad(cServerDC *server)
 {
-	cUserCollection::iterator it;
-	cUser *user;
-	
-	if (!mCfg) mCfg = new cRoomCfg(server);
-	mCfg->Load();
-	mCfg->Save();
-	
-	tpiChatroomBase::OnLoad(server);
-	for (it = mServer->mUserList.begin(); it !=  mServer->mUserList.end() ; ++it) {
-		user =(cUser*)*it;
-		if(user && user->mxConn)
-			mList->AutoJoin(user);
-	}
+	cVHPlugin::OnLoad(server);
+	mServer = server;
+	logFile.open(server->mConfigBaseDir + "/" + "pisg.log");
 }
 
-bool cpiChatroom::OnUserLogin(cUser *user)
+bool cpiPisg::RegisterAll()
 {
-	mList->AutoJoin(user);
+	RegisterCallBack("VH_OnParsedMsgChat");
 	return true;
 }
 
-bool cpiChatroom::OnUserLogout(cUser *user)
+bool cpiPisg::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
 {
-	cRooms::iterator it;
-	for (it = mList->begin(); it != mList->end(); ++it) {
-		if(*it) (*it)->DelUser(user);
+	if(logFile.is_open && conn != NULL && conn->mpUser != NULL && msg != NULL) {
+		 time_t rawtime;
+		struct tm * timeinfo;
+		time(&rawtime);
+		timeinfo = localtime (&rawtime);
+		logFile << "[[" << (timeinfo->tm_year + 1900) << "%s-%s-%s|%s:%s]] <" << conn->mpUser->mNick.c_str() << "> " << msg->ChunkString(eCH_CH_MSG).c_str() << endl;
+	//date =  os.date ("*t") io.write("[["..date.year.."-"..formatTF(date.month).."-"..formatTF(date.day).."|"..formatTF(date.hour)..":"..formatTF(date.min).."]] <"..nick.."> "..data..lf)
 	}
 	return true;
 }
 
-bool cpiChatroom::RegisterAll()
-{
-	RegisterCallBack("VH_OnUserLogin");
-	RegisterCallBack("VH_OnUserLogout");
-	RegisterCallBack("VH_OnOperatorCommand");
-	return true;
-}
-
-bool cpiChatroom::OnUserCommand(cConnDC *conn, string *str)
-{
-	if(mConsole.DoCommand(*str, conn))
-		return false;
-	return true;
-}
-
-bool cpiChatroom::OnOperatorCommand(cConnDC *conn, string *str)
-{
-	if(mConsole.DoCommand(*str, conn))
-		return false;
-	return true;
-}
-
-REGISTER_PLUGIN(cpiChatroom);
+REGISTER_PLUGIN(cpiPisg);
 

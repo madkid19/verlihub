@@ -28,8 +28,8 @@
 
 #define PADDING 15
 
-using namespace nDirectConnect;
-using namespace nDirectConnect::nPlugin;
+using namespace ;
+using namespace ::nPlugin;
 
 cPlug::cPlug() : 
 	mLoadOnStartup(true),

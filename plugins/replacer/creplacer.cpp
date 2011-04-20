@@ -24,7 +24,7 @@
 #include "src/cconfigitembase.h"
 #include "src/cserverdc.h"
 
-namespace nDirectConnect {
+namespace  {
 namespace nTables {
 
 cReplacer::cReplacer( cServerDC *server )

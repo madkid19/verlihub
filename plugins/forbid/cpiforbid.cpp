@@ -22,7 +22,7 @@
 #include "cpiforbid.h"
 #include "src/cserverdc.h"
 
-using namespace nDirectConnect;
+using namespace ;
 
 cpiForbid::cpiForbid() : mCfg(NULL)
 {
