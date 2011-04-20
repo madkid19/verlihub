@@ -26,6 +26,7 @@
 #include "stringutils.h"
 #include "i18n.h"
 
+using namespace nStringUtils;
 using namespace nUtils;
 namespace nDirectConnect {
 namespace nTables {
@@ -77,29 +78,31 @@ ostream & operator << (ostream &os, nDirectConnect::nTables::cBan &ban)
 
 void nDirectConnect::nTables::cBan::DisplayUser(ostream &os)
 {
+	os << "\r\n";
 	if(mNick.size())
-		os << autosprintf(_("Nick: %s"), mNick.c_str()) << "\r\n";
+		os << setw(20) << setiosflags(ios::left) << toUpper(_("Nickname")) << mNick.c_str() << "\r\n";
 	if(mIP.size() && mIP[0] != '_')
-		os << autosprintf(_("IP: %s"), mIP.c_str()) << "\r\n";
-	os << autosprintf(_("Reason: %s"), mReason.c_str());
+		os << setw(20) << setiosflags(ios::left) << toUpper(_("IP")) << mIP.c_str() << "\r\n";
+	os << setw(20) << setiosflags(ios::left) << toUpper(_("Reason")) << mReason.c_str() << "\r\n";
+	os << setw(20) << setiosflags(ios::left) << toUpper(_("Left")) ;	
 	// Append extra ban message
 	if(!mS->mC.ban_extra_message.empty())
 		os << " " << mS->mC.ban_extra_message.empty();
 	os << "\r\n";
 	if(mDateEnd) {
 		cTime HowLong(mDateEnd - cTime().Sec());
-		os << autosprintf(_("Remaining: %s"), HowLong.AsPeriod().AsString().c_str()) << "\r\n";
+		os << toLower(_("Remaining")) << " " << HowLong.AsPeriod().AsString().c_str();
 	} else
-		os << _("Permanently.") << "\r\n";
-
+		os << toLower(_("Permanently."));
+	os  << "\r\n";
 	string initialRange, endRange;
 	if(mRangeMin) {
 		cBanList::Num2Ip(mRangeMin, initialRange);
 		cBanList::Num2Ip(mRangeMax, endRange);
-		os <<  autosprintf(_("IP range: %s-%s"), initialRange.c_str(), endRange.c_str()) << "\r\n";
+		os << setw(20) << setiosflags(ios::left) << toUpper(_("IP range")) << initialRange.c_str() << "-" << endRange.c_str() << "\r\n";
 	}
 	if(mShare)
-		os << autosprintf(_("Share: %s"), nStringUtils::convertByte(mShare, false).c_str()) << "\r\n";
+		os << setw(20) << setiosflags(ios::left) << toUpper(_("Share")) << nStringUtils::convertByte(mShare, false).c_str() << "\r\n";
 }
 
 void nDirectConnect::nTables::cUnBan::DisplayUser(ostream &os)
@@ -111,8 +114,8 @@ void nDirectConnect::nTables::cUnBan::DisplayUser(ostream &os)
 void nDirectConnect::nTables::cBan::DisplayComplete(ostream &os)
 {
 	DisplayUser(os);
-	os << autosprintf(_("OP: %s"), mNickOp.c_str()) << "\r\n";
-	os << autosprintf(_("Ban type: %s"), this->GetBanType());
+	os << setw(20) << setiosflags(ios::left) << toUpper(_("OP")) << mNickOp.c_str() << "\r\n";
+	os << setw(20) << setiosflags(ios::left) << toUpper(_("Ban type")) << this->GetBanType();
 }
 
 const char *nDirectConnect::nTables::cBan::GetBanType()

@@ -7,5 +7,5 @@ INSERT IGNORE INTO pi_plug (nick,autoload,path,detail) VALUES
 	("lua"    ,0,"@prefix@/lib/liblua_pi.so"   ,"Allows you to use simple scripts written in LUA language (http://www.lua.org)"),
 	("msg"    ,0,"@prefix@/lib/libmessenger_pi.so","Send messages to offline users"),
 	("python"   ,0,"@prefix@/lib/libpython_pi.so"  ,"Allows you to use scripts written with Python (http://www.python.org)"),
-	("replace",0,"@prefix@/lib/libreplace_pi.so","Replace some words by other"),
+	("replace",0,"@prefix@/lib/libreplace_pi.so","Replace given patterns in text messages"),
 	("stats"  ,0,"@prefix@/lib/libstats_pi.so","Periodically saves statistics in the database (i.e. users, share, upload, searching, etc...)")

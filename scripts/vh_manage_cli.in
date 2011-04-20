@@ -369,6 +369,9 @@ function clean() #path_to_config
 # Manage of autoload plugins
 function autoload() # params
 {
+	if  [ "_$1" == "_" ]; then
+		ACTION="list";
+	fi
 	# Read options
 	while [ "_$1" != "_" ]; do
 		case "$1" in
@@ -377,6 +380,7 @@ function autoload() # params
 			"--off")	ACTION="off";;
 			"--configdir")	shift
 							CONF_DIR=$1;;
+			"_--autoload")		ACTION="list";;
 			*)			echo_s "Unknown parameter $1\n" $RED && exit;;
 		esac;
 		shift;

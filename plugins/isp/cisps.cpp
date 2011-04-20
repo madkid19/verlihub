@@ -25,6 +25,7 @@
 #include "src/stringutils.h"
 #include "cisps.h"
 #include "cpiisp.h"
+#include "src/i18n.h"
 
 using namespace nDirectConnect::nTables;
 using namespace nDirectConnect::nEnums;
@@ -45,8 +46,8 @@ cISP::cISP() :
 		mMaxShare[i] = -1;
 	}
 
-	mPatternMessage = "Your nick should match %[pattern]";
-	mConnMessage = "Your connection type should match %[pattern]";
+	mPatternMessage = _("Your nick should match %[pattern]");
+	mConnMessage = _("Your connection type should match %[pattern]");
 }
 
 cISP::~cISP()

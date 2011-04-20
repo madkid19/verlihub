@@ -54,15 +54,15 @@ void cRoomConsole::GetHelpForCommand(int cmd, ostream &os)
 		break;
 		case eLC_ADD: 
 		case eLC_MOD:
-		help_str = "!(add|mod)room <nick>"
-			"[ -CC<country_codes>]"
-			"[ -ac<min_auto_class>]"
-			"[ -AC<max_auto_class>]"
-			"[ -c<min_class>]"
-			"[ -t<\"topic\">]";
+		help_str = "!(add|mod)room <nickname>"
+			" [-CC <country_codes>]"
+			" [-ac <min_auto_class>]"
+			" [-AC <max_auto_class>]"
+			" [-c <min_class>]"
+			" [-t <\"topic\">]";
 		break;
 		case eLC_DEL:
-		help_str = "!delroom <nick>"; break;
+		help_str = "!delroom <nickname>"; break;
 		default: break;
 	}
 	cDCProto::EscapeChars(help_str,help_str);

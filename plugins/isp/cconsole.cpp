@@ -54,21 +54,21 @@ void cISPConsole::GetHelpForCommand(int cmd, ostream &os)
 		case eLC_ADD: 
 		case eLC_MOD:
 		help_str = "!(add|mod)isp <iprange>"
-			"[ -N<\"name\">]"
-			"[ -CC<country_codes>]"
-			"[ -n<nick_pattern>]"
-			"[ -d(<\"desc_tag\">]"
-			"[ -c<conn_type>]"
-			"[ -g<share_guest>]"
-			"[ -r<share_reg>]"
-			"[ -v<share_vip>]"
-			"[ -o<share_op>]"
-			"[ -G<max_share_guest>]"
-			"[ -R<max_share_reg>]"
-			"[ -V<max_share_vip>]"
-			"[ -O<max_share_op>]"
-			"[ -mn<\"nick error message\">]"
-			"[ -mc<\"conn error message\">]";
+			" [-N <\"name\">]"
+			" [-CC <country_codes>]"
+			" [-n <nick_pattern>]"
+			" [-d <\"desc_tag\">]"
+			" [-c <conn_type>]"
+			" [-g <share_guest>]"
+			" [-r <share_reg>]"
+			" [-v <share_vip>]"
+			" [-o <share_op>]"
+			" [-G <max_share_guest>]"
+			" [-R <max_share_reg>]"
+			" [-V <max_share_vip>]"
+			" [-O <max_share_op>]"
+			" [-mn <\"nick error message\">]"
+			" [-mc <\"conn error message\">]";
 		break;
 		case eLC_DEL:
 		help_str = "!delisp <iprange>"; break;

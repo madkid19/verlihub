@@ -55,9 +55,9 @@ void cForbidConsole::GetHelpForCommand(int cmd, ostream &os)
 		case eLC_ADD: 
 		case eLC_MOD:
 		help_str = "!(add|mod)forbid <\"expression\">"
-			"[ -f <flags>]"
-			"[ -C <max_class>]"
-			"[ -r <\"kick_reason\">]"
+			" [-f <flags>]"
+			" [-C <max_class>]"
+			" [-r <\"kick_reason\">]"
 			"\r\n";
 		break;
 		case eLC_DEL:

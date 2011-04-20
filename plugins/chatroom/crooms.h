@@ -49,7 +49,6 @@ public:
 	// -- stored data
 	string mNick;
 	string mTopic;
-	string mCreator;
 	string mAutoCC;
 	int mMinClass;
 	int mAutoClassMin;
