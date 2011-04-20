@@ -25,27 +25,27 @@
 #include <GeoIP.h>
 using std::string;
 
-namespace nUtils {
-
+namespace nVerliHub {
+	namespace nUtils {
   /**
   * Class to convert IP address or hostname to country code.
-  * 
+  *
   * @author Daniel Muller
   * @version 1.0
   */
-  
-class cGeoIP{
- public:
+class cGeoIP
+{
+public:
 	/**
 	* Class constructor.
 	*/
 	cGeoIP();
-	
+
 	/**
 	* Class destructor.
 	*/
 	~cGeoIP();
-	
+
 	/**
 	* Return the country code for the given hostname.
 	* @param hostname The hostname.
@@ -57,7 +57,7 @@ class cGeoIP{
 	// GeoIP instance
 	GeoIP * mGI;
 };
-
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub
 
 #endif

@@ -36,10 +36,9 @@ using namespace std;
 
 #define PADDING 25
 
-using namespace ::nUtils;
-
-namespace nDirectConnect {
-namespace nTables {
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nTables {
 
 cRegUserInfo::cRegUserInfo():
 	mPWCrypt(eCRYPT_NONE),
@@ -102,7 +101,7 @@ ostream & operator << (ostream &os, cRegUserInfo &ui)
 	os << "\r\n";
 	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Last error");
 	if(ui.mErrorLast)
-		os << cTime(ui.mErrorLast).AsDate() << "  [" << ui.mErrorIP << "]"; 
+		os << cTime(ui.mErrorLast).AsDate() << "  [" << ui.mErrorIP << "]";
 	else
 		os <<  _("No information");
 	os << "\r\n";
@@ -125,17 +124,14 @@ string & cRegUserInfo::GetNick(){
 	return mNick;
 }
 
-};
-};
-
 /*!
-    \fn nDirectConnect::nTables::cRegUserInfo::SetPass(const string &)
+    \fn ::nTables::cRegUserInfo::SetPass(const string &)
  */
-void nDirectConnect::nTables::cRegUserInfo::SetPass(string str, int crypt_method)
+void cRegUserInfo::SetPass(string str, int crypt_method)
 {
 	string salt;
 	mPwdChange = !str.size();
-	
+
 	if(str.size()) {
 		static const char *saltchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmlopqrstuvwxyz0123456789./";
 		static const int saltcharsnum = strlen(saltchars);
@@ -168,3 +164,6 @@ void nDirectConnect::nTables::cRegUserInfo::SetPass(string str, int crypt_method
 	} else
 		mPasswd = str;
 }
+
+	}; // namespace nTables
+}; // namespace nVerliHub

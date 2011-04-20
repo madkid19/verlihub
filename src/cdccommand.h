@@ -23,10 +23,9 @@
 #define CDCCOMMAND_H
 #include "ccommand.h"
 #include "cobj.h"
-using namespace ::nCmdr;
+//using namespace ::nCmdr;
 
-namespace nDirectConnect
-{
+namespace nVerliHub {
 	class cUser;
 	class cServerDC;
 	class cConnDC;
@@ -42,12 +41,12 @@ namespace nDirectConnect
 		OwnerType *mOwner;
 		virtual ~tConsoleBase(){}
 		virtual int OpCommand(const string &, cConnDC*) = 0;
-		virtual int UsrCommand(const string & , cConnDC * ) = 0;		
+		virtual int UsrCommand(const string & , cConnDC * ) = 0;
 	};
-	
+
 	typedef tConsoleBase<cServerDC> cDCConsoleBase;
 
-	class cDCCommand : public ::nCmdr::cCommand
+	class cDCCommand : public nCmdr::cCommand
 	{
 	public:
 		cDCCommand();
@@ -55,7 +54,7 @@ namespace nDirectConnect
 
 		long mActionType;
 
-		class sDCCmdFunc : public ::nCmdr::cCommand::sCmdFunc
+		class sDCCmdFunc : public nCmdr::cCommand::sCmdFunc
 		{
 		public:
 			cServerDC *mS;
@@ -76,6 +75,6 @@ namespace nDirectConnect
 		virtual void Init(void *co);
 		virtual void Init(int ID, const char *IdRegex, const char *, sCmdFunc*);
 	};
-};
+}; // namespace nVerliHub
 
 #endif

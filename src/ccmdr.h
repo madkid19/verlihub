@@ -37,7 +37,8 @@ using std::ostream;
 \brief Command and their parameter parsing and Interpreting tools
 Contains a notion of a Command and a Command list
 */
-namespace nCmdr {
+namespace nVerliHub {
+	namespace nCmdr {
 
 /**
 a command collection, interprets commands
@@ -61,6 +62,7 @@ private:
 	tCmdList mCmdList;
 };
 
-};
+	}; // namespace nCmdr
+}; // namespace nVerliHub
 
 #endif

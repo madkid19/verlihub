@@ -28,103 +28,103 @@
 #include "cobj.h"
 
 using std::vector;
-using namespace nUtils;
 
-namespace nConfig
-{
-
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nConfig {
 
 #define NewItemMethod(TYPE,Suffix) virtual cConfigItemBase##Suffix * NewItem(TYPE &var){ return new cConfigItemBase##Suffix(var);};
 
 class cBasicItemCreator
 {
-public:
-	cBasicItemCreator(){};
-	NewItemMethod(bool, Bool);
-	NewItemMethod(char, Char);
-	NewItemMethod(int, Int);
-	NewItemMethod(unsigned int, UInt);
-	NewItemMethod(long, Long);
-	NewItemMethod(__int64, Int64);
-	NewItemMethod(unsigned long, ULong);
-	NewItemMethod(char *, PChar);
-	NewItemMethod(string, String);
-	NewItemMethod(double, Double);
-	virtual void DeleteItem(cConfigItemBase *item) { delete item; }
+	public:
+		cBasicItemCreator(){};
+		NewItemMethod(bool, Bool);
+		NewItemMethod(char, Char);
+		NewItemMethod(int, Int);
+		NewItemMethod(unsigned int, UInt);
+		NewItemMethod(long, Long);
+		NewItemMethod(__int64, Int64);
+		NewItemMethod(unsigned long, ULong);
+		NewItemMethod(char *, PChar);
+		NewItemMethod(string, String);
+		NewItemMethod(double, Double);
+		virtual void DeleteItem(cConfigItemBase *item)
+		{
+			delete item;
+		}
 };
 
-
-class cConfigBaseBase;
 
 /**configuration base class
   *@author Daniel Muller
   */
 class cConfigBaseBase : public cObj
 {
-public:
-	typedef unsigned tItemHashType;
-	cConfigBaseBase();
-	virtual ~cConfigBaseBase();
-	/** save config, to be able to load it after */
-	virtual int Save() = 0;
-	/** The config load function - whetre from a file, or from database, or whatever
-		return >= 0 on success, otherwise error code
-	*/
-	virtual int Load() = 0;
+	public:
+		typedef unsigned tItemHashType;
+		cConfigBaseBase();
+		virtual ~cConfigBaseBase();
+		/** save config, to be able to load it after */
+		virtual int Save() = 0;
+		/** The config load function - whetre from a file, or from database, or whatever
+			return >= 0 on success, otherwise error code
+		*/
+		virtual int Load() = 0;
 
-	cBasicItemCreator *mItemCreator;
-	
-	/********** typedefs */
-	/** the itemlist type */
-	// nicked acess
-	//typedef tStringHashMap<cConfigItemBase*> tItemHash;
-	// numerated access
-	typedef vector<size_t> tItemVec;
-	typedef tItemVec::iterator tIVIt;
+		cBasicItemCreator *mItemCreator;
 
-	typedef tcHashListMap<cConfigItemBase*,unsigned > tItemHash;
-	typedef tItemHash::iterator tIHIt;
+		/********** typedefs */
+		/** the itemlist type */
+		// nicked acess
+		//typedef tStringHashMap<cConfigItemBase*> tItemHash;
+		// numerated access
+		typedef vector<size_t> tItemVec;
+		typedef tItemVec::iterator tIVIt;
 
-	// set the base pointer to relative adresses
-	void SetBaseTo(void * new_base);
+		typedef tcHashListMap<cConfigItemBase*,unsigned > tItemHash;
+		typedef tItemHash::iterator tIHIt;
 
-	void *mBasePtr;
-	tItemHash mhItems;
-	tItemVec  mvItems;
-	static hHashStr<tItemHashType> msHasher;
+		// set the base pointer to relative adresses
+		void SetBaseTo(void * new_base);
 
-	/**
-		Item iterator
-	*/
-	struct iterator
-	{
-		iterator(){}
-		iterator (class cConfigBaseBase *C,const tIVIt &it):mC(C),mIT(it){}
-		cConfigItemBase * operator* () { return mC->mhItems.GetByHash(*mIT);}
-		iterator &operator ++(){ mIT++; return *this;}
-		iterator(iterator &it){operator=(it);}
-		bool operator != (iterator &it){ return mIT != it.mIT;}
-		cConfigBaseBase *mC;
-		tIVIt mIT;
-		iterator &Set(class cConfigBaseBase *C,const tIVIt &it){mC=C;mIT=it; return *this;}
-		iterator &operator=(iterator & it){ mIT = it.mIT; mC=it.mC; return *this;}
+		void *mBasePtr;
+		tItemHash mhItems;
+		tItemVec  mvItems;
+		static hHashStr<tItemHashType> msHasher;
 
-	};
+		/**
+			Item iterator
+		*/
+		struct iterator
+		{
+			iterator(){}
+			iterator (class cConfigBaseBase *C,const tIVIt &it):mC(C),mIT(it){}
+			cConfigItemBase * operator* () { return mC->mhItems.GetByHash(*mIT);}
+			iterator &operator ++(){ mIT++; return *this;}
+			iterator(iterator &it){operator=(it);}
+			bool operator != (iterator &it){ return mIT != it.mIT;}
+			cConfigBaseBase *mC;
+			tIVIt mIT;
+			iterator &Set(class cConfigBaseBase *C,const tIVIt &it){mC=C;mIT=it; return *this;}
+			iterator &operator=(iterator & it){ mIT = it.mIT; mC=it.mC; return *this;}
 
-	iterator mBegin;
-	iterator mEnd;
-	iterator &begin(){return mBegin.Set(this,mvItems.begin());}
-	iterator &end()  {return mEnd.Set(this,mvItems.end());  }
-	/** add existing item pointed by the argument at the end of mvItems , and bind a nick to it*/
-	cConfigItemBase * Add(const string &, cConfigItemBase *);
+		};
 
-	/** bind a nick to a given vaiable */
-	void BindNick(int , const string &);
+		iterator mBegin;
+		iterator mEnd;
+		iterator &begin(){return mBegin.Set(this,mvItems.begin());}
+		iterator &end()  {return mEnd.Set(this,mvItems.end());  }
+		/** add existing item pointed by the argument at the end of mvItems , and bind a nick to it*/
+		cConfigItemBase * Add(const string &, cConfigItemBase *);
+
+		/** bind a nick to a given vaiable */
+		void BindNick(int , const string &);
 
 
-	/** access operators */
-	cConfigItemBase * operator[](int);
-	cConfigItemBase * operator[](const string &);
+		/** access operators */
+		cConfigItemBase * operator[](int);
+		cConfigItemBase * operator[](const string &);
 };
 
 
@@ -141,21 +141,21 @@ very useful
 */
 class cConfigBase : public cConfigBaseBase
 {
-public:
-	cConfigBase(){};
-	virtual ~cConfigBase(){};
+	public:
+		cConfigBase(){};
+		virtual ~cConfigBase(){};
 
-	DeclareAddMethods(bool);
-	DeclareAddMethods(char);
-	DeclareAddMethods(int);
-	DeclareAddMethods(unsigned);
-	DeclareAddMethods(long);
-	DeclareAddMethods(unsigned long);
-	DeclareAddMethods(__int64);
-	DeclareAddMethods(string);
-	DeclareAddMethods(char *);
-	DeclareAddMethods(double);
+		DeclareAddMethods(bool);
+		DeclareAddMethods(char);
+		DeclareAddMethods(int);
+		DeclareAddMethods(unsigned);
+		DeclareAddMethods(long);
+		DeclareAddMethods(unsigned long);
+		DeclareAddMethods(__int64);
+		DeclareAddMethods(string);
+		DeclareAddMethods(char *);
+		DeclareAddMethods(double);
 };
-
-};
+	}; // namespace nConfig
+}; // namespace nVerliHub
 #endif

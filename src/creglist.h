@@ -27,14 +27,15 @@
 #include "tcache.h"
 
 using namespace std;
-using namespace nMySQL;
-using namespace nConfig;
 
-namespace nDirectConnect {
-
-// forward declarations
-class cConnDC;
-class cServerDC;
+namespace nVerliHub {
+	using namespace nMySQL;
+	using namespace nConfig;
+	// forward declarations
+	namespace nSocket { class cConnDC; class cServerDC; };
+	using nSocket::cConnDC;
+	using nSocket::cServerDC;
+	class cServerDC;
 
 namespace nTables {
 

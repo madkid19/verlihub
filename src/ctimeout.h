@@ -23,8 +23,8 @@
 #define NUTILS_CTIMEOUT_H
 #include "ctime.h"
 
-namespace nUtils
-{
+namespace nVerliHub {
+	namespace nUtils {
 /**mesures timeout and detects flooding
   *@author Daniel Muller
   */
@@ -34,7 +34,7 @@ namespace nUtils
  * */
 
 class cTimeOut {
-public: 
+public:
 	cTimeOut():mMinDelay(0l),mMaxDelay(0l),mLast(0l){};
 	cTimeOut(double min,double max,const cTime &now):mMinDelay(min),mMaxDelay(max),mLast(now){};
 	~cTimeOut();
@@ -81,5 +81,6 @@ public: // Public attributes
 
 };
 
-};
+	}; // nUtils
+}; // nVerliHub
 #endif

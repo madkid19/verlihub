@@ -26,10 +26,8 @@
 #include "tlistconsole.h"
 #include "cdcconsole.h"
 
-using nConfig::tMySQLMemoryList;
-
-namespace nDirectConnect {
-	
+namespace nVerliHub {
+	using nConfig::tMySQLMemoryList;
 	class cServerDC;
 	class cDCConsole;
 	namespace nTables {
@@ -67,10 +65,7 @@ namespace nDirectConnect {
 				virtual void GetHelp(ostream &os);
 
 		};
-
-
-	};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 #endif
- 

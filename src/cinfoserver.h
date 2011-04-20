@@ -29,19 +29,15 @@
 
 using std::ostream;
 
-using nConfig::cConfigBase;
+namespace nVerliHub {
+	class cServerDC;
 
-namespace nDirectConnect {
-
-class cServerDC;
-
-namespace nInfo {
 /**
 info about the server
 @author Daniel Muller
 */
 
-class cInfoServer : public cConfigBase
+class cInfoServer : public nConfig::cConfigBase
 {
 public:
 	cInfoServer();
@@ -54,7 +50,6 @@ public:
 private:
 	cServerDC *mServer;
 };
-};
-};
+}; // namespace nVerliHub
 
 #endif

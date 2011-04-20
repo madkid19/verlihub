@@ -22,9 +22,8 @@
 #include "cvhpluginmgr.h"
 #include "cvhplugin.h"
 
-namespace nDirectConnect {
-
-namespace nPlugin {
+namespace nVerliHub {
+	namespace nPlugin {
 
 cVHPluginMgr::cVHPluginMgr(cServerDC *server,const string pluginDir):
 	cPluginManager(pluginDir), mServer(server)
@@ -35,18 +34,15 @@ cVHPluginMgr::cVHPluginMgr(cServerDC *server,const string pluginDir):
 	cout << "------------------------" << endl;
 }
 
-cVHPluginMgr::~cVHPluginMgr(){}
-};
+cVHPluginMgr::~cVHPluginMgr()
+{}
 
-};
-
-
-/*!
-    \fn nDirectConnect::nPlugin::cVHPluginMgr::OnPluginLoad(cPluginBase *pi)
- */
-void nDirectConnect::nPlugin::cVHPluginMgr::OnPluginLoad(cPluginBase *pi)
+void cVHPluginMgr::OnPluginLoad(cPluginBase *pi)
 {
 	if (Log(0))
 		LogStream() << "OnPluginLoad: " << pi->Name() << endl;
 	((cVHPlugin *)pi)->OnLoad(mServer);
 }
+
+	}; // namespace nPlugin
+}; // namespace nVerliHub

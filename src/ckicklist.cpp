@@ -22,9 +22,8 @@
 #include "cconndc.h"
 #include "ckicklist.h"
 
-namespace nDirectConnect {
-
-namespace nTables {
+namespace nVerliHub {
+	namespace nTables {
 
 cKickList::cKickList(cMySQL &mysql) : cConfMySQL(mysql)
 {
@@ -127,7 +126,7 @@ bool cKickList::FindKick(cKick &Kick, const string &Nick, const string &OpNick, 
 	return found;
 }
 
-};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 

@@ -20,8 +20,8 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cpluginloader.h"
-
-namespace nPlugin {
+namespace nVerliHub {
+	namespace nPlugin {
 
 cPluginLoader::cPluginLoader(const string &filename) :
 	cObj("cPluginLoader"),
@@ -44,16 +44,11 @@ cPluginLoader::~cPluginLoader()
 		mPlugin = NULL;
 	}
 }
-};
 
-
-/*!
-    \fn nPlugin::cPluginLoader::Open()
- */
-bool nPlugin::cPluginLoader::Open()
+bool cPluginLoader::Open()
 {
 	#ifdef _WIN32
-	mHandle = LoadLibrary(mFileName.c_str()); 
+	mHandle = LoadLibrary(mFileName.c_str());
 	if(mHandle == NULL) {
 	#else
 
@@ -76,11 +71,7 @@ bool nPlugin::cPluginLoader::Open()
 	return true;
 }
 
-
-/*!
-    \fn nPlugin::cPluginLoader::Close()
- */
-bool nPlugin::cPluginLoader::Close()
+bool cPluginLoader::Close()
 {
 	mcbDelPluginFunc(mPlugin);
 	mPlugin = NULL;
@@ -99,7 +90,7 @@ bool nPlugin::cPluginLoader::Close()
 }
 
 /** log the event */
-int nPlugin::cPluginLoader::StrLog(ostream & ostr, int level)
+int cPluginLoader::StrLog(ostream & ostr, int level)
 {
 	if(cObj::StrLog(ostr,level))
 	{
@@ -109,11 +100,7 @@ int nPlugin::cPluginLoader::StrLog(ostream & ostr, int level)
 	return 0;
 }
 
-
-/*!
-    \fn nPlugin::cPluginLoader::LoadSym()
- */
-bool nPlugin::cPluginLoader::LoadSym()
+bool cPluginLoader::LoadSym()
 {
 	#ifdef HAVE_FREEBSD
 	/*
@@ -129,11 +116,7 @@ bool nPlugin::cPluginLoader::LoadSym()
 	return true;
 }
 
-
-/*!
-    \fn nPlugin::cPluginLoader::LoadSym(const char *)
- */
-void * nPlugin::cPluginLoader::LoadSym(const char *name)
+void * cPluginLoader::LoadSym(const char *name)
 {
 	#ifdef _WIN32
 	void *func = (void *) GetProcAddress(mHandle, name);
@@ -151,3 +134,5 @@ void * nPlugin::cPluginLoader::LoadSym(const char *name)
 	#endif
 	return func;
 }
+	}; // namespace nPlugin
+}; // namespace nVerliHub

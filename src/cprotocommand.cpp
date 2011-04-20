@@ -24,11 +24,10 @@
 #endif
 #include "cprotocommand.h"
 #include "stringutils.h"
-using namespace nStringUtils;
 
-namespace nServer
-{
-
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nProtocol {
 cProtoCommand::cProtoCommand()
 {
 }
@@ -48,5 +47,5 @@ bool cProtoCommand::AreYou(const string &str)
 {
 	return 0==StrCompare(str,0,mCmd.length(),mCmd);
 }
-
-};
+	}; // namespace nProtocol
+}; // namespace nVerliHub

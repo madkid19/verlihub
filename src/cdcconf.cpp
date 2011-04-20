@@ -24,10 +24,8 @@
 #include <string>
 using namespace std;
 
-namespace nDirectConnect
-{
-namespace nTables
-{
+namespace nVerliHub {
+	namespace nTables {
 
 cDCConf::cDCConf( cServerDC &serv ): mS(serv)
 {
@@ -66,7 +64,7 @@ void cDCConf::AddVars()
 	Add("hub_category",hub_category,string(""));
 	Add("hub_owner",hub_owner,string(""));
 	Add("hub_version",hub_version,VERSION);
-	Add("hub_version_special",hub_version_special,string(""));	
+	Add("hub_version_special",hub_version_special,string(""));
 	Add("hub_security", hub_security, string("VerliHub"));
 	Add("hub_security_desc", hub_security_desc, string("Hub-Security for broadcasting messages"));
 	Add("opchat_name", opchat_name, string("OpChat"));
@@ -80,7 +78,7 @@ void cDCConf::AddVars()
 	#endif
 	Add("extra_listen_ports", extra_listen_ports,string(""));
 	// End hub info and basic settings
-	
+
 	// Hublist configuration
 	Add("hublist_host",hublist_host,string(""));
 	Add("hublist_port",hublist_port,2501);
@@ -103,7 +101,7 @@ void cDCConf::AddVars()
 	Add("max_users5",max_users[5],1000);
 	Add("max_users6",max_users[6],1000);
 	// End max users configuration
-	
+
 	// Share configuration
 	Add("min_share",min_share,(unsigned long)1*1024);
 	Add("min_share_reg",min_share_reg,(unsigned long)1*1024);
@@ -118,7 +116,7 @@ void cDCConf::AddVars()
 	Add("max_share_vip",max_share_vip,(unsigned long)10*1024*1024);
 	Add("max_share_ops",max_share_ops,(unsigned long)10*1024*1024);
 	// End share configuration
-	
+
 	// Search configuration
 	Add("search_number", search_number, 1);
 	Add("int_search",int_search,32);
@@ -131,7 +129,7 @@ void cDCConf::AddVars()
 	Add("max_passive_sr",max_passive_sr,25);
 	Add("delayed_search",delayed_search, 1);
 	// End search configuration
-	
+
 	// Nicklist configuration
 	Add("max_nick",max_nick,64u);
 	Add("min_nick",min_nick,3u);
@@ -144,7 +142,7 @@ void cDCConf::AddVars()
 	Add("optimize_userlist",optimize_userlist,0);
 	Add("ul_portion",ul_portion,50);
 	// End nicklist configuration
-	
+
 	// Mainchat messages configuration
 	Add("max_message_size",mS.mMaxLineLength, (unsigned long)10240);
 	Add("max_chat_msg",max_chat_msg,256u);
@@ -154,13 +152,13 @@ void cDCConf::AddVars()
 	Add("chat_default_on",chat_default_on, true);
 	Add("mainchat_class",mainchat_class,0);
 	// End mainchat messages configuration
-	
+
 	// Private message configuration
 	Add("max_flood_counter_pm",max_flood_counter_pm,5);
 	Add("int_flood_pm_period", int_flood_pm_period, 5);
 	Add("int_flood_pm_limit", int_flood_pm_limit, 5);
 	// End private message configuration
-	
+
 	// User control configuration
 	Add("classdif_reg", classdif_reg, 2);
 	Add("classdif_kick", classdif_kick, 0);
@@ -196,7 +194,7 @@ void cDCConf::AddVars()
 	Add("send_user_ip",send_user_ip,false);
 	Add("send_user_info", send_user_info, true);
 	// End user control configuration
-	
+
 	// Advanced hub configuration and tweaks
 	Add("extended_welcome_message", extended_welcome_message, 0);
 	Add("host_header", host_header, 1);
@@ -234,7 +232,7 @@ void cDCConf::AddVars()
 		Add(s_varname, timeout_length[i], to_default[i]);
 	}
 	// End advanced hub configuration and tweaks
-	
+
 	 // Tag configuration
 	Add("show_tags",show_tags,2);
 	Add("tag_allow_none",tag_allow_none, true);
@@ -252,7 +250,7 @@ void cDCConf::AddVars()
 	Add("tag_min_version",tag_min_version,-1);
 	Add("tag_max_version",tag_max_version,-1);
 	// End tag configuration
-	
+
 	// IP and zone configuration
 	Add("cc_zone1",cc_zone[0],string(""));
 	Add("cc_zone2",cc_zone[1],string(""));
@@ -264,7 +262,7 @@ void cDCConf::AddVars()
 	Add("ip_zone6_min",ip_zone6_min,string(""));
 	Add("ip_zone6_max",ip_zone6_max,string(""));
 	// End IP and zone configuration
-	
+
 	// Custom messages
 	Add("ban_extra_message", ban_extra_message, "");
 	Add("msg_replace_ban",msg_replace_ban, string(""));
@@ -299,5 +297,5 @@ int cDCConf::Save()
 	return 0;
 }
 
-};
-};
+	}; // namepsace nTables
+}; // namespace nVerliHub

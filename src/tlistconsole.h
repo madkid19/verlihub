@@ -24,15 +24,11 @@
 #include "cdccommand.h"
 #include "ccmdr.h"
 
-using namespace nCmdr;
-
-namespace nDirectConnect{ class cConnDC;}
-using namespace nDirectConnect;
-
-namespace nConfig
-{
-
-	using namespace ::nCmdr;
+namespace nVerliHub {
+	using namespace nCmdr;
+	namespace nSocket { class cConnDC;};
+	namespace nConfig {
+	using namespace nCmdr;
 /**
 a console that parses commands for Lists based on tMySQLMemoryList
 
@@ -73,12 +69,12 @@ public:
 	{
 		return this->DoCommand(str,conn);
 	}
-	
+
 	virtual int UsrCommand(const string &str , cConnDC *conn)
 	{
 		return this->DoCommand(str,conn);
 	}
-	
+
 	virtual int DoCommand(const string &str, cConnDC * conn)
 	{
 		ostringstream os;
@@ -121,7 +117,7 @@ public:
 		if(!(cmd == eLC_LST || cmd == eLC_HELP)) id += " ";
 		return id.c_str();
 	}
-	
+
 	virtual const char *CmdId(int cmd)
 	{
 		static string id;
@@ -135,17 +131,17 @@ public:
 	{
 		os << this->CmdId(cmd) << this->GetParamsRegex(cmd) << "\r\n";
 	}
-	
+
 	virtual void GetHelp(ostream &os)
 	{
-		os << "No help available" << "\r\n";	
+		os << "No help available" << "\r\n";
 	}
-	
+
 	virtual OWNER_TYPE * GetPlugin() { return this->mOwner; }
 protected:
 
 
-	class cfBase : public ::cDCCommand::sDCCmdFunc
+	class cfBase : public cDCCommand::sDCCmdFunc
 	{
 		public:
 		~cfBase(){};
@@ -224,7 +220,7 @@ protected:
 			{
 				if (this->GetTheList() && (pOrig = this->GetTheList()->FindData(Data)))
 				{
-					if(Console->ReadDataFromCmd(this, eLC_MOD, *pOrig)) 
+					if(Console->ReadDataFromCmd(this, eLC_MOD, *pOrig))
 					{
 						this->GetTheList()->UpdateData(*pOrig);
 						(*this->mOS) << "Successfully modified: " << *pOrig << "\r\n";
@@ -257,7 +253,7 @@ protected:
 			return true;
 		}
 	} mcfLst;
-	
+
 	class cfHelp : public cfBase
 	{
 		public:

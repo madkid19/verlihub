@@ -23,7 +23,8 @@
 #ifndef NSERVERCCONNBASE_H
 #define NSERVERCCONNBASE_H
 
-namespace nServer {
+namespace nVerliHub {
+	namespace nSocket {
 
 #if !defined _WIN32
 	typedef int tSocket;
@@ -42,6 +43,8 @@ class cConnBase
 	public: virtual operator tSocket() const =0;
 };
 
-};
+	}; // namespace nSocket
+
+}; // namespace nVerliHub
 
 #endif

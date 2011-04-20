@@ -24,10 +24,8 @@
 #include <iomanip>
 #include "i18n.h"
 
-namespace nDirectConnect {
-
+namespace nVerliHub {
 	using namespace nEnums;
-
 	namespace nTables {
 
 		cRedirect::cRedirect()
@@ -62,6 +60,6 @@ namespace nDirectConnect {
 			return os;
 		}
 
-	};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 

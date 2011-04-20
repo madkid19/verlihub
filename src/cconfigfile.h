@@ -27,9 +27,8 @@
 
 
 using namespace std;
-namespace nConfig
-{
-
+namespace nVerliHub {
+	namespace nConfig {
 /**configuration lodable from a file
   *@author Daniel Muller
   */
@@ -49,5 +48,6 @@ protected: // Protected attributes
 	string mFile;
 
 };
-};
+	}; // namespace nConfig
+}; // namespace nVerliHub
 #endif

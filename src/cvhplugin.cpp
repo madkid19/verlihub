@@ -24,7 +24,7 @@
 #include "cserverdc.h"
 #include "i18n.h"
 
-namespace nDirectConnect {
+namespace  {
 
 namespace nPlugin {
 

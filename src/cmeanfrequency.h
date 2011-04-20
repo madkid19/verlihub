@@ -29,8 +29,8 @@
 #include <iostream>
 
 using namespace std;
-
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 /**
   *@author Daniel Muller
   */
@@ -183,6 +183,6 @@ template<class T, int max_size=20> class cMeanFrequency
 
 };
 
-};
-
+	}; // namespace nUtils
+}; // namespace nVerliHub
 #endif

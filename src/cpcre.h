@@ -25,7 +25,8 @@
 #include <string>
 using std::string;
 
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 
 /**
 class wrapper for pcre API
@@ -60,6 +61,6 @@ private:
 	void Clear();
 };
 
-};
-
+	}; // namespace nUtils
+}; // namespace nVerliHub
 #endif

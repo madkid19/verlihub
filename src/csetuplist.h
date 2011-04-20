@@ -25,11 +25,9 @@
 #include <string>
 
 using namespace std;
-using namespace nConfig;
-
-namespace nDirectConnect {
-
-namespace nTables  {
+namespace nVerliHub {
+	using namespace nConfig;
+	namespace nTables {
 
 /**
 table containing hub's setup variables that used to be in config file
@@ -52,7 +50,7 @@ public:
 		string mVarName;
 		string mVarValue;
 	};
-	cSetupList(cMySQL &mysql);
+	cSetupList(nMySQL::cMySQL &mysql);
 	~cSetupList();
 	void LoadFileTo(cConfigBaseBase *, const char*);
 	void SaveFileTo(cConfigBaseBase *, const char*);
@@ -64,8 +62,7 @@ private:
 };
 
 
-};
-
-};
+	}; // namespace nTables
+}; // namespace VerliHub
 
 #endif

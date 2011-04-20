@@ -28,7 +28,8 @@
 
 using namespace std;
 
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 
 /** hashing structure */
 template <class HashType = unsigned long> class hHashStr
@@ -148,6 +149,6 @@ bool tcHashListMap<DataType,KeyType>::RemoveByHash(const KeyType &Hash)
 }
 
 
-};
-
+	}; // namespace nUtils
+}; // namespace nVerliHub
 #endif

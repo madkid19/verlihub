@@ -25,21 +25,23 @@
 #include "cmessagedc.h"
 #include "cdctag.h"
 
-using namespace nConfig;
 using std::string;
-namespace nDirectConnect {
+namespace  nVerliHub {
 
 namespace nProtocol {
 	class cDCProto;
 };
 
 using nProtocol::cDCProto;
-using nProtocol::nEnums::eDC_UNKNOWN;
+//using nProtocol::nEnums::eDC_UNKNOWN;
 
 class cServerDC;
 class cDCBanList;
 class cDCConsole;
-class cConnDC;
+//class cConnDC;
+namespace nSocket {
+	class cConnDC;
+};
 
 
 namespace nTables {
@@ -51,7 +53,7 @@ namespace nTables {
   * This class contains almost all verlihub's configuration parameters
   */
 
-class cDCConf : public cConfigBase //<sBasicItemCreator>
+class cDCConf : public nConfig::cConfigBase //<sBasicItemCreator>
 {
 public:
 	cDCConf( cServerDC &);
@@ -60,11 +62,11 @@ public:
 	virtual int Save();
 	void AddVars();
 
-	friend class ::nDirectConnect::cServerDC;
-	friend class ::nDirectConnect::nProtocol::cDCProto;
-	friend class ::nDirectConnect::nTables::cDCBanList;
-	friend class ::nDirectConnect::cDCConsole;
-	friend class ::nDirectConnect::cConnDC;
+	friend class cServerDC;
+	friend class nProtocol::cDCProto;
+	friend class nTables::cDCBanList;
+	friend class cDCConsole;
+	friend class cConnDC;
 public:
 	unsigned int max_users_total;
 	unsigned int max_users[7];
@@ -92,7 +94,7 @@ public:
 	unsigned int max_passive_sr;
 	unsigned tban_kick;
 	unsigned tban_max;
-	unsigned int max_length[eDC_UNKNOWN+1];
+	unsigned int max_length[nEnums::eDC_UNKNOWN+1];
 	unsigned max_nick;
 	unsigned min_nick;
 	string nick_chars;
@@ -164,7 +166,7 @@ public:
 	int int_myinfo;
 	int disable_me_cmd; // TODO: Convert to bool
 	int disable_regme_cmd;
-	int disable_usr_cmds; 
+	int disable_usr_cmds;
 	int disable_report_cmd;
 	bool disable_zlib;
 	int plugin_mod_class;
@@ -207,7 +209,7 @@ public:
 	int wrongpassword_report;
 	int botinfo_report;
 	double timeout_length[6];
-	
+
 	string ban_extra_message;
 	string msg_replace_ban;
 	string msg_welcome[11];
@@ -215,6 +217,6 @@ public:
 public: // Public attributes
 	cServerDC & mS;
 };
-};
-};
+	}; // nmaespace nTables
+}; // namespace nVerliHub
 #endif

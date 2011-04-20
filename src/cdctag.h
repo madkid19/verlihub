@@ -27,13 +27,18 @@
 
 using namespace std;
 
-namespace nDirectConnect
-{
+namespace nVerliHub {
 	namespace nEnums {
-	      typedef enum{ eCM_NOTAG, eCM_ACTIVE, eCM_PASSIVE, eCM_SOCK5} tClientMode;
-	      
+		typedef enum
+		{
+			eCM_NOTAG,
+			eCM_ACTIVE,
+			eCM_PASSIVE,
+			eCM_SOCK5
+		} tClientMode;
+
 		// Validate tag error code
-	        enum {
+		enum {
 			eTC_BANNED, // Banned client
 			eTC_UNKNOWN, // Unkown client
 			eTC_PARSE, // Tag parse error
@@ -49,12 +54,13 @@ namespace nDirectConnect
 			eTC_PASSIVE, // Restrict passive connections
 		};
 	}
+
 	namespace nTables {
 		class cDCConf;
 		class cConnType;
 	};
-	using namespace nDirectConnect::nTables;
-	using namespace nDirectConnect::nEnums;
+	using namespace nTables;
+	using namespace nEnums;
 
 /**dc info tag the <++ V:0.00,S:0,H:1> thing
   *@author Daniel Muller
@@ -62,58 +68,57 @@ namespace nDirectConnect
 
 class cDCTag
 {
-public:
-	cDCTag(cServerDC *mS);
-	cDCTag(cServerDC *mS, cDCClient *c);
-	
-	~cDCTag();
-	
-	cServerDC *mServer;
-	
-	cDCClient *client;
-	
-	/** the parsed tag if available **/
-	
-	string mTag;
-	
-	/** The name of the client **/
-	
-	//string mClientName;
-	
-	/** The chunck in the tag that identify the client **/
-	
-	string mTagID;
+	public:
+		cDCTag(cServerDC *mS);
+		cDCTag(cServerDC *mS, cDCClient *c);
+
+		~cDCTag();
+
+		cServerDC *mServer;
+
+		cDCClient *client;
+
+		/** the parsed tag if available **/
+
+		string mTag;
+
+		/** The name of the client **/
+
+		//string mClientName;
+
+		/** The chunck in the tag that identify the client **/
+
+		string mTagID;
 
 
-	/** The client version */
-	
-	double mClientVersion;
-	
-	/** The number of the hubs connected to **/
-	
-	int mTotHubs;
-	
-	/** The number of open slots **/
-	
-	int mSlots;
-	
-	/** Limit **/
-	
-	int mLimit;
+		/** The client version */
 
-	/** The mode of the client (active, passive or socket) **/
-	
-	tClientMode mClientMode;
-	
-	/** The rest of tag (after the mode part to the end) **/
-	
-	string mTagBody;
-	
-	bool ValidateTag(ostream &os, cConnType *conn_type, int &code);
-	
-	friend ostream &operator << (ostream&os, cDCTag &tag);
+		double mClientVersion;
 
+		/** The number of the hubs connected to **/
+
+		int mTotHubs;
+
+		/** The number of open slots **/
+
+		int mSlots;
+
+		/** Limit **/
+
+		int mLimit;
+
+		/** The mode of the client (active, passive or socket) **/
+
+		tClientMode mClientMode;
+
+		/** The rest of tag (after the mode part to the end) **/
+
+		string mTagBody;
+
+		bool ValidateTag(ostream &os, cConnType *conn_type, int &code);
+
+		friend ostream &operator << (ostream&os, cDCTag &tag);
 };
 
-};
+}; // namespace nVerliHub
 #endif

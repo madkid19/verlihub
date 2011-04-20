@@ -22,22 +22,20 @@
 #include "cmysql.h"
 #include "mysql_version.h"
 
-namespace nMySQL {
+namespace nVerliHub {
+
+	namespace nMySQL {
 
 cMySQL::cMySQL() : cObj("cMySQL")
 {
 	Init();
 }
 
-/*!
-    \fn nMySQL::cMySQL::cMySQL(string&host,string&user,string&pass,string&data)
- */
 cMySQL::cMySQL(string&host,string&user,string&pass,string&data) : cObj("cMySQL")
 {
 	 mDBName = data;
 	 Init();
-	 if(!Connect(host,user,pass,data))
-	 {
+	 if(!Connect(host,user,pass,data)) {
 	         throw "Mysql connection error.";
 	 }
 }
@@ -51,14 +49,15 @@ void cMySQL::Init()
 {
 	mDBHandle = NULL;
 	mDBHandle = mysql_init(mDBHandle);
-	if(!mDBHandle) Error(0, string("Can't init mysql structure :(.: "));	
+	if(!mDBHandle)
+		Error(0, string("Can't init mysql structure :(.: "));
 }
 
 bool cMySQL::Connect(string &host, string &user, string &pass, string &data)
 {
 	if(Log(1)) LogStream() << "Connecting to mysql server: "
 			<< user << "@" << host << "/" << data << " using UTF8 encoding" << endl;
-	
+
 	mysql_options(mDBHandle,MYSQL_OPT_COMPRESS,0);
 	//mysql_options(mDBHandle,MYSQL_SET_CHARSET_NAME,"utf8");
 	#if MYSQL_VERSION_ID  >= 50000
@@ -66,29 +65,18 @@ bool cMySQL::Connect(string &host, string &user, string &pass, string &data)
 	#endif
 
 	//mysql_options(mDBHandle,MYSQL_SET_CHARSET_NAME,charset.c_str());
-	
-	if(!mysql_real_connect(
-		mDBHandle,
-		host.c_str(),
-		user.c_str(),
-		pass.c_str(),
-		data.c_str(),0,0,0
-		)
-	){
 
+	if(!mysql_real_connect(mDBHandle, host.c_str(), user.c_str(), pass.c_str(), data.c_str(),0,0,0)){
 		Error(1, string("Connection to mysql server failed: "));
 		return false;
 	}
 	return true;
 }
 
-/*!
-    \fn cMySQL::Error()
- */
 void cMySQL::Error(int level, string text)
 {
 	if(ErrLog(level)) LogStream() << text << mysql_error(mDBHandle) << endl;
 }
 
-};
-
+	}; // namepspace nMySQL
+}; // namespace nVerliHub

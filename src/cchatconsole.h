@@ -24,15 +24,20 @@
 #include "cdccommand.h"
 #include "ccmdr.h"
 
-using namespace nCmdr;
-
-namespace nDirectConnect
-{
-
-class cConnDC;
-class cChatRoom;
-class cUserCollection;
-
+namespace nVerliHub {
+	using namespace nCmdr;
+	//class cConnDC;
+	class cChatRoom;
+	class cUserCollection;
+	namespace nEnums {
+		// Chat console command id
+		enum {
+			eCHAT_INVITE,
+			eCHAT_LEAVE,
+			eCHAT_OUT,
+			eCHAT_MEMBERS
+		};
+	};
 /**
 contains the commands that are accepted thourh the pm of any chatroom, like for example the OpChat
 
@@ -55,8 +60,6 @@ public:
 	virtual const char *CmdPrefix() {return "\\+";}
 	virtual const char *CmdId(int cmd);
 
-	// commands id's
-	enum { eCHAT_INVITE, eCHAT_LEAVE, eCHAT_OUT, eCHAT_MEMBERS };
 
 protected:
 
@@ -80,6 +83,6 @@ protected:
 	cChatRoom *mChatRoom;
 };
 
-};
+}; // namespace nVerliHub
 
 #endif

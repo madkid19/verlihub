@@ -26,7 +26,8 @@
 #include <sstream>
 
 using namespace std;
-namespace nMySQL {
+namespace nVerliHub {
+	namespace nMySQL {
 
 /**
 mysql query, contains result etc..
@@ -35,34 +36,34 @@ mysql query, contains result etc..
 */
 class cQuery : public cObj
 {
-public:
-	cQuery(cMySQL & mysql);
-	cQuery(cQuery & query);
-	~cQuery();
-	// clear the query and result, etc..
-	void Clear();
-	// return the stream to build the query
-	ostringstream & OStream(){ return mOS;}
-	// perform the query, return -1 on error
-	int Query();
-	// store result for iterating through it
-	int StoreResult();
-	// fetch next row from result
-	MYSQL_ROW Row();
-	// return the number of colums in the query result
-	int Cols();
-	// seek data row by the given number
-	void DataSeek(unsigned long long);
-	// is there an existing result?
-	bool GetResult();
-	cMySQL& getMySQL() { return mMySQL;}
-private:
-	cMySQL & mMySQL;
-	MYSQL_RES *mResult;
-	//string mQuery;
-	ostringstream mOS;
+	public:
+		cQuery(cMySQL & mysql);
+		cQuery(cQuery & query);
+		~cQuery();
+		// clear the query and result, etc..
+		void Clear();
+		// return the stream to build the query
+		ostringstream & OStream(){ return mOS;}
+		// perform the query, return -1 on error
+		int Query();
+		// store result for iterating through it
+		int StoreResult();
+		// fetch next row from result
+		MYSQL_ROW Row();
+		// return the number of colums in the query result
+		int Cols();
+		// seek data row by the given number
+		void DataSeek(unsigned long long);
+		// is there an existing result?
+		bool GetResult();
+		cMySQL& getMySQL() { return mMySQL;}
+	private:
+		cMySQL & mMySQL;
+		MYSQL_RES *mResult;
+		//string mQuery;
+		ostringstream mOS;
 };
-
-};
+	}; // namespace nMySQL
+}; // namespace nVerliHub
 
 #endif

@@ -24,13 +24,10 @@
 #include "cconfmysql.h"
 #include "ckick.h"
 
-using nConfig::cConfMySQL;
-
-namespace nDirectConnect {
-
-class cConnDC;
-
-namespace nTables {
+namespace nVerliHub {
+	using nConfig::cConfMySQL;
+	class cConnDC;
+	namespace nTables {
 
 /**
 @author Daniel Muller
@@ -47,8 +44,7 @@ protected:
 	cKick mModel;
 };
 
-};
-
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 #endif

@@ -20,9 +20,16 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cfreqlimiter.h"
-namespace nUtils {
-cFreqLimiter::cFreqLimiter(){
+
+namespace nVerliHub {
+	namespace nUtils {
+
+cFreqLimiter::cFreqLimiter()
+{
 }
-cFreqLimiter::~cFreqLimiter(){
+
+cFreqLimiter::~cFreqLimiter()
+{
 }
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub

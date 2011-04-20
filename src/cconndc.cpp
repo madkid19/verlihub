@@ -31,10 +31,10 @@
 #include "ccustomredirects.h"
 #include "i18n.h"
 
-using namespace ::nDirectConnect::nTables;
-namespace nDirectConnect
-{
-
+namespace nVerliHub {
+	using namespace nTables;
+	using namespace nEnums;
+	namespace nSocket {
 cConnDC::cConnDC(int sd, cAsyncSocketServer *server)
 : cAsyncConn(sd,server)
 {
@@ -407,5 +407,6 @@ void cDCConnFactory::DeleteConn(cAsyncConn * &Conn)
 	cConnFactory::DeleteConn(Conn);
 }
 
-};
+	}; // namespace nSocket
+}; // namespace nVerliHub
 

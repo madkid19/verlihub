@@ -22,10 +22,9 @@
 #include "csetuplist.h"
 #include "cdcproto.h"
 
-using namespace ::nDirectConnect::nProtocol;
-namespace nDirectConnect {
-
-namespace nTables  {
+namespace VerliHub {
+	using namespace nConfig;
+	namespace nTables {
 
 cSetupList::cSetupList(cMySQL &mysql):cConfMySQL(mysql)
 {
@@ -43,16 +42,7 @@ cSetupList::~cSetupList()
 {
 }
 
-
-};
-
-};
-
-
-/*!
-    \fn nDirectConnect::nTables::cSetupList::LoadFileTo(cConfigBase &, const char*)
- */
-void nDirectConnect::nTables::cSetupList::LoadFileTo(cConfigBaseBase *Config, const char*file)
+void cSetupList::LoadFileTo(cConfigBaseBase *Config, const char*file)
 {
 	db_iterator it;
 	cConfigItemBase *item = NULL;
@@ -66,7 +56,7 @@ void nDirectConnect::nTables::cSetupList::LoadFileTo(cConfigBaseBase *Config, co
 	mQuery.Clear();
 }
 
-void nDirectConnect::nTables::cSetupList::OutputFile(const string &file, ostream &os)
+void cSetupList::OutputFile(const string &file, ostream &os)
 {
 	const int width = 5;
 	db_iterator it;
@@ -89,10 +79,8 @@ void nDirectConnect::nTables::cSetupList::OutputFile(const string &file, ostream
 	}
 	mQuery.Clear();
 }
-/*!
-    \fn nDirectConnect::nTables::cSetupList::SaveFileTo(cConfigBase *, const char*)
- */
-void nDirectConnect::nTables::cSetupList::SaveFileTo(cConfigBaseBase *Config, const char*file)
+
+void cSetupList::SaveFileTo(cConfigBaseBase *Config, const char*file)
 {
 	cConfigBaseBase::iterator it;
 	mModel.mFile = file;
@@ -104,10 +92,7 @@ void nDirectConnect::nTables::cSetupList::SaveFileTo(cConfigBaseBase *Config, co
 	}
 }
 
-/*!
-    \fn nDirectConnect::nTables::cSetupList::SaveItem(cConfigItemBase *)
- */
-bool nDirectConnect::nTables::cSetupList::SaveItem(const char *InFile, cConfigItemBase *ci)
+bool cSetupList::SaveItem(const char *InFile, cConfigItemBase *ci)
 {
 	mModel.mFile = InFile;
 	mModel.mVarName = ci->mName;
@@ -117,10 +102,7 @@ bool nDirectConnect::nTables::cSetupList::SaveItem(const char *InFile, cConfigIt
 	return true;
 }
 
-/*!
-    \fn nDirectConnect::nTables::cSetupList::LoadItem(const char* FromFile, cConfigItemBase *)
- */
-bool nDirectConnect::nTables::cSetupList::LoadItem(const char *FromFile, cConfigItemBase *ci)
+bool cSetupList::LoadItem(const char *FromFile, cConfigItemBase *ci)
 {
 	mModel.mFile = FromFile;
 	mModel.mVarName = ci->mName;
@@ -128,3 +110,6 @@ bool nDirectConnect::nTables::cSetupList::LoadItem(const char *FromFile, cConfig
 	ci->ConvertFrom(mModel.mVarValue);
 	return true;
 }
+
+	}; // namespace nTables
+}; // namespace nVerliHub

@@ -22,14 +22,14 @@
 #ifndef NCONFIGTMYSQLMEMORYORDLIST_H
 #define NCONFIGTMYSQLMEMORYORDLIST_H
 #include "tmysqlmemorylist.h"
-using namespace nUtils;
 
-namespace nConfig
-{
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nConfig {
 
 /**
 a list mirroring the mysql data, loaded in ram, and ordered by some key
- 
+
 @author Daniel Muller
 */
 template<class DataType, class OwnerType>
@@ -37,27 +37,27 @@ class tMySQLMemoryOrdList : public tMySQLMemoryList<DataType,OwnerType>
 {
 public:
 	virtual int OrderTwoItems(const DataType &Data1, const DataType &Data2) =0;
-	
+
 	typedef vector<DataType*> tDataIndex;
 public:
-	tMySQLMemoryOrdList(cMySQL& mysql, OwnerType* owner, const string &tablename, const string &db_order): 
+	tMySQLMemoryOrdList(cMySQL& mysql, OwnerType* owner, const string &tablename, const string &db_order):
 		tMySQLMemoryList<DataType, OwnerType> (mysql, owner, tablename)
 	{
 		this->SetSelectOrder(db_order);
 	}
-	
+
 	virtual ~tMySQLMemoryOrdList() {}
 
 	virtual DataType* FindDataPosition(DataType const &data, int &CurPos)
 	{
 		// first adjust the CurPos, and init limits
-		int MinPos = 0; 
+		int MinPos = 0;
 		int MaxPos = this->mDataIndex.size()-1;
 		if(CurPos > MaxPos)
 			CurPos = MaxPos;
 		if(CurPos < MinPos)
 			CurPos = MinPos;
-		
+
 		// Chech if the Proposed CurPos might be ok
 		DataType *Data2 = NULL;
 		int Order = -1, CurOrder = 0;
@@ -75,7 +75,7 @@ public:
 				Data2 = this->GetDataAtOrder(MaxPos);
 				Order = this->OrderTwoItems(data, *Data2);
 			}
-		
+
 			switch (Order) {
 				case  0:
 					CurPos = MaxPos;
@@ -86,12 +86,12 @@ public:
 				default: break;
 			}
 		}
-		
+
 		// Try The Lower limit
 		if ((MinPos != CurPos)&&(MinPos<=MaxPos)) {
 			Data2 = this->GetDataAtOrder(MinPos);
 			Order = this->OrderTwoItems(data,*Data2);
-		
+
 			switch (Order) {
 				case  0:
 					CurPos = MinPos;
@@ -102,8 +102,8 @@ public:
 				default: break;
 			}
 		}
-	
-		// nope, it's somewhere in the middle	
+
+		// nope, it's somewhere in the middle
 		if((CurOrder > 0) && (CurPos < MaxPos))
 			return this->FindDataPositionLimited(data, CurPos, MaxPos, CurPos);
 		if((CurOrder < 0) && (CurPos > MinPos))
@@ -115,7 +115,7 @@ public:
 	{
 		return this->mDataIndex[Pos];
 	}
-	
+
 	virtual DataType* AppendData(DataType const& data)
 	{
 		int ExpectedPosition = this->Size();
@@ -124,22 +124,22 @@ public:
 		mDataIndex.insert(mDataIndex.begin()+ExpectedPosition, pData);
 		return pData;
 	}
-	
+
 	virtual void DelData(DataType& data)
 	{
 		int ExpectedPosition = 0;
 		this->FindDataPosition(data, ExpectedPosition);
-		
+
 		tMySQLMemoryList<DataType,OwnerType>::DelData(data);
 		mDataIndex.erase(mDataIndex.begin()+ExpectedPosition);
 	}
-	
+
 	virtual void Empty()
 	{
 		tMySQLMemoryList<DataType,OwnerType>::Empty();
 		mDataIndex.empty();
 	}
-	
+
 protected:
 	tDataIndex mDataIndex;
 
@@ -154,15 +154,15 @@ protected:
 			CurPos = MidPos;
 			Data2 = this->GetDataAtOrder(MidPos);
 			Order = this->OrderTwoItems(data, *Data2);
-			
+
 			switch(Order) {
 				case  0:
 					return Data2;
-				case  1: 
+				case  1:
 					if(MidPos < MaxPos)
 						return this->FindDataPositionLimited(data, MidPos, MaxPos, CurPos);
 					else
-						CurPos = MidPos +1; 
+						CurPos = MidPos +1;
 					return NULL;
 				case -1:
 					if(MidPos > MinPos+1)
@@ -179,6 +179,6 @@ protected:
 	}
 };
 
-};
-
+	}; // namespace nConfig
+}; // namespace nVerliHub
 #endif

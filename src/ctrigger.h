@@ -26,7 +26,7 @@
 
 using namespace std;
 
-namespace nDirectConnect {
+namespace  {
 
 class cConnDC;
 class cServerDC;

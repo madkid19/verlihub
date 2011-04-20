@@ -25,24 +25,23 @@
 #include "ccallbacklist.h"
 #include "cvhplugin.h"
 
-using namespace ::nPlugin;
-
-namespace nDirectConnect {
+namespace nVerliHub {
 
 class cServerDC;
 class cUser;
 class cDCTag;
 class cUserCollection;
 
-namespace nProtocol{ class cMessageDC; };
-using ::nDirectConnect::nProtocol::cMessageDC;
+	namespace nProtocol {
+		class cMessageDC;
+	};
+	using nProtocol::cMessageDC;
 /**
   * Verlihub's plugin namespace
   * contains baase classes fo plugin related structures specialized for verlihub
   */
-namespace nPlugin {
+	namespace nPlugin {
 
-using namespace ::nDirectConnect;
 /**
 verlihub's plugin manager
 
@@ -227,8 +226,7 @@ typedef tVHCBL_1Type<string> cVHCBL_String;
 typedef tVHCBL_1Type<cUser> cVHCBL_User;
 typedef tVHCBL_1Type<cBan> cVHCBL_Ban;
 
-};
-
-};
+	}; // namespace nPlugin
+}; // namespace nVerliHub
 
 #endif

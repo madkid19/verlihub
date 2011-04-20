@@ -28,11 +28,10 @@
 
 #define PADDING 25
 
-using namespace nStringUtils;
-using namespace ::nDirectConnect::nProtocol;
-
-namespace nDirectConnect
-{
+namespace nVerliHub {
+	using namespace nProtocol;
+	using namespace nUtils;
+	using namespace nEnums;
 
 cTime user_global_time;
 
@@ -44,8 +43,8 @@ cUserBase::cUserBase() :
 
 cUserBase::~cUserBase() {}
 
-cUserBase::cUserBase(const string &nick) : 
-	cObj((const char *)"User"), 
+cUserBase::cUserBase(const string &nick) :
+	cObj((const char *)"User"),
 	mNick(nick),
 	mClass(eUC_NORMUSER),
 	mInList(false)
@@ -53,7 +52,7 @@ cUserBase::cUserBase(const string &nick) :
 
 bool cUserBase::CanSend()
 {
-	return false; 
+	return false;
 }
 
 void cUserBase::Send(string &data, bool, bool)

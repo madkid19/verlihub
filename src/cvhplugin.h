@@ -35,33 +35,33 @@ VH_OnUnban(unbanwhat, op, reason) DONE
 #include "cpluginbase.h"
 #include "cusercollection.h"
 
-using ::nPlugin::cPluginBase;
+namespace  nVerliHub {
+	//using nPlugin::cPluginBase;
+	namespace nProtocol {
+		class cMessageDC;
+	};
+	namespace nTables {
+		class cBan;
+		class cRegUserInfo;
+	};
 
-namespace nDirectConnect {
+	using namespace nProtocol;
+	using namespace nTables;
 
-namespace nProtocol {
-class cMessageDC;
-};
-namespace nTables {
-class cBan;
-class cRegUserInfo;
-};
+	class cServerDC;
+	namespace nSocket {
+		class cConnDC;
+	};
+	using nSocket::cConnDC;
+	class cDCTag;
+	class cUser;
+	class cUserRobot;
+	class cPluginRobot;
 
-using namespace nProtocol;
-using namespace nTables;
+	namespace nPlugin {
 
-class cServerDC;
-class cConnDC;
-class cDCTag;
-class cUser;
-class cUserRobot;
-class cPluginRobot;
-
-namespace nPlugin {
-
-using namespace ::nDirectConnect;
-using ::nDirectConnect::cServerDC;
-using ::nDirectConnect::cConnDC;
+//using cServerDC;
+//using cConnDC;
 
 class cPluginUserData
 {
@@ -370,11 +370,10 @@ public:
 	/// Pointer for the verlihub server
 	cServerDC *mServer;
 	cUserCollection mRobots;
-	tHashArray<cPluginUserData*> *mUserDataTable;
+	nUtils::tHashArray<cPluginUserData*> *mUserDataTable;
 };
 
-};
-
-};
+	}; // namespace nPlugins
+}; // namespace nVerliHub
 
 #endif

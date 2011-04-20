@@ -36,7 +36,8 @@ struct pollfd {
 #include <vector>
 using std::vector;
 
-namespace nServer {
+namespace nVerliHub {
+	namespace nSocket {
 
 /**
 polling connection chooser
@@ -52,32 +53,35 @@ public:
 	/** Calls the poll function to determine non-blocking socket
 	  * \sa cConnChoose::Choose
 	  */
-	virtual int Choose(cTime &tmout){ return this->poll(tmout.MiliSec()); };
-	
+	virtual int Choose(cTime &tmout)
+	{
+		return this->poll(tmout.MiliSec());
+	};
+
 	/**
 	* Register the connection for the given I/O operation.
 	* @param conn The connection.
 	* @param event Bitwise OR list of I/O operation.
 	*/
-	virtual void OptIn ( tSocket, tChEvent);
-	
+	virtual void OptIn(tSocket, nEnums::tChEvent);
+
 	/**
 	* Unregister the connection for the given I/O operations.
 	* @param conn The connection.
 	* @param event Bitwise OR list of I/O operation.
 	*/
-	virtual void OptOut( tSocket, tChEvent);
-	
+	virtual void OptOut(tSocket, nEnums::tChEvent);
+
 	/**
 	* Unregister the connection for the given I/O operation.
 	* @param conn The connection.
 	* @param event Bitwise OR list of I/O operation.
 	*/
-	virtual int OptGet( tSocket );
+	virtual int OptGet(tSocket);
 	/// @see cConnChoose::RevGet
-	virtual int RevGet( tSocket );
-	virtual bool RevTest( tSocket );
-	
+	virtual int RevGet(tSocket);
+	virtual bool RevTest(tSocket);
+
 	/**
 	* Add new connection to be handled by connection manager.
 	* @param conn The connection.
@@ -85,14 +89,21 @@ public:
 	*/
 	virtual bool AddConn(cConnBase *);
 
-	/** 
+	/**
 	  * Wrapper for pollfd structure. It provides constructor and reset method
 	  * @author Daniel Muller
 	*/
 	struct cPollfd: public pollfd
 	{
-		cPollfd(){reset();};
-		void reset(){fd=-1;events=revents=0;};
+		cPollfd()
+		{
+			reset();
+		};
+		void reset()
+		{
+			fd=-1;
+			events=revents=0;
+		};
 	};
 
 	virtual bool RevTest(cPollfd &);
@@ -100,15 +111,18 @@ public:
 	int poll(int wp_sec);
 	typedef vector<cPollfd> tFDArray;
 
-	cPollfd &FD(int sock){ return mFDs[sock];}
+	cPollfd &FD(int sock)
+	{
+		return mFDs[sock];
+	}
 protected:
 	tFDArray mFDs;
 
 	const int mBlockSize;
-
 };
 
-};
+	}; // namespace nSocket
+}; // namespace nVerliHub
 
 #endif
 

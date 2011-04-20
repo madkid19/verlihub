@@ -49,19 +49,18 @@
 #define LOCK_VERSION PACKAGE
 #define HUB_VERSION_NAME "VerliHub"
 
-using namespace nUtils;
-using namespace nThreads;
-using namespace nStringUtils;
-namespace nDirectConnect
-{
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	using namespace nThreads;
+	using namespace nTables;
+	cServerDC * cServerDC::sCurrentServer = NULL;
 
-cServerDC * cServerDC::sCurrentServer = NULL;
-using namespace nTables;
-#if HAVE_LIBGEOIP
-cGeoIP cServerDC::sGeoIP;
-#endif
+	#if HAVE_LIBGEOIP
+		cGeoIP cServerDC::sGeoIP;
+	#endif
 
-
+	namespace nSocket {
 cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	cAsyncSocketServer(), // create parent class
 	mConfigBaseDir(CfgBase),
@@ -1305,9 +1304,7 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 	}
 }
 
-};
-
-void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const string &Nick, const string &Reason, int flags)
+void cServerDC::DCKickNick(ostream *use_os,cUser *OP, const string &Nick, const string &Reason, int flags)
 {
 	ostringstream ostr;
 	cUser *user = mUserList.GetUserByNick(Nick);
@@ -1434,3 +1431,5 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 		}
 	}
 }
+	}; // namespace nServer
+}; // namespace nVerliHub

@@ -21,43 +21,42 @@
 ***************************************************************************/
 #include "ccmdr.h"
 
-namespace nCmdr {
+namespace nVerliHub {
+	namespace nCmdr {
 
-cCmdr::cCmdr(void *owner):cObj("cCmdr"), mOwner(owner){}
-cCmdr::~cCmdr(){}
-};
+cCmdr::cCmdr(void *owner):cObj("cCmdr"), mOwner(owner)
+{}
 
+cCmdr::~cCmdr()
+{}
 
-
-/*!
-    \fn nCmdr::cCmdr::ParseAll(const string &CmdLine, ostream &os, void *extrapar)
-    \return the number of command found..
- */
-int nCmdr::cCmdr::ParseAll(const string &CmdLine, ostream &os, void *extrapar)
+int cCmdr::ParseAll(const string &CmdLine, ostream &os, void *extrapar)
 {
 	cCommand *Cmd = this->FindCommand(CmdLine);
-	if (Cmd != NULL) return (int)this->ExecuteCommand(Cmd, os, extrapar);
-	else return -1;
+	if(Cmd != NULL)
+		return (int)this->ExecuteCommand(Cmd, os, extrapar);
+	else
+		return -1;
 }
 
-nCmdr::cCommand *nCmdr::cCmdr::FindCommand(const string &CmdLine)
+cCommand *cCmdr::FindCommand(const string &CmdLine)
 {
 	tCmdList::iterator it;
-	for(it = mCmdList.begin(); it != mCmdList.end(); ++it)
-	{
+	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) {
 		cCommand *Cmd = *it;
-		if( Cmd && Cmd->TestID(CmdLine)) 
+		if( Cmd && Cmd->TestID(CmdLine))
 			return Cmd;
 	}
 	return NULL;
 }
 
-bool nCmdr::cCmdr::ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar)
+bool cCmdr::ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar)
 {
-	if( Cmd->TestParams() )
-	{
-		if(Cmd->Execute(os, extrapar)) os << " OK";
-		else os << "Error";
+	if(Cmd->TestParams()) {
+		if(Cmd->Execute(os, extrapar))
+			os << " OK";
+		else
+			os << "Error";
 		return true;
 	} else {
 		os << "Params error.." << "\r\n";
@@ -66,38 +65,33 @@ bool nCmdr::cCmdr::ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar)
 	}
 }
 
-void nCmdr::cCmdr::List(ostream *pOS)
+void cCmdr::List(ostream *pOS)
 {
 	tCmdList::iterator it;
-	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) 
-	{
-		if (*it)
-		{
+	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) {
+		if(*it) {
 			(*it)->ListCommands(*pOS);
 			(*pOS) << "\r\n";
 		}
 	}
 }
 
-/*!
-    \fn nCmdr::cCmdr::Add(cCommand *)
- */
-void nCmdr::cCmdr::Add(cCommand *cmd)
+void cCmdr::Add(cCommand *cmd)
 {
-	if(cmd)
-	{
+	if(cmd) {
 		//mCmdList.reserve(cmd->mID+1);
 		mCmdList.push_back(cmd);
 		cmd->mCmdr = this;
 	}
 }
 
-
-/*!
-    \fn nCmdr::cCmdr::InitAll(void *)
- */
-void nCmdr::cCmdr::InitAll(void *par)
+void cCmdr::InitAll(void *par)
 {
 	tCmdList::iterator it;
-	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) if (*it) (*it)->Init(par);
+	for(it = mCmdList.begin(); it != mCmdList.end(); ++it)
+		if(*it)
+			(*it)->Init(par);
 }
+
+	}; //namespace nCmdr
+}; // namespace nVerliHub

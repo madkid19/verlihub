@@ -22,14 +22,16 @@
 #ifndef NUTILSCTEMPFUNCTIONBASE_H
 #define NUTILSCTEMPFUNCTIONBASE_H
 
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 
 /**
 the interface for temporary functions that are periodialy called to do some stuff, until they are done
 
 @author Daniel Muller
 */
-class cTempFunctionBase{
+class cTempFunctionBase
+{
 public:
     cTempFunctionBase();
     virtual ~cTempFunctionBase();
@@ -37,6 +39,6 @@ public:
     virtual void step() = 0;
 };
 
-};
-
+	}; // namespace nUtils
+}; // namespace nVerliHub
 #endif

@@ -26,9 +26,10 @@
 #include "stringutils.h"
 #include "i18n.h"
 
-using namespace nUtils;
-namespace nDirectConnect {
-namespace nTables {
+namespace nVerliHub {
+	using namespace nEnums;
+	using namespace nUtils;
+	namespace nTables {
 
 cBan::cBan(cServerDC *s) : cObj("cBan"), mS(s)
 {
@@ -61,10 +62,7 @@ cUnBan::cUnBan(cBan &Ban, cServerDC *s): cBan(s)
 }
 cUnBan::~cUnBan(){}
 
-};
-};
-
-ostream & operator << (ostream &os, nDirectConnect::nTables::cBan &ban)
+ostream & operator << (ostream &os, cBan &ban)
 {
 	switch(ban.mDisplayType) {
 		case 0: ban.DisplayComplete(os); break;
@@ -75,7 +73,7 @@ ostream & operator << (ostream &os, nDirectConnect::nTables::cBan &ban)
 	return os;
 }
 
-void nDirectConnect::nTables::cBan::DisplayUser(ostream &os)
+void cBan::DisplayUser(ostream &os)
 {
 	if(mNick.size())
 		os << autosprintf(_("Nick: %s"), mNick.c_str()) << "\r\n";
@@ -99,35 +97,35 @@ void nDirectConnect::nTables::cBan::DisplayUser(ostream &os)
 		os <<  autosprintf(_("IP range: %s-%s"), initialRange.c_str(), endRange.c_str()) << "\r\n";
 	}
 	if(mShare)
-		os << autosprintf(_("Share: %s"), nStringUtils::convertByte(mShare, false).c_str()) << "\r\n";
+		os << autosprintf(_("Share: %s"), nUtils::convertByte(mShare, false).c_str()) << "\r\n";
 }
 
-void nDirectConnect::nTables::cUnBan::DisplayUser(ostream &os)
+void cUnBan::DisplayUser(ostream &os)
 {
 	this->cBan::DisplayUser(os);
 	os << autosprintf(_("Removed: %s by %s because %s"), cTime(mDateUnban,0).AsDate().AsString().c_str(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
 }
 
-void nDirectConnect::nTables::cBan::DisplayComplete(ostream &os)
+void cBan::DisplayComplete(ostream &os)
 {
 	DisplayUser(os);
 	os << autosprintf(_("OP: %s"), mNickOp.c_str()) << "\r\n";
 	os << autosprintf(_("Ban type: %s"), this->GetBanType());
 }
 
-const char *nDirectConnect::nTables::cBan::GetBanType()
+const char *cBan::GetBanType()
 {
 	static const char *banTypes[] = {_("Nick+IP"), _("IP"), _("Nick"),_("IP Range"), _("Host Level 1"),_("Host Level 2"), _("Host Level 3"), _("Share Size"), _("E-mail"), _("Nick Prefix"), _("Reverse Host")};
 	return banTypes[mType];
 }
 
-void nDirectConnect::nTables::cUnBan::DisplayComplete(ostream &os)
+void cUnBan::DisplayComplete(ostream &os)
 {
 	this->cBan::DisplayComplete(os);
 	os << autosprintf(_("Removed: %s by %s because %s"), cTime(mDateUnban,0).AsDate().AsString().c_str(), mUnNickOp.c_str(), mUnReason.c_str()) << "\r\n";
 }
 
-void nDirectConnect::nTables::cBan::DisplayKick(ostream &os)
+void cBan::DisplayKick(ostream &os)
 {
 	if(mDateEnd) {
 		cTime HowLong(mDateEnd-cTime().Sec(),0);
@@ -141,7 +139,7 @@ void nDirectConnect::nTables::cBan::DisplayKick(ostream &os)
 	}
 }
 
-void nDirectConnect::nTables::cBan::DisplayInline(ostream &os)
+void cBan::DisplayInline(ostream &os)
 {
 	static const char *sep = " \t ";
 	switch(1 << mType) {
@@ -158,7 +156,7 @@ void nDirectConnect::nTables::cBan::DisplayInline(ostream &os)
 			os << mHost;
 		break;
 		case eBF_SHARE:
-			os << nStringUtils::convertByte(mShare,false);
+			os << nUtils::convertByte(mShare,false);
 		break;
 		case eBF_PREFIX:
 		default:
@@ -169,3 +167,6 @@ void nDirectConnect::nTables::cBan::DisplayInline(ostream &os)
 	DisplayKick(os);
 	os << sep << GetBanType();
 }
+
+	}; // namespace nTables
+}; // Namespace nVerliHub

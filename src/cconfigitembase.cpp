@@ -26,15 +26,13 @@
 #include <stdio.h>
 #include "stringutils.h"
 
-using namespace nStringUtils;
 using namespace std;
 
-namespace nConfig
-{
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nConfig {
 
-//
 //// ConvertFrom
-//
 
 void cConfigItemBaseBool	::ConvertFrom(const std::string &str){*this = (0!=atoi(str.c_str()));}
 void cConfigItemBaseInt		::ConvertFrom(const std::string &str){*this = atoi(str.c_str());}
@@ -86,11 +84,11 @@ DefineReadFromStreamMethod(long,Long);
 DefineReadFromStreamMethod(unsigned long,ULong);
 
 std::istream &cConfigItemBaseInt64::ReadFromStream(std::istream& is)
-{ 
-	string tmp; 
-	is >> tmp; 
-	this->ConvertFrom(tmp); 
-	return is; 
+{
+	string tmp;
+	is >> tmp;
+	this->ConvertFrom(tmp);
+	return is;
 }
 
 std::istream &cConfigItemBaseString::ReadFromStream(std::istream& is)
@@ -122,26 +120,26 @@ DefineWriteToStreamMethod(string,String);
 DefineWriteToStreamMethod(long,Long);
 DefineWriteToStreamMethod(unsigned long,ULong);
 std::ostream &cConfigItemBaseInt64::WriteToStream(std::ostream& os)
-{ 
-	string tmp; 
-	this->ConvertTo(tmp); 
-	os << tmp; 
-	return os; 
+{
+	string tmp;
+	this->ConvertTo(tmp);
+	os << tmp;
+	return os;
 }
 
 //
 //// IsEmpty
 //
-bool cConfigItemBaseBool	::IsEmpty(){ return !this->Data();} 
-bool cConfigItemBaseInt		::IsEmpty(){ return !this->Data();} 
-bool cConfigItemBaseUInt	::IsEmpty(){ return !this->Data();} 
-bool cConfigItemBaseLong	::IsEmpty(){ return !this->Data();} 
-bool cConfigItemBaseInt64	::IsEmpty(){ return !this->Data();} 
-bool cConfigItemBaseULong	::IsEmpty(){ return !this->Data();} 
-bool cConfigItemBaseChar	::IsEmpty(){ return !this->Data();} 
-bool cConfigItemBasePChar	::IsEmpty(){ return !this->Data() || !*(this->Data());} 
-bool cConfigItemBaseDouble	::IsEmpty(){ return this->Data() == 0.;} 
-bool cConfigItemBaseString	::IsEmpty(){ return !this->Data().size();} 
+bool cConfigItemBaseBool	::IsEmpty(){ return !this->Data();}
+bool cConfigItemBaseInt		::IsEmpty(){ return !this->Data();}
+bool cConfigItemBaseUInt	::IsEmpty(){ return !this->Data();}
+bool cConfigItemBaseLong	::IsEmpty(){ return !this->Data();}
+bool cConfigItemBaseInt64	::IsEmpty(){ return !this->Data();}
+bool cConfigItemBaseULong	::IsEmpty(){ return !this->Data();}
+bool cConfigItemBaseChar	::IsEmpty(){ return !this->Data();}
+bool cConfigItemBasePChar	::IsEmpty(){ return !this->Data() || !*(this->Data());}
+bool cConfigItemBaseDouble	::IsEmpty(){ return this->Data() == 0.;}
+bool cConfigItemBaseString	::IsEmpty(){ return !this->Data().size();}
 
-
-};
+	}; // namespace nConfig
+}; // namespace nVerliHub

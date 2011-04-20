@@ -25,7 +25,8 @@
 #endif
 #include <dlfcn.h>
 
-namespace nPlugin {
+namespace nVerliHub {
+	namespace nPlugin {
 
 tPluginBase::tPluginBase():cObj("PluginBase"), mHandle(NULL)
 {}
@@ -33,19 +34,13 @@ tPluginBase::tPluginBase():cObj("PluginBase"), mHandle(NULL)
 tPluginBase::~tPluginBase()
 {}
 
-};
-
-
-/*!
-    \fn nPlugin::tPluginBase::Open()
- */
-bool nPlugin::tPluginBase::Open()
+bool tPluginBase::Open()
 {
 	#ifdef _WIN32
-	mHandle = LoadLibrary(mFileName.c_str()); 
+	mHandle = LoadLibrary(mFileName.c_str());
 	if(mHandle == NULL)
 	#else
-      
+
 	#ifdef HAVE_FREEBSD
 	/*
 	* Reset dlerror() since it can contain error from previous
@@ -64,11 +59,7 @@ bool nPlugin::tPluginBase::Open()
 	return true;
 }
 
-
-/*!
-    \fn nPlugin::tPluginBase::Close()
- */
-bool nPlugin::tPluginBase::Close()
+bool tPluginBase::Close()
 {
 	#ifdef _WIN32
 	if(!FreeLibrary(mHandle))
@@ -81,23 +72,19 @@ bool nPlugin::tPluginBase::Close()
 	return true;
 }
 
-
-/*!
-    \fn nPlugin::tPluginBase::Error()
- */
-string nPlugin::tPluginBase::Error()
+string tPluginBase::Error()
 {
 	const char *error;
 	#ifdef _WIN32
 		LPVOID buff;
-		FormatMessage( 
+		FormatMessage(
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_HMODULE,
 			mHandle,
 			GetLastError(),
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 			(LPTSTR) &buff,
 			0,
-			NULL 
+			NULL
 		);
 		error= (const char *) buff;
 		LocalFree(buff);
@@ -107,8 +94,7 @@ string nPlugin::tPluginBase::Error()
 	return string(error?error:"ok");
 }
 
-/** log the event */
-int nPlugin::tPluginBase::StrLog(ostream & ostr, int level)
+int tPluginBase::StrLog(ostream & ostr, int level)
 {
 	if(cObj::StrLog(ostr,level))
 	{
@@ -117,3 +103,6 @@ int nPlugin::tPluginBase::StrLog(ostream & ostr, int level)
 	}
 	return 0;
 }
+
+	}; // namespace nPlugin
+}; // namespace nVerliHub

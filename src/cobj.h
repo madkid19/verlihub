@@ -32,46 +32,47 @@ using namespace std;
 /** Base class for every object, inque method of logging events (virtual)
     @author Daniel Muller
   */
+namespace nVerliHub {
 
 class cObj
 {
-public: 
-	/**  */
-	cObj();
-	/** with name constructor */
-	cObj(const char *name);
-	/** destructor */
-	virtual ~cObj();
-	
-	/** Logs an event into a given stream */
-	virtual int StrLog(std::ostream & ostr, int level);
-	/** Log or not an event?? */
-	int Log(int level);
-	/** error Log or not an event */
-	int ErrLog(int level);
+	public:
+		/**  */
+		cObj();
+		/** with name constructor */
+		cObj(const char *name);
+		/** destructor */
+		virtual ~cObj();
 
-	/** No descriptions */
-	void SetClassName(const char *name){mClassName=name;}
-	/** return selected log stream */
-	std::ostream & LogStream();
-	/** error log stream */
-	virtual std::ostream & ErrLog();
-	/** return the streal where logging  goes to */
-	virtual std::ostream & Log();
+		/** Logs an event into a given stream */
+		virtual int StrLog(std::ostream & ostr, int level);
+		/** Log or not an event?? */
+		int Log(int level);
+		/** error Log or not an event */
+		int ErrLog(int level);
 
-public: // Public attributes
-	/** the Ascii representaition of class name */
-	const char * mClassName;
-	/** all events higher than this are discarded */
-	static int msLogLevel;
-	/** a string stream variable to log */
-	std::ostream *mToLog;
-	static const string mEmpty;
-	static int GetCount(){ return msCounterObj;}
-	
-private: //private attributes
-	/** object counter */
-	static int msCounterObj;
+		/** No descriptions */
+		void SetClassName(const char *name){mClassName=name;}
+		/** return selected log stream */
+		std::ostream & LogStream();
+		/** error log stream */
+		virtual std::ostream & ErrLog();
+		/** return the streal where logging  goes to */
+		virtual std::ostream & Log();
+
+	public:
+		/** the Ascii representaition of class name */
+		const char * mClassName;
+		/** all events higher than this are discarded */
+		static int msLogLevel;
+		/** a string stream variable to log */
+		std::ostream *mToLog;
+		static const string mEmpty;
+		static int GetCount(){ return msCounterObj;}
+
+	private:
+		/** object counter */
+		static int msCounterObj;
 };
-
+}; // namespace nVerliHub
 #endif

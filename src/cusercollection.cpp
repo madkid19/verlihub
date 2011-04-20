@@ -24,18 +24,18 @@ using namespace std;
 #include "cuser.h"
 #include "cusercollection.h"
 #include "cvhpluginmgr.h"
-using namespace ::nUtils;
-namespace nDirectConnect {
+
+namespace nVerliHub {
+	using namespace nUtils;
 void cUserCollection::ufSend::operator() (cUserBase *User)
 {
 	if(User && User->CanSend())
-		User->Send(mData, false); 
+		User->Send(mData, false);
 }
 
 void cUserCollection::ufSendWithNick::operator() (cUserBase *User)
 {
-	if(User && User->CanSend())
-	{
+	if(User && User->CanSend()) {
 		User->Send(mDataStart, false, false);
 		User->Send(User->mNick, false, false);
 		User->Send(mDataEnd, true, true);
@@ -68,8 +68,7 @@ void cUserCollection::ufDoINFOList::AppendList(string &List, cUserBase *User)
 void cCompositeUserCollection::ufDoIpList::AppendList(string &List, cUserBase *User)
 {
 	cUser *user = static_cast<cUser *>(User);
-	if (user->mxConn)
-	{
+	if (user->mxConn) {
 		List.append(user->mNick);
 		List.append(" ");
 		List.append(user->mxConn->AddrIP());
@@ -105,18 +104,25 @@ void cUserCollection::Nick2Hash(const std::string &Nick, tHashType &Hash)
 	Hash = Key2Hash(Key);
 }
 
-bool   cUserCollection::Add        (cUserBase *User                    )
-{ if(User) return AddWithHash(User, Nick2Hash(User->mNick)); else return false; }
+bool cUserCollection::Add(cUserBase *User)
+{
+	if(User)
+		return AddWithHash(User, Nick2Hash(User->mNick));
+	else
+		return false;
+}
 
+bool  cUserCollection::Remove(cUserBase *User)
+{
+	if(User)
+		return RemoveByHash(Nick2Hash(User->mNick));
+	else
+		return false;
+}
 
-bool   cUserCollection::Remove      (cUserBase *User       )
-{ if(User) return RemoveByHash(Nick2Hash(User->mNick)); else return false; }
-
-////////////////////////////////// the rest
 string &cUserCollection::GetNickList()
 {
-	if(mRemakeNextNickList && mKeepNickList )
-	{
+	if(mRemakeNextNickList && mKeepNickList) {
 		mNickListMaker.Clear();
 		for_each(begin(),end(),mNickListMaker);
 		mRemakeNextNickList = false;
@@ -126,20 +132,20 @@ string &cUserCollection::GetNickList()
 
 string &cUserCollection::GetInfoList(bool complete)
 {
-	if(mRemakeNextInfoList && mKeepInfoList )
-	{
+	if(mRemakeNextInfoList && mKeepInfoList) {
 		mINFOListMaker.Clear();
 		for_each(begin(),end(),mINFOListMaker);
 		mRemakeNextInfoList = false;
 	}
-	if (complete) return mINFOListComplete;
-	else return mINFOList;
+	if(complete)
+		return mINFOListComplete;
+	else
+		return mINFOList;
 }
 
 string &cCompositeUserCollection::GetIPList()
 {
-	if (mRemakeNextIPList && mKeepIPList )
-	{
+	if(mRemakeNextIPList && mKeepIPList) {
 		mIpListMaker.Clear();
 		for_each(begin(),end(),mIpListMaker);
 		mRemakeNextIPList = false;
@@ -171,7 +177,7 @@ void cUserCollection::SendToAll(string &Data, bool UseCache, bool AddPipe)
 void cUserCollection::SendToAllWithClass(string &Data, int min_class, int max_class, bool UseCache, bool AddPipe)
 {
 	if(AddPipe) Data.append("|");
-	
+
 	mSendAllCache.append(Data.data(),Data.size());
 	if (!UseCache) {
 		//if(Log(4))CoutAllKeys();
@@ -207,10 +213,9 @@ void cUserCollection::FlushCache()
 
 int cUserCollection::StrLog(ostream & ostr, int level)
 {
-	if(cObj::StrLog(ostr,level))
-	{
-		LogStream()   << "(" << mNickListMaker.mStart ;
-		LogStream()   << ") "<< "[ " << size() /* << "/" << mUserList.size()*/ << " ] ";
+	if(cObj::StrLog(ostr,level)) {
+		LogStream() << "(" << mNickListMaker.mStart ;
+		LogStream() << ") "<< "[ " << size() /* << "/" << mUserList.size()*/ << " ] ";
 		return 1;
 	}
 	return 0;

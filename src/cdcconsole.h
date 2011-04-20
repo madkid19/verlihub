@@ -34,24 +34,23 @@
 #include "cconntypes.h"
 
 using namespace std;
-using namespace nCmdr;
 
-// nDirectConnect namespace
-namespace nDirectConnect {
+namespace nVerliHub {
 
-namespace nTables {
-	class cTriggers;
-	class cTriggerConsole;
-	class cRedirects;
-	class cDCClients;
-	class cRedirectConsole;
-	class cDCClientConsole;
-}
-using namespace nTables;
-using namespace nInfo;
-
-class cConnDC;
-class cServerDC;
+	namespace nTables {
+		class cTriggers;
+		class cTriggerConsole;
+		class cRedirects;
+		class cDCClients;
+		class cRedirectConsole;
+		class cDCClientConsole;
+	}
+	namespace nSocket { class cConnDC; };
+	using namespace nTables;
+	using namespace nUtils;
+	using namespace nCmdr;
+	using nSocket::cConnDC;
+	class cServerDC;
 
 /**
 	 * cDCConsole class. VerliHub console and command interpreter for users' and operators' commands.
@@ -379,6 +378,6 @@ private:
 	cDCClientConsole *mDCClientConsole;
 };
 
-};
+}; // namespace nVerliHub
 
 #endif

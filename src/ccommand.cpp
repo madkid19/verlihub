@@ -23,24 +23,28 @@
 #include <iostream>
 using namespace std;
 
-namespace nCmdr {
+namespace nVerliHub {
+	namespace nCmdr {
 
 cCommand::cCommand(int ID, const char *IdRegex, const char *ParRegex, sCmdFunc *CmdFunc) :
-	mID(ID), mIdentificator(IdRegex, PCRE_ANCHORED),
-	mParamsParser(ParRegex, PCRE_DOTALL, 64 ), mCmdFunc(CmdFunc),
-	mIdRegexStr(IdRegex),
-	mParRegexStr(ParRegex)
+mID(ID), mIdentificator(IdRegex, PCRE_ANCHORED),
+mParamsParser(ParRegex, PCRE_DOTALL, 64 ), mCmdFunc(CmdFunc),
+mIdRegexStr(IdRegex),
+mParRegexStr(ParRegex)
 {
 	mCmdr = NULL;
-	if (CmdFunc != NULL)
-	{
+	if(CmdFunc != NULL) {
 		CmdFunc->mCommand = this;
 		CmdFunc->mIdRex = &mIdentificator;
 		CmdFunc->mParRex = &mParamsParser;
 	}
 }
 
-cCommand::cCommand() :  mCmdr(NULL), mID(-1), mParamsParser(64), mCmdFunc(NULL)
+cCommand::cCommand() :
+mCmdr(NULL),
+mID(-1),
+mParamsParser(64),
+mCmdFunc(NULL)
 {
 }
 
@@ -54,100 +58,72 @@ void cCommand::Init(int ID, const char *IdRegex, const char *ParRegex, sCmdFunc 
 	mParRegexStr = ParRegex;
 
 	mCmdr = NULL;
-	if (CmdFunc != NULL)
-	{
+	if(CmdFunc != NULL) {
 		CmdFunc->mCommand = this;
 		CmdFunc->mIdRex = &mIdentificator;
 		CmdFunc->mParRex = &mParamsParser;
 	}
 }
 
-cCommand::~cCommand(){}
+cCommand::~cCommand()
+{}
 
-};
-
-
-/*!
-    \fn nCmdr::cCommand::TestID(const string&)
- */
-bool nCmdr::cCommand::TestID(const string &str)
+bool cCommand::TestID(const string &str)
 {
 	int ret = mIdentificator.Exec(str);
-	if(ret > 0)
-	{
+	if(ret > 0) {
 		mIdentificator.Extract(0, str, mIdStr);
 		mParStr.assign(str, mIdStr.size(), str.size() - mIdStr.size());
-	}
-	else
-	{
-		mIdStr  ="";
-		mParStr ="";
+	} else {
+		mIdStr = "";
+		mParStr = "";
 	}
 	return ret > 0;
 }
 
-
-/*!
-    \fn nCmdr::cCommand::TestParams()
- */
-bool nCmdr::cCommand::TestParams()
+bool cCommand::TestParams()
 {
 	return 0 < mParamsParser.Exec(mParStr);
 }
 
-
-/*!
-    \fn nCmdr::cCommand::Execute(ostream &output, void *extrapar)
- */
-bool nCmdr::cCommand::Execute(ostream &output, void *extrapar)
+bool cCommand::Execute(ostream &output, void *extrapar)
 {
 	mCmdFunc->mIdStr = mIdStr;
 	mCmdFunc->mParStr = mParStr;
 	return (*mCmdFunc)(mIdentificator, mParamsParser, output, extrapar);
 }
 
-/*!
-	\fn nCmdr::cCommand::sCmdFunc::StringToIntFromList(const string &str, const char *stringlist[], const int intlist[], int item_count)
-
- */
-int nCmdr::cCommand::sCmdFunc::StringToIntFromList(const string &str, const char *stringlist[], const int intlist[], int item_count)
+int cCommand::sCmdFunc::StringToIntFromList(const string &str, const char *stringlist[], const int intlist[], int item_count)
 {
 	int theInt = -1;
 	int i;
 
-	for(i = 0; i < item_count; i++)
-	{
-		if (str == stringlist[i])
-		{
+	for(i = 0; i < item_count; i++) {
+		if(str == stringlist[i]) {
 			theInt = intlist[i];
 			return theInt;
 		}
 	}
 
-	if(theInt == -1)
-	{
+	if(theInt == -1) {
 		(*mOS) << "Sorry, '" << str << "' is not implemented" << endl;
 		(*mOS) << "Only known: ";
-		for(i = 0; i < item_count; i++) (*mOS) << stringlist[i] << " ";
+		for(i = 0; i < item_count; i++)
+			(*mOS) << stringlist[i] << " ";
 		(*mOS) << endl;
 	}
 	return theInt;
 }
 
-
-/*!
-    \fn nCmdr::cCommand::ListCommands(ostream &os)
- */
-void nCmdr::cCommand::ListCommands(ostream &os)
+void cCommand::ListCommands(ostream &os)
 {
 	os << mIdRegexStr << mParRegexStr;
 }
 
-
-/*!
-    \fn nCmdr::cCommand::GetParamSyntax(ostream &os)
- */
-void nCmdr::cCommand::GetParamSyntax(ostream &os)
+void cCommand::GetParamSyntax(ostream &os)
 {
 	mCmdFunc->GetSyntaxHelp(os, this);
 }
+
+	}; // namespae nCmdr
+}; // namespace nVerliHub

@@ -29,7 +29,7 @@
 
 using namespace nUtils;
 
-namespace nDirectConnect
+namespace 
 {
 namespace nPlugin
 {

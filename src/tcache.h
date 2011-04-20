@@ -25,10 +25,9 @@
 #include "cconfmysql.h"
 #include "ctime.h"
 
-using namespace nUtils;
-
-namespace nConfig {
-
+namespace nVerliHub {
+	namespace nConfig {
+		using namespace nUtils;
 /**
 allows to find faster whether user is NOT registered
 
@@ -39,7 +38,7 @@ template <class IndexType>
 class tCache : public cConfMySQL
 {
 public:
-	tCache(cMySQL &mysql, const char* TableName, const char* IndexName, const char* DateName = NULL) :
+	tCache(nMySQL::cMySQL &mysql, const char* TableName, const char* IndexName, const char* DateName = NULL) :
 		cConfMySQL(mysql), mDateName(DateName)
 	{
 		SetClassName("tCache");
@@ -127,6 +126,7 @@ private:
 	IndexType mCurIdx;
 };
 
-};
+	}; // namespace nConfig
+}; // namespace nVerliHub
 
 #endif

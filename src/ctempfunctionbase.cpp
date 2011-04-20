@@ -20,8 +20,8 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "ctempfunctionbase.h"
-
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 
 cTempFunctionBase::cTempFunctionBase()
 {
@@ -32,5 +32,5 @@ cTempFunctionBase::~cTempFunctionBase()
 {
 }
 
-
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub

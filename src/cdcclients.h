@@ -29,13 +29,29 @@
 #include "cdctag.h"
 #include "cdcclient.h"
 
-using nConfig::tMySQLMemoryList;
 using namespace std;
-// forward declarations
-namespace nUtils { class cPCRE; };
+namespace nVerliHub {
+	//using namespace nTables;
+	//namespace nUtils { class cPCRE; };
+	//using nConfig::tMySQLMemoryList;
 
-namespace nDirectConnect {
-	using namespace nDirectConnect::nTables;
+	namespace nEnums {
+		// TODO: Remove ME!
+		typedef enum {
+			eCT_NOTAG,
+			eCT_PLUSPLUS,
+			eCT_DCGUI,
+			eCT_ODC,
+			eCT_DC,
+			eCT_DCPRO,
+			eCT_STRONGDC,
+			eCT_IDC, eCT_ZDC,
+			eCT_APEXDC,
+			eCT_ZION,
+			eCT_UNKNOWN
+		} tClientType;
+	};
+
 	/**
 	* Parser for DC Tag
 	* @author Daniel Muller, Simoncelli Davide
@@ -52,7 +68,7 @@ namespace nDirectConnect {
 		nUtils::cPCRE mSlotsRE;
 		nUtils::cPCRE mLimitRE;
 	};
-	
+
 	class cServerDC;
 	class cDCConsole;
 	namespace nTables {
@@ -63,10 +79,8 @@ namespace nDirectConnect {
 			static cDCTagParser mParser;
 			cServerDC *mServer;
 			public:
-				  int mPositionInDesc;
-				  typedef enum{ eCT_NOTAG, eCT_PLUSPLUS, eCT_DCGUI, eCT_ODC, eCT_DC, eCT_DCPRO, eCT_STRONGDC, eCT_IDC, eCT_ZDC, eCT_APEXDC, eCT_ZION, eCT_UNKNOWN } tClientType;
+				int mPositionInDesc;
 
-			  
 				cDCClients(cServerDC *);
 				virtual ~cDCClients(){};
 				virtual void AddFields();;
@@ -90,16 +104,14 @@ namespace nDirectConnect {
 				virtual const char *CmdSuffix();
 				virtual const char *CmdPrefix();
 				virtual void ListHead(ostream *os);
-				virtual bool IsConnAllowed(cConnDC *conn,int cmd);
+				virtual bool IsConnAllowed(nSocket::cConnDC *conn,int cmd);
 				virtual bool ReadDataFromCmd(cfBase *cmd, int CmdID, cDCClient &data);
 				virtual void GetHelpForCommand(int cmd, ostream &os);
 				virtual void GetHelp(ostream &os);
 
 		};
-
-
-	};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 #endif
- 
+

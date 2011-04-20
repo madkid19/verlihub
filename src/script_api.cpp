@@ -31,7 +31,7 @@
 #include "cconfigitembase.h"
 
 using namespace std;
-using namespace nDirectConnect;
+using namespace ;
 
 cServerDC *GetCurrentVerlihub()
 {
@@ -353,41 +353,41 @@ bool GetTempRights(char *nick,  map<string,int> &rights)
 	if(user == NULL) return false;
 	cTime time = cTime().Sec();
 
-	static const int ids[] = { nDirectConnect::nEnums::eUR_CHAT, nDirectConnect::nEnums::eUR_PM, nDirectConnect::nEnums::eUR_SEARCH, nDirectConnect::nEnums::eUR_CTM, nDirectConnect::nEnums::eUR_KICK, nDirectConnect::nEnums::eUR_REG, nDirectConnect::nEnums::eUR_OPCHAT, nDirectConnect::nEnums::eUR_DROP, nDirectConnect::nEnums::eUR_TBAN, nDirectConnect::nEnums::eUR_PBAN, nDirectConnect::nEnums::eUR_NOSHARE };
+	static const int ids[] = { ::nEnums::eUR_CHAT, ::nEnums::eUR_PM, ::nEnums::eUR_SEARCH, ::nEnums::eUR_CTM, ::nEnums::eUR_KICK, ::nEnums::eUR_REG, ::nEnums::eUR_OPCHAT, ::nEnums::eUR_DROP, ::nEnums::eUR_TBAN, ::nEnums::eUR_PBAN, ::nEnums::eUR_NOSHARE };
 	for(unsigned int i = 0; i < sizeof ids; i++) {
 		string key;
 		switch(ids[i]) {
-			case nDirectConnect::nEnums::eUR_CHAT:
+			case ::nEnums::eUR_CHAT:
 				key = "mainchat";
 			break;
-			case nDirectConnect::nEnums::eUR_PM:
+			case ::nEnums::eUR_PM:
 				key = "pm";
 			break;
-			case nDirectConnect::nEnums::eUR_SEARCH:
+			case ::nEnums::eUR_SEARCH:
 				key = "search";
 			break;
-			case nDirectConnect::nEnums::eUR_CTM:
+			case ::nEnums::eUR_CTM:
 				key = "ctm";
 			break;
-			case nDirectConnect::nEnums::eUR_KICK:
+			case ::nEnums::eUR_KICK:
 				key = "kick";
 			break;
-			case nDirectConnect::nEnums::eUR_REG:
+			case ::nEnums::eUR_REG:
 				key = "reg";
 			break;
-			case nDirectConnect::nEnums::eUR_OPCHAT:
+			case ::nEnums::eUR_OPCHAT:
 				key = "opchat";
 			break;
-			case nDirectConnect::nEnums::eUR_DROP:
+			case ::nEnums::eUR_DROP:
 				key = "drop";
 			break;
-			case nDirectConnect::nEnums::eUR_TBAN:
+			case ::nEnums::eUR_TBAN:
 				key = "tempban";
 			break;
-			case nDirectConnect::nEnums::eUR_PBAN:
+			case ::nEnums::eUR_PBAN:
 				key = "perban";
 			break;
-			case nDirectConnect::nEnums::eUR_NOSHARE:
+			case ::nEnums::eUR_NOSHARE:
 				key = "noshare";
 			break;
 		}

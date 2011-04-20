@@ -28,8 +28,8 @@
   * Various utility classes, very useful
   *@author Daniel Muller
   */
-
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 
 /** a simple frequency limitter
  * You can setup:
@@ -77,6 +77,7 @@ public:
 	}
 };
 
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub
 
 #endif

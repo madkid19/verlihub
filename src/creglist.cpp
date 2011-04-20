@@ -29,7 +29,7 @@
 #include <algorithm>
 #include <unistd.h>
 
-namespace nDirectConnect
+namespace 
 {
 namespace nTables
 {
@@ -207,7 +207,7 @@ bool cRegList::LoginError(cConnDC *conn, const string &nick)
 
 
 /*!
-    \fn nDirectConnect::nTables::cRegList::DelReg(const string &nick)
+    \fn ::nTables::cRegList::DelReg(const string &nick)
  */
 bool cRegList::DelReg(const string &nick)
 {

@@ -32,7 +32,7 @@
 using std::string;
 using std::ostream;
 
-namespace nDirectConnect {
+namespace nVerliHub {
 
 class cConnDC;
 
@@ -51,52 +51,52 @@ class cUnBanList;
   */
 class cBanList : public cConfMySQL
 {
-	friend class ::nDirectConnect::cServerDC;
+	friend class nVerliHub::cServerDC;
 	struct sTempBan
 	{
 		sTempBan(long u, const string &reason):mUntil(u), mReason(reason){};
 		long mUntil;
 		string mReason;
 	};
-public:
-	cBanList(cServerDC*);
-	~cBanList();
-	int UpdateBan(cBan &);
-	bool LoadBanByKey(cBan &ban);
-	void NewBan(cBan &,cConnDC *,const string &nick_op, const string &reason,
-		unsigned length, unsigned type);
-	void AddBan(cBan &);
-	bool TestBan(cBan &, cConnDC *, const string &, unsigned mask);
-	virtual void Cleanup();
-	void DelBan(cBan &);
-	int DeleteAllBansBy(const string &IP, const string &Nick, int Flags);
-	void NewBan(cBan &Dest, const cKick &Kick, long period, int Type);
-	// Remove ban for given ip nick or whatever.. and also corresponding bans.
-	int Unban(ostream &os, const string &What, const string &reason, const string &NickOp, int TypeOfWhat, bool DoIt = true);
-	/**
-	 * Extract the host (of given level) substring from a given string
-	 */
-	bool GetHostSubstring(const string &src, string &dest, int level);
-	bool AddTestCondition(ostream &os, const string &What, int Type);
-	void SetUnBanList(cUnBanList *UnBanList){mUnBanList = UnBanList;}
-	void List(ostream &os, int count);
-	static unsigned long Ip2Num(const string &ip);
-	static void Num2Ip(unsigned long num, string &ip);
-	long IsIPTempBanned(unsigned long ip);
-	void AddIPTempBan(unsigned long ip, long until, const string &reason);
-	void DelIPTempBan(unsigned long);
-	long IsNickTempBanned(const string &nick);
-	void AddNickTempBan(const string &nick, long until, const string &reason);
-	void DelNickTempBan(const string &nick);
-	int RemoveOldShortTempBans(long before);
-private:
-	cUnBanList *mUnBanList;
-	typedef tHashArray<sTempBan *> tTempNickBans;
-	tTempNickBans mTempNickBanlist;
-	tTempNickBans mTempIPBanlist;
-	cServerDC* mS;
-protected:
-	cBan mModel;
+	public:
+		cBanList(cServerDC*);
+		~cBanList();
+		int UpdateBan(cBan &);
+		bool LoadBanByKey(cBan &ban);
+		void NewBan(cBan &,cConnDC *,const string &nick_op, const string &reason,
+			unsigned length, unsigned type);
+		void AddBan(cBan &);
+		bool TestBan(cBan &, cConnDC *, const string &, unsigned mask);
+		virtual void Cleanup();
+		void DelBan(cBan &);
+		int DeleteAllBansBy(const string &IP, const string &Nick, int Flags);
+		void NewBan(cBan &Dest, const cKick &Kick, long period, int Type);
+		// Remove ban for given ip nick or whatever.. and also corresponding bans.
+		int Unban(ostream &os, const string &What, const string &reason, const string &NickOp, int TypeOfWhat, bool DoIt = true);
+		/**
+		* Extract the host (of given level) substring from a given string
+		*/
+		bool GetHostSubstring(const string &src, string &dest, int level);
+		bool AddTestCondition(ostream &os, const string &What, int Type);
+		void SetUnBanList(cUnBanList *UnBanList){mUnBanList = UnBanList;}
+		void List(ostream &os, int count);
+		static unsigned long Ip2Num(const string &ip);
+		static void Num2Ip(unsigned long num, string &ip);
+		long IsIPTempBanned(unsigned long ip);
+		void AddIPTempBan(unsigned long ip, long until, const string &reason);
+		void DelIPTempBan(unsigned long);
+		long IsNickTempBanned(const string &nick);
+		void AddNickTempBan(const string &nick, long until, const string &reason);
+		void DelNickTempBan(const string &nick);
+		int RemoveOldShortTempBans(long before);
+	private:
+		cUnBanList *mUnBanList;
+		typedef tHashArray<sTempBan *> tTempNickBans;
+		tTempNickBans mTempNickBanlist;
+		tTempNickBans mTempIPBanlist;
+		cServerDC* mS;
+	protected:
+		cBan mModel;
 };
 
 /**
@@ -106,12 +106,12 @@ Banlist uses this class to produce unbans
 */
 class cUnBanList : public cBanList
 {
-public:
-	cUnBanList(cServerDC*);
-	~cUnBanList();
-	virtual void Cleanup();
-protected:
-	cUnBan mModelUn;
+	public:
+		cUnBanList(cServerDC*);
+		~cUnBanList();
+		virtual void Cleanup();
+	protected:
+		cUnBan mModelUn;
 };
 
 };

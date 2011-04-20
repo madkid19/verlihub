@@ -37,12 +37,13 @@
 #include "i18n.h"
 
 using std::string;
-using namespace nStringUtils;
-using namespace nDirectConnect;
-namespace nDirectConnect
-{
-namespace nProtocol
-{
+
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	using namespace nSocket;
+	using namespace nServer;
+	namespace nProtocol {
 
 cDCProto::cDCProto(cServerDC *serv):mS(serv)
 {
@@ -1674,14 +1675,7 @@ const string &cDCProto::GetMyInfo(cUserBase * User, int ForClass)
 		return User->mMyINFO_basic;
 }
 
-};
-};
-
-
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &, string &)
- */
-void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, string &dst, bool WithDCN)
+void cDCProto::UnEscapeChars(const string &src, string &dst, bool WithDCN)
 {
 	size_t pos;
 	dst = src;
@@ -1698,7 +1692,7 @@ void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, strin
 	}
 }
 
-void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, char *dst, int &len ,bool WithDCN)
+void cDCProto::UnEscapeChars(const string &src, char *dst, int &len ,bool WithDCN)
 {
 	size_t pos, pos2 = 0;
 	string start, end;
@@ -1734,10 +1728,7 @@ void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, char 
 	len = i;
 }
 
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::EscapeChars(const string &, string &)
- */
-void nDirectConnect::nProtocol::cDCProto::EscapeChars(const string &src, string &dst, bool WithDCN)
+void cDCProto::EscapeChars(const string &src, string &dst, bool WithDCN)
 {
 	dst = src;
 	size_t pos;
@@ -1752,7 +1743,7 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const string &src, string 
 	}
 }
 
-void nDirectConnect::nProtocol::cDCProto::EscapeChars(const char *buf, int len, string &dest, bool WithDCN)
+void cDCProto::EscapeChars(const char *buf, int len, string &dest, bool WithDCN)
 {
 	dest ="";
 	unsigned char c;
@@ -1782,7 +1773,7 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const char *buf, int len, 
 	}
 }
 
-void nDirectConnect::nProtocol::cDCProto::Lock2Key(const string &Lock, string &fkey)
+void cDCProto::Lock2Key(const string &Lock, string &fkey)
 {
 	int count = 0, len = Lock.size();
 	char *key = 0;
@@ -1805,3 +1796,6 @@ void nDirectConnect::nProtocol::cDCProto::Lock2Key(const string &Lock, string &f
 	delete [] key;
 	delete [] lock;
 }
+
+	}; // namespace nProtocol
+}; // namespace nVerliHub

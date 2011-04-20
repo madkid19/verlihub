@@ -33,7 +33,7 @@
 #include "i18n.h"
 
 using namespace nStringUtils;
-namespace nDirectConnect {
+namespace  {
 namespace nTables {
 
   /**

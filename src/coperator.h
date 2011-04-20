@@ -23,7 +23,7 @@
 #define COPERATOR_H
 #include "cuser.h"
 
-namespace nDirectConnect
+namespace 
 {
 
 /**operator has some extra data to store, like kicks, ips, bans etc..

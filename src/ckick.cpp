@@ -21,8 +21,8 @@
 ***************************************************************************/
 #include "ckick.h"
 
-namespace nDirectConnect {
-namespace nTables {
+namespace nVerliHub {
+	namespace nTables {
 
 cKick::cKick()
 {
@@ -30,8 +30,9 @@ cKick::cKick()
 	mTime = 0;
 	mIsDrop = false;
 }
-cKick::~cKick(){
+cKick::~cKick()
+{
 }
 
-};
-};
+	}; //namespace nTables
+}; //namespace nVerliHub

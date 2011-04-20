@@ -28,7 +28,7 @@
 
 using nConfig::tMySQLMemoryList;
 
-namespace nDirectConnect {
+namespace  {
 
 class cServerDC;
 class cDCConsole;

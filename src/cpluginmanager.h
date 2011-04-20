@@ -30,13 +30,12 @@ using std::vector;
 using std::string;
 using std::ostream;
 
-using namespace nUtils;
-
-namespace nPlugin {
-
-class cPluginLoader;
-class cCallBackList;
-class cPluginBase;
+namespace nVerliHub {
+	namespace nPlugin {
+		using namespace nUtils;
+		class cPluginLoader;
+		class cCallBackList;
+		class cPluginBase;
 /**
 the plugin manager, let's you to load, and unload plugins
 
@@ -68,7 +67,8 @@ protected:
 	tCBList mCallBacks;
 	string mLastLoadError;
 };
+}; // namespace nPlugin
 
-};
+}; // namespace nVerliHub
 
 #endif

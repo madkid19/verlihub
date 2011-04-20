@@ -33,10 +33,9 @@
 #endif
 
 using std::string;
-
-namespace nPlugin {
-
-class cPluginManager;
+namespace nVerliHub {
+	namespace nPlugin {
+	class cPluginManager;
 /**
 the plugin base class suitable for any application
 
@@ -65,6 +64,7 @@ protected:
 	cPluginManager * mManager;
 };
 
-};
+	}; // namespace nPlugin
+}; // namespace nVerliHub
 
 #endif
