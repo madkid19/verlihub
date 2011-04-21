@@ -71,7 +71,7 @@ cConsole::~cConsole()
 int cConsole::DoCommand(const string &str, cConnDC * conn)
 {
 	ostringstream os;
-	
+
 	if(mCmdr.ParseAll(str, os, conn) >= 0)
 	{
 		mLua->mServer->DCPublicHS(os.str().c_str(),conn);
@@ -86,7 +86,7 @@ bool cConsole::cfVersionLuaScript::operator()()
 	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Lua library version") << LUA_RELEASE << endl;
 	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Copyright") << LUA_COPYRIGHT << endl;
 	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Authors") << LUA_AUTHORS << endl;
-	
+
 	return true;
 }
 
@@ -94,7 +94,7 @@ bool cConsole::cfInfoLuaScript::operator()()
 {
 	int size = 0;
 	if(GetPI()->Size() > 0) size = lua_getgccount(GetPI()->mLua[0]->mL);
-	
+
 	(*mOS) << "\n" << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Version date") << __CURR_DATE_TIME__ << endl;
 	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Running scripts") << GetPI()->Size() << endl;
 	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Memory used") << convertByte(size*1024, false).c_str() << endl;
@@ -118,18 +118,18 @@ bool cConsole::cfDelLuaScript::operator()()
 {
 	string scriptfile;
 	GetParStr(1,scriptfile);
-	
+
 	bool found = false;
 	bool number = false;
 	int i = 0, num = 0;
 	vector<cLuaInterpreter *>::iterator it;
 	cLuaInterpreter *li;
-	
+
 	if (GetPI()->IsNumber(scriptfile.c_str())) {
 		num = atoi(scriptfile.c_str());
 		number = true;
 	}
-		
+
 	for(it = GetPI()->mLua.begin(); it != GetPI()->mLua.end(); ++it, ++i) {
 		li = *it;
 		if ((number && num == i) || (!number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile)==0)) {
@@ -141,7 +141,7 @@ bool cConsole::cfDelLuaScript::operator()()
 			break;
 		}
 	}
-	
+
 	if(!found) {
 		if(number)
 			(*mOS) << autosprintf(_("Script #%s not stopped because it is not running."), scriptfile.c_str()) << " ";
@@ -159,7 +159,7 @@ bool cConsole::cfAddLuaScript::operator()()
 	int num = 0;
 	GetParStr(1, scriptfile);
 	vector<cLuaInterpreter *>::iterator it;
-	cLuaInterpreter *li;	
+	cLuaInterpreter *li;
 
 	if (GetPI()->IsNumber(scriptfile.c_str())) {
 		num = atoi(scriptfile.c_str());
@@ -167,8 +167,8 @@ bool cConsole::cfAddLuaScript::operator()()
 	}
 	cServerDC *server= cServerDC::sCurrentServer;
 	pathname = server->mConfigBaseDir;
-	
-	
+
+
 	if(number) {
 		DIR *dir = opendir(pathname.c_str());
 		int i = 0;
@@ -177,17 +177,18 @@ bool cConsole::cfAddLuaScript::operator()()
 			return false;
 		}
 		struct dirent *dent = NULL;
-		
+
 		while(NULL != (dent=readdir(dir))) {
-			
+
 			filename = dent->d_name;
 			if((filename.size() > 4) && (StrCompare(filename,filename.size()-4,4,".lua")==0)) {
 				if(i == num)
 					scriptfile = pathname + "/" + filename;
 				i++;
 			}
-			
+
 		}
+		closedir(dir);
 	}
 	cLuaInterpreter *ip = new cLuaInterpreter(scriptfile);
 	if(ip) {
@@ -218,7 +219,7 @@ bool cConsole::cfReloadLuaScript::operator()()
 	bool found = false, number = false;
 	int i, num;
 	i = num = 0;
-	
+
 	GetParStr(1,scriptfile);
 	if (GetPI()->IsNumber(scriptfile.c_str())) {
 		num = atoi(scriptfile.c_str());
@@ -238,7 +239,7 @@ bool cConsole::cfReloadLuaScript::operator()()
 			break;
 		}
 	}
-	
+
 	if(!found) {
 		if(number)
 			(*mOS) << autosprintf(_("Script #%s not stopped because it is not running."), scriptfile.c_str()) << " ";

@@ -41,18 +41,18 @@ int StrCompare(const string &str1, int start, int count, const string &str2)
 	return str1.compare(start,count,str2);
 }
 
-string toLower(const string str)
+string toLower(const string &str)
 {
-	string dest = str;
-	transform(str.begin(), str.end(), dest.begin(), ::tolower);
-	return dest;
+	string result = str;
+	transform(str.begin(), str.end(), result.begin(), ::tolower);
+	return result;
 }
 
-string toUpper(const string str)
+string toUpper(const string &str)
 {
-	string dest = str;
-	transform(str.begin(), str.end(), dest.begin(), ::toupper);
-	return dest;
+	string result = str;
+	transform(str.begin(), str.end(), result.begin(), ::toupper);
+	return result;
 }
 
 void ShrinkStringToFit(string &str)
@@ -71,7 +71,7 @@ void StrCutLeft(const string &str1, string &str2, size_t cut)
 {
 	string tmp;
 	if(cut > str1.size()) cut = str1.size();
-	std::string(str1, cut, str1.size() - cut).swap(str2);	
+	std::string(str1, cut, str1.size() - cut).swap(str2);
 }
 
 bool LoadFileInString(const string &FileName, string &dest)
@@ -100,8 +100,10 @@ if(Path.substr(0,2) == "./") {
 #ifdef _WIN32
 		char * cPath = new char[35];
 		int size = GetCurrentDirectory(35, cPath);
-		if(!size)
+		if(!size) {
+			delete cPath;
 			return;
+		}
 		else if(size > 35) {
 			delete cPath;
 			cPath = new char[size];
@@ -123,7 +125,7 @@ if(Path.substr(0,2) == "./") {
 		Path.replace(pos, 2, getenv("HOME"));
 	}
 #endif
-	// FIXME: It doesn't work on Windows 
+	// FIXME: It doesn't work on Windows
 	pos = Path.find("../");
 	while (pos != Path.npos) {
 		Path.replace(pos, 3, "");
@@ -215,9 +217,9 @@ string convertByte(__int64 byte, bool UnitType)
 	static const char *byteSecUnit[] = {"B/s", "KB/s", "MB/s", "GB/s", "TB/s", "PB/s", "", "", ""};
 	//string result;
 	int unit;
-	
+
 	double long lByte = byte;
-	
+
 	if(lByte < 1024) {
 		unit = 0;
 	} else {
@@ -225,7 +227,7 @@ string convertByte(__int64 byte, bool UnitType)
 			lByte /= 1024;
 		}
 	}
-	
+
 	ostringstream os (ostringstream::out);
 	os.precision(2);
 	os << fixed << lByte << " ";
@@ -260,7 +262,7 @@ int CountLines(const string &str)
 	int lines=1;
 	size_t pos=0;
 	// the ?:  ... because in the beginning start search from the first char, but then from next after last found
-	while(str.npos != (pos=str.find_first_of("\n",pos?pos+1:0))) 
+	while(str.npos != (pos=str.find_first_of("\n",pos?pos+1:0)))
 		lines++;
 	return lines;
 }
@@ -270,8 +272,8 @@ bool LimitLines(const string &str, int max)
 	int lines=1;
 	size_t pos=0;
 	// the ?:  ... because in the beginning start search from the first char, but then from next after last found
-	while(str.npos != (pos=str.find_first_of("\n",pos?pos+1:0))) 
-		if(++lines > max) 
+	while(str.npos != (pos=str.find_first_of("\n",pos?pos+1:0)))
+		if(++lines > max)
 			return false;
 	return true;
 }
