@@ -102,7 +102,7 @@ function migrate_clean()
 	fi
 	echo_s "-- Welcome to VerliHub migration script to version 0.9.9a to clean up old files\n" $RED_BOLD
 	if $(yes_or_no "Do you want to continue with hub migration?") ; then
-		OLD_SCRIPTS=(vh_getcfg vh_getdb vh_install vh_regnick vh_restart vh_runhub vh_setup vh_trigger)
+		OLD_SCRIPTS=(vh_getcfg vh_getdb vh_install vh_regnick vh_restart vh_runhub vh_setup vh_trigger verlihub_config)
 
 		for VAR in ${OLD_SCRIPTS[@]}; do
 			FILE="$BINDIR/$VAR"
