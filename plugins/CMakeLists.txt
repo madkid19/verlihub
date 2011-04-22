@@ -35,4 +35,4 @@ ADD_PLUGIN(ENABLE_PLUGIN replacer)
 MACRO_LOG_FEATURE(ENABLE_PLUGIN "replacer" "Replace given patterns in text messages")
 
 ADD_PLUGIN(ENABLE_PLUGIN floodprot)
-MACRO_LOG_FEATURE(ENABLE_PLUGIN "floodprot" "Offers more control from users flooding the hub")
+MACRO_LOG_FEATURE(ENABLE_PLUGIN "floodprot" "Offer more control from users flooding the hub")
