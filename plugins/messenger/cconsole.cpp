@@ -67,7 +67,7 @@ bool cConsole::cfMessageSend::operator ( )()
 	this->GetParStr(1,msg.mReceiver);
 	this->GetParStr(2,msg.mSubject);
 	this->GetParStr(4,msg.mBody);
-	
+
 	receiver = GetMessanger()->mServer->mUserList.GetUserByNick(msg.mReceiver);
 	if ((receiver != NULL) && (receiver->mxConn != NULL)) {
 		GetMessanger()->mMsgs->DeliverOnline(receiver, msg);

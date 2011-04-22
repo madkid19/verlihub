@@ -40,7 +40,7 @@ public:
 
 	typedef vector<DataType*> tDataIndex;
 public:
-	tMySQLMemoryOrdList(cMySQL& mysql, OwnerType* owner, const string &tablename, const string &db_order):
+	tMySQLMemoryOrdList(nMySQL::cMySQL& mysql, OwnerType* owner, const string &tablename, const string &db_order):
 		tMySQLMemoryList<DataType, OwnerType> (mysql, owner, tablename)
 	{
 		this->SetSelectOrder(db_order);

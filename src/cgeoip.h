@@ -23,8 +23,8 @@
 #define NUTILSCGEOIP_H
 #include <string>
 #include <GeoIP.h>
-using std::string;
 
+using std::string;
 namespace nVerliHub {
 	namespace nUtils {
   /**

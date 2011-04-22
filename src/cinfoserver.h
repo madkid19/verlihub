@@ -30,7 +30,9 @@
 using std::ostream;
 
 namespace nVerliHub {
-	class cServerDC;
+	namespace nSocket {
+		class cServerDC;
+	};
 
 /**
 info about the server
@@ -43,12 +45,12 @@ public:
 	cInfoServer();
 	~cInfoServer();
 	void SystemInfo(ostream &os);
-	void SetServer(cServerDC *Server);
+	void SetServer(nSocket::cServerDC *Server);
 	void Output(ostream &os, int Class);
 	virtual int Save(){return 0;}
 	virtual int Load(){return 0;}
 private:
-	cServerDC *mServer;
+	nSocket::cServerDC *mServer;
 };
 }; // namespace nVerliHub
 

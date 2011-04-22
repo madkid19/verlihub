@@ -25,9 +25,9 @@
 #include "src/cserverdc.h"
 #include "src/cdcproto.h"
 
-
-using namespace ;
-using namespace nConfig;
+namespace nVerliHub {
+	using namespace nConfig;
+	namespace nChatRoom {
 
 cpiChatroom::cpiChatroom()
 {
@@ -46,11 +46,11 @@ void cpiChatroom::OnLoad(cServerDC *server)
 {
 	cUserCollection::iterator it;
 	cUser *user;
-	
+
 	if (!mCfg) mCfg = new cRoomCfg(server);
 	mCfg->Load();
 	mCfg->Save();
-	
+
 	tpiChatroomBase::OnLoad(server);
 	for (it = mServer->mUserList.begin(); it !=  mServer->mUserList.end() ; ++it) {
 		user =(cUser*)*it;
@@ -96,5 +96,6 @@ bool cpiChatroom::OnOperatorCommand(cConnDC *conn, string *str)
 	return true;
 }
 
+	}; // namespace nChatRoom
+}; // namespace nVerliHub
 REGISTER_PLUGIN(cpiChatroom);
-

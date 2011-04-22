@@ -19,8 +19,9 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#include "cconntypes.h"
+#include <ios>
 #include "cserverdc.h"
+//#include "cconntypes.h"
 #include "cdcconsole.h"
 #include "i18n.h"
 #include "stringutils.h"

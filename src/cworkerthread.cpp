@@ -21,8 +21,8 @@
 ***************************************************************************/
 #include "cworkerthread.h"
 
-namespace nThreads
-{
+namespace nVerliHub {
+	namespace nThread {
 
 cWorkerThread::cWorkerThread() : mWork(NULL)
 {}
@@ -73,6 +73,7 @@ void cWorkerThread::DoSomething()
 	}
 }
 
-};
+	}; // namespace nThread
+}; // namespace nVerliHub
 
 

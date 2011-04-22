@@ -41,8 +41,9 @@ namespace nVerliHub {
 			eBF_HOSTR1 = 1 << 10,
 		};
 	};
-
-class cServerDC;
+	namespace nSocket {
+		class cServerDC;
+	};
 
 namespace nTables {
 /**
@@ -59,7 +60,7 @@ class cBan : public cObj
 	* Class constructor.
 	* @param server Pointer to the server.
 	*/
-	cBan(class cServerDC *);
+	cBan(class nSocket::cServerDC *);
 
 	/**
 	* Class destructor.
@@ -140,7 +141,7 @@ class cBan : public cObj
 	// How ban should be displayed to output stream
 	int mDisplayType;
 	// Pointer to the server
-	cServerDC *mS;
+	nSocket::cServerDC *mS;
 };
 
 /**
@@ -157,13 +158,13 @@ class cUnBan : public cBan
 	* @param ban A ban
 	* @param server Pointer to the server.
 	*/
-	cUnBan(cBan &, cServerDC *);
+	cUnBan(cBan &, nSocket::cServerDC *);
 
 	/**
 	* Class constructor.
 	* @param server Pointer to the server.
 	*/
-	cUnBan(cServerDC *);
+	cUnBan(nSocket::cServerDC *);
 
 	/**
 	* Class destructor.

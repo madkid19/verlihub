@@ -20,9 +20,12 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cconndc.h"
+#include "cuser.h"
 #include "ckicklist.h"
 
 namespace nVerliHub {
+	using namespace nMySQL;
+	using namespace nConfig;
 	namespace nTables {
 
 cKickList::cKickList(cMySQL &mysql) : cConfMySQL(mysql)

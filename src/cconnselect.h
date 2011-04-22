@@ -73,12 +73,11 @@ public:
 	* @return Bitwise OR list of I/O operation.
 	* @see OptIn(tSocket sock, tChEvent events)
 	*/
-	virtual int OptGet( tSocket );
+	virtual int OptGet(tSocket sock);
 	/// \brief get the result after Choose operation
-	virtual int RevGet( tSocket );
+	virtual int RevGet(tSocket sock);
 	/// \brief test wheather the choose result is non-nul
-	virtual bool RevTest( tSocket );
-
+	virtual bool RevTest(tSocket sock);
 
 	/**
 	* Wrapper for fd_set structure. It provides constructor and = operator.

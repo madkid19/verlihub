@@ -21,12 +21,17 @@
 ***************************************************************************/
 #ifndef NDIRECTCONNECT_NTABLESCCONNTYPES_H
 #define NDIRECTCONNECT_NTABLESCCONNTYPES_H
+#include <string>
 #include "tmysqlmemorylist.h"
 #include "tlistconsole.h"
 
+using namespace std;
 namespace nVerliHub {
 	//using namespace nConfig;
-	class cServerDC;
+	namespace nSocekt {
+		class cServerDC;
+		class cConnDC;
+	};
 	class cDCConsole;
 
 	namespace nTables {
@@ -49,7 +54,7 @@ namespace nVerliHub {
 				friend ostream &operator << (ostream &, cConnType &);
 		};
 
-		typedef nConfig::tMySQLMemoryList<cConnType, cServerDC> tConnTypesBase;
+		typedef nConfig::tMySQLMemoryList<cConnType, nSocket::cServerDC> tConnTypesBase;
 
 		/**
 		Table for connection types and their configuration
@@ -60,7 +65,7 @@ namespace nVerliHub {
 		class cConnTypes : public tConnTypesBase
 		{
 			public:
-				cConnTypes(cServerDC *server);
+				cConnTypes(nSocket::cServerDC *server);
 				virtual ~cConnTypes();
 				// overiding methods
 				virtual void AddFields();

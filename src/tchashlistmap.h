@@ -43,7 +43,7 @@ template <class HashType = unsigned long> class hHashStr
 		return HashType(__h);
 	}
 	public:
-	HashType operator() (const std::string &s) const {return __stl_hash_string(s.c_str());}
+	HashType operator() (const string &s) const {return __stl_hash_string(s.c_str());}
 };
 
 typedef unsigned long ulong;

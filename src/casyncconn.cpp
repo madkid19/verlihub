@@ -261,6 +261,7 @@ void cAsyncConn::CloseNow()
 	if(mxServer) {
 		mxServer->mConnChooser.OptOut((cConnBase*)this, eCC_ALL);
 		mxServer->mConnChooser.OptIn((cConnBase*)this, eCC_CLOSE);
+
 	}
 }
 

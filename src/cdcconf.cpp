@@ -72,9 +72,9 @@ void cDCConf::AddVars()
 	Add("hub_host",hub_host,string(""));
 	Add("listen_ip",mS.mAddr,string("0.0.0.0"));
 	#if !defined _WIN32
-	Add("listen_port",mS.mPort,4111);
+	Add("listen_port", mS.mPort, 4111);
 	#else
-	Add("listen_port",mS.mPort,411);
+	Add("listen_port",mS.mPort, 411);
 	#endif
 	Add("extra_listen_ports", extra_listen_ports,string(""));
 	// End hub info and basic settings

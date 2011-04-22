@@ -26,14 +26,17 @@
 #include "src/cuser.h"
 #include "src/cusercollection.h"
 
-using namespace nConfig;
-namespace  { class cUser; class cServerDC; };
-using namespace ;
-class cpiChatroom;
+namespace nVerliHub {
+	//using namespace nConfig;
+	namespace nSocket {
+		class cServerDC;
+	};
+	class cUser;
+	namespace nChatRoom {
+		class cpiChatroom;
+		class cRoom;
 
-class cRoom;
-
-class cXChatRoom : public ::cChatRoom::cChatRoom
+class cXChatRoom : public cChatRoom::cChatRoom
 {
 public:
 	cXChatRoom(const string &nick, cRoom *room);
@@ -60,7 +63,7 @@ public:
 	cUserCollection *mUsers;
 	cServerDC *mServer;
 	cpiChatroom *mPlugin;
-	
+
 	// -- required methods
 	cRoom();
 	virtual ~cRoom();
@@ -71,7 +74,7 @@ public:
 	friend ostream& operator << (ostream &, const cRoom &room);
 };
 
-class cRoomCfg : public cConfigBase
+class cRoomCfg : public nConfig::cConfigBase
 {
 public:
 	cRoomCfg(cServerDC *);
@@ -79,14 +82,14 @@ public:
 	int min_class_mod;
 	int min_class_del;
 	int min_class_lst;
-	
+
 	cServerDC *mS;
 	virtual int Load();
 	virtual int Save();
 };
 
 
-typedef class tList4Plugin<cRoom, cpiChatroom> tRoomListBase;
+typedef class nPlugin::tList4Plugin<cRoom, cpiChatroom> tRoomListBase;
 
 /**
 @author Rongic
@@ -97,7 +100,7 @@ class cRooms : public tRoomListBase
 public:
 	// -- usable methods
 	void AutoJoin(cUser *user);
-	
+
 	// -- required methods
 	cRooms(cVHPlugin *pi);
 	virtual ~cRooms();
@@ -105,5 +108,7 @@ public:
 	virtual void OnLoadData(cRoom &);
 	virtual bool CompareDataKey(const cRoom &D1, const cRoom &D2);
 };
+	}; // namepsace nChatRoom
+}; // namespace nVerliHub
 
 #endif

@@ -42,7 +42,7 @@ namespace nVerliHub {
 	using namespace nUtils;
 	using namespace nEnums;
 	using namespace nSocket;
-	using namespace nServer;
+	using namespace nSocket;
 	namespace nProtocol {
 
 cDCProto::cDCProto(cServerDC *serv):mS(serv)
@@ -414,8 +414,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		return -1;
 	}
 
-	if( tag->mClientMode == nDirectConnect::nEnums::eCM_PASSIVE ||
-			 tag->mClientMode == nDirectConnect::nEnums::eCM_SOCK5 )
+	if( tag->mClientMode == eCM_PASSIVE ||  tag->mClientMode == eCM_SOCK5 )
 					conn->mpUser->IsPassive = true;
 	////////////////////// END TAG VERRIFICATION
 	delete tag;
@@ -521,7 +520,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) {
 		cBan Ban(mS);
 		bool banned = false;
-		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, cBan::eBF_SHARE | cBan::eBF_EMAIL);
+		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, eBF_SHARE | eBF_EMAIL);
 		if(banned && conn->GetTheoricalClass() <= eUC_REGUSER) {
 			stringstream msg;
 			msg << _("Banned.") << endl;
@@ -847,7 +846,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 			string nick;
 			mKickChatPattern.Extract(3,text,nick);
 
-			mS->DCKickNick(NULL, conn->mpUser, nick, kick_reason, cServerDC::eKCK_Reason);
+			mS->DCKickNick(NULL, conn->mpUser, nick, kick_reason, eKCK_Reason);
 		}
 		return 0;
 	}
@@ -873,7 +872,7 @@ int cDCProto::DC_Kick(cMessageDC * msg, cConnDC * conn)
 	// check rights
 	if(conn->mpUser->Can(eUR_KICK, mS->mTime.Sec()))
 	{
-		mS->DCKickNick(NULL, conn->mpUser, nick, mS->mEmpty, cServerDC::eKCK_Drop|cServerDC::eKCK_TBAN);
+		mS->DCKickNick(NULL, conn->mpUser, nick, mS->mEmpty, eKCK_Drop | eKCK_TBAN);
 		return 0;
 	}
 	else
@@ -1352,10 +1351,10 @@ int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 	os.str(mS->mEmpty);
 
 	cBan ban(mS);
-	mS->mBanList->NewBan(ban, other->mxConn, conn->mpUser->mNick, msg->ChunkString(eCH_NB_REASON), period, cBan::eBF_NICKIP);
+	mS->mBanList->NewBan(ban, other->mxConn, conn->mpUser->mNick, msg->ChunkString(eCH_NB_REASON), period, eBF_NICKIP);
 	mS->mBanList->AddBan(ban);
 
-	mS->DCKickNick(NULL, conn->mpUser, msg->ChunkString(eCH_NB_NICK), mS->mEmpty, cServerDC::eKCK_Drop);
+	mS->DCKickNick(NULL, conn->mpUser, msg->ChunkString(eCH_NB_NICK), mS->mEmpty, eKCK_Drop);
 
 	ban.DisplayKick(os);
 	mS->DCPublicHS(os.str(),conn);
@@ -1453,7 +1452,7 @@ int cDCProto::DCO_UnBan(cMessageDC * msg, cConnDC * conn)
 	if(msg->mType == eDCO_UNBAN)
 		ip = msg->ChunkString(eCH_1_PARAM);
 
-	int n = mS->mBanList->DeleteAllBansBy(ip, nick , cBan::eBF_NICKIP);
+	int n = mS->mBanList->DeleteAllBansBy(ip, nick , eBF_NICKIP);
 
 	if(n <= 0) {
 		os << autosprintf(_("No banned user found with ip %s."), msg->ChunkString(eCH_1_PARAM).c_str());

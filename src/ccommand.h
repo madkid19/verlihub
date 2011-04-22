@@ -23,9 +23,12 @@
 #ifndef NCMDRCCOMMAND_H
 #define NCMDRCCOMMAND_H
 #include "cpcre.h"
+#include <string>
+#include <ostream>
 
-using std::ostream;
 using std::string;
+using std::ostream;
+
 namespace nVerliHub {
 	namespace nCmdr {
 
@@ -47,8 +50,8 @@ public:
 	public:
 		string mIdStr;
 		string mParStr;
-		cPCRE * mIdRex;
-		cPCRE * mParRex;
+		nUtils::cPCRE * mIdRex;
+		nUtils::cPCRE * mParRex;
 		ostream *mOS;
 		cCommand *mCommand;
 
@@ -58,7 +61,7 @@ public:
 		virtual ~sCmdFunc(){};
 		// this is an executive function of a command
 		virtual bool operator() (void) = 0;
-		virtual bool operator() (cPCRE &idrex, cPCRE &parrex, ostream &os, void *extra)
+		virtual bool operator() (nUtils::cPCRE &idrex, nUtils::cPCRE &parrex, ostream &os, void *extra)
 		{
 			mIdRex = &idrex;
 			mParRex = &parrex;

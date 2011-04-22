@@ -29,6 +29,7 @@
 namespace nVerliHub {
 	using namespace nEnums;
 	using namespace nUtils;
+	using namespace nSocket;
 	namespace nTables {
 
 cBan::cBan(cServerDC *s) : cObj("cBan"), mS(s)
@@ -97,7 +98,7 @@ void cBan::DisplayUser(ostream &os)
 		os <<  autosprintf(_("IP range: %s-%s"), initialRange.c_str(), endRange.c_str()) << "\r\n";
 	}
 	if(mShare)
-		os << autosprintf(_("Share: %s"), nUtils::convertByte(mShare, false).c_str()) << "\r\n";
+		os << autosprintf(_("Share: %s"), convertByte(mShare, false).c_str()) << "\r\n";
 }
 
 void cUnBan::DisplayUser(ostream &os)
@@ -156,7 +157,7 @@ void cBan::DisplayInline(ostream &os)
 			os << mHost;
 		break;
 		case eBF_SHARE:
-			os << nUtils::convertByte(mShare,false);
+			os << convertByte(mShare,false);
 		break;
 		case eBF_PREFIX:
 		default:

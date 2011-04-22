@@ -24,8 +24,8 @@
 #include "cthread.h"
 #include "cthreadwork.h"
 
-namespace nThreads
-{
+namespace nVerliHub {
+	namespace nThread {
 
 /**
 a thread designed to do some work of type cThreadWork
@@ -62,6 +62,7 @@ protected:
 	cThreadWork * mWork;
 };
 
-};
+	}; // namespace nThread
+}; // namespace nVerliHub
 
 #endif

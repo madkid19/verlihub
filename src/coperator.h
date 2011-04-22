@@ -23,8 +23,7 @@
 #define COPERATOR_H
 #include "cuser.h"
 
-namespace 
-{
+namespace nVerliHub {
 
 /**operator has some extra data to store, like kicks, ips, bans etc..
   *@author Daniel Muller
@@ -32,13 +31,10 @@ namespace
 
 class cOperator : public cUser
 {
-public: 
+public:
 	cOperator();
 	~cOperator();
-	
-//	typedef
-//	mKickList
 };
 
-};
+}; // namespace nVerliHub
 #endif

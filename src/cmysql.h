@@ -30,12 +30,11 @@ typedef unsigned int SOCKET;
 #include "cobj.h"
 
 namespace nVerliHub {
-
 /**
    Mysql utilities
    Contains classes that encapsulate mysql structures,  and ease their usage
 */
-namespace nMySQL {
+	namespace nMySQL {
 
 /**
 a class encapsulating operations with mysql conenction

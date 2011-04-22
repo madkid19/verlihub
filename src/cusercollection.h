@@ -23,15 +23,14 @@
 #define NDIRECTCONNECTCUSERCOLLECTION_H
 #if defined _WIN32
 namespace std {
-inline unsigned long
-_Atomic_swap(unsigned long * __p, unsigned long __q)
-{
-    // __gthread_mutex_lock(&_Swap_lock_struct<0>::_S_swap_lock);
-    unsigned long __result = *__p;
-    *__p = __q;
-    // __gthread_mutex_unlock(&_Swap_lock_struct<0>::_S_swap_lock);
-    return __result;
-}
+	inline unsigned long _Atomic_swap(unsigned long * __p, unsigned long __q)
+	{
+    		// __gthread_mutex_lock(&_Swap_lock_struct<0>::_S_swap_lock);
+    		unsigned long __result = *__p;
+    		*__p = __q;
+    		// __gthread_mutex_unlock(&_Swap_lock_struct<0>::_S_swap_lock);
+    		return __result;
+	}
 };
 #endif
 
@@ -189,9 +188,9 @@ public:
 	virtual string &GetInfoList(bool complete=false);
 	const char *GetNickListChar() {return GetNickList().c_str();}
 
-	void   Nick2Hash(const std::string &Nick, tHashType &Hash);
-	tHashType Nick2Hash(const std::string &Nick){string Key; Nick2Key(Nick,Key); return Key2Hash(Key); }
-	void   Nick2Key (const std::string &Nick, std::string &Key);
+	void   Nick2Hash(const string &Nick, tHashType &Hash);
+	tHashType Nick2Hash(const string &Nick){string Key; Nick2Key(Nick,Key); return Key2Hash(Key); }
+	void   Nick2Key (const string &Nick, string &Key);
 
 	cUserBase* GetUserBaseByKey (const string &Key ){ return GetByHash(Key2Hash(Key));}
 	cUserBase* GetUserBaseByNick(const string &Nick){ return GetByHash(Nick2Hash(Nick));}

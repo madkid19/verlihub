@@ -28,12 +28,9 @@
 #include "crooms.h"
 #include "cconsole.h"
 
-using namespace ::nPlugin;
-using namespace ;
-using namespace nUtils;
-
-typedef tpiListPlugin<cRooms,cRoomConsole> tpiChatroomBase;
-
+namespace nVerliHub {
+	namespace nChatRoom {
+		typedef nPlugin::tpiListPlugin<cRooms,cRoomConsole> tpiChatroomBase;
 /**
 \brief a messanger plugin for verlihub
 
@@ -47,7 +44,7 @@ public:
 	cpiChatroom();
 	virtual ~cpiChatroom();
 	virtual void OnLoad(cServerDC *);
-	
+
 
 	virtual bool RegisterAll();
 	virtual bool OnUserCommand(cConnDC *, string *);
@@ -56,6 +53,7 @@ public:
 	virtual bool OnOperatorCommand(cConnDC *, string *);
 	cRoomCfg *mCfg;
 };
-
+	}; // namespace nChatRoom
+}; // namespace nVerliHub
 
 #endif

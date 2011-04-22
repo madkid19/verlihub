@@ -20,8 +20,10 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cpenaltylist.h"
+#include "cquery.h"
 
-namespace  nVerliHub {
+namespace nVerliHub {
+	using namespace nMySQL;
 	namespace nTables {
 
 cPenaltyList::cPenaltyList(cMySQL &mysql) : cConfMySQL(mysql), mCache(mysql, "temp_rights", "nick")

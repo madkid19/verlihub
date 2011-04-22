@@ -26,7 +26,7 @@
 
 using namespace std;
 
-namespace  nVerliHub {
+namespace nVerliHub {
 	namespace nSocket {
 		class cConnDC;
 	};

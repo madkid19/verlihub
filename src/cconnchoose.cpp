@@ -111,7 +111,7 @@ inline cConnBase * cConnChoose::operator[] (tSocket sock)
 }
 #endif
 
-inline void cConnChoose::OptIn (cConnBase* conn, nEnums::tChEvent mask)
+inline void cConnChoose::OptIn(cConnBase* conn, nEnums::tChEvent mask)
 {
 	if(!conn)
 		return;

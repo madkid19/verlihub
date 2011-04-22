@@ -28,15 +28,13 @@
 using namespace std;
 
 namespace nVerliHub {
-	//using nUtils::cPCRE;
-	//using namespace nSocket;
 	namespace nTables{ class cConnType; };
 	using namespace nTables;
 	namespace nSocket {
 		class cConnDC;
+		class cServerDC;
 	};
-	//class cConnDC;
-	class cServerDC;
+
 	class cUser;
 	class cUserBase;
 
@@ -53,15 +51,15 @@ class cMessageDC;
 * @author Daniel Muller
 * @version 1.1
 */
-class cDCProto : public nVerliHub::nProtocol::cProtocol
+class cDCProto : public cProtocol
 {
-	friend class nVerliHub::cServerDC;
+	friend class nSocket::cServerDC;
  public:
 	/**
 	* Class constructor.
 	* @param serv An instance of Direct Connect hub server.
 	*/
-	cDCProto(cServerDC *serv);
+	cDCProto(nSocket::cServerDC *serv);
 
 	/**
 	* Class destructor.
@@ -85,7 +83,7 @@ class cDCProto : public nVerliHub::nProtocol::cProtocol
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int NickList(cConnDC *);
+	int NickList(nSocket::cConnDC *);
 
 	/**
 	* Check if the message is a command and pass it to the console.
@@ -93,7 +91,7 @@ class cDCProto : public nVerliHub::nProtocol::cProtocol
 	* @param conn User connection.
 	* @return 1 if the message is a command, 0 otherwise.
 	*/
-	int ParseForCommands(const string &, cConnDC *);
+	int ParseForCommands(const string &, nSocket::cConnDC *);
 
 	/**
 	* Process a given protocol message that has been already parsed.
@@ -101,7 +99,7 @@ class cDCProto : public nVerliHub::nProtocol::cProtocol
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	virtual int TreatMsg(cMessageParser *msg, cAsyncConn *conn);
+	virtual int TreatMsg(cMessageParser *msg,  nSocket::cAsyncConn *conn);
 
 
 protected:
@@ -112,7 +110,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DC_ConnectToMe(cMessageDC * msg, cConnDC * conn);
+	int DC_ConnectToMe(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat $MyPass protocol message.
@@ -120,7 +118,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DC_MyPass(cMessageDC * msg, cConnDC * conn);
+	int DC_MyPass(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat $Search protocol message.
@@ -128,7 +126,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DC_Search(cMessageDC * msg, cConnDC * conn);
+	int DC_Search(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat $SR protocol message.
@@ -136,7 +134,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DC_SR(cMessageDC * msg, cConnDC * conn);
+	int DC_SR(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat $BotINFO protocol message.
@@ -145,7 +143,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DCB_BotINFO(cMessageDC * msg, cConnDC * conn);
+	int DCB_BotINFO(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat protocol message. NOT IMPLEMENTED.
@@ -153,7 +151,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DCO_Banned(cMessageDC * msg, cConnDC * conn);
+	int DCO_Banned(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat $WhoIP protocol message and send requested users' IP.
@@ -161,33 +159,33 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DCO_WhoIP(cMessageDC * msg, cConnDC * conn);
+	int DCO_WhoIP(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/** Treat the DC message in a appropriate way */
-	int DC_GetNickList(cMessageDC * msg, cConnDC * conn);
+	int DC_GetNickList(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
-	int DC_GetINFO(cMessageDC * msg, cConnDC * conn);
+	int DC_GetINFO(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
-	int DC_MyINFO(cMessageDC * msg, cConnDC * conn);
+	int DC_MyINFO(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
-	int DC_Kick(cMessageDC * msg, cConnDC * conn);
+	int DC_Kick(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
-	int DC_OpForceMove(cMessageDC * msg, cConnDC * conn);
+	int DC_OpForceMove(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
-	int DC_RevConnectToMe(cMessageDC * msg, cConnDC * conn);
+	int DC_RevConnectToMe(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
-	int DC_MultiConnectToMe(cMessageDC * msg, cConnDC * conn);
+	int DC_MultiConnectToMe(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Network info (neo Modus) */
-	int DCM_NetInfo(cMessageDC * msg, cConnDC * conn);
+	int DCM_NetInfo(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** operator ban */
-	int DCO_TempBan(cMessageDC * msg, cConnDC * conn);
+	int DCO_TempBan(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** operator unban */
-	int DCO_UnBan(cMessageDC * msg, cConnDC * conn);
+	int DCO_UnBan(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** operator getbanlist */
-	int DCO_GetBanList(cMessageDC * msg, cConnDC * conn);
+	int DCO_GetBanList(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/** operator set hub topic */
-	int DCO_SetTopic(cMessageDC * msg, cConnDC * conn);
+	int DCO_SetTopic(cMessageDC * msg, nSocket::cConnDC * conn);
 
  public:
 	/**
@@ -197,7 +195,7 @@ protected:
 	* @param conn User connection.
 	* @return True if the message is valid or false otherwise.
 	*/
-	static bool CheckChatMsg(const string &text, cConnDC *conn);
+	static bool CheckChatMsg(const string &text, nSocket::cConnDC *conn);
 
 	/**
 	* Create a message to send in mainchat.
@@ -260,7 +258,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DC_Chat(cMessageDC * msg, cConnDC * conn);
+	int DC_Chat(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat $Key protocol message.
@@ -268,7 +266,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DC_Key(cMessageDC * msg, cConnDC * conn);
+	int DC_Key(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat $To protocol message.
@@ -277,7 +275,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DC_To(cMessageDC * msg, cConnDC * conn);
+	int DC_To(cMessageDC * msg, nSocket::cConnDC * conn);
 
 
 	/**
@@ -286,7 +284,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DC_ValidateNick(cMessageDC *msg, cConnDC *conn);
+	int DC_ValidateNick(cMessageDC *msg, nSocket::cConnDC *conn);
 
 	/**
 	* Treat $Version protocol message.
@@ -294,7 +292,7 @@ protected:
 	* @param conn User connection.
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
-	int DC_Version(cMessageDC * msg, cConnDC * conn);
+	int DC_Version(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Parse client's extensions and send $Support.
@@ -302,7 +300,7 @@ protected:
 	* @param conn User connection.
 	* @return Always 0.
 	*/
-	int DCE_Supports(cMessageDC * msg, cConnDC * conn);
+	int DCE_Supports(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Send hub topic to an user.
@@ -310,7 +308,7 @@ protected:
 	* @param conn User connection.
 	* @return Always 0.
 	*/
-	int DCO_GetTopic(cMessageDC * msg, cConnDC * conn);
+	int DCO_GetTopic(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Escape DC string.
@@ -348,13 +346,13 @@ protected:
 	* @param speed The speed.
 	* @return Pointer to connection type object.
 	*/
-	cConnType *ParseSpeed(const std::string &speed);
+	cConnType *ParseSpeed(const string &speed);
 
 	const string &GetMyInfo(cUserBase * User, int ForClass);
 	void Append_MyInfoList(string &dest, const string &MyINFO, const string &MyINFO_basic, bool DoBasic);
 	static void UnEscapeChars(const string &, string &, bool WithDCN = false);
 	static void UnEscapeChars(const string &, char *, int &len ,bool WithDCN = false);
-	static bool CheckIP(cConnDC * conn, string &ip);
+	static bool CheckIP(nSocket::cConnDC * conn, string &ip);
 
 	// Message kick regex
 	nUtils::cPCRE mKickChatPattern;
@@ -363,7 +361,7 @@ protected:
 	nUtils::cPCRE mKickBanPattern;
 
 	// Direct Connect hub server
-	cServerDC *mS;
+	nSocket::cServerDC *mS;
 };
 	}; // namespace nProtocol
 }; // namespace nVerliHub

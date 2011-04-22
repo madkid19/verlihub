@@ -26,39 +26,38 @@
 #include "tlistconsole.h"
 #include "cdcconsole.h"
 
-using nConfig::tMySQLMemoryList;
+namespace nVerliHub {
+	namespace nSocket {
+		class cServerDC;
+	};
+	class cDCConsole;
+	namespace nTables {
 
-namespace  {
-
-class cServerDC;
-class cDCConsole;
-namespace nTables {
-
-typedef tMySQLMemoryList<cTrigger, cServerDC> tTriggersBase;
+		typedef nConfig::tMySQLMemoryList<cTrigger, nSocket::cServerDC> tTriggersBase;
 
   /**
   This class contains the list of all triggers and is able to add, edit and delete them
 
   @author Daniel Muller
   @author Simoncelli Davide
-  
+
   */
 class cTriggers : public tTriggersBase
 {
 public:
-	cTriggers(cServerDC *);
+	cTriggers(nSocket::cServerDC *);
 	virtual ~cTriggers(){};
 	virtual void AddFields();
 	cTrigger * Find(const string &name); //@todo Trigger stuff
 	virtual bool CompareDataKey(const cTrigger &D1, const cTrigger &D2);
 	void OnTimer(long now);
 	// useful functions
-	void TriggerAll(int FlagMask, cConnDC *conn);
-	bool DoCommand(cConnDC *conn, const string &cmd, istringstream &cmd_line, cServerDC &server);
+	void TriggerAll(int FlagMask, nSocket::cConnDC *conn);
+	bool DoCommand(nSocket::cConnDC *conn, const string &cmd, istringstream &cmd_line, nSocket::cServerDC &server);
 };
 
 
-typedef tListConsole<cTrigger, cTriggers, cDCConsole> tTriggerConsoleBase;
+typedef nConfig::tListConsole<cTrigger, cTriggers, cDCConsole> tTriggerConsoleBase;
 
   /**
 
@@ -79,7 +78,7 @@ public:
 	virtual const char *CmdSuffix();
 	virtual const char *CmdPrefix();
 	virtual void ListHead(ostream *os);
-	virtual bool IsConnAllowed(cConnDC *conn,int cmd);
+	virtual bool IsConnAllowed(nSocket::cConnDC *conn,int cmd);
 	virtual bool ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data);
 	virtual void GetHelpForCommand(int cmd, ostream &os);
 	virtual void GetHelp(ostream &os);
@@ -88,8 +87,7 @@ public:
 
 };
 
-
-};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 #endif

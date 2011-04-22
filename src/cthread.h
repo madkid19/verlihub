@@ -24,9 +24,8 @@
 #include "cmutex.h"
 #include "cobj.h"
 
-namespace nThreads
-{
-
+namespace nVerliHub {
+	namespace nThread {
 /**
 @author Daniel Muller
 */
@@ -62,7 +61,8 @@ protected:
 	/** */
 	int mStop;
 };
-};
+	}; // namespace nThread
+}; // namespace nVerliHub
 
 
 #endif

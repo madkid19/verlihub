@@ -54,7 +54,7 @@ namespace nVerliHub {
 	using nUtils::cGeoIP;
 	#endif
 	using namespace nPlugin;
-	using namespace nThreads;
+	using namespace nThread;
 	using namespace nSocket;
 
 	using nMySQL::cMySQL;
@@ -142,7 +142,7 @@ namespace nVerliHub {
 			eKCK_PM = 4,
 			eKCK_TBAN = 8
 		};
-	};
+	}; // namespace nEnums
 
 	namespace nTables{
 		class cConnTypes;
@@ -155,30 +155,21 @@ namespace nVerliHub {
 	};
 
 	namespace nSocket {
-		//class cConnDC;
+		class cConnDC;
 		class cDCConnFactory;
 	};
-//	using nSocket::cConnDC;
-// forward declarations
-//using namespace nEnums;
-//using namespace nConfig;
-using namespace nUtils;
-//using namespace nDirectConnect;
-//using namespace nSocket;
-using namespace nProtocol;
-//using namespace nZlib;
-//using namespace ::nDirectConnect::nTables;
-//using namespace ::nDirectConnect::nPlugin;
 
-using nTables::cDCConf;
+	//using namespace nConfig;
+	using namespace nUtils;
+	using namespace nProtocol;
+	//using namespace ::nTables;
+	//using namespace ::nPlugin;
+	using nTables::cDCConf;
 
-
-class cUser;
-class cUserRobot;
-class cChatRoom;
-class cDCConsole;
-
-class cDCConsole;
+	class cUser;
+	class cUserRobot;
+	class cChatRoom;
+	class cDCConsole;
 
 	namespace nSocket {
 
@@ -190,12 +181,12 @@ class cServerDC : public cAsyncSocketServer
 {
 	friend class nSocket::cConnDC;
 	friend class nSocket::cDCConnFactory;
-	friend class cDCConsole;
+	friend class nVerliHub::cDCConsole;
 	friend class nProtocol::cDCProto;
-	friend class cDCConf;
+	friend class nVerliHub::cDCConf;
 	friend class nTables::cRegList;
 	friend class nTables::cDCBanList;
-	friend class cUser;
+	friend class nVerliHub::cUser;
 	public:
 		// Path to VerliHub config folder
 		string mConfigBaseDir;

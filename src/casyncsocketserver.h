@@ -49,8 +49,8 @@ namespace nVerliHub {
  */
 class cAsyncSocketServer : public cObj
 {
-    public:
-	friend class cAsyncConn;
+public:
+	friend class nVerliHub::nSocket::cAsyncConn;
 
 	/**
 	* Class constructor.
@@ -73,7 +73,7 @@ class cAsyncSocketServer : public cObj
 	* Return the port on which the server is listening on.
 	* @return The port.
 	*/
-	virtual const int& getmPort();
+	virtual unsigned int getPort() const;
 
 	/**
 	* This event is triggered when a connection is closed.
@@ -117,10 +117,12 @@ class cAsyncSocketServer : public cObj
 	virtual bool StopListenConn(cAsyncConn *);
 	virtual int StartListening(int OverrideDefaultPort=0);
 	/** Write property of int mPort. */
-	virtual void setmPort( const int& _newVal);
+	virtual void setPort(const unsigned int _newVal);
 
 	// Listening address
 	string mAddr;
+	// The port to listen on
+	unsigned int mPort;
 	// Connection period for timer
 	int timer_conn_period;
 	// Server period for timer
@@ -139,8 +141,6 @@ class cAsyncSocketServer : public cObj
     protected:
 	// Indicate if the loop should be run or not
 	bool mbRun;
-	// The port to listen on
-	int mPort;
 
 	typedef list<cAsyncConn*> tConnList;
 	// Iterator to iterate over connections list

@@ -39,8 +39,6 @@ namespace nVerliHub {
 			eReconnect =  0x000080
 		};
 	};
-	class cConnDC;
-	class cServerDC;
 
 	namespace nTables {
 

@@ -24,7 +24,6 @@
 
 namespace nVerliHub {
 	namespace nUtils {
-
 /**
 the interface for temporary functions that are periodialy called to do some stuff, until they are done
 

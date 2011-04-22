@@ -24,10 +24,10 @@
 #include "cserverdc.h"
 #include "i18n.h"
 
-namespace  {
-
-namespace nPlugin {
-
+namespace nVerliHub {
+	using namespace nEnums;
+	using namespace nSocket;
+	namespace nPlugin {
 cVHPlugin::cVHPlugin()
 {
 	mServer = 0;
@@ -97,7 +97,7 @@ bool cVHPlugin::LoadScript(const string &filename, ostream &os)
 cPluginUserData *cVHPlugin::GetPluginUserData( cUser * User )
 {
 	if (mUserDataTable) {
-		tHashArray<cPluginUserData*>::tHashType Hash = (tHashArray<cPluginUserData*>::tHashType) User; 
+		tHashArray<cPluginUserData*>::tHashType Hash = (tHashArray<cPluginUserData*>::tHashType) User;
 		return mUserDataTable->GetByHash(Hash);
 	} else return NULL;
 }
@@ -107,12 +107,11 @@ cPluginUserData *cVHPlugin::SetPluginUserData( cUser *User, cPluginUserData *New
 	if (!mUserDataTable && User && NewData) {
 		mUserDataTable = new tHashArray<cPluginUserData*>();
 	}
-	tHashArray<cPluginUserData*>::tHashType Hash = (tHashArray<cPluginUserData*>::tHashType) User; 
+	tHashArray<cPluginUserData*>::tHashType Hash = (tHashArray<cPluginUserData*>::tHashType) User;
 	cPluginUserData *OldData = mUserDataTable->GetByHash(Hash);
 	mUserDataTable->SetByHash(Hash, NewData);
 	return OldData;
 }
 
-};
-
-};
+	}; // namespace nPlugin
+}; // namespace nVerliHub

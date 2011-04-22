@@ -20,13 +20,12 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include <string>
-using namespace std;
 #include <unistd.h>
 #include "cthread.h"
 
-namespace nThreads
-{
-
+using namespace std;
+namespace nVerliHub {
+	namespace nThread {
 cThread::cThread()
 {
 	mStop = 1;
@@ -90,4 +89,5 @@ void *cThread::ThreadFunc(void *obj)
 	return obj;
 }
 
-};
+	}; // namespace nThread
+}; // namespace nVerliHub

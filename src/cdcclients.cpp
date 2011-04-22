@@ -27,7 +27,7 @@
 
 namespace nVerliHub {
 	using nUtils::cPCRE;
-	using nEnums;
+	using namespace nEnums;
 	cDCTagParser cDCClients::mParser;
 
 	cDCTagParser::cDCTagParser()

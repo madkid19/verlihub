@@ -45,7 +45,7 @@ class cObj
 		virtual ~cObj();
 
 		/** Logs an event into a given stream */
-		virtual int StrLog(std::ostream & ostr, int level);
+		virtual int StrLog(ostream & ostr, int level);
 		/** Log or not an event?? */
 		int Log(int level);
 		/** error Log or not an event */
@@ -54,11 +54,11 @@ class cObj
 		/** No descriptions */
 		void SetClassName(const char *name){mClassName=name;}
 		/** return selected log stream */
-		std::ostream & LogStream();
+		ostream & LogStream();
 		/** error log stream */
-		virtual std::ostream & ErrLog();
+		virtual ostream & ErrLog();
 		/** return the streal where logging  goes to */
-		virtual std::ostream & Log();
+		virtual ostream & Log();
 
 	public:
 		/** the Ascii representaition of class name */
@@ -66,7 +66,7 @@ class cObj
 		/** all events higher than this are discarded */
 		static int msLogLevel;
 		/** a string stream variable to log */
-		std::ostream *mToLog;
+		ostream *mToLog;
 		static const string mEmpty;
 		static int GetCount(){ return msCounterObj;}
 

@@ -34,11 +34,13 @@ using std::ostream;
 
 namespace nVerliHub {
 
-class cConnDC;
+	namespace nSocket {
+		class cConnDC;
+	};
 
-namespace nTables {
+	namespace nTables {
 
-class cUnBanList;
+		class cUnBanList;
 
 /** \brief a Banlist Manager
   *
@@ -49,9 +51,9 @@ class cUnBanList;
   * etc..
   * @author Daniel Muller
   */
-class cBanList : public cConfMySQL
+class cBanList : public nConfig::cConfMySQL
 {
-	friend class nVerliHub::cServerDC;
+	friend class nVerliHub::nSocket::cServerDC;
 	struct sTempBan
 	{
 		sTempBan(long u, const string &reason):mUntil(u), mReason(reason){};
@@ -63,10 +65,10 @@ class cBanList : public cConfMySQL
 		~cBanList();
 		int UpdateBan(cBan &);
 		bool LoadBanByKey(cBan &ban);
-		void NewBan(cBan &,cConnDC *,const string &nick_op, const string &reason,
+		void NewBan(cBan &,nSocket::cConnDC *,const string &nick_op, const string &reason,
 			unsigned length, unsigned type);
 		void AddBan(cBan &);
-		bool TestBan(cBan &, cConnDC *, const string &, unsigned mask);
+		bool TestBan(cBan &, nSocket::cConnDC *, const string &, unsigned mask);
 		virtual void Cleanup();
 		void DelBan(cBan &);
 		int DeleteAllBansBy(const string &IP, const string &Nick, int Flags);

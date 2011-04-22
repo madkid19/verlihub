@@ -69,19 +69,22 @@ namespace nVerliHub {
 		nUtils::cPCRE mLimitRE;
 	};
 
-	class cServerDC;
+	namespace nSocket {
+		class cServerDC;
+	};
 	class cDCConsole;
+
 	namespace nTables {
 
-		typedef tMySQLMemoryList<cDCClient, cServerDC> tClientsBase;
+		typedef tMySQLMemoryList<cDCClient, nSocket::cServerDC> tClientsBase;
 		class cDCClients : public tClientsBase
 		{
 			static cDCTagParser mParser;
-			cServerDC *mServer;
+			nSocket::cServerDC *mServer;
 			public:
 				int mPositionInDesc;
 
-				cDCClients(cServerDC *);
+				cDCClients(nSocket::cServerDC *);
 				virtual ~cDCClients(){};
 				virtual void AddFields();;
 				cDCClient* FindTag(const string &tagID);

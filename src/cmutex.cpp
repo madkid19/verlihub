@@ -24,9 +24,8 @@
 #include <string.h>
 
 using namespace std;
-
-namespace nThreads
-{
+namespace nVerliHub {
+	namespace nThread {
 
 cMutex::cMutex()
 {
@@ -75,4 +74,5 @@ void cMutex::PrintError(const char *function)
 	cerr << "Mutex error in " << function << " : " << GetError() << endl;
 }
 
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub

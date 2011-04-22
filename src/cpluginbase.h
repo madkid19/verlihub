@@ -26,8 +26,8 @@
 #ifndef REGISTER_PLUGIN
 #define REGISTER_PLUGIN(__classname) \
 	extern "C" {\
-		cPluginBase * get_plugin(void){ return new (__classname); }\
-		void del_plugin(cPluginBase *plugin)\
+		nPlugin::cPluginBase * get_plugin(void){ return new (__classname); }\
+		void del_plugin(nPlugin::cPluginBase *plugin)\
 		{if(plugin) delete plugin;}\
 	}
 #endif

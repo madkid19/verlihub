@@ -149,12 +149,12 @@ void cAsyncSocketServer::close()
 	}
 }
 
-const int& cAsyncSocketServer::getmPort()
+unsigned int cAsyncSocketServer::getPort() const
 {
 	return mPort;
 }
 
-void cAsyncSocketServer::setmPort( const int& _newVal)
+void cAsyncSocketServer::setPort(unsigned int _newVal)
 {
 	mPort = _newVal;
 }

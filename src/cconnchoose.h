@@ -70,8 +70,6 @@
 	#include "thasharray.h"
 #endif // _WIN32
 
-
-
 namespace nVerliHub {
 	using namespace nUtils;
 	namespace nEnums {
@@ -142,7 +140,7 @@ public:
 	virtual bool DelConn(cConnBase *);
 	virtual bool HasConn(cConnBase *);
 
-	cConnBase * operator[] (tSocket sock);
+	virtual cConnBase * operator[] (tSocket sock);
 
 	tSocket operator[] (cConnBase *conn);
 
@@ -153,14 +151,14 @@ public:
 	* @param conn The connection.
 	* @param event Bitwise OR list of I/O operation.
 	*/
-	void OptIn (cConnBase *conn, nEnums::tChEvent);
+	virtual void OptIn(cConnBase *conn, nEnums::tChEvent event);
 
 	/**
 	* Unregister the connection for the given I/O operations.
 	* @param conn The connection.
 	* @param event Bitwise OR list of I/O operation.
 	*/
-	void OptOut(cConnBase *conn, nEnums::tChEvent mask);
+	virtual void OptOut(cConnBase *conn, nEnums::tChEvent event);
 
 	/**
 	* Return I/O operations for the given connection.
@@ -168,9 +166,10 @@ public:
 	* @return Bitwise OR list of I/O operation.
 	* @see OptIn(cConnBase *conn, tChEvent events)
 	*/
-
 	int OptGet(cConnBase *conn);
+
 	int RevGet(cConnBase *conn);
+
 	bool RevTest(cConnBase *conn);
 
 	virtual void OptIn (tSocket, nEnums::tChEvent) = 0;

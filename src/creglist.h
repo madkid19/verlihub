@@ -30,26 +30,23 @@ using namespace std;
 
 namespace nVerliHub {
 	using namespace nMySQL;
-	using namespace nConfig;
-	// forward declarations
-	namespace nSocket { class cConnDC; class cServerDC; };
-	using nSocket::cConnDC;
-	using nSocket::cServerDC;
-	class cServerDC;
+	namespace nSocket {
+		class cConnDC;
+		class cServerDC;
+	};
 
-namespace nTables {
+	namespace nTables {
 
-// forward declarations
-//class cRegUserInfo;
+	class cRegUserInfo;
 
 /**a reg users list
   *@author Daniel Muller
   */
 
-class cRegList : public cConfMySQL
+class cRegList : public nConfig::cConfMySQL
 {
 public:
-	cRegList(cMySQL &mysql,cServerDC *);
+	cRegList(nMySQL::cMySQL &mysql, nSocket::cServerDC *);
 	virtual ~cRegList();
 	/** find nick in reglist
 		if not foud return 0
@@ -57,23 +54,23 @@ public:
 	bool FindRegInfo(cRegUserInfo &, const string &nick);
 	bool ShowUsers(cConnDC *op, ostream &os, int page, int offset, string nick);
 	/** add registered user */
-	bool AddRegUser(const string &nick, cConnDC *op, int cl, const char *password = NULL);
+	bool AddRegUser(const string &nick, nSocket::cConnDC *op, int cl, const char *password = NULL);
 	/** No descriptions */
 	bool ChangePwd(const string &nick, const string &pwd,int);
 	/** No descriptions */
 	bool SetVar(const string &nick, string &field, string &value);
 	/** log that user logged in */
-	bool Login(cConnDC *conn, const string &nick);
+	bool Login(nSocket::cConnDC *conn, const string &nick);
 	bool Logout(const string &nick);
 	/** log that user logged in with wrong passwd*/
-	bool LoginError(cConnDC *conn, const string &nick);
+	bool LoginError(nSocket::cConnDC *conn, const string &nick);
 	bool DelReg(const string &nick);
 	void ReloadCache(){mCache.Clear(); mCache.LoadAll();}
 	void UpdateCache(){mCache.Update();}
-	tCache<string> mCache;
+	nConfig::tCache<string> mCache;
 protected: // Protected attributes
 	/** reference to a server */
-	cServerDC *mS;
+	nSocket::cServerDC *mS;
 	cRegUserInfo mModel;
 };
 };

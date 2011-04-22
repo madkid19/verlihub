@@ -60,7 +60,6 @@ namespace nVerliHub {
 		class cConnType;
 	};
 	using namespace nTables;
-	using namespace nEnums;
 
 /**dc info tag the <++ V:0.00,S:0,H:1> thing
   *@author Daniel Muller
@@ -69,12 +68,12 @@ namespace nVerliHub {
 class cDCTag
 {
 	public:
-		cDCTag(cServerDC *mS);
-		cDCTag(cServerDC *mS, cDCClient *c);
+		cDCTag(nSocket::cServerDC *mS);
+		cDCTag(nSocket::cServerDC *mS, cDCClient *c);
 
 		~cDCTag();
 
-		cServerDC *mServer;
+		nSocket::cServerDC *mServer;
 
 		cDCClient *client;
 

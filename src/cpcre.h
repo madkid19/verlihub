@@ -40,16 +40,16 @@ public:
 	cPCRE(int coord=30);
 	~cPCRE();
 	cPCRE(const char *, unsigned int options, int coord=30);
-	cPCRE(const std::string&, unsigned int options, int coord=30);
+	cPCRE(const string&, unsigned int options, int coord=30);
 	bool Compile(const char *, unsigned int options = 0);
-	int Exec(const std::string &text);
-	int Compare(const std::string &name, const std::string &text, const string &text2);
-	int Compare(int rank, const std::string &text, const string &text2);
-	int Compare(int rank, const std::string &text, const char   *text2);
+	int Exec(const string &text);
+	int Compare(const string &name, const string &text, const string &text2);
+	int Compare(int rank, const string &text, const string &text2);
+	int Compare(int rank, const string &text, const char   *text2);
 	int StartOf(int rank){ if(rank < 0 || rank >= mResult) return -1; return mCoords[rank << 1];}
-	void Extract( int rank, const std::string &src, std::string &dst);
-	void Replace(int rank, std::string &InString, const std::string &ByThis);
-	int GetStringRank(const std::string &ame);
+	void Extract( int rank, const string &src, string &dst);
+	void Replace(int rank, string &InString, const string &ByThis);
+	int GetStringRank(const string &ame);
 	bool PartFound(int index);
 private:
 	pcre * mPattern;

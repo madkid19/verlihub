@@ -27,40 +27,40 @@
 #include "tmysqlmemoryordlist.h"
 #include "cserverdc.h"
 
-using namespace nUtils;
 
-namespace 
-{
-namespace nPlugin
-{
+
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nPlugin {
+
 
 template <class DATA_TYPE, class PLUGIN_TYPE>
 class tList4Plugin : public tMySQLMemoryList<DATA_TYPE, PLUGIN_TYPE>
 {
 public:
 	tList4Plugin(cVHPlugin *pi, const string & TableName):
-		tMySQLMemoryList<DATA_TYPE,PLUGIN_TYPE>(pi->mServer->mMySQL, (PLUGIN_TYPE*)pi, TableName)
+		nConfig::tMySQLMemoryList<DATA_TYPE,PLUGIN_TYPE>(pi->mServer->mMySQL, (PLUGIN_TYPE*)pi, TableName)
 	{}
 	virtual ~tList4Plugin() {}
 };
 
 template <class DATA_TYPE, class PLUGIN_TYPE>
-class tHash4Plugin : public tMySQLMemoryHash<DATA_TYPE, PLUGIN_TYPE>
+class tHash4Plugin : public nConfig::tMySQLMemoryHash<DATA_TYPE, PLUGIN_TYPE>
 {
 public:
 	tHash4Plugin(cVHPlugin *pi, const string & TableName):
-		tMySQLMemoryHash<DATA_TYPE,PLUGIN_TYPE>(pi->mServer->mMySQL, (PLUGIN_TYPE*)pi, TableName)
+		nConfig::tMySQLMemoryHash<DATA_TYPE,PLUGIN_TYPE>(pi->mServer->mMySQL, (PLUGIN_TYPE*)pi, TableName)
 	{}
 	virtual ~tHash4Plugin() {}
 };
 
 
 template <class DATA_TYPE, class PLUGIN_TYPE>
-class tOrdList4Plugin : public tMySQLMemoryOrdList<DATA_TYPE, PLUGIN_TYPE>
+class tOrdList4Plugin : public nConfig::tMySQLMemoryOrdList<DATA_TYPE, PLUGIN_TYPE>
 {
 public:
 	tOrdList4Plugin(cVHPlugin *pi, const string & TableName, const string &DbOrder):
-		tMySQLMemoryOrdList<DATA_TYPE,PLUGIN_TYPE>(pi->mServer->mMySQL, (PLUGIN_TYPE*)pi, TableName, DbOrder)
+		nConfig::tMySQLMemoryOrdList<DATA_TYPE,PLUGIN_TYPE>(pi->mServer->mMySQL, (PLUGIN_TYPE*)pi, TableName, DbOrder)
 	{}
 	virtual ~tOrdList4Plugin() {}
 };
@@ -74,19 +74,19 @@ public:
 		if (mList != NULL) delete mList;
 		mList = NULL;
 	}
-	
+
 	virtual bool RegisterAll() {
 		RegisterCallBack("VH_OnUserCommand");
 		return true;
 	}
-	
+
 	virtual bool OnUserCommand(cConnDC *conn, string *str) {
 		return !(mConsole.DoCommand(*str, conn));
 	}
 
 	virtual void OnLoad(cServerDC *server){
 		cVHPlugin::OnLoad(server);
-	
+
 		mList = new LIST_TYPE(this);
 		mList->OnStart();
 	}

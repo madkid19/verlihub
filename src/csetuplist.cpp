@@ -22,8 +22,10 @@
 #include "csetuplist.h"
 #include "cdcproto.h"
 
-namespace VerliHub {
+namespace nVerliHub {
 	using namespace nConfig;
+	using namespace nMySQL;
+	using namespace nProtocol;
 	namespace nTables {
 
 cSetupList::cSetupList(cMySQL &mysql):cConfMySQL(mysql)

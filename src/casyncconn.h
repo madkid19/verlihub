@@ -38,6 +38,7 @@
 #include <string>
 #include <list>
 
+using namespace std;
 namespace nVerliHub {
 	namespace nEnums {
 
@@ -60,16 +61,15 @@ namespace nVerliHub {
 
  	namespace nProtocol {
  		class cProtocol;
-// 		class cMessageParser;
+ 		class cMessageParser;
  	};
 
 	namespace nSocket {
  		class cAsyncSocketServer;
-// 		class cAsyncConn;
+ 		class cAsyncConn;
 // 		class cConnBase;
 
 		using namespace nEnums;
-		using namespace std;
 		using namespace nUtils;
 
 
@@ -186,7 +186,7 @@ class cAsyncConn : public cConnBase, public cObj
 		int mExtraPoll;
 	public:
 		// Pointer to server class
-		nSocket::cAsyncSocketServer *mxServer;
+		cAsyncSocketServer *mxServer;
 		cConnFactory * mxMyFactory;
 		cConnFactory * mxAcceptingFactory;
 		nProtocol::cProtocol * mxProtocol;

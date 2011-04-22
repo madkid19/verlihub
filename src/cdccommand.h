@@ -27,8 +27,10 @@
 
 namespace nVerliHub {
 	class cUser;
-	class cServerDC;
-	class cConnDC;
+	namespace nSocket {
+		class cServerDC;
+		class cConnDC;
+	};
 
 	template<class OwnerType>
 	class tConsoleBase: public cObj
@@ -40,11 +42,11 @@ namespace nVerliHub {
 			{}
 		OwnerType *mOwner;
 		virtual ~tConsoleBase(){}
-		virtual int OpCommand(const string &, cConnDC*) = 0;
-		virtual int UsrCommand(const string & , cConnDC * ) = 0;
+		virtual int OpCommand(const string &, nSocket::cConnDC*) = 0;
+		virtual int UsrCommand(const string & , nSocket::cConnDC * ) = 0;
 	};
 
-	typedef tConsoleBase<cServerDC> cDCConsoleBase;
+	typedef tConsoleBase<nSocket::cServerDC> cDCConsoleBase;
 
 	class cDCCommand : public nCmdr::cCommand
 	{
@@ -57,8 +59,8 @@ namespace nVerliHub {
 		class sDCCmdFunc : public nCmdr::cCommand::sCmdFunc
 		{
 		public:
-			cServerDC *mS;
-			cConnDC * mConn;
+			nSocket::cServerDC *mS;
+			nSocket::cConnDC * mConn;
 			cDCConsoleBase *mCo;
 
 			virtual ~sDCCmdFunc(){};
@@ -68,7 +70,7 @@ namespace nVerliHub {
 			virtual bool GetParRegex(int rank, string &dest);
 			virtual bool GetParOnlineUser(int rank, cUser *&dest, string &nick);
 			void Bind(cDCConsoleBase *co);
-			virtual bool operator() (cPCRE &idrex, cPCRE &parrex, ostream &os, void *extra);
+			virtual bool operator() (nUtils::cPCRE &idrex, nUtils::cPCRE &parrex, ostream &os, void *extra);
 		};
 
 		cDCCommand(int ID, const char *IdRegex, const char *ParRegex, sDCCmdFunc *CmdFunc, long Action = -1);

@@ -29,7 +29,6 @@
 
 using namespace std;
 namespace nVerliHub {
-
 	namespace nEnums {
 		/** several types of users with some differences .. for later
 			everyone is allowed to create no more then he is -1
@@ -96,7 +95,9 @@ using namespace nTables;
  * those that they always get.. this should be configurable 2DO TODO*/
 
 //class cConnDC;
-class cServerDC;
+	namespace nSocket {
+		class cServerDC;
+	};
 
 /**
  * Basic class for users, every users must have at least this info..
@@ -145,7 +146,7 @@ public:
 	/* Pointer to the connection */
 	nSocket::cConnDC * mxConn;
 	/* Pointer to the srever (this pointer must never be deleted) */
-	cServerDC * mxServer;
+	nSocket::cServerDC * mxServer;
 	/* Email retrived from MyINFO */
 	string mEmail;
 	/* True if user is in passive mode */
@@ -239,23 +240,23 @@ class cChatConsole;
 class cUserRobot : public cUser
 {
 public:
-	cUserRobot(cServerDC *server = NULL){mxServer = server;};
+	cUserRobot(nSocket::cServerDC *server = NULL){mxServer = server;};
 	virtual ~cUserRobot(){};
 	/** constructor with a nickname */
-	cUserRobot(const string &nick, cServerDC *server = NULL):cUser(nick){mxServer = server;};
+	cUserRobot(const string &nick, nSocket::cServerDC *server = NULL):cUser(nick){mxServer = server;};
 
-	virtual bool ReceiveMsg(cConnDC *conn, cMessageDC *msg) = 0;
-	bool SendPMTo(cConnDC *conn, const string &msg);
+	virtual bool ReceiveMsg(nSocket::cConnDC *conn, cMessageDC *msg) = 0;
+	bool SendPMTo(nSocket::cConnDC *conn, const string &msg);
 };
 
 class cChatRoom : public cUserRobot
 {
 public:
-	cChatRoom(const string &nick, cUserCollection *col, cServerDC *server = NULL);
+	cChatRoom(const string &nick, cUserCollection *col, nSocket::cServerDC *server = NULL);
 	virtual ~cChatRoom();
 	cUserCollection *mCol;
-	virtual bool ReceiveMsg(cConnDC *conn, cMessageDC *msg);
-	virtual void SendPMToAll(const string & Msg, cConnDC *FromConn);
+	virtual bool ReceiveMsg(cConnDC *conn, nProtocol::cMessageDC *msg);
+	virtual void SendPMToAll(const string & Msg, nSocket::cConnDC *FromConn);
 	virtual bool IsUserAllowed(cUser *);
 	cChatConsole *mConsole;
 };
@@ -263,28 +264,27 @@ public:
 class cOpChat : public cChatRoom
 {
 public:
-	cOpChat(cServerDC *server);
+	cOpChat(nSocket::cServerDC *server);
 	virtual bool IsUserAllowed(cUser *);
 };
 
 class cMainRobot : public cUserRobot
 {
 public:
-	cMainRobot(const string &nick, cServerDC *server = NULL):cUserRobot(nick,server){};
-	virtual bool ReceiveMsg(cConnDC *conn, cMessageDC *msg);
+	cMainRobot(const string &nick, nSocket::cServerDC *server = NULL):cUserRobot(nick,server){};
+	virtual bool ReceiveMsg(nSocket::cConnDC *conn, nProtocol::cMessageDC *msg);
 };
 
 namespace nPlugin {
 	class cVHPlugin;
 };
-using nPlugin::cVHPlugin;
 
 class cPluginRobot : public cUserRobot
 {
 public:
-	cPluginRobot(const string &nick, cVHPlugin *pi, cServerDC *server = NULL);
-	cVHPlugin *mPlugin;
-	virtual bool ReceiveMsg(cConnDC *conn, cMessageDC *msg);
+	cPluginRobot(const string &nick, nPlugin::cVHPlugin *pi, nSocket::cServerDC *server = NULL);
+	nPlugin::cVHPlugin *mPlugin;
+	virtual bool ReceiveMsg(nSocket::cConnDC *conn, nProtocol::cMessageDC *msg);
 };
 
 

@@ -36,7 +36,7 @@
 
 namespace nVerliHub {
 	using namespace nUtils;
-
+	using namespace nSocket;
 cInfoServer::cInfoServer()
 {
 	mServer = NULL;

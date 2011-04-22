@@ -26,12 +26,28 @@
 
 using namespace std;
 
-namespace  {
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+		class cServerDC;
+	};
 
-class cConnDC;
-class cServerDC;
-
-namespace nTables {
+	namespace nEnums {
+		/**
+		 A *llowed flags and their meanings for a trigger
+		 */
+		enum
+		{
+			eTF_EXECUTE = 1 << 0, // Execute the content of the trigger message in as a shell command
+			eTF_SENDPM = 1 << 1, // Send trigger message as private message
+			eTF_MOTD = 1 << 2, // Trigger when an user logs in
+			eTF_HELP = 1 << 3, // Trigger on +help or !help command
+			eTF_DB = 1 << 4, // Trigger message is stored in DB (def column)
+			eTF_VARS = 1 << 5, // Replace variables
+			eTF_SENDTOALL = 1 << 6 // Send trigger message to all when triggered
+		};
+	};
+	namespace nTables {
 
 /**
 Trigger class
@@ -46,7 +62,7 @@ class cTrigger
 public:
 	cTrigger();
 	virtual ~cTrigger();
-	int DoIt(istringstream & cmd_line, cConnDC *conn, cServerDC &server, bool timer=false);
+	int DoIt(istringstream & cmd_line, nSocket::cConnDC *conn, nSocket::cServerDC &server, bool timer=false);
 	/**
 	 The trigger
 	*/
@@ -55,20 +71,7 @@ public:
 	 The nick that sends the trigger message
 	*/
 	string mSendAs;
-	/**
-	 Allowed flags and their meanings for a trigger
-	*/
-	enum
-	{
-		eTF_EXECUTE = 1 << 0, // Execute the content of the trigger message in as a shell command
-		eTF_SENDPM = 1 << 1, // Send trigger message as private message
-		eTF_MOTD = 1 << 2, // Trigger when an user logs in
-		eTF_HELP = 1 << 3, // Trigger on +help or !help command
-		eTF_DB = 1 << 4, // Trigger message is stored in DB (def column)
-		eTF_VARS = 1 << 5, // Replace variables
-		eTF_SENDTOALL = 1 << 6 // Send trigger message to all when triggered
-	};
-	
+
 	/**
 	 Timeout for trigger if there is an actived timer for it
 	*/

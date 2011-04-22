@@ -28,20 +28,16 @@
 using std::string;
 namespace  nVerliHub {
 
-namespace nProtocol {
-	class cDCProto;
-};
-
-using nProtocol::cDCProto;
-//using nProtocol::nEnums::eDC_UNKNOWN;
-
-class cServerDC;
-class cDCBanList;
-class cDCConsole;
-//class cConnDC;
-namespace nSocket {
-	class cConnDC;
-};
+	namespace nProtocol {
+		class cDCProto;
+	};
+	using nProtocol::cDCProto;
+	class cDCBanList;
+	class cDCConsole;
+	namespace nSocket {
+		class cConnDC;
+		class cServerDC;
+	};
 
 
 namespace nTables {
@@ -56,17 +52,17 @@ namespace nTables {
 class cDCConf : public nConfig::cConfigBase //<sBasicItemCreator>
 {
 public:
-	cDCConf( cServerDC &);
+	cDCConf(nSocket::cServerDC &);
 	~cDCConf();
 	virtual int Load();
 	virtual int Save();
 	void AddVars();
 
-	friend class cServerDC;
+	friend class nVerliHub::nSocket::cServerDC;
 	friend class nProtocol::cDCProto;
 	friend class nTables::cDCBanList;
 	friend class cDCConsole;
-	friend class cConnDC;
+	friend class nVerliHub::nSocket::cConnDC;
 public:
 	unsigned int max_users_total;
 	unsigned int max_users[7];
@@ -215,7 +211,7 @@ public:
 	string msg_welcome[11];
 	bool desc_insert_mode;
 public: // Public attributes
-	cServerDC & mS;
+	nSocket::cServerDC & mS;
 };
 	}; // nmaespace nTables
 }; // namespace nVerliHub

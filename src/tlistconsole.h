@@ -25,8 +25,9 @@
 #include "ccmdr.h"
 
 namespace nVerliHub {
-	using namespace nCmdr;
-	namespace nSocket { class cConnDC;};
+	namespace nSocket {
+		class cConnDC;
+	};
 	namespace nConfig {
 	using namespace nCmdr;
 /**
@@ -65,17 +66,17 @@ public:
 		mCmdr.Add(&mCmdHelp);
 	}
 
-	virtual int OpCommand(const string &str, cConnDC*conn)
+	virtual int OpCommand(const string &str, nSocket::cConnDC*conn)
 	{
 		return this->DoCommand(str,conn);
 	}
 
-	virtual int UsrCommand(const string &str , cConnDC *conn)
+	virtual int UsrCommand(const string &str , nSocket::cConnDC *conn)
 	{
 		return this->DoCommand(str,conn);
 	}
 
-	virtual int DoCommand(const string &str, cConnDC * conn)
+	virtual int DoCommand(const string &str, nSocket::cConnDC * conn)
 	{
 		ostringstream os;
 		cCommand *Cmd = mCmdr.FindCommand(str);
@@ -94,7 +95,7 @@ public:
 	virtual const char *CmdSuffix() {return "";}
 	virtual const char *CmdPrefix() {return "\\+";}
 	virtual void ListHead(ostream *os){}
-	virtual bool IsConnAllowed(cConnDC *conn,int cmd){return true;}
+	virtual bool IsConnAllowed(nSocket::cConnDC *conn,int cmd){return true;}
 	virtual bool ReadDataFromCmd(cfBase *cmd, int CmdID, DATA_TYPE &data) = 0;
 
 	virtual const char *CmdWord(int cmd)
@@ -275,6 +276,7 @@ protected:
 	cCmdr mCmdr;
 };
 
-};
+	}; // namespace nConfig
+}; // namespace nVerliHub
 
 #endif
