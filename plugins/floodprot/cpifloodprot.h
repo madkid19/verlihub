@@ -15,10 +15,10 @@
 #include <config.h>
 #endif
 #include "cfloodprotect.h"
-#include <verlihub/ctime.h>
-#include <verlihub/cconndc.h>
-#include <verlihub/cvhplugin.h>
-#include <verlihub/cserverdc.h>
+#include "src/ctime.h"
+#include "src/cconndc.h"
+#include "src/cvhplugin.h"
+#include "src/cserverdc.h"
 
 using namespace nDirectConnect::nPlugin;
 using namespace nDirectConnect::nTables;
@@ -36,11 +36,11 @@ public:
 	virtual bool OnParsedMsgPM(cConnDC *, cMessageDC *);
 	virtual bool OnParsedMsgSearch(cConnDC *, cMessageDC *);
 	virtual bool OnParsedMsgMyINFO(cConnDC *, cMessageDC *);
-	virtual bool OnNewConn(cConnDC *); 
+	virtual bool OnNewConn(cConnDC *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
 	virtual bool OnCloseConn(cConnDC *);
-	
+
 	cFloodprotect * mFloodprotect;
 };
 

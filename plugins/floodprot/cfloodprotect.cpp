@@ -8,11 +8,11 @@
  *   (at your option) any later version.                                   *
  ***************************************************************************/
 
-#include <verlihub/ckick.h>
-#include <verlihub/cban.h>
-#include <verlihub/cconndc.h>
-#include <verlihub/cbanlist.h>
-#include <verlihub/cserverdc.h>
+#include "src/ckick.h"
+#include "src/cban.h"
+#include "src/cconndc.h"
+#include "src/cbanlist.h"
+#include "src/cserverdc.h"
 #include "cfloodprotect.h"
 
 namespace nDirectConnect {
@@ -55,7 +55,7 @@ bool cFloodprotect::CleanUp(int secs)
 	unsigned long Hash;
 	sUserInfo * userinfo = 0;
 	tUIIt it, it2;
-	
+
 	for(it = mUserInfo.begin(); it != mUserInfo.end();)
 	{
 		it2 = it;
@@ -91,16 +91,16 @@ bool cFloodprotect::CheckFlood(cConnDC * conn, tFloodType ft)
 		cTime now;
 		sUserInfo * usr = 0;
 		usr = mUserInfo.GetByHash(Hash);
-		
+
 		if(!usr || (usr && usr->mDisabled)) return false;
-		
+
 		usr->mElapsedTime += now.Get() - usr->mLastAction;
 		usr->mLastAction = now;
 		usr->mActionCounter++;
-		
+
 		usr->addFloodType(ft); // registers the current action type for later analysis
-		
-		if(usr->mActionCounter == 10) 
+
+		if(usr->mActionCounter == 10)
 		{
 			//10/10 = freq > 1 Hz
 			//10/10 - freq = 1 Hz - 0.33 Hz
@@ -109,9 +109,9 @@ bool cFloodprotect::CheckFlood(cConnDC * conn, tFloodType ft)
 			{
 				ostringstream os;
 				string text, floodtype;
-			
+
 				int cnt = KickAll(conn);
-			
+
 				switch(ft)
 				{
 					case eFT_CHAT: floodtype = "MAIN CHAT"; break;
@@ -130,7 +130,7 @@ bool cFloodprotect::CheckFlood(cConnDC * conn, tFloodType ft)
 
 				cBan Ban(mS);
 				cKick Kick;
-		    
+
 				Kick.mOp = mS->mC.hub_security;
 				Kick.mIP = usr->mIP;
 				Kick.mTime = cTime().Sec();
@@ -189,11 +189,11 @@ int cFloodprotect::KickAll(cConnDC *conn)
 	int cnt=0;
 	cConnDC * tempConn = 0;
 	cUserCollection::iterator it;
-	
+
 	if(!conn) return 0;
-	
+
 	unsigned long ip = cBanList::Ip2Num(conn->AddrIP());
-	
+
 	for(it=mS->mUserList.begin(); it!=mS->mUserList.end(); ++it)
 	{
 		tempConn = (static_cast<cUser *>(*it))->mxConn;
@@ -230,7 +230,7 @@ bool cFloodprotect::AddConn(cConnDC *conn, short difference)
 	Count += difference;
 
 	// every user has 2 points
-	
+
 	short limit = 2 * mCfg.mMaxUsersPerIP;
 
 	bool exists = mConnCounter.ContainsHash(Hash);

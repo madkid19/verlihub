@@ -14,10 +14,10 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <verlihub/tchashlistmap.h>
-#include <verlihub/thasharray.h>
-#include <verlihub/ctime.h>
-#include <verlihub/cconfigbase.h>
+#include "src/tchashlistmap.h"
+#include "src/thasharray.h"
+#include "src/ctime.h"
+#include "src/cconfigbase.h"
 
 #include <vector>
 
@@ -42,7 +42,7 @@ struct sUserInfo
 	string mFTStr;
 	bool mDisabled;
 	list<tFloodType> mFloodTypes;
-	
+
 	sUserInfo(string ip) : mIP(ip), mActionCounter(0), mDisabled(false) {}
 	~sUserInfo() {}
 	void addFloodType(tFloodType ft)
@@ -62,7 +62,7 @@ struct sUserInfo
 		{
 		    case eFT_CHAT: mFTStr += "CHAT ";
 		    break;
-		    case eFT_PRIVATE: mFTStr += "PRIVATE "; 
+		    case eFT_PRIVATE: mFTStr += "PRIVATE ";
 		    break;
 		    case eFT_SEARCH: mFTStr += "SEARCH ";
 		    break;
@@ -97,9 +97,9 @@ public:
 	bool CheckFlood(cConnDC *, tFloodType);
 	bool AddConn(cConnDC *, short diff = 1);
 	int KickAll(cConnDC *);
-	
+
 	cServerDC * mS;
-	
+
 	typedef tcHashListMap<sUserInfo *> tUserInfo;
 	typedef tHashArray<short int> tConnCounter;
 	typedef tUserInfo::iterator tUIIt;
