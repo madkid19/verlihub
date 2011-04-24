@@ -20,10 +20,11 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cpenaltylist.h"
+#include "cquery.h"
 
-namespace nDirectConnect {
-
-namespace nTables {
+namespace nVerliHub {
+	using namespace nMySQL;
+	namespace nTables {
 
 cPenaltyList::cPenaltyList(cMySQL &mysql) : cConfMySQL(mysql), mCache(mysql, "temp_rights", "nick")
 {
@@ -122,8 +123,7 @@ bool cPenaltyList::RemPenalty(sPenalty &penal)
 	SetBaseTo(&mModel);
 	mModel.mNick = penal.mNick;
 	time_t Now = cTime().Sec();
-	if (LoadPK())
-	{
+	if(LoadPK()) {
 		if(penal.mStartChat < Now) mModel.mStartChat = Now;
 		if(penal.mStartCTM < Now) mModel.mStartCTM = Now;
 		if(penal.mStartPM < Now) mModel.mStartPM = Now;
@@ -133,12 +133,12 @@ bool cPenaltyList::RemPenalty(sPenalty &penal)
 		if(penal.mStopReg < Now) mModel.mStopReg = Now;
 		if(penal.mStopOpchat < Now) mModel.mStopOpchat = Now;
 	}
-	if( mModel.ToKeepIt() )
+	if(mModel.ToKeepIt())
 		return SavePK();
-	else DeletePK();
+	else
+		DeletePK();
 	return true;
 }
 
-};
-
-};
+	}; // namespace nTables
+}; // namespace nVerliHub

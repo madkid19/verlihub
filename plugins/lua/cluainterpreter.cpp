@@ -31,9 +31,9 @@
 #include "src/i18n.h"
 
 using namespace std;
-
-namespace nScripts
-{
+namespace nVerliHub {
+	using namespace nSocket;
+	namespace nLuaPlugin {
 
 cLuaInterpreter::cLuaInterpreter(string scriptname) : mScriptName(scriptname)
 {
@@ -79,7 +79,7 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("GetHubSecAlias",          &_GetHubSecAlias);
 	RegisterFunction("AddRegUser",          &_AddRegUser);
 	RegisterFunction("DelRegUser",          &_DelRegUser);
-	
+
 	RegisterFunction("GetUserClass",      &_GetUserClass);
 	RegisterFunction("GetUserHost",       &_GetUserHost);
 	RegisterFunction("GetUserIP",         &_GetUserIP);
@@ -89,12 +89,12 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("ParseCommand",      &_ParseCommand);
 	RegisterFunction("SetConfig",         &_SetConfig);
 	RegisterFunction("GetConfig",         &_GetConfig);
-	
-	
+
+
 	RegisterFunction("SQLQuery",          &_SQLQuery);
 	RegisterFunction("SQLFetch",          &_SQLFetch);
 	RegisterFunction("SQLFree",           &_SQLFree);
-	
+
 	RegisterFunction("GetUsersCount",     &_GetUsersCount);
 	RegisterFunction("GetTotalShareSize", &_GetTotalShareSize);
 	RegisterFunction("GetNickList",       &_GetNickList);
@@ -106,8 +106,8 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("GetVHCfgDir",       &_GetVHCfgDir);
 	RegisterFunction("GetTopic", &_GetTopic);
 	RegisterFunction("SetTopic", &_SetTopic);
-	
-	
+
+
 	lua_setglobal(mL, "VH");
 
 	int status = luaL_dofile(mL, (char *)mScriptName.c_str());
@@ -116,7 +116,7 @@ bool cLuaInterpreter::Init()
 		ReportLuaError((char *) error);
 		return false;
 	}
-	
+
 	lua_pushstring(mL,VERSION); lua_setglobal(mL,"_PLUGINVERSION");
 	return true;
 }
@@ -155,9 +155,9 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[])
 	lua_pushliteral(mL, "_TRACEBACK");
 	lua_rawget(mL, LUA_GLOBALSINDEX);
 	lua_insert(mL, base);
-	
+
 	lua_getglobal(mL, func);
-	
+
 	if(lua_isnil(mL, -1))
 	{
 		// function not exists
@@ -172,7 +172,7 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[])
 			lua_pushstring(mL, args[i]);
 			i++;
 		}
-		
+
 		int result = lua_pcall(mL, i, 1, base);
 		if(result)
 		{
@@ -185,17 +185,17 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[])
 			lua_remove(mL, base); // remove _TRACEBACK
 			return true;
 		}
-		
+
 		int val = (int)lua_tonumber(mL, -1);
 		lua_pop(mL, 1);
-		
+
 		lua_remove(mL, base); // remove _TRACEBACK
-		
+
 		if(!(bool)val)
 			return false;
 	}
-	
+
 	return true;
 }
-
-};
+	}; // namespace nLuaPlugin
+}; // namespace nVerliHub

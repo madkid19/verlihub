@@ -24,8 +24,8 @@
 #endif
 #include "cpluginbase.h"
 #include "cpluginmanager.h"
-
-namespace nPlugin {
+namespace nVerliHub {
+	namespace nPlugin {
 
 cPluginBase::cPluginBase():cObj("PluginBase")
 {
@@ -35,26 +35,29 @@ cPluginBase::cPluginBase():cObj("PluginBase")
 
 cPluginBase::~cPluginBase(){}
 
-};
-
-int nPlugin::cPluginBase::StrLog(ostream & ostr, int level)
+int cPluginBase::StrLog(ostream & ostr, int level)
 {
-	if(cObj::StrLog(ostr,level))
-	{
+	if(cObj::StrLog(ostr,level)) {
 		LogStream()   << "(" << mName << ") ";
 		return 1;
 	}
 	return 0;
 }
 
-bool nPlugin::cPluginBase::RegisterCallBack(string id)
+bool cPluginBase::RegisterCallBack(string id)
 {
-	if(mManager) return mManager->RegisterCallBack(id, this);
-	else return false;
+	if(mManager)
+		return mManager->RegisterCallBack(id, this);
+	else
+		return false;
 }
 
 bool nPlugin::cPluginBase::UnRegisterCallBack(string id)
 {
-	if(mManager) return mManager->UnregisterCallBack(id, this);
-	else return false;
+	if(mManager)
+		return mManager->UnregisterCallBack(id, this);
+	else
+		return false;
 }
+	}; // namespace nPlugin
+}; // namespace nVerliHub

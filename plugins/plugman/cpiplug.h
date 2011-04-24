@@ -26,14 +26,15 @@
 #include <tlistplugin.h>
 #include "cconsole.h"
 
-class cPlug;
-class cPlugs;
-namespace nDirectConnect{
-	class cConnDC;
-};
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+		class cServerDC;
+	};
 
-using namespace nDirectConnect;
-using namespace nDirectConnect::nPlugin;
+	namespace nPlugMan {
+		class cPlug;
+		class cPlugs;
 
 typedef tpiListPlugin<cPlugs,cPlugConsole> tpiPlugBase;
 
@@ -42,10 +43,11 @@ class cpiPlug : public tpiPlugBase
 public:
 	cpiPlug();
 	virtual ~cpiPlug();
-	virtual void OnLoad(cServerDC *server);
+	virtual void OnLoad(nSocket::cServerDC *server);
 
 	virtual bool RegisterAll();
-	virtual bool OnOperatorCommand(cConnDC *, string *);
+	virtual bool OnOperatorCommand(nSocket::cConnDC *, string *);
 };
-
+	}; // namespace nPlugMan
+}; // namespace nVerliHub
 #endif

@@ -25,8 +25,10 @@
 #include "i18n.h"
 #include "cpiforbid.h"
 
-namespace nDirectConnect {
-namespace nTables {
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nEnums;
+	namespace nForbidPlugin {
 
 cForbiddenWorker::cForbiddenWorker() : mpRegex(NULL)
 {
@@ -42,7 +44,7 @@ cForbiddenWorker::~cForbiddenWorker()
 	mpRegex = NULL;
 }
 
-bool cForbiddenWorker::CheckMsg(const string &msg) 
+bool cForbiddenWorker::CheckMsg(const string &msg)
 {
 	return (mpRegex->Exec(msg) > 0);
 }
@@ -67,7 +69,7 @@ int cForbiddenWorker::DoIt(const string & cmd_line, cConnDC *conn, cServerDC *se
 		// User is kick user by hub security
 		ostringstream os;
 		cUser *OP = server->mUserList.GetUserByNick(server->mC.hub_security);
-		server->DCKickNick(&os, OP, conn->mpUser->mNick, mReason, cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
+		server->DCKickNick(&os, OP, conn->mpUser->mNick, mReason, eKCK_Drop | eKCK_Reason | eKCK_PM | eKCK_TBAN);
 	}
 
 	// Notify it in opchat
@@ -146,7 +148,7 @@ int cForbidden::CheckRepeat(const string & str, int r)
 		if(j == r)
 			return 0;
 	}
-	
+
 	return 1;
 }
 
@@ -166,7 +168,7 @@ int cForbidden::CheckUppercasePercent(const string & str, int percent)
 	if((k * percent) < (j * 100)) {
 		return 0;
 	}
-	
+
 	return 1;
 }
 
@@ -189,5 +191,5 @@ int cForbidCfg::Save()
 	return 0;
 }
 
-};
-};
+	}; // namespace nForbidPlugin
+}; // namespace nVerliHub

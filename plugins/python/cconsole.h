@@ -26,24 +26,21 @@
 #include <string>
 #include <sstream>
 
-class cpiPython;
-using namespace nCmdr;
-
-namespace nDirectConnect { class cConnDC; };
-using namespace nDirectConnect;
-
-namespace nScripts
-{
-
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+	};
+	namespace nPythonPlugin {
+		class cpiPython;
 class cConsole
 {
 public:
 	cConsole(cpiPython *);
 	virtual ~cConsole();
-	int DoCommand(const string &str, cConnDC * conn);
+	int DoCommand(const string &str, nSocket::cConnDC * conn);
 	cpiPython *mPython;
 protected:
-	class cfBase : public cCommand::sCmdFunc {
+	class cfBase : public nCmdr::cCommand::sCmdFunc {
 		public:
 		cpiPython *GetPI(){ return ((cConsole *)(mCommand->mCmdr->mOwner))->mPython;}
 	};
@@ -53,15 +50,16 @@ protected:
 	class cfDelPythonScript : public cfBase { virtual bool operator()();} mcfPythonScriptDel;
 	class cfReloadPythonScript : public cfBase { virtual bool operator()();} mcfPythonScriptRe;
 	class cfLogPythonScript : public cfBase { virtual bool operator()();} mcfPythonScriptLog;
-	
-	cCommand mCmdPythonScriptAdd;
-	cCommand mCmdPythonScriptGet;
-	cCommand mCmdPythonScriptDel;
-	cCommand mCmdPythonScriptRe;
-	cCommand mCmdPythonScriptLog;
-	cCmdr mCmdr;
+
+	nCmdr::cCommand mCmdPythonScriptAdd;
+	nCmdr::cCommand mCmdPythonScriptGet;
+	nCmdr::cCommand mCmdPythonScriptDel;
+	nCmdr::cCommand mCmdPythonScriptRe;
+	nCmdr::cCommand mCmdPythonScriptLog;
+	nCmdr::cCmdr mCmdr;
 };
 
-};
+	}; // namespace nPythonPlugin
+}; // namespace nVerliHub
 
 #endif

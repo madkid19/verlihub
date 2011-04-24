@@ -22,6 +22,10 @@
 
 
 #include "cantiflood.h"
-
-cAntiFlood::~cAntiFlood(){
+namespace nVerliHub {
+	namespace nUtils {
+cAntiFlood::~cAntiFlood()
+{
 }
+	}; // namespace nUtils
+}; // namespace nVerliHub

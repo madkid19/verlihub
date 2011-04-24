@@ -24,14 +24,15 @@
 #include <config.h>
 #endif
 #include "stringutils.h"
-using namespace nStringUtils;
 
-namespace nUtils {
+using namespace std;
+namespace nVerliHub {
+	namespace nUtils {
 
 cPCRE::cPCRE(int coord) :
 	mCoords(NULL),
-	mCoordsCount(coord) 
-{ 
+	mCoordsCount(coord)
+{
 	Clear();
 }
 
@@ -39,13 +40,8 @@ cPCRE::~cPCRE(){
 	if(mCoords) delete [] mCoords;
 	mCoords = NULL;
 }
-};
 
-
-/*!
-    \fn nUtils::cPCRE::cPCRE(const char *)
- */
-nUtils::cPCRE::cPCRE(const char *pat, unsigned int options, int coord) :
+cPCRE::cPCRE(const char *pat, unsigned int options, int coord) :
 	mCoords(NULL),
 	mCoordsCount(coord)
 {
@@ -53,11 +49,7 @@ nUtils::cPCRE::cPCRE(const char *pat, unsigned int options, int coord) :
 	Compile(pat, options);
 }
 
-
-/*!
-    \fn nUtils::cPCRE::cPCRE(const std::string&)
- */
-nUtils::cPCRE::cPCRE(const std::string &str, unsigned int options, int coord):
+cPCRE::cPCRE(const string &str, unsigned int options, int coord):
 	mCoords(NULL),
 	mCoordsCount(coord)
 {
@@ -65,11 +57,7 @@ nUtils::cPCRE::cPCRE(const std::string &str, unsigned int options, int coord):
 	Compile(str.c_str(), options);
 }
 
-
-/*!
-    \fn nUtils::cPCRE::Compile(const char *)
- */
-bool nUtils::cPCRE::Compile(const char *pat, unsigned int options)
+bool cPCRE::Compile(const char *pat, unsigned int options)
 {
 	char *errptr;
 	int erroffset;
@@ -80,11 +68,7 @@ bool nUtils::cPCRE::Compile(const char *pat, unsigned int options)
 	return true;
 }
 
-
-/*!
-    \fn nUtils::cPCRE::Clear()
- */
-void nUtils::cPCRE::Clear()
+void cPCRE::Clear()
 {
 	mPattern = NULL;
 	mPatternE = NULL;
@@ -93,72 +77,51 @@ void nUtils::cPCRE::Clear()
 	//memset(mCoords,0, 3* mCoordsCount * sizeof(int) );
 }
 
-
-/*!
-    \fn nUtils::cPCRE::Exec()
- */
-int nUtils::cPCRE::Exec(const std::string &text)
+int nUtils::cPCRE::Exec(const string &text)
 {
 	mResult = pcre_exec(mPattern, mPatternE, text.c_str(), text.size(), 0, 0, mCoords, mCoordsCount);
 	return mResult;
 }
 
-
-/*!
-    \fn nUtils::cPCRE::Compare(int rank, const std::string &text)
-    string compare the rank'th pat of text to text2 , return 0 on same strings
- */
-int nUtils::cPCRE::Compare(int rank, const std::string &text, const char *text2)
+int cPCRE::Compare(int rank, const string &text, const char *text2)
 {
 	if(!this->PartFound(rank)) return -1;
 	int start = mCoords[rank<<1];
 	return StrCompare(text, start, mCoords[(rank<<1)+1]-start,text2);
 }
 
-int nUtils::cPCRE::Compare(int rank, const std::string &text, const std::string &text2)
+int cPCRE::Compare(int rank, const string &text, const string &text2)
 {
 	return Compare(rank, text, text2.c_str());
 }
 
-int nUtils::cPCRE::Compare(const std::string &name, const std::string &text, const std::string &text2)
+int cPCRE::Compare(const string &name, const string &text, const string &text2)
 {
 	return Compare(this->GetStringRank(name), text, text2.c_str());
 }
 
-
-/*!
-    \fn nUtils::cPCRE::Extract( int rank, std::string &)
- */
-void nUtils::cPCRE::Extract(int rank, const std::string &src, std::string &dst)
+void cPCRE::Extract(int rank, const string &src, string &dst)
 {
 	if(!this->PartFound(rank)) return;
 	int start = mCoords[rank<<1];
 	dst.assign(src, start, mCoords[(rank<<1)+1]-start);
 }
 
-
-/*!
-    \fn nUtils::cPCRE::PartFound(int index)
- */
-bool nUtils::cPCRE::PartFound(int rank)
+bool cPCRE::PartFound(int rank)
 {
 	if((rank < 0)|| (rank >= mResult)) return false;
 
 	return mCoords[rank<<1] >= 0;
 }
 
-
-/*!
-    \fn nUtils::cPCRE::Replace(int rank, std::string &InString, const std::string &ByThis)
- */
-void nUtils::cPCRE::Replace(int rank, std::string &InString, const std::string &ByThis)
+void cPCRE::Replace(int rank, string &InString, const string &ByThis)
 {
 	if(!this->PartFound(rank)) return;
 	int start = mCoords[rank<<1];
 	InString.replace(start, mCoords[(rank<<1)+1]-start, ByThis);
 }
 
-int nUtils::cPCRE::GetStringRank(const std::string &name)
+int cPCRE::GetStringRank(const string &name)
 {
 #if HAVE_PCRE_GET_STRINGNUMBER
 	return pcre_get_stringnumber(this->mPattern, name.c_str());
@@ -166,3 +129,5 @@ int nUtils::cPCRE::GetStringRank(const std::string &name)
 	return -1;
 #endif
 }
+	}; // namespace nUtils
+}; // namespace nVerliHub

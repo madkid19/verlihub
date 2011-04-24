@@ -23,40 +23,49 @@
 #ifndef CCONFMYSQL_H
 #define CCONFMYSQL_H
 #include "cconfigbase.h"
+#include "cconfigitembase.h"
 #include <iostream>
 #include <iomanip>
 #include "cmysql.h"
 #include "cquery.h"
 
-using namespace nMySQL;
-using namespace nConfig;
+using namespace std;
 
-namespace nConfig
-{
+namespace nVerliHub {
+	namespace nConfig {
 
-/**
-  * a Typed config Item for mysql - not users due to compiling problems
-*/
+	// Config item for MySQL
+	#define DeclareMySQLItemClass(TYPE,Suffix) \
+		class cConfigItemMySQL##Suffix : public cConfigItemBase##Suffix \
+		{ \
+		public: \
+			cConfigItemMySQL##Suffix(TYPE &var): cConfigItemBase##Suffix(var){}; \
+			virtual std::ostream &WriteToStream (std::ostream& os); \
+	}; \
 
-#define DeclareMySQLItemClass(TYPE,Suffix) \
-class cConfigItemMySQL##Suffix : public cConfigItemBase##Suffix \
-{ \
-public: \
-	cConfigItemMySQL##Suffix(TYPE &var): cConfigItemBase##Suffix(var){}; \
-	virtual std::ostream &WriteToStream (std::ostream& os); \
-};
+	DeclareMySQLItemClass(string,String);
+	DeclareMySQLItemClass(char *,PChar);
+	/**a mysql configuratin class
+	 * @author Daniel Muller
+	 */
+	}; // namespace nConfig
 
-DeclareMySQLItemClass(string,String);
-DeclareMySQLItemClass(char *,PChar);
-
-/** Unused structure
-*/
-class cMySQLItemCreator : public cBasicItemCreator
+	namespace nMySQL {
+	//using namespace nConfig;
+class cMySQLItemCreator : public nConfig::cBasicItemCreator
 {
 public:
 	cMySQLItemCreator(){};
-	virtual cConfigItemBaseString* NewItem(string &var){ return new cConfigItemMySQLString(var);};
-	virtual cConfigItemBasePChar * NewItem(char * &var){ return new cConfigItemMySQLPChar(var);};
+
+	virtual nConfig::cConfigItemBaseString* NewItem(string &var)
+ 	{
+		return new nConfig::cConfigItemMySQLString(var);
+ 	};
+
+	virtual nConfig::cConfigItemBasePChar * NewItem(char * &var)
+	{
+		return new nConfig::cConfigItemMySQLPChar(var);
+	};
 };
 
 
@@ -93,6 +102,8 @@ public:
 	cQuery mQuery;
 };
 
+	}; // namespace nMySQL
+	namespace nConfig {
 /**a mysql configuratin class
   *@author Daniel Muller
   */
@@ -100,21 +111,21 @@ public:
 class cConfMySQL : public cConfigBase //<sMySQLItemCreator>
 {
 public:
-	cConfMySQL(cMySQL &mysql);
+	cConfMySQL(nMySQL::cMySQL &mysql);
 	~cConfMySQL();
 
-	cMySQL &mMySQL;
-	cQuery mQuery;
+	nMySQL::cMySQL &mMySQL;
+	nMySQL::cQuery mQuery;
 	/** loads data from the mysql result */
 	virtual int Load();
-	virtual int Load(cQuery &);
+	virtual int Load(nMySQL::cQuery &);
 	virtual int Save();
 	/** do mysql query */
 	int StartQuery(string query);
 	int StartQuery();
-	int StartQuery(cQuery &);
+	int StartQuery(nMySQL::cQuery &);
 	int EndQuery();
-	int EndQuery(cQuery &);
+	int EndQuery(nMySQL::cQuery &);
 	void AddPrimaryKey(const char*);
 	void WherePKey(ostream &os);
 	void AllFields(ostream &, bool DoF=true, bool DoV=false, bool IsAff = false, string joint=string(", "));
@@ -125,7 +136,7 @@ public:
 	bool UpdatePKVar(const char *);
 	bool UpdatePKVar(cConfigItemBase *);
 	bool UpdatePK();
-	bool UpdatePK(cQuery &);
+	bool UpdatePK(nMySQL::cQuery &);
 	bool LoadPK();
 	bool SavePK(bool dup=false);
 	static void WriteStringConstant(ostream &os, const string &str);
@@ -133,7 +144,7 @@ public:
 	void CreateTable();
 	template <class T> void AddCol(const char *colName, const char *colType, const char *colDefault, bool colNull, T &var)
 	{
-		cMySQLColumn col;
+		nMySQL::cMySQLColumn col;
 		col.mName = colName;
 		col.mType = colType;
 		col.mDefault = colDefault;
@@ -150,7 +161,7 @@ protected: // Protected attributes
 	int ok;
 	// number of columns
 	unsigned mCols;
-	cMySQLTable mMySQLTable;
+	nMySQL::cMySQLTable mMySQLTable;
 
 	/// UF to make equations and lists of values or fiel names
 	struct ufEqual
@@ -197,9 +208,9 @@ public:
 	struct db_iterator
 	{
 		cConfMySQL *mConf;
-		cQuery *mQuery;
-		db_iterator( cConfMySQL *conf = NULL ) : mConf(conf), mQuery(conf?&conf->mQuery:NULL){};
-		db_iterator( cConfMySQL *conf, cQuery *query ) : mConf(conf), mQuery(query){};
+		nMySQL::cQuery *mQuery;
+		db_iterator(cConfMySQL *conf = NULL ) : mConf(conf), mQuery(conf?&conf->mQuery:NULL){};
+		db_iterator(cConfMySQL *conf, nMySQL::cQuery *query ) : mConf(conf), mQuery(query){};
 		db_iterator &operator++();
 		db_iterator &operator= (const db_iterator &it ){mConf = it.mConf; mQuery = it.mQuery; return *this;}
 		db_iterator &operator= (cConfMySQL *conf){mConf = conf; mQuery=conf?&conf->mQuery:NULL; return *this;}
@@ -207,7 +218,7 @@ public:
 		bool operator!=(db_iterator &it ){return (mConf != it.mConf) || (mQuery != it.mQuery);}
 	};
 
-	db_iterator &db_begin(cQuery &);
+	db_iterator &db_begin(nMySQL::cQuery &);
 	db_iterator &db_begin();
 	db_iterator &db_end(){return mDBEnd;}
 private:
@@ -215,6 +226,6 @@ private:
 	db_iterator mDBEnd;
 };
 
-};
-
+	}; // namespace nConfig
+}; // namespace nVerliHub
 #endif

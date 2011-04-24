@@ -31,7 +31,10 @@
 #include "cconfigitembase.h"
 
 using namespace std;
-using namespace nDirectConnect;
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nEnums;
+	using namespace nMySQL;
 
 cServerDC *GetCurrentVerlihub()
 {
@@ -46,11 +49,11 @@ cUser *GetUser(char *nick)
 		return NULL;
 	}
 	cUser *usr = server->mUserList.GetUserByNick(string(nick));
-	
+
 	//user without connection (bot) must be accepted as well
 	if (usr == NULL)
 		return NULL;
-	
+
 	return usr;
 }
 
@@ -61,7 +64,7 @@ bool SendDataToUser(char *data, char *nick)
 		return false;
 	if(!usr->mxConn)
 		return false;
-	
+
 	string omsg(data);
 	if(omsg.find("$ConnectToMe") != string::npos || omsg.find("$RevConnectToMe") != string::npos)
 		return false;
@@ -77,7 +80,7 @@ bool KickUser(char *OP,char *nick, char *reason)
 	{
 		if(server)
 		{
-			server->DCKickNick(NULL, OPusr, nick, reason, cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
+			server->DCKickNick(NULL, OPusr, nick, reason, eKCK_Drop | eKCK_Reason | eKCK_PM | eKCK_TBAN);
 			return true;
 		}
 		else
@@ -152,7 +155,7 @@ char * GetUserCC(char * nick)
 	else {
 		return (char *) usr->mxConn->mCC.c_str();
 	}
-	
+
 }
 
 char *GetMyINFO(char *nick)
@@ -207,7 +210,7 @@ bool Ban(char *nick, const string op, const string reason, unsigned howlong, uns
 	}
 	cUser *usr = GetUser(nick);
 	if ((!usr) || (usr && !usr->mxConn)) return false;
-	
+
 	cBan ban(server);
 	server->mBanList->NewBan(ban, usr->mxConn, op, reason, howlong, bantype);
 	server->mBanList->AddBan(ban);
@@ -228,7 +231,7 @@ char * ParseCommand(char *command_line)
 	if ((!usr) || (usr && !usr->mxConn)) return false;
 	cout << "here" << endl;
 	if (!server->mP.ParseForCommands(command_line, usr->mxConn)) {
-		// unknown command	
+		// unknown command
 	}
 	return (char *) "";
 }
@@ -242,9 +245,9 @@ bool SetConfig(char *config_name, char *var, char *val)
 		cerr << "Server verlihub is unfortunately not running or not found." << endl;
 		return false;
 	}
-	
+
 	string file(server->mDBConf.config_name);
-		
+
 	cConfigItemBase *ci = NULL;
 	if(file == server->mDBConf.config_name)
 	{
@@ -272,13 +275,13 @@ int GetConfig(char *config_name, char *var, char *buf, int size)
 		cerr << "Server verlihub is unfortunately not running or not found." << endl;
 		return -1;
 	}
-	
+
 	if (size < 1) return -1;
 	buf[0] = 0;
-	
+
 	string val;
 	string file(server->mDBConf.config_name);
-	
+
 	cConfigItemBase *ci = NULL;
 	if(file == server->mDBConf.config_name)
 	{
@@ -289,7 +292,7 @@ int GetConfig(char *config_name, char *var, char *buf, int size)
 			return -1;
 		}
 	}
-	
+
 	if(ci)
 	{
 		ci->ConvertTo(val);
@@ -301,7 +304,7 @@ int GetConfig(char *config_name, char *var, char *buf, int size)
 		}
 		return val.size();
 	}
-	
+
 	return -1;
 }
 
@@ -316,7 +319,7 @@ int __GetUsersCount()
 	return server->mUserCountTot;
 }
 
-		
+
 __int64 GetTotalShareSize()
 {
 	cServerDC *server = GetCurrentVerlihub();
@@ -353,41 +356,41 @@ bool GetTempRights(char *nick,  map<string,int> &rights)
 	if(user == NULL) return false;
 	cTime time = cTime().Sec();
 
-	static const int ids[] = { nDirectConnect::nEnums::eUR_CHAT, nDirectConnect::nEnums::eUR_PM, nDirectConnect::nEnums::eUR_SEARCH, nDirectConnect::nEnums::eUR_CTM, nDirectConnect::nEnums::eUR_KICK, nDirectConnect::nEnums::eUR_REG, nDirectConnect::nEnums::eUR_OPCHAT, nDirectConnect::nEnums::eUR_DROP, nDirectConnect::nEnums::eUR_TBAN, nDirectConnect::nEnums::eUR_PBAN, nDirectConnect::nEnums::eUR_NOSHARE };
+	static const int ids[] = { eUR_CHAT, eUR_PM, eUR_SEARCH, eUR_CTM, eUR_KICK, eUR_REG, eUR_OPCHAT, eUR_DROP, eUR_TBAN, eUR_PBAN, eUR_NOSHARE };
 	for(unsigned int i = 0; i < sizeof ids; i++) {
 		string key;
 		switch(ids[i]) {
-			case nDirectConnect::nEnums::eUR_CHAT:
+			case eUR_CHAT:
 				key = "mainchat";
 			break;
-			case nDirectConnect::nEnums::eUR_PM:
+			case eUR_PM:
 				key = "pm";
 			break;
-			case nDirectConnect::nEnums::eUR_SEARCH:
+			case eUR_SEARCH:
 				key = "search";
 			break;
-			case nDirectConnect::nEnums::eUR_CTM:
+			case eUR_CTM:
 				key = "ctm";
 			break;
-			case nDirectConnect::nEnums::eUR_KICK:
+			case eUR_KICK:
 				key = "kick";
 			break;
-			case nDirectConnect::nEnums::eUR_REG:
+			case eUR_REG:
 				key = "reg";
 			break;
-			case nDirectConnect::nEnums::eUR_OPCHAT:
+			case eUR_OPCHAT:
 				key = "opchat";
 			break;
-			case nDirectConnect::nEnums::eUR_DROP:
+			case eUR_DROP:
 				key = "drop";
 			break;
-			case nDirectConnect::nEnums::eUR_TBAN:
+			case eUR_TBAN:
 				key = "tempban";
 			break;
-			case nDirectConnect::nEnums::eUR_PBAN:
+			case eUR_PBAN:
 				key = "perban";
 			break;
-			case nDirectConnect::nEnums::eUR_NOSHARE:
+			case eUR_NOSHARE:
 				key = "noshare";
 			break;
 		}
@@ -403,9 +406,9 @@ bool AddRegUser(char *nick, int uClass, char * passwd, char* op)
 		  cerr << "Server verlihub is not running or not found." << endl;
 		  return false;
 	}
-		
+
 	cConnDC * conn = NULL;
-	
+
 	if(strlen(op) > 0) {
 		cUser *user = GetUser(op);
 		if(user && user->mxConn) conn = user->mxConn;
@@ -422,14 +425,14 @@ bool DelRegUser(char *nick)
 		cerr << "Server verlihub is not running or not found." << endl;
 		return false;
 	}
-	
+
 	cRegUserInfo ui;
 	bool RegFound = server->mR->FindRegInfo(ui, nick);
 	if(!RegFound) return false;
 	if(ui.mClass == eUC_MASTER) return false;
 	return server->mR->DelReg(nick);
 }
-extern "C" { 
+extern "C" {
 	int GetUsersCount()
 	{
 		return __GetUsersCount();
@@ -439,4 +442,5 @@ extern "C" {
 		return __GetNickList();
 	}
 }
-	
+
+}; // namespace nVerliHub

@@ -26,17 +26,16 @@
 #ifndef REGISTER_PLUGIN
 #define REGISTER_PLUGIN(__classname) \
 	extern "C" {\
-		cPluginBase * get_plugin(void){ return new (__classname); }\
-		void del_plugin(cPluginBase *plugin)\
+		nVerliHub::nPlugin::cPluginBase * get_plugin(void){ return new (__classname); }\
+		void del_plugin(nVerliHub::nPlugin::cPluginBase *plugin)\
 		{if(plugin) delete plugin;}\
 	}
 #endif
 
 using std::string;
-
-namespace nPlugin {
-
-class cPluginManager;
+namespace nVerliHub {
+	namespace nPlugin {
+	class cPluginManager;
 /**
 the plugin base class suitable for any application
 
@@ -65,6 +64,7 @@ protected:
 	cPluginManager * mManager;
 };
 
-};
+	}; // namespace nPlugin
+}; // namespace nVerliHub
 
 #endif

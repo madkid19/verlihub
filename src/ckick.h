@@ -27,9 +27,8 @@ using namespace std;
 #define __int64 long long
 #endif
 
-namespace nDirectConnect {
-namespace nTables {
-
+namespace nVerliHub {
+	namespace nTables {
 /**this represents kick by ops, has all information, that mey serve to ban
   *@author Daniel Muller
   */
@@ -49,6 +48,6 @@ public:
 	__int64 mShare;
 };
 
-};
-};
+	}; // namespace nTables
+}; //namespace nVerliHub
 #endif

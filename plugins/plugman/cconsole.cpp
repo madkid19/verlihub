@@ -31,8 +31,8 @@
 
 #define PADDING 30
 
-using namespace nDirectConnect;
-
+namespace nVerliHub {
+	namespace nPlugMan {
 
 cPlugs *cPlugConsole::GetTheList()
 {
@@ -67,7 +67,7 @@ bool cPlugConsole::IsConnAllowed(cConnDC *conn, int cmd)
 		case eLC_MOD:
 		case eLC_ON:
 		case eLC_OFF:
-		case eLC_RE: 
+		case eLC_RE:
 			return conn->mpUser->mClass >= eUC_ADMIN;
 		break;
 		case eLC_LST:
@@ -82,10 +82,10 @@ void cPlugConsole::GetHelpForCommand(int cmd, ostream &os)
 	string help_str;
 	switch(cmd)
 	{
-		case eLC_LST: 
-		help_str = "!lstplug\r\nGive a list of registered plugins"; 
+		case eLC_LST:
+		help_str = "!lstplug\r\nGive a list of registered plugins";
 		break;
-		case eLC_ADD: 
+		case eLC_ADD:
 		case eLC_MOD:
 		help_str = "!(add|mod)plug <nick>"
 			"[ -p <\"path\">]"
@@ -102,7 +102,7 @@ void cPlugConsole::GetHelpForCommand(int cmd, ostream &os)
 		default: break;
 	}
 	cDCProto::EscapeChars(help_str,help_str);
-	os << help_str;	
+	os << help_str;
 }
 
 const char * cPlugConsole::GetParamsRegex(int cmd)
@@ -139,8 +139,8 @@ const char *cPlugConsole::CmdWord(int cmd)
 bool cPlugConsole::ReadDataFromCmd(cfBase *cmd, int id, cPlug &data)
 {
 	/// regex parts for add command
-	enum {aADD_ALL, eADD_NICK, eADD_CHOICE, 
-		eADD_PATHp, eADD_QUOTE , eADD_PATH, 
+	enum {aADD_ALL, eADD_NICK, eADD_CHOICE,
+		eADD_PATHp, eADD_QUOTE , eADD_PATH,
 		eADD_DESCP, eADD_QUOTE2, eADD_DESC,
 		eADD_AUTOp, eADD_AUTO};
 
@@ -213,3 +213,5 @@ bool cPlugConsole::cfRe::operator()()
 
 cPlugConsole::~cPlugConsole(){}
 
+	}; // namespace nPlugMan
+}; // namespace nPlugMan

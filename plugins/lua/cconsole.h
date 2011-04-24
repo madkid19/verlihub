@@ -25,29 +25,26 @@
 
 #include "src/ccmdr.h"
 
-class cpiLua;
-using namespace nCmdr;
-
-namespace nDirectConnect { class cConnDC; };
-using namespace nDirectConnect;
-
-namespace nScripts
-{
-
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+	};
+	namespace nLuaPlugin {
+		class cpiLua;
 class cConsole
 {
 public:
 	cConsole(cpiLua *);
 	virtual ~cConsole();
-	int DoCommand(const string &str, cConnDC * conn);
+	int DoCommand(const string &str, nSocket::cConnDC * conn);
 	cpiLua *mLua;
 protected:
 	//enum {eMSG_SEND, eMSG_Read };
-	class cfBase : public cCommand::sCmdFunc {
+	class cfBase : public nCmdr::cCommand::sCmdFunc {
 		public:
 		cpiLua *GetPI(){ return ((cConsole *)(mCommand->mCmdr->mOwner))->mLua;}
 	};
-		
+
 	class cfGetLuaScript : public cfBase { virtual bool operator()();} mcfLuaScriptGet;
 	class cfAddLuaScript : public cfBase { virtual bool operator()();} mcfLuaScriptAdd;
 	class cfDelLuaScript : public cfBase { virtual bool operator()();} mcfLuaScriptDel;
@@ -55,17 +52,18 @@ protected:
 	class cfLogLuaScript : public cfBase { virtual bool operator()();} mcfLuaScriptLog;
 	class cfInfoLuaScript : public cfBase { virtual bool operator()();} mcfLuaScriptInfo;
 	class cfVersionLuaScript : public cfBase { virtual bool operator()();} mcfLuaScriptVersion;
-	
-	cCommand mCmdLuaScriptGet;
-	cCommand mCmdLuaScriptAdd;
-	cCommand mCmdLuaScriptDel;
-	cCommand mCmdLuaScriptRe;
-	cCommand mCmdLuaScriptLog;
-	cCommand mCmdLuaScriptInfo;
-	cCommand mCmdLuaScriptVersion;
-	cCmdr mCmdr;
+
+	nCmdr::cCommand mCmdLuaScriptGet;
+	nCmdr::cCommand mCmdLuaScriptAdd;
+	nCmdr::cCommand mCmdLuaScriptDel;
+	nCmdr::cCommand mCmdLuaScriptRe;
+	nCmdr::cCommand mCmdLuaScriptLog;
+	nCmdr::cCommand mCmdLuaScriptInfo;
+	nCmdr::cCommand mCmdLuaScriptVersion;
+	nCmdr::cCmdr mCmdr;
 };
 
-};
+	}; // namespace nLuaPlugin
+}; // namespace nVerliHub
 
 #endif

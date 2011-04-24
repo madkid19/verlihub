@@ -28,7 +28,12 @@
 #include <string>
 #include "src/script_api.h"
 
-using namespace nStringUtils;
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nSocket;
+	using namespace nPlugin;
+	using namespace nMySQL;
+	namespace nLuaPlugin {
 
 cpiLua    *cpiLua::me = NULL;
 int	  cpiLua::log_level = 1;
@@ -514,5 +519,6 @@ const char * cpiLua::toString(int number)
 	os << number;
 	return os.str().c_str();
 }
-
-REGISTER_PLUGIN(cpiLua);
+	}; // namepsace nLuaPlugin
+}; // namespace nVerliHub
+REGISTER_PLUGIN(nVerliHub::nLuaPlugin::cpiLua);

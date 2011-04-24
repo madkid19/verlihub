@@ -24,9 +24,8 @@
 #include <string>
 
 using namespace std;
-
-namespace nServer
-{
+namespace nVerliHub {
+	namespace nProtocol {
 
 /** \brief DC protocol command
   * provides a Method Telling wheter a given command is this one or not
@@ -50,5 +49,6 @@ public: // Public attributes
 	int mBaseLength;
 };
 
-};
+	}; // namespace nProtocol
+}; // namespace nVerliHub
 #endif

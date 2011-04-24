@@ -25,7 +25,8 @@
 #include <stdlib.h>
 #include <iostream>
 
-using namespace nZlib;
+namespace nVerliHub {
+	namespace nUtils {
 
 cZLib::cZLib() :
 zBufferPos(0),
@@ -59,7 +60,6 @@ char *cZLib::Compress(const char *buffer, size_t len, size_t &outLen)
 		return NULL;
 	}
 	zBuffer = new_buffer;
-
 
 	/* allocate deflate state */
 	strm.zalloc = Z_NULL;
@@ -121,3 +121,5 @@ void cZLib::AppendData(const char *buffer, size_t len)
 	memcpy(zBuffer + zBufferPos, buffer, len);
 	zBufferPos += len;
 }
+	}; // namespace nUtils
+}; // namespace nVerliHub

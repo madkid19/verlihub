@@ -28,11 +28,11 @@
 
 #define PADDING 25
 
-using namespace nStringUtils;
-using namespace ::nDirectConnect::nProtocol;
-
-namespace nDirectConnect
-{
+namespace nVerliHub {
+	using namespace nProtocol;
+	using namespace nSocket;
+	using namespace nUtils;
+	using namespace nEnums;
 
 cTime user_global_time;
 
@@ -44,8 +44,8 @@ cUserBase::cUserBase() :
 
 cUserBase::~cUserBase() {}
 
-cUserBase::cUserBase(const string &nick) : 
-	cObj((const char *)"User"), 
+cUserBase::cUserBase(const string &nick) :
+	cObj((const char *)"User"),
 	mNick(nick),
 	mClass(eUC_NORMUSER),
 	mInList(false)
@@ -53,7 +53,7 @@ cUserBase::cUserBase(const string &nick) :
 
 bool cUserBase::CanSend()
 {
-	return false; 
+	return false;
 }
 
 void cUserBase::Send(string &data, bool, bool)
@@ -166,12 +166,7 @@ void cUser::Register()
 	}
 }
 
-};
-
-/*!
-    \fn nDirectConnect::cUser::ShareEnthropy()
- */
-long nDirectConnect::cUser::ShareEnthropy(const string &sharesize)
+long cUser::ShareEnthropy(const string &sharesize)
 {
 	char diff[20];
 	int count[20];
@@ -205,12 +200,7 @@ long nDirectConnect::cUser::ShareEnthropy(const string &sharesize)
 	return score;
 }
 
-
-
-/*!
-    \fn nDirectConnect::cUser::DisplayInfo(ostream &os, int DisplClass)
- */
- void nDirectConnect::cUser::DisplayInfo(ostream &os, int DisplClass)
+void cUser::DisplayInfo(ostream &os, int DisplClass)
 {
 	static const char *ClassName[]={"Guest","Registred", "VIP", "Operator", "Cheef", "Admin" , "6-err","7-err", "8-err","9-err","Master"};
 
@@ -234,82 +224,80 @@ long nDirectConnect::cUser::ShareEnthropy(const string &sharesize)
 	}
 }
 
-bool nDirectConnect::cUser::Can(unsigned Right, long now, unsigned OtherClass)
+bool cUser::Can(unsigned Right, long now, unsigned OtherClass)
 {
-	if( mClass >= nDirectConnect::nEnums::eUC_ADMIN ) return true;
+	if( mClass >= nEnums::eUC_ADMIN ) return true;
 	switch(Right)
 	{
-		case nDirectConnect::nEnums::eUR_CHAT: if(!mGag || (mGag > now)) return false; break;
-		case nDirectConnect::nEnums::eUR_PM  : if(!mNoPM || (mNoPM > now)) return false; break;
-		case nDirectConnect::nEnums::eUR_SEARCH: if(!mNoSearch || (mNoSearch > now)) return false; break;
-		case nDirectConnect::nEnums::eUR_CTM: if(!mNoCTM || (mNoCTM > now)) return false; break;
-		case nDirectConnect::nEnums::eUR_KICK   : if((mClass < nDirectConnect::nEnums::eUC_OPERATOR) && mCanKick && (mCanKick < now)) return false; break;
-		case nDirectConnect::nEnums::eUR_DROP   : if((mClass < nDirectConnect::nEnums::eUC_OPERATOR) && mCanDrop && (mCanDrop < now)) return false; break;
-		case nDirectConnect::nEnums::eUR_TBAN   : if((mClass < nDirectConnect::nEnums::eUC_OPERATOR) && mCanTBan && (mCanTBan < now)) return false; break;
-		case nDirectConnect::nEnums::eUR_PBAN   : if((mClass < nDirectConnect::nEnums::eUC_OPERATOR) && mCanPBan && (mCanPBan < now)) return false; break;
-		case nDirectConnect::nEnums::eUR_NOSHARE: if((mClass < nDirectConnect::nEnums::eUC_VIPUSER ) && mCanShare0 && (mCanShare0 < now)) return false; break;
-		case nDirectConnect::nEnums::eUR_REG: if((mClass < mxServer->mC.min_class_register ) && mCanReg && (mCanReg < now)) return false; break;
-		case nDirectConnect::nEnums::eUR_OPCHAT: if((mClass < eUC_OPERATOR ) && mCanOpchat && (mCanOpchat < now)) return false; break;
+		case nEnums::eUR_CHAT: if(!mGag || (mGag > now)) return false; break;
+		case nEnums::eUR_PM  : if(!mNoPM || (mNoPM > now)) return false; break;
+		case nEnums::eUR_SEARCH: if(!mNoSearch || (mNoSearch > now)) return false; break;
+		case nEnums::eUR_CTM: if(!mNoCTM || (mNoCTM > now)) return false; break;
+		case nEnums::eUR_KICK   : if((mClass < nEnums::eUC_OPERATOR) && mCanKick && (mCanKick < now)) return false; break;
+		case nEnums::eUR_DROP   : if((mClass < nEnums::eUC_OPERATOR) && mCanDrop && (mCanDrop < now)) return false; break;
+		case nEnums::eUR_TBAN   : if((mClass < nEnums::eUC_OPERATOR) && mCanTBan && (mCanTBan < now)) return false; break;
+		case nEnums::eUR_PBAN   : if((mClass < nEnums::eUC_OPERATOR) && mCanPBan && (mCanPBan < now)) return false; break;
+		case nEnums::eUR_NOSHARE: if((mClass < nEnums::eUC_VIPUSER ) && mCanShare0 && (mCanShare0 < now)) return false; break;
+		case nEnums::eUR_REG: if((mClass < mxServer->mC.min_class_register ) && mCanReg && (mCanReg < now)) return false; break;
+		case nEnums::eUR_OPCHAT: if((mClass < eUC_OPERATOR ) && mCanOpchat && (mCanOpchat < now)) return false; break;
 		default: break;
 	};
 	return true;
 }
 
-void nDirectConnect::cUser::SetRight(unsigned Right, long until, bool allow)
+void cUser::SetRight(unsigned Right, long until, bool allow)
 {
 	switch(Right)
 	{
-		case nDirectConnect::nEnums::eUR_CHAT:
+		case eUR_CHAT:
 			if(!allow) mGag = until;
 			else mGag = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_PM:
+		case nEnums::eUR_PM:
 			if(!allow) mNoPM = until;
 			else mNoPM = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_SEARCH:
+		case nEnums::eUR_SEARCH:
 			if(!allow) mNoSearch = until;
 			else mNoSearch = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_CTM:
+		case nEnums::eUR_CTM:
 			if(!allow) mNoCTM = until;
 			else mNoCTM = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_KICK:
+		case nEnums::eUR_KICK:
 			if(allow) mCanKick = until;
 			else mCanKick = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_REG:
+		case nEnums::eUR_REG:
 			if(allow) mCanReg = until;
 			else mCanReg = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_OPCHAT:
+		case nEnums::eUR_OPCHAT:
 			if(allow) mCanOpchat = until;
 			else mCanOpchat = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_NOSHARE:
+		case nEnums::eUR_NOSHARE:
 			if(allow) mCanShare0 = until;
 			else mCanShare0 = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_DROP:
+		case nEnums::eUR_DROP:
 			if(allow) mCanDrop = until;
 			else mCanDrop = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_TBAN:
+		case nEnums::eUR_TBAN:
 			if(allow) mCanTBan = until;
 			else mCanTBan = 1;
 			break;
-		case nDirectConnect::nEnums::eUR_PBAN:
+		case nEnums::eUR_PBAN:
 			if(allow) mCanPBan = until;
 			else mCanPBan = 1;
 			break;
 		default: break;
 	};
 }
-/*!
-    \fn nDirectConnect::cUser::ApplyRights(cPenaltyList::sPenalty &pen)
- */
-void nDirectConnect::cUser::ApplyRights(cPenaltyList::sPenalty &pen)
+
+void cUser::ApplyRights(cPenaltyList::sPenalty &pen)
 {
 	mGag = pen.mStartChat;
 	mNoPM = pen.mStartPM;
@@ -321,7 +309,7 @@ void nDirectConnect::cUser::ApplyRights(cPenaltyList::sPenalty &pen)
 	mCanOpchat = pen.mStopOpchat;
 }
 
-bool nDirectConnect::cUserRobot::SendPMTo(cConnDC *conn, const string &msg)
+bool cUserRobot::SendPMTo(cConnDC *conn, const string &msg)
 {
 	if (conn && conn->mpUser)
 	{
@@ -333,20 +321,20 @@ bool nDirectConnect::cUserRobot::SendPMTo(cConnDC *conn, const string &msg)
 	return false;
 }
 
-nDirectConnect::cChatRoom::cChatRoom(const string &nick, cUserCollection *col, cServerDC *server) :
+cChatRoom::cChatRoom(const string &nick, cUserCollection *col, cServerDC *server) :
 	cUserRobot(nick, server), mCol(col)
 {
 	mConsole = new cChatConsole(mxServer, this);
 	mConsole->AddCommands();
 };
 
-nDirectConnect::cChatRoom::~cChatRoom()
+cChatRoom::~cChatRoom()
 {
 	if (mConsole) delete mConsole;
 	mConsole = NULL;
 }
 
-void nDirectConnect::cChatRoom::SendPMToAll(const string & Msg, cConnDC *FromConn)
+void cChatRoom::SendPMToAll(const string & Msg, cConnDC *FromConn)
 {
 	string omsg;
 	string start, end, FromNick;
@@ -374,7 +362,7 @@ void nDirectConnect::cChatRoom::SendPMToAll(const string & Msg, cConnDC *FromCon
 	}
 }
 
-bool nDirectConnect::cChatRoom::ReceiveMsg(cConnDC *conn, cMessageDC *msg)
+bool cChatRoom::ReceiveMsg(cConnDC *conn, cMessageDC *msg)
 {
 	ostringstream os;
 	if (msg->mType == eDC_TO)
@@ -406,26 +394,21 @@ bool nDirectConnect::cChatRoom::ReceiveMsg(cConnDC *conn, cMessageDC *msg)
 	return true;
 }
 
-bool nDirectConnect::cChatRoom::IsUserAllowed(cUser *)
+bool cChatRoom::IsUserAllowed(cUser *)
 {
 	return false;
 }
 
-
-///////////////////////
-
-nDirectConnect::cOpChat::cOpChat(cServerDC *server) : cChatRoom(server->mC.opchat_name, &server->mOpchatList, server)
+cOpChat::cOpChat(cServerDC *server) : cChatRoom(server->mC.opchat_name, &server->mOpchatList, server)
 {}
 
-bool nDirectConnect::cOpChat::IsUserAllowed(cUser *user)
+bool cOpChat::IsUserAllowed(cUser *user)
 {
 	if (user && (user->mClass >= eUC_OPERATOR)) return true;
 	else return false;
 }
 
-///////////////////////
-
-bool nDirectConnect::cMainRobot::ReceiveMsg(cConnDC *conn, cMessageDC *message)
+bool cMainRobot::ReceiveMsg(cConnDC *conn, cMessageDC *message)
 {
 	ostringstream os;
 	if (message->mType == eDC_TO)
@@ -445,11 +428,11 @@ bool nDirectConnect::cMainRobot::ReceiveMsg(cConnDC *conn, cMessageDC *message)
    return true;
 }
 
-nDirectConnect::cPluginRobot::cPluginRobot(const string &nick, cVHPlugin *pi, cServerDC *server) :
+cPluginRobot::cPluginRobot(const string &nick, cVHPlugin *pi, cServerDC *server) :
 	cUserRobot(nick, server), mPlugin(pi)
 {}
 
-bool nDirectConnect::cPluginRobot::ReceiveMsg(cConnDC *conn, cMessageDC *message)
+bool cPluginRobot::ReceiveMsg(cConnDC *conn, cMessageDC *message)
 {
 	ostringstream os;
 	if (message->mType == eDC_TO)
@@ -458,3 +441,5 @@ bool nDirectConnect::cPluginRobot::ReceiveMsg(cConnDC *conn, cMessageDC *message
 	}
 	return true;
 }
+
+};  // namespace nVerliHub

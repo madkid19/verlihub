@@ -29,10 +29,12 @@
 #include <algorithm>
 #include <unistd.h>
 
-namespace nDirectConnect
-{
-namespace nTables
-{
+namespace nVerliHub {
+	using namespace nConfig;
+	using namespace nSocket;
+	using namespace nMySQL;
+	using namespace nUtils;
+	namespace nTables {
 
 
 cRegList::cRegList(cMySQL &mysql, cServerDC *server): cConfMySQL(mysql)
@@ -112,7 +114,7 @@ cout << "Offset is  " << offset << " and page is " << page << endl;
 		mQuery.OStream() << oss.str();
 		if(mQuery.Query() <= 0) return false;
 		int n = mQuery.StoreResult();
-		
+
 		cMySQLColumn col;
 		MYSQL_ROW row;
 		for(int i = 0; i < n; i++) {
@@ -134,7 +136,7 @@ bool cRegList::AddRegUser(const string &nick, cConnDC *op, int cl, const char *p
 	if(FindRegInfo(ui, nick))
 		return false;
 	// Do not register opchat or hub security
-	if(nStringUtils::toLower(nick) == nStringUtils::toLower(mS->mC.opchat_name) || nStringUtils::toLower(nick) == nStringUtils::toLower(mS->mC.hub_security))
+	if(toLower(nick) == toLower(mS->mC.opchat_name) || toLower(nick) == toLower(mS->mC.hub_security))
 		return false;
 
 	ui.mNick = nick;//@todo nick2dbkey
@@ -149,7 +151,7 @@ bool cRegList::AddRegUser(const string &nick, cConnDC *op, int cl, const char *p
 		ui.SetPass(string(password),mS->mC.default_password_encryption);
 	else
 		ui.SetPass(string(),mS->mC.default_password_encryption);
-	
+
 	if(cl < 0)
 		ui.mPwdChange = false;
 	if(mCache.IsLoaded())
@@ -207,7 +209,7 @@ bool cRegList::LoginError(cConnDC *conn, const string &nick)
 
 
 /*!
-    \fn nDirectConnect::nTables::cRegList::DelReg(const string &nick)
+    \fn ::nTables::cRegList::DelReg(const string &nick)
  */
 bool cRegList::DelReg(const string &nick)
 {
@@ -245,7 +247,7 @@ md5
 crypt
 */
 
-};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 

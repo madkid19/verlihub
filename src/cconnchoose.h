@@ -23,50 +23,67 @@
 #ifndef NSERVERCCONNCHOOSE_H
 #define NSERVERCCONNCHOOSE_H
 #ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+	#include <config.h>
+#endif // HAVE_CONFIG_H
+
 #ifndef __extension__
-#  define __extension__
-#endif
+	#  define __extension__
+#endif // __extension__
+
 #ifndef TEMP_FAILURE_RETRY
-#define TEMP_FAILURE_RETRY(expression) expression
-#endif
+	#define TEMP_FAILURE_RETRY(expression) expression
+#endif // TEMP_FAILURE_RETRY
+
 #ifndef TEMP_FAILURE_RETRY
-#	if !defined _WIN32
-#		define TEMP_FAILURE_RETRY(expression) \
+	#if !defined _WIN32
+		#define TEMP_FAILURE_RETRY(expression) \
 		(__extension__ ({ long int __result;\
 		while ((__result = (long int) (expression)) == -1L && errno == EINTR){}; __result; }))
-#	else // _WIN32
-#		define TEMP_FAILURE_RETRY(expression) while ((long int) (expression) == -1L && errno == EINTR){}
-#	endif // _WIN32
+	#else // _WIN32
+		#define TEMP_FAILURE_RETRY(expression) while ((long int) (expression) == -1L && errno == EINTR){}
+	#endif // _WIN32
 #endif
+
 #ifdef _WIN32
-#	define USE_SELECT 1
+	#define USE_SELECT 1
 #else
-#	if HAVE_SYS_POLL_H
-#		define USE_SELECT 0
-#	else
-#		define USE_SELECT 1
-#	endif
-#endif
+	#if HAVE_SYS_POLL_H
+		#define USE_SELECT 0
+	#else
+		#define USE_SELECT 1
+	#endif
+#endif // _WIN32
+
 #include "ctime.h"
 #include "cconnbase.h"
+
 #ifndef _WIN32
-#ifndef USE_OLD_CONNLIST
-#include <vector>
-using std::vector;
+	#ifndef USE_OLD_CONNLIST
+		#include <vector>
+		using std::vector;
+	#else
+		#include <map>
+		#include "tchashlistmap.h"
+		using std::map;
+	#endif // USE_OLD_CONNLIST
 #else
-#include <map>
-#include "tchashlistmap.h"
-using std::map;
-#endif
-#else
-#include "thasharray.h"
-#endif
+	#include "thasharray.h"
+#endif // _WIN32
 
-using namespace nUtils;
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nEnums {
+		enum  tChEvent
+		{
+			eCC_INPUT = 1 << 0,
+			eCC_OUTPUT= 1 << 1,
+			eCC_ERROR = 1 << 2,
+			eCC_CLOSE = 1 << 3,
+			eCC_ALL   = eCC_INPUT | eCC_OUTPUT | eCC_ERROR
+		};
+	};
 
-namespace nServer {
+	namespace nSocket {
 
 /**
  * This class is an interface for polling an selecting connection and it provides the following features:
@@ -103,14 +120,6 @@ class cConnChoose
 public:
 	cConnChoose();
 	virtual ~cConnChoose();
-	enum  tChEvent
-	{
-		eCC_INPUT = 1 << 0,
-		eCC_OUTPUT= 1 << 1,
-		eCC_ERROR = 1 << 2,
-		eCC_CLOSE = 1 << 3,
-		eCC_ALL   = eCC_INPUT | eCC_OUTPUT | eCC_ERROR
-	};
 
 	#ifndef _WIN32
 	#ifdef USE_OLD_CONNLIST
@@ -131,8 +140,9 @@ public:
 	virtual bool DelConn(cConnBase *);
 	virtual bool HasConn(cConnBase *);
 
-	inline cConnBase * operator [] (tSocket);
-	inline tSocket operator [] (cConnBase *);
+	virtual cConnBase * operator[] (tSocket sock);
+
+	tSocket operator[] (cConnBase *conn);
 
 	virtual int Choose(cTime &) = 0;
 
@@ -141,30 +151,32 @@ public:
 	* @param conn The connection.
 	* @param event Bitwise OR list of I/O operation.
 	*/
-	inline void OptIn (cConnBase *conn, tChEvent);
-	
+	virtual void OptIn(cConnBase *conn, nEnums::tChEvent event);
+
 	/**
 	* Unregister the connection for the given I/O operations.
 	* @param conn The connection.
 	* @param event Bitwise OR list of I/O operation.
 	*/
-	inline void OptOut(cConnBase *conn, tChEvent);
-	
+	virtual void OptOut(cConnBase *conn, nEnums::tChEvent event);
+
 	/**
 	* Return I/O operations for the given connection.
 	* @param conn The connection.
 	* @return Bitwise OR list of I/O operation.
 	* @see OptIn(cConnBase *conn, tChEvent events)
 	*/
-	inline int OptGet(cConnBase *conn);
-	inline int RevGet(cConnBase *conn);
-	inline bool RevTest( cConnBase *conn );
+	int OptGet(cConnBase *conn);
 
-	virtual void OptIn ( tSocket, tChEvent) = 0;
-	virtual void OptOut( tSocket, tChEvent) = 0;
-	virtual int OptGet( tSocket ) = 0;
-	virtual int RevGet( tSocket ) = 0;
-	virtual bool RevTest( tSocket ) = 0;
+	int RevGet(cConnBase *conn);
+
+	bool RevTest(cConnBase *conn);
+
+	virtual void OptIn (tSocket, nEnums::tChEvent) = 0;
+	virtual void OptOut(tSocket, nEnums::tChEvent) = 0;
+	virtual int OptGet(tSocket) = 0;
+	virtual int RevGet(tSocket) = 0;
+	virtual bool RevTest(tSocket) = 0;
 
 	/**
 	  Choose Result, returned by iterator,
@@ -176,7 +188,7 @@ public:
 		int mEvent;
 		int mRevent;
 		cConnBase *mConn;
-		sChooseRes():mSock(0), mEvent(tChEvent(0)), mRevent(tChEvent(0)), mConn(NULL){}
+		sChooseRes():mSock(0), mEvent(nEnums::tChEvent(0)), mRevent(nEnums::tChEvent(0)), mConn(NULL){}
 	};
 
 	#if 1
@@ -195,7 +207,8 @@ public:
 
 		iterator &operator++()
 		{
-			while( (++mRes.mSock <= *mEnd) && !(mChoose->RevTest(mRes.mSock)) ){}
+			while( (++mRes.mSock <= *mEnd) && !(mChoose->RevTest(mRes.mSock)) ){
+			}
 			return *this;
 		};
 
@@ -222,7 +235,7 @@ public:
 			mRes.mSock = it.mRes.mSock;
 			mEnd = it.mEnd;
 			mChoose = it.mChoose;
-         return *this;
+			return *this;
 		}
 	};
 
@@ -292,14 +305,15 @@ public:
 			//mNextIterator = mIterator;
 			//++mNextIterator;
 			mChoose = it.mChoose;
-         return *this;
+			return *this;
 		}
 	};
 
 	iterator &begin()
 	{
 		sBegin = iterator(mConnList.begin(),this);
-		if( !RevTest((*(mConnList.begin()))->operator tSocket()) ) ++sBegin;
+		if(!RevTest((*(mConnList.begin()))->operator tSocket()))
+			++sBegin;
 		return sBegin;
 	};
 
@@ -317,56 +331,7 @@ protected:
 	static iterator sBegin;
 	static iterator sEnd;
 };
-
-};
-
-void nServer::cConnChoose::OptIn ( nServer::cConnBase *conn, nServer::cConnChoose::tChEvent mask)
-{
-	if(!conn) return;
-	this->OptIn(tSocket(*conn), mask);
-}
-
-void nServer::cConnChoose::OptOut( nServer::cConnBase *conn, nServer::cConnChoose::tChEvent mask)
-{
-	if(!conn) return;
-	this->OptOut(tSocket(*conn), mask);
-}
-
-int nServer::cConnChoose::OptGet( nServer::cConnBase *conn)
-{
-	if(!conn) return 0;
-	return this->OptGet(tSocket(*conn));
-}
-
-int nServer::cConnChoose::RevGet( nServer::cConnBase *conn)
-{
-	if(!conn) return 0;
-	return this->RevGet(tSocket(*conn));
-}
-
-bool nServer::cConnChoose::RevTest( nServer::cConnBase *conn)
-{
-	if(!conn) return false;
-	return this->RevTest(tSocket(*conn));
-}
-
-nServer::tSocket nServer::cConnChoose::operator [] (nServer::cConnBase *conn)
-{
-	if(!conn) return INVALID_SOCKET;
-	return (tSocket)(*conn);
-}
-
-#if defined (USE_OLD_CONNLIST) || defined (_WIN32)
-nServer::cConnBase * nServer::cConnChoose::operator [] (nServer::tSocket sock)
-{
-	return mConnList.GetByHash(sock);
-}
-#else
-nServer::cConnBase * nServer::cConnChoose::operator [] (nServer::tSocket sock)
-{
-	if( tSocket(mConnList.size()) > sock )	return mConnList[sock];
-	else return NULL;
-}
-#endif //USE_OLD_CONNLIST
+	}; // namespace nSocket
+}; // namespace nVerliHub
 
 #endif

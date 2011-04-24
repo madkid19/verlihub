@@ -49,18 +49,17 @@
 #define LOCK_VERSION PACKAGE
 #define HUB_VERSION_NAME "VerliHub"
 
-using namespace nUtils;
-using namespace nThreads;
-using namespace nStringUtils;
-namespace nDirectConnect
-{
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	using namespace nThread;
+	using namespace nTables;
+	namespace nSocket {
+		cServerDC * cServerDC::sCurrentServer = NULL;
 
-cServerDC * cServerDC::sCurrentServer = NULL;
-using namespace nTables;
-#if HAVE_LIBGEOIP
-cGeoIP cServerDC::sGeoIP;
-#endif
-
+		#if HAVE_LIBGEOIP
+			cGeoIP cServerDC::sGeoIP;
+		#endif
 
 cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	cAsyncSocketServer(), // create parent class
@@ -647,7 +646,7 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	ostringstream os;
 	if(conn->Log(3))
 		conn->LogStream() << "Entered the hub." << endl;
-	mCo->mTriggers->TriggerAll(cTrigger::eTF_MOTD, conn);
+	mCo->mTriggers->TriggerAll(eTF_MOTD, conn);
 
 	// The user has to change password
 	if(conn->mRegInfo && conn->mRegInfo->mPwdChange) {
@@ -966,11 +965,11 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick, int &closeReason)
 	bool banned = false;
 	if(conn->GetTheoricalClass() < eUC_MASTER) { // Master class is immune
 		if( conn->GetTheoricalClass() >= eUC_REGUSER ) {
-			banned = mBanList->TestBan(Ban, conn, nick, cBan::eBF_NICK);
-			if (banned && !((1 << Ban.mType) & (cBan::eBF_NICK |cBan::eBF_NICKIP))) banned = false;
+			banned = mBanList->TestBan(Ban, conn, nick, eBF_NICK);
+			if (banned && !((1 << Ban.mType) & (eBF_NICK | eBF_NICKIP))) banned = false;
 		} else {
 			// Here we can't check share ban because user hasn't sent $MyInfo string yet
-			banned = mBanList->TestBan(Ban, conn, nick, cBan::eBF_NICKIP | cBan::eBF_RANGE | cBan::eBF_HOST2 | cBan::eBF_HOST1 | cBan::eBF_HOST3 | cBan::eBF_HOSTR1 | cBan::eBF_PREFIX);
+			banned = mBanList->TestBan(Ban, conn, nick, eBF_NICKIP | eBF_RANGE | eBF_HOST2 | eBF_HOST1 | eBF_HOST3 | eBF_HOSTR1 | eBF_PREFIX);
 		}
 	}
 
@@ -1305,9 +1304,7 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 	}
 }
 
-};
-
-void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const string &Nick, const string &Reason, int flags)
+void cServerDC::DCKickNick(ostream *use_os,cUser *OP, const string &Nick, const string &Reason, int flags)
 {
 	ostringstream ostr;
 	cUser *user = mUserList.GetUserByNick(Nick);
@@ -1412,11 +1409,11 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 					mKickList->FindKick(Kick, user->mNick, OP->mNick, 30, true, true);
 
 					if(user->mToBan) {
-						mBanList->NewBan(Ban, Kick, user->mBanTime, cBan::eBF_NICKIP);
+						mBanList->NewBan(Ban, Kick, user->mBanTime, eBF_NICKIP);
 						ostr << " " << _("and banned") << " ";
 						Ban.DisplayKick(ostr);
 					} else {
-						mBanList->NewBan(Ban, Kick, mC.tban_kick, cBan::eBF_NICKIP);
+						mBanList->NewBan(Ban, Kick, mC.tban_kick, eBF_NICKIP);
 						ostr << " " << _("and banned") << " ";
 						Ban.DisplayKick(ostr);
 					}
@@ -1434,3 +1431,5 @@ void nDirectConnect::cServerDC::DCKickNick(ostream *use_os,cUser *OP, const stri
 		}
 	}
 }
+	}; // namespace nServer
+}; // namespace nVerliHub

@@ -23,7 +23,10 @@
 #include "cpiiplog.h"
 #include "src/cserverdc.h"
 
-using namespace nDirectConnect;
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nEnums;
+	namespace nIPLogPlugin {
 
 cpiIPLog::cpiIPLog() :  mConsole(this),	mIPLog(NULL)
 {
@@ -49,31 +52,31 @@ bool cpiIPLog::RegisterAll()
 	RegisterCallBack("VH_OnUserLogout");
 	return true;
 }
-	
+
 bool cpiIPLog::OnCloseConn(cConnDC *conn)
 {
-	if ((1 << eLT_DISCONNECT) & mLogFlags) 
+	if ((1 << eLT_DISCONNECT) & mLogFlags)
 		mIPLog->Log(conn, eLT_DISCONNECT, conn->mCloseReason);
 	return true;
 }
 
 bool cpiIPLog::OnNewConn(cConnDC * conn)
 {
-	if ((1 << eLT_CONNECT) & mLogFlags) 
+	if ((1 << eLT_CONNECT) & mLogFlags)
 		mIPLog->Log(conn, eLT_CONNECT, 0);
 	return true;
 }
 
 bool cpiIPLog::OnUserLogout(cUser *user)
 {
-	if (user->mxConn && ((1 << eLT_LOGOUT) & mLogFlags)) 
+	if (user->mxConn && ((1 << eLT_LOGOUT) & mLogFlags))
 		mIPLog->Log(user->mxConn, eLT_LOGOUT, user->mxConn->mCloseReason);
 	return true;
 }
 
 bool cpiIPLog::OnUserLogin(cUser *user)
 {
-	if (user->mxConn && ((1 << eLT_LOGIN) & mLogFlags)) 
+	if (user->mxConn && ((1 << eLT_LOGIN) & mLogFlags))
 		mIPLog->Log(user->mxConn, eLT_LOGIN, 0);
 	return true;
 }
@@ -83,7 +86,7 @@ bool cpiIPLog::OnOperatorCommand(cConnDC *conn, string *str)
         if( mConsole.DoCommand(*str, conn) ) return false;
         return true;
 }
-		
+
 cpiIPLog::~cpiIPLog()
 {
 	if (mIPLog)
@@ -91,5 +94,7 @@ cpiIPLog::~cpiIPLog()
 	mIPLog = NULL;
 }
 
-REGISTER_PLUGIN(cpiIPLog);
+	}; // namespace using namespace nIPLogPlugin;
+}; // namespace nVerliHub
+REGISTER_PLUGIN(nVerliHub::nIPLogPlugin::cpiIPLog);
 

@@ -21,11 +21,9 @@
 ***************************************************************************/
 
 #include "creplacerworker.h"
-#include "src/cconndc.h"
-#include "src/cserverdc.h"
 
-namespace nDirectConnect {
-
+namespace nVerliHub {
+	namespace nReplacePlugin {
 cReplacerWorker::cReplacerWorker()
 {
 	mAfClass = 4; // default affected class is <= 4 (operator)
@@ -45,4 +43,5 @@ bool cReplacerWorker::PrepareRegex()
 	return mRegex.Compile(mWord.data(),PCRE_CASELESS);
 }
 
-};
+	}; // namespace nReplacePlugin
+}; // namespace nVerliHub

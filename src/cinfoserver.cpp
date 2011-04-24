@@ -34,10 +34,9 @@
 
 #define PADDING 25
 
-using namespace nStringUtils;
-namespace nDirectConnect {
-namespace nInfo {
-
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nSocket;
 cInfoServer::cInfoServer()
 {
 	mServer = NULL;
@@ -53,7 +52,7 @@ void cInfoServer::SystemInfo(ostream &os)
 	}
 	cTime uptime(serverInfo.uptime);
 	utsname osname;
-	if(uname(&osname) == 0) { 
+	if(uname(&osname) == 0) {
 		os << "\r\n[*] " << setw(PADDING) << setiosflags(ios::left) << "OS" << osname.sysname << " " << osname.release << " (" << osname.machine << ") ";
 	}
 	os << "\r\n[*] " << setw(PADDING) << setiosflags(ios::left) << _("System uptime") << uptime.AsPeriod().AsString().c_str() << endl;
@@ -65,11 +64,11 @@ void cInfoServer::SystemInfo(ostream &os)
 	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Frew swap") << convertByte((long long int) serverInfo.freeswap,false).c_str() << "/" << convertByte((long long int) serverInfo.totalswap,false).c_str() << endl;
 	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Number of processes") << serverInfo.procs << endl;
 
-        struct rusage resourceUsage; 
+        struct rusage resourceUsage;
 
         getrusage(RUSAGE_SELF, &resourceUsage);
 
-	#else 
+	#else
 	os << _("No info available") << endl;
 	#endif
 }
@@ -149,6 +148,4 @@ void cInfoServer::Output(ostream &os, int Class)
 }
 
 cInfoServer::~cInfoServer(){}
-};
-};
-
+}; // namespace nVerliHub

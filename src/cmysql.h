@@ -29,11 +29,12 @@ typedef unsigned int SOCKET;
 #include <mysql.h>
 #include "cobj.h"
 
+namespace nVerliHub {
 /**
    Mysql utilities
    Contains classes that encapsulate mysql structures,  and ease their usage
 */
-namespace nMySQL {
+	namespace nMySQL {
 
 /**
 a class encapsulating operations with mysql conenction
@@ -42,23 +43,23 @@ a class encapsulating operations with mysql conenction
 */
 class cMySQL : public cObj
 {
-friend class cQuery;
-public:
-	cMySQL();
-	cMySQL(string&host,string&user,string&pass,string&data);
-	~cMySQL();
-	void Init();
-	bool Connect(string &host, string &user, string &passwd, string &db);
-	string GetDBName()
-	{
-		return mDBName;
-	}
-	public: void Error(int level, string text);
+	friend class cQuery;
+	public:
+		cMySQL();
+		cMySQL(string&host,string&user,string&pass,string&data);
+		~cMySQL();
+		void Init();
+		bool Connect(string &host, string &user, string &passwd, string &db);
+		string GetDBName()
+		{
+			return mDBName;
+		}
+		public: void Error(int level, string text);
 
-private:
-	string mDBName;
-	MYSQL *mDBHandle;
-	
+	private:
+		string mDBName;
+		MYSQL *mDBHandle;
 };
-};
+	}; // namespace nMySQL
+}; // namespace nVerliHub
 #endif

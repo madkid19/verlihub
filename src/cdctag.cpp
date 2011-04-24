@@ -21,7 +21,6 @@
 ***************************************************************************/
 #include <iostream>
 #include <string>
-using namespace std;
 #include "cdctag.h"
 #include "cconntypes.h"
 #include <string>
@@ -29,13 +28,10 @@ using namespace std;
 #include "cdcconf.h"
 #include "i18n.h"
 
-using std::string;
 using namespace std;
-using namespace nDirectConnect::nTables;
-namespace nDirectConnect
-{
-
-
+namespace nVerliHub {
+	using namespace nTables;
+	using namespace nSocket;
 cDCTag::cDCTag(cServerDC *mS, cDCClient *c) : mServer(mS), client(c)
 {
 	mTotHubs = -1;
@@ -54,59 +50,59 @@ cDCTag::~cDCTag() { }
 
 bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 {
-  
+
 	if(client && client->mBan) {
 		os << _("<<Your client is banned>>");
 		code = eTC_BANNED;
 		return false;
 	}
-  
+
 	//not parsed tag, unknown tag
 	if ((mClientMode == eCM_SOCK5) && !mServer->mC.tag_allow_sock5) {
 		os << _("Connections through proxy server are not allowed in this hub.");
 		code = eTC_SOCK5;
 		return false;
 	}
-		
+
 	if ((mClientMode == eCM_PASSIVE) && !mServer->mC.tag_allow_passive) {
 		os << _("Passive connections are restricted. Consider changing to active.");
 		code = eTC_PASSIVE;
 		return false;
 	}
-		
+
 	if((mTotHubs < 0) || (mSlots < 0)) {
 		os << _("Error: your client tag is reporting less then 0 hubs or slots!");
 		code = eTC_PARSE;
 		return false;
 	}
-		
+
 	string MsgToUser;
-	
+
 	if(!mServer->mC.tag_allow_unknown && !client) {
-		
+
 		os << _("Unknown clients are not allowed in this hub");
 		code = eTC_UNKNOWN;
 		return false;
 	}
-	
+
 	if(mTotHubs > mServer->mC.tag_max_hubs) {
 		os << autosprintf(_("Too many open hubs, max is %d"), mServer->mC.tag_max_hubs);
 		code = eTC_MAX_HUB;
 		return false;
 	}
-	
+
 	if(mSlots < conn_type->mTagMinSlots) {
 		os << autosprintf(_("Too little open slots for your connection type (%s), min is %d"), conn_type->mIdentifier.c_str(), conn_type->mTagMinSlots);
 		code = eTC_MIN_SLOTS;
 		return false;
 	}
-	
+
 	if(mSlots > conn_type->mTagMaxSlots) {
 		os << autosprintf(_("Too many open slots for your connection type (%s), max is %d"), conn_type->mIdentifier.c_str(), conn_type->mTagMaxSlots);
 		code = eTC_MAX_SLOTS;
 		return false;
 	}
-	
+
 	if( (mServer->mC.tag_max_hs_ratio * mSlots) < mTotHubs ) {
 		os << autosprintf(_("Your hubs/slots ratio %.2f is too high (max is %.2f)."), (double) mTotHubs/mSlots, mServer->mC.tag_max_hs_ratio);
 		int slotToOpen = (int) (mTotHubs / mServer->mC.tag_max_hs_ratio);
@@ -115,7 +111,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		code = eTC_MAX_HS_RATIO;
 		return false;
 	}
-	
+
 	if (mLimit >= 0) {
 		//Well, DCGUI bug!
 		//if (tag->mClientType == eCT_DCGUI) limit *= slot;
@@ -130,10 +126,10 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 			return false;
 		}
 	}
-	
+
 	// Use tag_min_version and tag_max_version for unknown client or use the version number in the matching rule
 	double minVersion = mServer->mC.tag_min_version, maxVersion = mServer->mC.tag_max_version;
-	
+
 	if(client) {
 		minVersion = client->mMinVersion;
 		maxVersion = client->mMaxVersion;
@@ -180,11 +176,10 @@ ostream &operator << (ostream &os, cDCTag &tag)
 	os << "[::] Open slots: ";
 	if(tag.mSlots >=0)
 		os << tag.mSlots;
-	else 
+	else
 		os << "Not available";
 	os << endl;
 	return os;
 }
 
-};
-
+}; // namespace nVerliHub

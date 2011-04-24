@@ -23,9 +23,27 @@
 #define NDIRECTCONNECTCBAN_H
 #include "cobj.h"
 
-namespace nDirectConnect {
+namespace nVerliHub {
 
-class cServerDC;
+	namespace nEnums {
+		// Type of the ban
+		enum {
+			eBF_NICKIP = 1 << 0,
+			eBF_IP  = 1 << 1,
+			eBF_NICK  = 1 << 2,
+			eBF_RANGE = 1 << 3,
+			eBF_HOST1 = 1 << 4,
+			eBF_HOST2 = 1 << 5,
+			eBF_HOST3 = 1 << 6,
+			eBF_SHARE = 1 << 7,
+			eBF_EMAIL = 1 << 8,
+			eBF_PREFIX = 1 << 9,
+			eBF_HOSTR1 = 1 << 10,
+		};
+	};
+	namespace nSocket {
+		class cServerDC;
+	};
 
 namespace nTables {
 /**
@@ -37,48 +55,48 @@ namespace nTables {
 class cBan : public cObj
 {
     public:
-	
+
 	/**
 	* Class constructor.
 	* @param server Pointer to the server.
 	*/
-	cBan(class cServerDC *);
-	
+	cBan(class nSocket::cServerDC *);
+
 	/**
 	* Class destructor.
 	*/
 	~cBan();
-	
+
 	/**
 	* Display full information about the ban.
 	* @param os The output stream.
 	*/
 	virtual void DisplayComplete(ostream &os);
-	
+
 	/**
 	* Display kick information.
 	* @param os The output stream.
 	*/
 	virtual void DisplayKick(ostream &os);
-	
+
 	/**
 	* Display ban information into a single line.
 	* @param os The output stream.
 	*/
 	void DisplayInline(ostream &os);
-	
+
 	/**
 	* Display ban information about the user.
 	* @param os The output stream.
 	*/
 	virtual void DisplayUser(ostream &);
-	
+
 	/**
 	* Return a string describing the type of the ban.
 	* @return The type of the ban.
 	*/
 	const char *GetBanType();
-	
+
 	/**
 	* Set the type of the ban.
 	* @param type Ban type.
@@ -89,7 +107,7 @@ class cBan : public cObj
 			if(type == (unsigned)(1 << mType))
 				break;
 	}
-	
+
 	/**
 	* Write ban information to the output stream.
 	*/
@@ -114,20 +132,6 @@ class cBan : public cObj
 	// End of the ban in Unix time format
 	long mDateEnd;
 
-	// Type of the ban
-	enum {
-		eBF_NICKIP = 1 << 0,
-		eBF_IP  = 1 << 1,
-		eBF_NICK  = 1 << 2,
-		eBF_RANGE = 1 << 3,
-		eBF_HOST1 = 1 << 4,
-		eBF_HOST2 = 1 << 5,
-		eBF_HOST3 = 1 << 6,
-		eBF_SHARE = 1 << 7,
-		eBF_EMAIL = 1 << 8,
-		eBF_PREFIX = 1 << 9,
-		eBF_HOSTR1 = 1 << 10,
-	};
 	// Ban type
 	unsigned mType;
 	// Operator who banned an user
@@ -137,7 +141,7 @@ class cBan : public cObj
 	// How ban should be displayed to output stream
 	int mDisplayType;
 	// Pointer to the server
-	cServerDC *mS;
+	nSocket::cServerDC *mS;
 };
 
 /**
@@ -154,14 +158,14 @@ class cUnBan : public cBan
 	* @param ban A ban
 	* @param server Pointer to the server.
 	*/
-	cUnBan(cBan &, cServerDC *);
-	
+	cUnBan(cBan &, nSocket::cServerDC *);
+
 	/**
 	* Class constructor.
 	* @param server Pointer to the server.
 	*/
-	cUnBan(cServerDC *);
-	
+	cUnBan(nSocket::cServerDC *);
+
 	/**
 	* Class destructor.
 	*/
@@ -172,7 +176,7 @@ class cUnBan : public cBan
 	* @param os The output stream.
 	*/
 	virtual void DisplayComplete(ostream &os);
-	
+
 	/**
 	* Display unban information about the user.
 	* @param os The output stream.

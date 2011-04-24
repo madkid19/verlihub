@@ -27,8 +27,8 @@
 #endif
 
 using namespace std;
-namespace nStringUtils
-{
+namespace nVerliHub {
+	namespace nUtils {
 
 int StrCompare(const string &str1, int Start, int Count, const string &str2);
 string toLower(const string &str);
@@ -50,6 +50,8 @@ string StringFrom(__int64 const &ll);
 __int64 StringAsLL(const string &);
 int CountLines(const string &);
 bool LimitLines(const string &str, int max);
-};
+
+	}; // namespace nUtils
+}; // namespace nVerliHub
 
 #endif

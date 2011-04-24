@@ -19,18 +19,19 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#include "cconntypes.h"
+#include <ios>
 #include "cserverdc.h"
+//#include "cconntypes.h"
 #include "cdcconsole.h"
 #include "i18n.h"
 #include "stringutils.h"
 
-using namespace nStringUtils;
-namespace nDirectConnect
-{
-
-namespace nTables
-{
+using namespace std;
+namespace nVerliHub {
+	using namespace nConfig;
+	using namespace nUtils;
+	using namespace nEnums;
+	namespace nTables {
 
 cConnType::cConnType() :
 	mTagMaxSlots(100),
@@ -39,8 +40,11 @@ cConnType::cConnType() :
 	mTagMinLSRatio(-1.)
 {}
 
-cConnType::~cConnType (){}
-void cConnType::OnLoad(){}
+cConnType::~cConnType()
+{}
+
+void cConnType::OnLoad()
+{}
 
 ostream &operator << (ostream &os, cConnType &ct)
 {
@@ -72,10 +76,10 @@ void cConnTypes::AddFields()
 	AddCol("identifier","varchar(16)","", false, mModel.mIdentifier);
 	AddPrimaryKey("identifier");
 	AddCol("description","varchar(64)","no description",true,mModel.mDescription);
-	AddCol("tag_min_slots","INT(4)", "0", true, mModel.mTagMinSlots); 
-	AddCol("tag_max_slots","INT(4)", "100", true, mModel.mTagMaxSlots); 
-	AddCol("tag_min_limit","DOUBLE", "-1", true, mModel.mTagMinLimit); 
-	AddCol("tag_min_ls_ratio","DOUBLE", "-1", true, mModel.mTagMinLSRatio); 
+	AddCol("tag_min_slots","INT(4)", "0", true, mModel.mTagMinSlots);
+	AddCol("tag_max_slots","INT(4)", "100", true, mModel.mTagMaxSlots);
+	AddCol("tag_min_limit","DOUBLE", "-1", true, mModel.mTagMinLimit);
+	AddCol("tag_min_ls_ratio","DOUBLE", "-1", true, mModel.mTagMinLSRatio);
 	mMySQLTable.mExtra =" PRIMARY KEY(identifier)";
 }
 
@@ -112,10 +116,10 @@ void cConnTypeConsole::GetHelpForCommand(int cmd, ostream &os)
 	string help_str;
 	switch(cmd)
 	{
-		case eLC_LST: 
-		help_str = "!lstconntype\r\nGive a list of registered connection types"; 
+		case eLC_LST:
+		help_str = "!lstconntype\r\nGive a list of registered connection types";
 		break;
-		case eLC_ADD: 
+		case eLC_ADD:
 		case eLC_MOD:
 		help_str = "!(add|mod)conntype <type>[ -d <\"desc\">][ -S <max_slots>][ -s <min_slots>][ -l <min_limiter>][ -ls <min_ls_ratio>]\r\n"
 		"      add or edit a connection type\r\n"
@@ -129,7 +133,7 @@ void cConnTypeConsole::GetHelpForCommand(int cmd, ostream &os)
 		help_str = "!delconntype <type>"; break;
 		default: break;
 	}
-	
+
 	cDCProto::EscapeChars(help_str,help_str);
 	os << help_str;
 }
@@ -155,15 +159,15 @@ const char * cConnTypeConsole::GetParamsRegex(int cmd)
 
 bool cConnTypeConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cConnType &data)
 {
-	enum{ 	eADD_ALL, eADD_IDENT, 
-		eADD_PARAM, 
+	enum { 	eADD_ALL, eADD_IDENT,
+		eADD_PARAM,
 		eADD_DESCp, eADD_QUOTE, eADD_DESC,
 		eADD_MAX_SLOTSp, eADD_MAX_SLOTS,
 		eADD_MIN_SLOTSp, eADD_MIN_SLOTS,
 		eADD_MIN_LIMITp, eADD_MIN_LIMIT,
 		eADD_MIN_LS_RATIOp, eADD_MIN_LS_RATIO
 		};
-		
+
 	cmd->GetParStr(eADD_IDENT,data.mIdentifier);
 	cmd->GetParStr(eADD_DESC, data.mDescription);
 	cmd->GetParInt(eADD_MAX_SLOTS, data.mTagMaxSlots);
@@ -199,6 +203,5 @@ bool cConnTypeConsole::IsConnAllowed(cConnDC *conn,int cmd)
 }
 
 
-};
-
-};
+	}; // namespace nTables
+}; // namespace nVerliHub

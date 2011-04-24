@@ -23,10 +23,7 @@
 #include "ctime.h"
 #include <iostream>
 using namespace std;
-using nUtils::cTime;
-int cObj::msLogLevel = 4;
-int cObj::msCounterObj = 0;
-const string cObj::mEmpty;
+
 #ifndef left
 #define left ""
 #endif
@@ -34,15 +31,22 @@ const string cObj::mEmpty;
 #define right ""
 #endif
 
+namespace nVerliHub {
+	int cObj::msLogLevel = 4;
+	int cObj::msCounterObj = 0;
+	const string cObj::mEmpty;
+	using nUtils::cTime;
 /** with name constructor */
 cObj::cObj(const char *name) : mClassName(name), mToLog(&cout)
 {
 	msCounterObj++;//cout << "Constructor cObj(char*), count = " << msCounterObj << endl;
 }
+
 cObj::cObj(): mClassName("Obj"), mToLog(&cout)
 {
 	msCounterObj++;//cout << "Constructor cObj(), count = " << msCounterObj << endl;
 }
+
 cObj::~cObj()
 {
 	msCounterObj--;//cout << "Destructor cObj, count = " << msCounterObj << endl;
@@ -99,3 +103,5 @@ ostream & cObj::LogStream()
 {
 	return *mToLog;
 }
+
+}; // namespace nVerliHub

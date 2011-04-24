@@ -22,9 +22,9 @@
 #include "cdcclient.h"
 #include "i18n.h"
 
-namespace nDirectConnect {
+namespace nVerliHub {
 	namespace nTables {
-			  
+
 		cDCClient::cDCClient()
 		{
 			mName = "Unknown";
@@ -33,9 +33,9 @@ namespace nDirectConnect {
 			mMaxVersion = -1;
 			mBan = false;
 		}
-		
+
 		cDCClient::~cDCClient() {}
-		
+
 		ostream &operator << (ostream &os, cDCClient &tr)
 		{
 			os << "\r" << tr.mName << " ID: " << tr.mTagID;
@@ -51,6 +51,6 @@ namespace nDirectConnect {
  			os << " (" << (tr.mEnable ? _("Enable") : _("Disable")) << ")";
 			return os;
 		}
-	};
-};
- 
+	}; // namespace nTables
+}; // namespace nVerliHub
+

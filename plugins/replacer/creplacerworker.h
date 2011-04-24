@@ -27,14 +27,9 @@
 #include "src/cpcre.h"
 
 using namespace std;
-using namespace nUtils;
 
-namespace nDirectConnect {
-
-class cConnDC;
-class cServerDC;
-
-namespace nTables {
+namespace nVerliHub {
+	namespace nReplacePlugin {
 
 /**
 @author Daniel Muller
@@ -55,9 +50,9 @@ public:
 	// affected class
 	int mAfClass;
 private:
-	cPCRE mRegex;
+	nUtils::cPCRE mRegex;
 };
-};
-};
+	}; // namespace nReplacePlugin
+}; // namespace nVerliHub
 
 #endif

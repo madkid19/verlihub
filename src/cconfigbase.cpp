@@ -21,9 +21,8 @@
 ***************************************************************************/
 
 #include "cconfigbase.h"
-
-namespace nConfig
-{
+namespace nVerliHub {
+	namespace nConfig {
 hHashStr<cConfigBaseBase::tItemHashType> cConfigBaseBase::msHasher;
 
 cConfigBaseBase::cConfigBaseBase() : cObj("cConfigBase")
@@ -37,7 +36,7 @@ cConfigBaseBase::~cConfigBaseBase()
 	tItemHashType Hash;
 	tItemVec::iterator it;
 	cConfigItemBase *item;
-	
+
 	for(it = mvItems.begin(); it != mvItems.end(); ++it)
 	{
 		Hash = *it;
@@ -122,5 +121,5 @@ DefineAddMethods(string);
 DefineAddMethods(char *);
 DefineAddMethods(double);
 
-};
-
+	}; // namespace nConfig
+}; // namespace nVerliHub

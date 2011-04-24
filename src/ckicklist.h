@@ -24,31 +24,28 @@
 #include "cconfmysql.h"
 #include "ckick.h"
 
-using nConfig::cConfMySQL;
-
-namespace nDirectConnect {
-
-class cConnDC;
-
-namespace nTables {
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+	};
+	namespace nTables {
 
 /**
 @author Daniel Muller
 */
-class cKickList : public cConfMySQL
+class cKickList : public nConfig::cConfMySQL
 {
 public:
-	cKickList(cMySQL &mysql);
+	cKickList(nMySQL::cMySQL &mysql);
 	~cKickList();
-	bool AddKick(cConnDC *,const string& OPNick, const string *, cKick &);
+	bool AddKick(nSocket::cConnDC *,const string& OPNick, const string *, cKick &);
 	bool FindKick(cKick &Dest,const string& Nick, const string &OpNick, unsigned Age, bool WithReason, bool WithDrop, bool IsNick=true);
 	void Cleanup();
 protected:
 	cKick mModel;
 };
 
-};
-
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 #endif

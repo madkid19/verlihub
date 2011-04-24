@@ -28,14 +28,11 @@
 #include "src/i18n.h"
 #include "stringutils.h"
 
-using namespace nStringUtils;
-using namespace nDirectConnect;
-using namespace nDirectConnect::nTables;
-using namespace nUtils;
-
-
-namespace nIPLog
-{
+namespace nVerliHub {
+	using namespace nEnums;
+	using namespace nTables;
+	using namespace nUtils;
+	namespace nIPLogPlugin {
 
 
 cIPLog::cIPLog(cServerDC *server): cConfMySQL(server->mMySQL), mS(server)
@@ -69,7 +66,7 @@ void cIPLog::GetLastNick(const string &ip, int limit, ostream &os)
 
 void cIPLog::GetLastIP(const string &nick, int limit, ostream &os)
 {
-	GetLastLogin(nick, true, limit, os);	
+	GetLastLogin(nick, true, limit, os);
 }
 
 void cIPLog::MakeSearchQuery(const string &who, bool isNick, int action, int limit)
@@ -203,5 +200,5 @@ bool cIPLog::Log(cConnDC *conn, int action, int info)
 	SetBaseTo(&entry);
 	return SavePK();
 }
-
-};
+	}; // namespace nIPLogPlugin
+}; // namespace

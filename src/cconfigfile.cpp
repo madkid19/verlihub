@@ -24,8 +24,8 @@
 #include <fstream>
 #include <sstream>
 
-namespace nConfig
-{
+namespace nVerliHub {
+	namespace nConfig {
 
 /*
  	to be used in a following way..
@@ -101,6 +101,5 @@ int cConfigFile::Save()
 	of.close();
 	return 0;
 }
-
-};
-
+	}; // namespace nConfig
+}; // namespace nVerliHub

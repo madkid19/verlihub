@@ -26,12 +26,14 @@
 #include "cpichatroom.h"
 #include "crooms.h"
 
-using namespace nDirectConnect;
-
+namespace nVerliHub {
+	using namespace nEnums;
+	using namespace nSocket;
+	namespace nChatRoom {
 
 cRooms *cRoomConsole::GetTheList()
 {
-	return mOwner->mList; 
+	return mOwner->mList;
 }
 
 const char *cRoomConsole::CmdSuffix()
@@ -49,10 +51,10 @@ void cRoomConsole::GetHelpForCommand(int cmd, ostream &os)
 	string help_str;
 	switch(cmd)
 	{
-		case eLC_LST: 
+		case eLC_LST:
 		help_str = "!lstroom\r\n" + string(_("Give a list of chatrooms"));
 		break;
-		case eLC_ADD: 
+		case eLC_ADD:
 		case eLC_MOD:
 		help_str = "!(add|mod)room <nickname>"
 			" [-CC <country_codes>]"
@@ -91,14 +93,14 @@ const char * cRoomConsole::GetParamsRegex(int cmd)
 bool cRoomConsole::ReadDataFromCmd(cfBase *cmd, int id, cRoom &data)
 {
 	/// regex parts for add command
-	enum {aADD_ALL, eADD_NICK, eADD_CHOICE, 
+	enum {aADD_ALL, eADD_NICK, eADD_CHOICE,
 		eADD_TOPICp, eADD_QUOTE, eADD_TOPIC,
 		eADD_CCp, eADD_CC,
 		eADD_MINCp, eADD_MINC,
 		eADD_MINACp, eADD_MINAC,
 		eADD_MAXACp, eADD_MAXAC
 	};
-	
+
 	cmd->GetParStr(eADD_NICK, data.mNick);
 	cmd->GetParStr(eADD_TOPIC, data.mTopic);
 	cmd->GetParStr(eADD_CC, data.mAutoCC);
@@ -127,3 +129,5 @@ bool cRoomConsole::IsConnAllowed(cConnDC *conn,int cmd)
 cRoomConsole::~cRoomConsole()
 {}
 
+	}; // namespace nChatRoom
+}; // namespace nVerliHub

@@ -26,17 +26,17 @@
 #include "i18n.h"
 #include "stringutils.h"
 
-using namespace nStringUtils;
-namespace nDirectConnect {
-namespace nTables {
-
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	using namespace nSocket;
+	using namespace nMySQL;
+	namespace nTables {
   /**
-  
   Class constructor.
-  
   @param[in] server A pointer to cServerDC object
   */
-  
+
 cTriggers::cTriggers( cServerDC *server ) :
 	tMySQLMemoryList<cTrigger, cServerDC>(server->mMySQL, server, "file_trigger")
 {
@@ -168,7 +168,7 @@ cTriggerConsole::cTriggerConsole(cDCConsole *console) : tTriggerConsoleBase(cons
   /**
 
   Class destructor
-  
+
   */
 
 cTriggerConsole::~cTriggerConsole()
@@ -180,7 +180,7 @@ cTriggerConsole::~cTriggerConsole()
 
   @param[in] cmd The type of the command (list, add, mod or del)
   @param[in,out] os The stream where to store the output
-  
+
   */
 
 void cTriggerConsole::GetHelpForCommand(int cmd, ostream &os)
@@ -188,10 +188,10 @@ void cTriggerConsole::GetHelpForCommand(int cmd, ostream &os)
 	string help_str;
 	switch(cmd)
 	{
-		case eLC_LST: 
-		help_str = "!lsttrigger\r\nGive a list of triggers"; 
+		case eLC_LST:
+		help_str = "!lsttrigger\r\nGive a list of triggers";
 		break;
-		case eLC_ADD: 
+		case eLC_ADD:
 		case eLC_MOD:
 		help_str = "!(add|mod)trigger <trigger>"
 			"[ -d <\"definition\">]"
@@ -220,7 +220,7 @@ void cTriggerConsole::GetHelpForCommand(int cmd, ostream &os)
 void cTriggerConsole::GetHelp(ostream &os)
 {
 	string help;
-	
+
 	help = "Available trigger flags are:\r\n";
 	help += "0  \tSend to main chat (visible to user only)\r\n";
 	help += "1  \tExecute command\r\n";
@@ -230,7 +230,7 @@ void cTriggerConsole::GetHelp(ostream &os)
 	help += "16\tThe definition is the text\r\n";
 	help += "32\tAllow replacing of variables\r\n";
 	help += "64\tMessage is sent to everyone in the main chat window\r\n";
-		
+
 	help += "\r\nRemember to make the sum of the selected flags above\n";
 	help += "For more help please visit http://dev.verlihub-project.org/page/index/Manage_the_hub#FileTriggers\r\n";
 	cDCProto::EscapeChars(help,help);
@@ -308,8 +308,8 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 {
 	cTrigger tmp = data;
 	enum {eADD_ALL, eADD_CMD, eADD_CHOICE,
-		eADD_DEFp, eADD_QUOTE, eADD_DEF, 
-		eADD_DESCp, eADD_QUOTE2, eADD_DESC, 
+		eADD_DEFp, eADD_QUOTE, eADD_DEF,
+		eADD_DESCp, eADD_QUOTE2, eADD_DESC,
 		eADD_FLAGSp, eADD_FLAGS,
 		eADD_NICKp, eADD_NICK,
 		eADD_CLASSp, eADD_CLASS,
@@ -326,8 +326,8 @@ bool cTriggerConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cTrigger &data)
 	string sTimeout("0");
 	cmd->GetParStr(eADD_TIMEOUT,sTimeout);
 	tmp.mSeconds = mOwner->mServer->Str2Period(sTimeout,*cmd->mOS);
-	
-	bool checkDefinition = !(tmp.mFlags & cTrigger::eTF_DB);
+
+	bool checkDefinition = !(tmp.mFlags & eTF_DB);
 	if(CmdID == eLC_ADD && checkDefinition && !CheckData(cmd,tmp)) {
 		return false;
 	} else if(CmdID == eLC_MOD && !data.mCommand.empty() && checkDefinition && !CheckData(cmd,tmp)) {

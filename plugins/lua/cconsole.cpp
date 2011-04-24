@@ -33,16 +33,13 @@ extern "C"
 #include "curr_date_time.h"
 #include "src/stringutils.h"
 #include "src/i18n.h"
-#include "src/stringutils.h"
 #include <dirent.h>
 
 #define PADDING 25
 
-using namespace nDirectConnect;
-using namespace nStringUtils;
-
-namespace nScripts
-{
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nLuaPlugin {
 
 cConsole::cConsole(cpiLua *lua) :
 	mLua(lua),
@@ -282,4 +279,5 @@ bool cConsole::cfLogLuaScript::operator()()
 	return true;
 }
 
-};
+	}; // namespace nLuaPlugin
+}; // namespace nVerliHub

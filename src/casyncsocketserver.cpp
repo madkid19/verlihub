@@ -30,11 +30,14 @@
 #include <algorithm>
 
 using namespace std;
-using namespace nUtils;
 
-namespace nServer {
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	using namespace nSocket;
+	namespace nSocket {
 
-bool cAsyncSocketServer::WSinitialized = false;
+	bool nSocket::cAsyncSocketServer::WSinitialized = false;
 
 cAsyncSocketServer::cAsyncSocketServer(int port):
 	cObj("cAsyncSocketServer"),
@@ -105,7 +108,7 @@ int cAsyncSocketServer::run()
 	if(Log(1))
 		LogStream() << "Main loop start." << endl;
 	while(mbRun) {
-		mTime.Get(); 
+		mTime.Get();
 		{
 			TimeStep();
 		}
@@ -146,12 +149,12 @@ void cAsyncSocketServer::close()
 	}
 }
 
-const int& cAsyncSocketServer::getmPort()
+unsigned int cAsyncSocketServer::getPort() const
 {
 	return mPort;
 }
 
-void cAsyncSocketServer::setmPort( const int& _newVal)
+void cAsyncSocketServer::setPort(unsigned int _newVal)
 {
 	mPort = _newVal;
 }
@@ -166,14 +169,12 @@ void cAsyncSocketServer::addConnection(cAsyncConn *new_conn)
 		new_conn->mxMyFactory->DeleteConn(new_conn);
 		return;
 	}
-	
+
 	mConnChooser.AddConn(new_conn);
 
-	mConnChooser.cConnChoose::OptIn(
-		(cConnBase *)new_conn,
-		cConnChoose::tChEvent( cConnChoose::eCC_INPUT|cConnChoose::eCC_ERROR));
+	mConnChooser.cConnChoose::OptIn((cConnBase *)new_conn, tChEvent(eCC_INPUT | eCC_ERROR));
 	tCLIt it = mConnList.insert(mConnList.begin(),new_conn);
-	
+
 	new_conn->mIterator = it;
 	if(0 > OnNewConn(new_conn))
 		delConnection(new_conn);
@@ -198,7 +199,7 @@ void cAsyncSocketServer::delConnection(cAsyncConn *old_conn)
 	mConnList.erase(it);
 	tCLIt emptyit;
 	old_conn->mIterator = emptyit;
-	
+
 	if (old_conn->mxMyFactory != NULL)
 		old_conn->mxMyFactory->DeleteConn(old_conn);
 	else
@@ -307,14 +308,14 @@ void cAsyncSocketServer::TimeStep()
 		if(!mNowTreating)
 			continue;
 		// Some connections may have been disabled during this loop so skip them
-		if(OK && (activity & cConnChoose::eCC_INPUT) && conn->GetType() == eCT_LISTEN) {
+		if(OK && (activity & eCC_INPUT) && conn->GetType() == eCT_LISTEN) {
 			// Cccept incoming connection
 			int i=0;
 			cAsyncConn *new_conn;
 			do {
-			  
+
 				new_conn = conn->Accept();
-				
+
 				if(new_conn) addConnection(new_conn);
 				i++;
 			} while(new_conn && i <= 101);
@@ -323,20 +324,20 @@ void cAsyncSocketServer::TimeStep()
 #endif
 
 		}
-		if(OK && (activity & cConnChoose::eCC_INPUT)  && 
-			((conn->GetType() == eCT_CLIENT) || (conn->GetType() == eCT_CLIENTUDP)))  
+		if(OK && (activity & eCC_INPUT)  &&
+			((conn->GetType() == eCT_CLIENT) || (conn->GetType() == eCT_CLIENTUDP)))
 			// Data to be read or data in buffer
 		{
 			if(input(conn) <= 0)
 				OK=false;
 		}
-		if(OK && (activity & cConnChoose::eCC_OUTPUT)) {
+		if(OK && (activity & eCC_OUTPUT)) {
 			// NOTE: in sockbuf::write is a bug, missing buf increment, it will block until whole buffer is sent
 			output(conn);
 		}
 		mNowTreating = NULL;
-		if(!OK || (activity & (cConnChoose::eCC_ERROR | cConnChoose::eCC_CLOSE))) {
-			
+		if(!OK || (activity & (eCC_ERROR | eCC_CLOSE))) {
+
 			delConnection(conn);
 		}
 	}
@@ -345,12 +346,12 @@ void cAsyncSocketServer::TimeStep()
 cAsyncConn * cAsyncSocketServer::Listen(int OnPort, bool UDP)
 {
 	cAsyncConn *ListenSock;
-	
+
 	if(!UDP)
 		ListenSock = new cAsyncConn(0, this, eCT_LISTEN);
 	else
 		ListenSock = new cAsyncConn(0, this, eCT_CLIENTUDP);
-	
+
 	if(this->ListenWithConn(ListenSock, OnPort, UDP) != NULL) {
 		return ListenSock;
 	} else {
@@ -385,7 +386,7 @@ cAsyncConn * cAsyncSocketServer::ListenWithConn(cAsyncConn *ListenSock, int OnPo
 		this->mConnChooser.AddConn(ListenSock);
 		this->mConnChooser.cConnChoose::OptIn(
 			(cConnBase *)ListenSock,
-			cConnChoose::tChEvent( cConnChoose::eCC_INPUT|cConnChoose::eCC_ERROR));
+			tChEvent(eCC_INPUT|eCC_ERROR));
 		if(Log(0)) LogStream() << "Listening for connections on " << mAddr << ":" << OnPort << (UDP?" UDP":" TCP") << endl;
 		return ListenSock;
 	}
@@ -401,4 +402,5 @@ bool cAsyncSocketServer::StopListenConn(cAsyncConn *ListenSock)
 	return false;
 }
 
-};
+	}; // namespace nSocket
+}; // namespace nVerliHub

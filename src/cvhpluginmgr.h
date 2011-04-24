@@ -25,24 +25,24 @@
 #include "ccallbacklist.h"
 #include "cvhplugin.h"
 
-using namespace ::nPlugin;
+namespace nVerliHub {
 
-namespace nDirectConnect {
+	namespace nSocket {
+		class cServerDC;
+	};
+	class cUser;
+	class cDCTag;
+	class cUserCollection;
 
-class cServerDC;
-class cUser;
-class cDCTag;
-class cUserCollection;
-
-namespace nProtocol{ class cMessageDC; };
-using ::nDirectConnect::nProtocol::cMessageDC;
+	namespace nProtocol {
+		class cMessageDC;
+	};
 /**
   * Verlihub's plugin namespace
   * contains baase classes fo plugin related structures specialized for verlihub
   */
-namespace nPlugin {
+	namespace nPlugin {
 
-using namespace ::nDirectConnect;
 /**
 verlihub's plugin manager
 
@@ -52,11 +52,11 @@ verlihub's plugin manager
 class cVHPluginMgr : public cPluginManager
 {
 public:
-	cVHPluginMgr(cServerDC *,const string pluginDir);
+	cVHPluginMgr(nSocket::cServerDC *,const string pluginDir);
 	virtual ~cVHPluginMgr();
 	virtual void OnPluginLoad(cPluginBase *pi);
 private:
-	cServerDC *mServer;
+	nSocket::cServerDC *mServer;
 };
 
 
@@ -66,7 +66,7 @@ private:
 class cVHCBL_Base : public cCallBackList
 {
 public:
-	cVHCBL_Base( cVHPluginMgr *mgr, const char * id ) : cCallBackList (mgr, string(id)) {}
+	cVHCBL_Base(cVHPluginMgr *mgr, const char * id ) : cCallBackList (mgr, string(id)) {}
 	/** Call one verlihub plugin's callback */
 	virtual bool CallOne(cPluginBase *pi) { return CallOne((cVHPlugin*)pi); }
 	/** Call a specific callback for verlihub plugin */
@@ -193,17 +193,17 @@ public:
 class cVHCBL_Connection : public cVHCBL_Base
 {
 public:
-	typedef bool (cVHPlugin::*tpfConnFunc)(cConnDC *);
+	typedef bool (cVHPlugin::*tpfConnFunc)(nSocket::cConnDC *);
 protected:
 	tpfConnFunc mFunc;
-	cConnDC *mConn;
+	nSocket::cConnDC *mConn;
 public:
 	/** Constructor */
 	cVHCBL_Connection( cVHPluginMgr *mgr, const char *id, tpfConnFunc pFunc ) :
 		cVHCBL_Base (mgr, id), mFunc(pFunc) { mConn = NULL;}
 
 	virtual bool CallOne(cVHPlugin *pi) { return (pi->*mFunc)(mConn); }
-	virtual bool CallAll(cConnDC *conn)
+	virtual bool CallAll(nSocket::cConnDC *conn)
 	{
 		mConn = conn;
 		if(mConn != NULL) return this->cCallBackList::CallAll();
@@ -217,18 +217,17 @@ public:
 typedef tVHCBL_3Types<cUser *, cUser *,  std::string *> cVHCBL_UsrUsrStr;
 typedef tVHCBL_3Types<std::string, int ,  int> cVHCBL_StrIntInt;
 typedef tVHCBL_3Types<std::string, std::string ,  std::string> cVHCBL_StrStrStr;
-typedef tVHCBL_2Types<cConnDC, cMessageDC> cVHCBL_Message;
+typedef tVHCBL_2Types<nSocket::cConnDC, nProtocol::cMessageDC> cVHCBL_Message;
 typedef tVHCBL_2Types<cUser, cUser> cVHCBL_UsrUsr;
-typedef tVHCBL_2Types<cConnDC, cDCTag> cVHCBL_ConnTag;
-typedef tVHCBL_2Types<cConnDC, std::string> cVHCBL_ConnText;
+typedef tVHCBL_2Types<nSocket::cConnDC, cDCTag> cVHCBL_ConnTag;
+typedef tVHCBL_2Types<nSocket::cConnDC, std::string> cVHCBL_ConnText;
 typedef tVHCBL_R2Types<std::string, int> cVHCBL_StringInt;
 typedef tVHCBL_R2Types<std::string, std::string> cVHCBL_Strings;
 typedef tVHCBL_1Type<string> cVHCBL_String;
 typedef tVHCBL_1Type<cUser> cVHCBL_User;
-typedef tVHCBL_1Type<cBan> cVHCBL_Ban;
+typedef tVHCBL_1Type<nTables::cBan> cVHCBL_Ban;
 
-};
-
-};
+	}; // namespace nPlugin
+}; // namespace nVerliHub
 
 #endif

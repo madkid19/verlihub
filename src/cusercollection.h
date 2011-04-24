@@ -22,16 +22,15 @@
 #ifndef NDIRECTCONNECTCUSERCOLLECTION_H
 #define NDIRECTCONNECTCUSERCOLLECTION_H
 #if defined _WIN32
-namespace std{
-inline unsigned long 
-_Atomic_swap(unsigned long * __p, unsigned long __q) 
-{
-    // __gthread_mutex_lock(&_Swap_lock_struct<0>::_S_swap_lock);
-    unsigned long __result = *__p;
-    *__p = __q;
-    // __gthread_mutex_unlock(&_Swap_lock_struct<0>::_S_swap_lock);
-    return __result;
-}
+namespace std {
+	inline unsigned long _Atomic_swap(unsigned long * __p, unsigned long __q)
+	{
+    		// __gthread_mutex_lock(&_Swap_lock_struct<0>::_S_swap_lock);
+    		unsigned long __result = *__p;
+    		*__p = __q;
+    		// __gthread_mutex_unlock(&_Swap_lock_struct<0>::_S_swap_lock);
+    		return __result;
+	}
 };
 #endif
 
@@ -39,21 +38,20 @@ _Atomic_swap(unsigned long * __p, unsigned long __q)
 #include <functional>
 #include "thasharray.h"
 
-using namespace nUtils;
 using std::string;
 using std::unary_function;
 
-namespace nDirectConnect {
-
-class cUser;
-class cUserBase;
+namespace nVerliHub {
+	using namespace nUtils;
+	class cUser;
+	class cUserBase;
 
 namespace nPlugin {
 	template <class Type1> class tVHCBL_1Type;
 	typedef tVHCBL_1Type<string> cVHCBL_String;
 };
 
-using namespace ::nDirectConnect::nPlugin;
+using namespace nPlugin;
 
 /**
 a structure that allows to insert and remove users, to quickly iterate and hold common sendall buffer, provides also number of sendall functions
@@ -66,7 +64,6 @@ supports: quick iterating with (restrained) constant time increment (see std::sl
 class cUserCollection : public tHashArray<cUserBase*>
 {
 public:
-
 	/**
 		Unary function foe sending Data to a user's connection
 	*/
@@ -85,7 +82,7 @@ public:
 		*/
 		void operator() (cUserBase *User);
 	};
-	
+
 	/**
 	Unary function to send data to a user by class
 	 */
@@ -122,8 +119,8 @@ public:
 		ufSendWithNick(string &DataS,string &DataE):mDataStart(DataS), mDataEnd(DataE){};
 		void operator() (cUserBase *User);
 	};
-	
-	
+
+
 
 	/** Unary function that constructs a nick list
 	*/
@@ -191,9 +188,9 @@ public:
 	virtual string &GetInfoList(bool complete=false);
 	const char *GetNickListChar() {return GetNickList().c_str();}
 
-	void   Nick2Hash(const std::string &Nick, tHashType &Hash);
-	tHashType Nick2Hash(const std::string &Nick){string Key; Nick2Key(Nick,Key); return Key2Hash(Key); }
-	void   Nick2Key (const std::string &Nick, std::string &Key);
+	void   Nick2Hash(const string &Nick, tHashType &Hash);
+	tHashType Nick2Hash(const string &Nick){string Key; Nick2Key(Nick,Key); return Key2Hash(Key); }
+	void   Nick2Key (const string &Nick, string &Key);
 
 	cUserBase* GetUserBaseByKey (const string &Key ){ return GetByHash(Key2Hash(Key));}
 	cUserBase* GetUserBaseByNick(const string &Nick){ return GetByHash(Nick2Hash(Nick));}
@@ -239,11 +236,11 @@ public:
 	/**
 	  * Creates IP List ( for the UserIP list extension )
 	  */
-	struct ufDoIpList : ::nDirectConnect::cUserCollection::ufDoNickList
+	struct ufDoIpList : cUserCollection::ufDoNickList
 	{
 		ufDoIpList(string &List):ufDoNickList(List){mSep="$$";mStart="$UserIP ";}
 		virtual ~ufDoIpList(){};
-		virtual void operator()(cUserBase *usr) {AppendList(mList, usr);} 
+		virtual void operator()(cUserBase *usr) {AppendList(mList, usr);}
 		virtual void AppendList(string &List, cUserBase *User);
 	};
 
@@ -260,11 +257,11 @@ public:
 
 	cUser* GetUserByKey (const string &Key ){ return (cUser*)GetByHash(Key2Hash(Key));}
 	cUser* GetUserByNick(const string &Nick){ return (cUser *)GetByHash(Nick2Hash(Nick));}
-	
+
 	string &GetIPList();
 
 	bool mKeepIPList;
-	string mIpList;	
+	string mIpList;
 	ufDoIpList mIpListMaker;
 	cVHCBL_String *mInfoListCB;
 	cVHCBL_String *mNickListCB;
@@ -274,6 +271,6 @@ public:
 	string mCompositeInfoList;
 };
 
-};
+}; // namespace nVerliHub
 
 #endif

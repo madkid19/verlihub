@@ -42,11 +42,11 @@
 #include <algorithm>
 #include <sys/resource.h>
 
-using nUtils::cTime;
-
-namespace nDirectConnect {
-
-using namespace nTables;
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nSocket;
+	using namespace nEnums;
+	using namespace nTables;
 
 cPCRE cDCConsole::mIPRangeRex("^(\\d+\\.\\d+\\.\\d+\\.\\d+)((\\/(\\d+))|(\\.\\.|-)(\\d+\\.\\d+\\.\\d+\\.\\d+))?$",0);
 
@@ -363,7 +363,7 @@ int cDCConsole::CmdHelp(istringstream &, cConnDC * conn)
 	if(!conn || !conn->mpUser)
 		return 1;
 	string file;
-	mTriggers->TriggerAll(cTrigger::eTF_HELP, conn);
+	mTriggers->TriggerAll(eTF_HELP, conn);
 	return 1;
 }
 
@@ -700,8 +700,7 @@ int cDCConsole::CmdKick(istringstream & cmd_line, cConnDC * conn)
 		}
 		if (Reason[0] == ' ') Reason = Reason.substr(1);
 		if (Reason.size() > 3) {
-			mOwner->DCKickNick(&os, conn->mpUser, OtherNick, Reason,
-				cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
+			mOwner->DCKickNick(&os, conn->mpUser, OtherNick, Reason, eKCK_Drop | eKCK_Reason | eKCK_PM| eKCK_TBAN);
 		}
 	}
 	omsg = os.str();
@@ -959,7 +958,7 @@ bool cDCConsole::cfReport::operator()()
 	//-- to opchat
 	if (user && user->mxConn)
 		os << autosprintf(_("REPORT: user '%s' IP='%s' Host='%s'"), nick.c_str(), user->mxConn->AddrIP().c_str(), user->mxConn->AddrHost().c_str());
-	else 
+	else
 		os << autosprintf(_("REPORT: user '%s' which is offline"), nick.c_str());
 	os << " " << autosprintf(_("Reason='%s'."), reason.c_str());
 	mS->ReportUserToOpchat(mConn, os.str(), mS->mC.dest_report_chat);
@@ -1057,7 +1056,7 @@ bool cDCConsole::cfClean::operator()()
 	if(mConn->mpUser->mClass < eUC_OPERATOR) return false;
 
 	string tmp;
-	int CleanType = cBan::eBF_NICKIP;
+	int CleanType = eBF_NICKIP;
 	if(mIdRex->PartFound(1)) {
 		mIdRex->Extract( 1, mIdStr, tmp);
 		CleanType = this->StringToIntFromList(tmp, cleanames, cleanids, sizeof(cleanames)/sizeof(char*));
@@ -1092,15 +1091,15 @@ bool cDCConsole::cfClean::operator()()
 bool cDCConsole::cfBan::operator()()
 {
 	static const char *bannames[]={"nick", "ip", "nickip", "", "range", "host1", "host2" , "host3", "hostr1",  "share", "prefix"};
-	static const int banids[]= {cBan::eBF_NICK, cBan::eBF_IP, cBan::eBF_NICKIP, cBan::eBF_NICKIP, cBan::eBF_RANGE,
-      cBan::eBF_HOST1, cBan::eBF_HOST2, cBan::eBF_HOST3, cBan::eBF_HOSTR1, cBan::eBF_SHARE, cBan::eBF_PREFIX};
+	static const int banids[]= {eBF_NICK, eBF_IP, eBF_NICKIP, eBF_NICKIP, eBF_RANGE,
+      eBF_HOST1, eBF_HOST2, eBF_HOST3, eBF_HOSTR1, eBF_SHARE, eBF_PREFIX};
 
 	enum { BAN_BAN, BAN_UNBAN, BAN_INFO, BAN_LIST };
 	static const char *prefixnames[]={"add", "new", "rm", "del", "un", "info", "check", "list", "ls"};
 	static const int prefixids[]= { BAN_BAN, BAN_BAN, BAN_UNBAN, BAN_UNBAN, BAN_UNBAN, BAN_INFO, BAN_INFO, BAN_LIST, BAN_LIST };
 
 	cBan Ban(mS);
-	int BanType = cBan::eBF_NICKIP;
+	int BanType = eBF_NICKIP;
 	cKick Kick;
 	time_t BanTime = 0;
 	string tmp;
@@ -1130,11 +1129,11 @@ bool cDCConsole::cfBan::operator()()
 		if (BanType < 0) return false;
 	}
 
-	if(BanType == cBan::eBF_NICK)
+	if(BanType == eBF_NICK)
 		IsNick = true;
 
 	if(mIdRex->PartFound(BAN_THIS))
-		IsNick = ((0 == mIdRex->Compare( BAN_TYPE, mIdStr, "nick")) || (BanType == cBan::eBF_NICK));
+		IsNick = ((0 == mIdRex->Compare( BAN_TYPE, mIdStr, "nick")) || (BanType == eBF_NICK));
 
 	string Who;
 	GetParUnEscapeStr(BAN_WHO, Who);
@@ -1172,22 +1171,22 @@ bool cDCConsole::cfBan::operator()()
 				(*mOS) << autosprintf(_("User %s unbanned."), mConn->mpUser->mNick.c_str()) << "\r\n";
 			}
 
-			if(BanType == cBan::eBF_NICKIP) {
-				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_NICK, unban);
-				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_IP, unban);
+			if(BanType == eBF_NICKIP) {
+				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_NICK, unban);
+				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_IP, unban);
 				if(!unban) {
-					Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_RANGE, false);
+					Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_RANGE, false);
 					string Host;
 					if (mConn->DNSResolveReverse(Who, Host)) {
-						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOSTR1, false);
-						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOST3, false);
-						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOST2, false);
-						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, cBan::eBF_HOST1, false);
+						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, eBF_HOSTR1, false);
+						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, eBF_HOST3, false);
+						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, eBF_HOST2, false);
+						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, eBF_HOST1, false);
 					}
 				}
-			} else if(BanType == cBan::eBF_NICK) {
-				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_NICK, unban);
-				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, cBan::eBF_NICKIP, unban);
+			} else if(BanType == eBF_NICK) {
+				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_NICK, unban);
+				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_NICKIP, unban);
 			} else {
 				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, BanType, unban);
 			}
@@ -1206,9 +1205,9 @@ bool cDCConsole::cfBan::operator()()
 		Ban.SetType(BanType);
 
 		switch (BanType) {
-			case cBan::eBF_NICKIP:
-			case cBan::eBF_NICK:
-			case cBan::eBF_IP:
+			case eBF_NICKIP:
+			case eBF_NICK:
+			case eBF_IP:
 			if(mS->mKickList->FindKick(Kick, Who, mConn->mpUser->mNick, 3000, true, true, IsNick)) {
 				mS->mBanList->NewBan(Ban, Kick, BanTime, BanType);
 				if(mParRex->PartFound(BAN_REASON)) {
@@ -1217,13 +1216,13 @@ bool cDCConsole::cfBan::operator()()
 					Ban.mReason += tmp;
 				}
 			} else {
-				if (BanType == cBan::eBF_NICKIP)
-					BanType = cBan::eBF_IP;
+				if (BanType == eBF_NICKIP)
+					BanType = eBF_IP;
 				mParRex->Extract(BAN_REASON, mParStr, Kick.mReason);
 				Kick.mOp = mConn->mpUser->mNick;
 				Kick.mTime = cTime().Sec();
 
-				if(BanType == cBan::eBF_NICK)
+				if(BanType == eBF_NICK)
 					Kick.mNick = Who;
 				else
 					Kick.mIP = Who;
@@ -1231,28 +1230,28 @@ bool cDCConsole::cfBan::operator()()
 			}
 			break;
 
-		case cBan::eBF_HOST1:
-		case cBan::eBF_HOST2:
-		case cBan::eBF_HOST3:
-		case cBan::eBF_HOSTR1:
-			if(MyClass < (eUC_ADMIN - (BanType - cBan::eBF_HOST1))) { //@todo rights
+		case eBF_HOST1:
+		case eBF_HOST2:
+		case eBF_HOST3:
+		case eBF_HOSTR1:
+			if(MyClass < (eUC_ADMIN - (BanType - eBF_HOST1))) { //@todo rights
 				(*mOS) << _("You have no rights to do this.");
 				return false;
 			}
 			Ban.mHost = Who;
 			Ban.mIP = Who;
 			break;
-		case cBan::eBF_RANGE:
+		case eBF_RANGE:
 			if(!cDCConsole::GetIPRange(Who, Ban.mRangeMin, Ban.mRangeMax)) {
 				(*mOS) << autosprintf(_("Unknown range format '%s'."), Who.c_str());
 				return false;
 			}
 			Ban.mIP = Who;
 			break;
-		case cBan::eBF_PREFIX:
+		case eBF_PREFIX:
 			Ban.mNick = Who;
 		break;
-		case cBan::eBF_SHARE:
+		case eBF_SHARE:
 		{
 			istringstream is(Who);
 			__int64 share;
@@ -1270,7 +1269,7 @@ bool cDCConsole::cfBan::operator()()
 		#endif
 		user = mS->mUserList.GetUserByNick(Ban.mNick);
 		if(user != NULL) {
-			mS->DCKickNick(mOS, mConn->mpUser, Ban.mNick, Ban.mReason, cServerDC::eKCK_Reason | cServerDC::eKCK_Drop);
+			mS->DCKickNick(mOS, mConn->mpUser, Ban.mNick, Ban.mReason, eKCK_Reason | eKCK_Drop);
 		}
 
 		mS->mBanList->AddBan(Ban);
@@ -1609,8 +1608,8 @@ bool cDCConsole::cfKick::operator()()
 		case eAC_DROP:
 			mS->DCKickNick(mOS, this->mConn->mpUser, nick, text,
 				(Action == eAC_KICK) ?
-				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN) :
-				(cServerDC::eKCK_Drop|cServerDC::eKCK_Reason));
+				(eKCK_Drop | eKCK_Reason | eKCK_PM| eKCK_TBAN) :
+				(eKCK_Drop | eKCK_Reason));
 		break;
 		default: (*mOS) << _("This command is not implemented.") << endl;
 		return false;
@@ -1935,7 +1934,6 @@ bool cDCConsole::cfRedirToConsole::operator()()
 	else return false;
 }
 
-/** broadcast command */
 bool cDCConsole::cfBc::operator()()
 {
 	enum { eBC_BC, eBC_OC, eBC_GUEST, eBC_REG, eBC_VIP, eBC_CHEEF, eBC_ADMIN, eBC_MASTER, eBC_CC };
@@ -2017,13 +2015,7 @@ bool cDCConsole::cfBc::operator()()
 	return true;
 }
 
-};
-
-
-/*!
-    \fn nDirectConnect::cDCConsole::GetIPRange(const string &range, unsigned long &from, unsigned long &to)
- */
-bool nDirectConnect::cDCConsole::GetIPRange(const string &range, unsigned long &from, unsigned long &to)
+bool cDCConsole::GetIPRange(const string &range, unsigned long &from, unsigned long &to)
 {
 	//"^(\\d+\\.\\d+\\.\\d+\\.\\d+)((\\/(\\d+))|(\\.\\.|-)(\\d+\\.\\d+\\.\\d+\\.\\d+))?$"
 	enum {R_IP1 = 1, R_RANGE = 2, R_BITS=4, R_DOTS = 5, R_IP2 = 6};
@@ -2064,3 +2056,5 @@ bool nDirectConnect::cDCConsole::GetIPRange(const string &range, unsigned long &
 	}
 	return false;
 }
+
+}; // namespace nVerliHub

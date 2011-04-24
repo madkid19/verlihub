@@ -30,14 +30,14 @@
 #define ZON_LEN 5 // $ZOn and pipe message length
 
 using namespace std;
-
-namespace nZlib {
+namespace nVerliHub {
+	namespace nUtils {
 
   /**
   * ZLib compression class.
-  * This class is used to compress data by using ZLib compression method and it is also possible to cache data 
+  * This class is used to compress data by using ZLib compression method and it is also possible to cache data
   * and then compress it.
-  * 
+  *
   * @author Simoncelli Davide
   * @version 1.0
   */
@@ -49,12 +49,12 @@ class cZLib
 		* Class constructor
 		*/
 		cZLib();
-		
+
 		/**
 		* Class destructor
 		*/
 		~cZLib();
-		
+
 		/**
 		 * Append new data to internal buffer and do not compresse them.
 		 *
@@ -62,7 +62,7 @@ class cZLib
 		 * @param len Data length.
 		*/
 		void AppendData(const char *buffer, size_t len);
-		
+
 		/**
 		* Compress data.
 		*
@@ -72,25 +72,24 @@ class cZLib
 		* @return Pointer to compressed data.
 		*/
 		char *Compress(const char *buffer, size_t len, size_t &outLen);
-		
+
 	private:
 		// Internal buffer to store uncompressed data
 		char * zBuffer;
-		
+
 		// Current position in the buffer
 		size_t zBufferPos;
-		
+
 		// Internal buffer length
 		size_t zBufferLen;
-		
+
 		// Compressed data buffer
 		char *outBuffer;
-		
+
 		// Compressed data buffer length
 		size_t outBufferLen;
 };
 
-
-};
-
+	}; // namespace nUtils
+}; // namespace nVerliHub
 #endif

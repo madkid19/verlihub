@@ -32,9 +32,8 @@
 #include <string>
 #include <sys/time.h>
 
-using std::string;
-
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 
 class cTime : public timeval
 {
@@ -92,7 +91,7 @@ class cTime : public timeval
 		return *this;
 	};
 
-	string AsString() const;
+	std::string AsString() const;
 	friend std::ostream & operator<< (std::ostream &os, const cTime &t);
 private:
 	mutable int mPrintType;
@@ -101,5 +100,7 @@ public:
 	const cTime & AsPeriod() const { mPrintType=2; return *this;}
 
 };
-};
+
+	}; // namespace nUtils
+}; // namespace nVerliHub
 #endif

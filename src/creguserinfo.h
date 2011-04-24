@@ -26,7 +26,7 @@
 
 using namespace std;
 
-namespace nDirectConnect {
+namespace nVerliHub {
 
 class cUser;
 
@@ -38,82 +38,82 @@ namespace nTables {
 
 class cRegUserInfo
 {
-public:
-	cRegUserInfo();
-	~cRegUserInfo();
+	public:
+		cRegUserInfo();
+		~cRegUserInfo();
 
-	/** friends */
-	friend ostream & operator << (ostream &, cRegUserInfo &i);
-	friend istream & operator >> (istream &, cRegUserInfo &i);
-	friend class nDirectConnect::cUser;
-	friend class cRegList;
+		/** friends */
+		friend ostream & operator << (ostream &, cRegUserInfo &i);
+		friend istream & operator >> (istream &, cRegUserInfo &i);
+		friend class cUser;
+		friend class cRegList;
 
-	/**
-	 * Get the class of the user.
-	 * @return The class
-	 */
-	int getClass(){return mClass;};
-	
-	/**
-	 * Get the nickname of the user.
-	 * @return The nickname
-	 */
-	string & GetNick();
-	
-	/**
-	 * Verify the password of the user.
-	 * @param password The password to check
-	 * @return True if password matches or false on failure
-	 */
-	bool PWVerify(const string &pass);
-	
-	/**
-	 * Set user passwrod.
-	 * @param password The new password
-	 * @param crypt_method The crypt method to use
-	 * @return Zero on success or -1 on failure
-	 */
-	void SetPass(string password, int crypt_method);
+		/**
+		* Get the class of the user.
+		* @return The class
+		*/
+		int getClass(){return mClass;};
 
-	enum {eCRYPT_NONE, eCRYPT_ENCRYPT, eCRYPT_MD5};
-public: // Public attributes
-	/** nickname */
-	string mNick;
-	/** password/hash */
-	string mPasswd;
-	/** crypted passwd - if mPasswd is a raw pw or a hash */
-	int mPWCrypt;
-	/** */
-	int mClass;
-	int mClassProtect;
-	int mClassHideKick;
-	bool mHideKick;
-	bool mHideKeys;
-	bool mHideShare;
-	long mRegDate;
-	string mRegOp;
-	unsigned mLoginCount;
-	unsigned mErrorCount;
-	/** time of last login */
-	long mLoginLast;
-	long mLogoutLast;
-	/** time of last error */
-	long mErrorLast;
-	/** last login ip */
-	string mLoginIP;
-	/** last error ip */
-	string mErrorIP;
-	/** alternate IP address for the ConnectToMe messages ip */
-	string mAlternateIP;
-	/** can change password */
-	bool mPwdChange;
-	/** account enabled */
-	bool mEnabled;
-	string mNoteOp;
-	string mNoteUsr;
-	string mEmail;
+		/**
+		* Get the nickname of the user.
+		* @return The nickname
+		*/
+		string & GetNick();
+
+		/**
+		* Verify the password of the user.
+		* @param password The password to check
+		* @return True if password matches or false on failure
+		*/
+		bool PWVerify(const string &pass);
+
+		/**
+		* Set user passwrod.
+		* @param password The new password
+		* @param crypt_method The crypt method to use
+		* @return Zero on success or -1 on failure
+		*/
+		void SetPass(string password, int crypt_method);
+
+		enum {eCRYPT_NONE, eCRYPT_ENCRYPT, eCRYPT_MD5};
+	public: // Public attributes
+		/** nickname */
+		string mNick;
+		/** password/hash */
+		string mPasswd;
+		/** crypted passwd - if mPasswd is a raw pw or a hash */
+		int mPWCrypt;
+		/** */
+		int mClass;
+		int mClassProtect;
+		int mClassHideKick;
+		bool mHideKick;
+		bool mHideKeys;
+		bool mHideShare;
+		long mRegDate;
+		string mRegOp;
+		unsigned mLoginCount;
+		unsigned mErrorCount;
+		/** time of last login */
+		long mLoginLast;
+		long mLogoutLast;
+		/** time of last error */
+		long mErrorLast;
+		/** last login ip */
+		string mLoginIP;
+		/** last error ip */
+		string mErrorIP;
+		/** alternate IP address for the ConnectToMe messages ip */
+		string mAlternateIP;
+		/** can change password */
+		bool mPwdChange;
+		/** account enabled */
+		bool mEnabled;
+		string mNoteOp;
+		string mNoteUsr;
+		string mEmail;
 };
-};
-};
+	}; // nTables
+}; // nVerliHub
 
 #endif

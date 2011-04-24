@@ -24,15 +24,10 @@
 #include <iostream>
 
 using namespace std;
-namespace nDirectConnect {
-namespace nProtocol {
+namespace nVerliHub {
+	using namespace nEnums;
+	namespace nProtocol {
 
-//#define __msBuffSize 10240
-//const int cMessageDC::msBuffSize=__msBuffSize;
-//char *cMessageDC::mBuffer = new char[__msBuffSize];
-//int cMessageDC::msCounterMessageDC  = 0;
-
-// these strings correspond to the enum tDCMsg in th .h file
 cProtoCommand /*cMessageDC::*/sDC_Commands[]=
 {
 	cProtoCommand(string("$GetINFO ")),  // check: logged_in(FI), nick
@@ -44,7 +39,7 @@ cProtoCommand /*cMessageDC::*/sDC_Commands[]=
 	cProtoCommand(string("$ValidateNick ")),
 	cProtoCommand(string("$MyPass ")),
 	cProtoCommand(string("$Version ")),
-	cProtoCommand(string("$GetNickList")), // 
+	cProtoCommand(string("$GetNickList")), //
 	cProtoCommand(string("$ConnectToMe ")), // check: ip, nick
 	cProtoCommand(string("$MultiConnectToMe ")),  // not implemented
 	cProtoCommand(string("$RevConnectToMe ")), // check: nick, other_nick
@@ -68,8 +63,6 @@ cProtoCommand /*cMessageDC::*/sDC_Commands[]=
 	cProtoCommand(string("$BotINFO "))
 };
 
-using namespace ::nDirectConnect::nProtocol::nEnums;
-
 cMessageDC::cMessageDC() : cMessageParser(10)
 {
 	SetClassName("MessageDC");
@@ -80,17 +73,16 @@ cMessageDC::~cMessageDC(){}
 /** parses the string and sets the state variables */
 int cMessageDC::Parse()    // this function call too many comparisons, it's to optimize by a tree
 {// attention, AreYou returns true if the first part matches, so, somemessages may be confused
-	for(int i=0; i < eDC_UNKNOWN; i++)
-	{
-		if ( sDC_Commands[i].AreYou(mStr) )  
-		{
+	for(int i=0; i < eDC_UNKNOWN; i++) {
+		if(sDC_Commands[i].AreYou(mStr)) {
 			mType=tDCMsg(i);
 			mKWSize=sDC_Commands[i].mBaseLength;
 			mLen=mStr.size();
 			break;
 		}
 	}
-	if(mType == eMSG_UNPARSED) mType=eDC_UNKNOWN;
+	if(mType == eMSG_UNPARSED)
+		mType=eDC_UNKNOWN;
 	return mType;
 }
 
@@ -188,13 +180,13 @@ bool cMessageDC::SplitChunks()
 			//           3)                                         |-----------SLOTS---------|-------------(HUBINFO)--------------------------------
 			//           4)                                                                   |-------------(HUBINFO)---------------|----TO----------
 			//           5)
-			// 
+			//
 			// enum {eCH_SR_FROM, eCH_SR_PATH, eCH_SR_SIZE, eCH_SR_SLOTS, eCH_SR_SL_FR, eCH_SR_SL_TO, eCH_SR_HUBINFO, eCH_SR_TO}
 			if(!SplitOnTwo( mKWSize,' ', eCH_SR_FROM, eCH_SR_PATH)) mError =1;
 			//if(!SplitOnTwo( ' ', eCH_SR_PATH, eCH_SR_PATH, eCH_SR_SLOTS)) mError =1;
 			//if(!SplitOnTwo( ' ', eCH_SR_SLOTS, eCH_SR_SLOTS, eCH_SR_HUBINFO) mError =1;
 			//if(!SplitOnTwo( ' ', eCH_SR_HUBINFO, eCH_SR_HUBINFO, eSR_TO) mError =1;
-			
+
 			if(!SplitOnTwo( 0x05, eCH_SR_PATH, eCH_SR_PATH,  eCH_SR_SIZE)) mError =1;
 			if(!SplitOnTwo( 0x05, eCH_SR_SIZE, eCH_SR_HUBINFO, eCH_SR_TO, false)) mError =1;
 			if(SplitOnTwo( 0x05,eCH_SR_HUBINFO, eCH_SR_SIZE, eCH_SR_HUBINFO))
@@ -220,8 +212,6 @@ bool cMessageDC::SplitChunks()
 	}
 	return mError;
 }
-
-
-};
-};
+	}; //namespace nProtocol
+}; // namespace nVerliHub
 

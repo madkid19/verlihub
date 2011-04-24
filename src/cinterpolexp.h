@@ -25,10 +25,8 @@
 #include "ctempfunctionbase.h"
 #include <string>
 
-using std::string;
-
-namespace nUtils {
-
+namespace nVerliHub {
+	namespace nUtils {
 /**
 a Utility to interpolate a value of a "cConfig' variable between two time events, expecting the increment function will be called in regular intervals during given period
 
@@ -63,7 +61,7 @@ protected:
 	long mNextStep;
 
 };
-
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub
 
 #endif

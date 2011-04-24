@@ -24,9 +24,8 @@
 #include "cuser.h"
 #include "i18n.h"
 
-namespace nDirectConnect
-{
-
+namespace nVerliHub {
+	using namespace nEnums;
 cChatConsole::cChatConsole(cServerDC *server, cChatRoom *ChatRoom) :
 	cDCConsoleBase(server),
 	mCmdr(this),
@@ -165,4 +164,4 @@ bool cChatConsole::cfInvite::operator()()
 	return true;
 }
 
-};
+}; // namespace nVerliHub

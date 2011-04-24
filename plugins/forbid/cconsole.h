@@ -25,14 +25,12 @@
 #include "src/tlistconsole.h"
 #include "cforbidden.h"
 
-class cpiForbid;
-using namespace nCmdr;
+namespace nVerliHub {
 
-namespace nDirectConnect { class cConnDC; };
-using namespace nDirectConnect;
-
-namespace nForbid
-{
+	namespace  nSocekt {
+		class cConnDC;
+	};
+	namespace nForbidPlugin {
 
 
 /**
@@ -40,10 +38,10 @@ a console that parses commands
 
 @author Daniel Muller
 */
-class cForbidConsole : public tListConsole<cForbiddenWorker, cForbidden, cpiForbid>
+class cForbidConsole : public nConfig::tListConsole<cForbiddenWorker, cForbidden, cpiForbid>
 {
 public:
-	cForbidConsole(cVHPlugin *pi) : tListConsole<cForbiddenWorker, cForbidden, cpiForbid>(pi)
+	cForbidConsole(nPlugin::cVHPlugin *pi) : tListConsole<cForbiddenWorker, cForbidden, cpiForbid>(pi)
 	{
 		AddCommands();
 	}
@@ -57,6 +55,7 @@ public:
 	virtual void GetHelpForCommand(int cmd, ostream &os);
 };
 
-};
+	}; // namespace nForbid
+}; // namespace nVerliHub
 
 #endif

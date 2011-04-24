@@ -27,13 +27,12 @@
 #include "tcache.h"
 
 using std::string;
-using nUtils::cTime;
-using nConfig::cConfMySQL;
-using namespace nUtils;
 
-namespace nDirectConnect {
-
-namespace nTables {
+namespace nVerliHub {
+	using nUtils::cTime;
+	using nConfig::cConfMySQL;
+	using namespace nUtils;
+	namespace nTables {
 
 /**
 has the list of temporary user penalties... that save in database
@@ -43,66 +42,68 @@ has the list of temporary user penalties... that save in database
 
 class cPenaltyList : public cConfMySQL
 {
-public:
-	/**structure representing the MySQL table data */
-	struct sPenalty
-	{
-		string mNick;
-		long mSince;
-		long mStartChat;
-		long mStartSearch;
-		long mStartCTM;
-		long mStartPM;
-		long mStopKick;
-		long mStopShare0;
-		long mStopReg;
-		long mStopOpchat;
-
-		sPenalty()
+	public:
+		/**structure representing the MySQL table data */
+		struct sPenalty
 		{
-			long Now = cTime().Sec();
-			mSince = Now;
-			mStartChat = 1;
-			mStartSearch = 1;
-			mStartCTM = 1;
-			mStartPM = 1;
-			mStopKick = 1;
-			mStopShare0 = 1;
-			mStopReg = 1;
-			mStopOpchat = 1;
-		}
+			string mNick;
+			long mSince;
+			long mStartChat;
+			long mStartSearch;
+			long mStartCTM;
+			long mStartPM;
+			long mStopKick;
+			long mStopShare0;
+			long mStopReg;
+			long mStopOpchat;
 
-		bool ToKeepIt()
+			sPenalty()
+			{
+				long Now = cTime().Sec();
+				mSince = Now;
+				mStartChat = 1;
+				mStartSearch = 1;
+				mStartCTM = 1;
+				mStartPM = 1;
+				mStopKick = 1;
+				mStopShare0 = 1;
+				mStopReg = 1;
+				mStopOpchat = 1;
+			}
+
+			bool ToKeepIt()
+			{
+				long Now = cTime().Sec();
+				if (mStartChat >  Now) return true;
+				if (mStartSearch > Now) return true;
+				if (mStartCTM > Now) return true;
+				if (mStartPM > Now) return true;
+				if (mStopKick > Now) return true;
+				if (mStopShare0 > Now) return true;
+				if (mStopReg > Now) return true;
+				if (mStopOpchat > Now) return true;
+				return false;
+			}
+			friend ostream &operator << (ostream &, const sPenalty &);
+		};
+
+
+		cPenaltyList(nMySQL::cMySQL &mysql);
+		~cPenaltyList();
+		void Cleanup(void);
+		bool LoadTo(sPenalty &, const string &Nick);
+		bool AddPenalty(sPenalty &);
+		bool RemPenalty(sPenalty &);
+		void ReloadCache()
 		{
-			long Now = cTime().Sec();
-			if (mStartChat >  Now) return true;
-			if (mStartSearch > Now) return true;
-			if (mStartCTM > Now) return true;
-			if (mStartPM > Now) return true;
-			if (mStopKick > Now) return true;
-			if (mStopShare0 > Now) return true;
-			if (mStopReg > Now) return true;
-			if (mStopOpchat > Now) return true;
-			return false;
+			mCache.Clear(); mCache.LoadAll();
 		}
-		friend ostream &operator << (ostream &, const sPenalty &);
-	};
-
-
-	cPenaltyList(cMySQL &mysql);
-	~cPenaltyList();
-	void Cleanup(void);
-	bool LoadTo(sPenalty &, const string &Nick);
-	bool AddPenalty(sPenalty &);
-	bool RemPenalty(sPenalty &);
-	void ReloadCache(){mCache.Clear(); mCache.LoadAll();}
-	tCache<string> mCache;
-protected:
-	sPenalty mModel;
+		nConfig::tCache<string> mCache;
+	protected:
+		sPenalty mModel;
 };
 
-};
-
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 #endif

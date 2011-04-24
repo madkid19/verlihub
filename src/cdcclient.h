@@ -26,9 +26,10 @@
 
 using namespace std;
 
-namespace nDirectConnect {
-	class cConnDC;
-
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+	};
 	namespace nTables {
 
 		/**
@@ -45,17 +46,17 @@ namespace nDirectConnect {
 				* Class constructor
 				*/
 				cDCClient();
-				
+
 				/**
 				* Class destructor
 				*/
 				virtual ~cDCClient();
-				
+
 				/**
 				* This function is called when cDCClient object is created. Here it is not useful so the body is empty
 				*/
 				virtual void OnLoad() {};
-				
+
 				/**
 				* Redefine << operator to print a client and show its description
 				    * @param os The stream where to store the description.
@@ -66,23 +67,23 @@ namespace nDirectConnect {
 
 				// Name of the client
 				string mName;
-				
+
 				// Unique string to identify the client
 				string mTagID;
-				
+
 				// Min version allowed
 				double mMinVersion;
-				
+
 				// Max version allowed
 				double mMaxVersion;
-				
+
 				// Client is banned from the hub
 				bool mBan;
-				
+
 				//  Enable or disable a client
 				int mEnable;
 		};
-	};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 #endif

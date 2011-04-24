@@ -32,16 +32,16 @@
 
 #include "i18n.h"
 
-using namespace nStringUtils;
-namespace nDirectConnect {
-namespace nTables {
-
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	namespace nTables {
   /**
-  
+
   Class constructor
- 
+
   */
-  
+
 cTrigger::cTrigger()
 {
 	mSeconds = mLastTrigger = mFlags = 0;
@@ -75,30 +75,30 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	bool timeTrigger = timer && conn == NULL;
 	string buf, filename, sender;
 	string par1, end1, parall;
-	
+
 	// Check if it has been triggered by timeout. If not, check the connection and the user rights
 	if(!timeTrigger) {
 		if(!conn) return 0;
 		if(!conn->mpUser) return 0;
-	       
+
 		int uclass = conn->mpUser->mClass;
 		if ((uclass < this->mMinClass)  || (uclass > this->mMaxClass)) return 0;
 	}
-	
+
 	if(cmd_line.str().size() > mCommand.size()) {
 		parall.assign(cmd_line.str(),mCommand.size()+1,string::npos);
 	}
 	cmd_line >> par1;
 	end1 = cmd_line.str();
-	
+
 	// Replace sender
 	sender = server.mC.hub_security;
 	if (mSendAs.size()) sender = mSendAs;
-	
+
 	ReplaceVarInString(sender, "PAR1", sender, par1);
 	if(!timeTrigger) ReplaceVarInString(sender, "NICK", sender, conn->mpUser->mNick);
-	
-	
+
+
 	if (mFlags & eTF_DB) {
 	  buf = mDefinition;
 	} else {
@@ -117,8 +117,8 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 		struct tm *lt = new tm();
 		localtime_r(&curr_time, lt);
 	#endif
-	  
-	  theTime -= server.mStartTime;	
+
+	  theTime -= server.mStartTime;
 	  ReplaceVarInString(buf, "PARALL", buf, parall);
 	  ReplaceVarInString(buf, "PAR1", buf, par1);
 	  ReplaceVarInString(buf, "END1", buf, end1);
@@ -129,7 +129,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 		ReplaceVarInString(buf, "NICK", buf, conn->mpUser->mNick);
 		ReplaceVarInString(buf, "SHARE", buf, convertByte(conn->mpUser->mShare, false));
 	  }
-	  
+
 	  ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.size());
 	  ReplaceVarInString(buf, "USERSPEAK", buf, (int)server.mUsersPeak);
 	  ReplaceVarInString(buf, "UPTIME", buf, theTime.AsPeriod().AsString());
@@ -153,14 +153,14 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	  #ifndef _WIN32
 	  delete lt;
 	  #endif
-	}	
-	
+	}
+
 	if(timeTrigger) {
 	  server.DCPublicToAll(sender,buf);
 	  return 1;
 	}
-	
-	
+
+
 	// @CHANGED by dReiska +BEGINS+
 	if (mFlags & eTF_SENDTOALL) {
 	  if (!(mFlags & eTF_SENDPM)) {
@@ -189,7 +189,7 @@ void cTrigger::OnLoad()
 {}
 
   /**
-     	
+
 Redefine << operator to show and describe a trigger
 
   @param[in,out] ostream The stream where to write

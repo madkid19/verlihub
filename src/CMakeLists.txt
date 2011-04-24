@@ -19,9 +19,7 @@ SET(VERLIHUB_HDRS
 	cconfmysql.h
 	cconnbase.h
 	cconnchoose.h
-	cconnchoose.h
 	cconndc.h
-	cconnpoll.h
 	cconnpoll.h
 	cconnselect.h
 	cconntypes.h

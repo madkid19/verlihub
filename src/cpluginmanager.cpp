@@ -31,9 +31,10 @@
 #include "stringutils.h"
 #include "i18n.h"
 
-using namespace nStringUtils;
+namespace nVerliHub {
+	using namespace nUtils;
 
-namespace nPlugin {
+	namespace nPlugin {
 
 cPluginManager::cPluginManager(const string &path) :
 	cObj("cPluginMgr"),
@@ -45,13 +46,7 @@ cPluginManager::cPluginManager(const string &path) :
 
 cPluginManager::~cPluginManager(){}
 
-};
-
-
-/*!
-    \fn nPlugin::cPluginManager::LoadAll()
- */
-bool nPlugin::cPluginManager::LoadAll()
+bool cPluginManager::LoadAll()
 {
 	if(Log(0))
 		LogStream() << "Open dir: " << mPluginDir << endl;
@@ -79,11 +74,7 @@ bool nPlugin::cPluginManager::LoadAll()
 	return true;
 }
 
-
-/*!
-    \fn nPlugin::cPluginManager::LoadPlugin(const string &)
- */
-bool nPlugin::cPluginManager::LoadPlugin(const string &file)
+bool cPluginManager::LoadPlugin(const string &file)
 {
 #if ! defined _WIN32
 	cPluginLoader *plugin;
@@ -114,11 +105,7 @@ bool nPlugin::cPluginManager::LoadPlugin(const string &file)
 	return true;
 }
 
-
-/*!
-    \fn nPlugin::cPluginManager::UnloadPlugin(const string &name)
- */
-bool nPlugin::cPluginManager::UnloadPlugin(const string &name)
+bool cPluginManager::UnloadPlugin(const string &name)
 {
 	cPluginLoader *plugin = mPlugins.GetByHash(mPlugins.Key2Hash(name));
 	if(!plugin || !mPlugins.RemoveByHash(mPlugins.Key2Hash(name))) {
@@ -134,10 +121,7 @@ bool nPlugin::cPluginManager::UnloadPlugin(const string &name)
 	return true;
 }
 
-/*!
-    \fn nPlugin::cPluginManager::ReloadPlugin(const string &name)
- */
-bool nPlugin::cPluginManager::ReloadPlugin(const string &name)
+bool cPluginManager::ReloadPlugin(const string &name)
 {
 	cPluginLoader *plugin = mPlugins.GetByHash(mPlugins.Key2Hash(name));
 	if (plugin) {
@@ -151,10 +135,7 @@ bool nPlugin::cPluginManager::ReloadPlugin(const string &name)
 	return false;
 }
 
-/*!
-	\fn nPlugin::cPluginManager::SetCallBack(int id, cCallBackList*)
-*/
-bool nPlugin::cPluginManager::SetCallBack(string  id, cCallBackList *cb)
+bool cPluginManager::SetCallBack(string  id, cCallBackList *cb)
 {
 	if(!cb)
 		return false;
@@ -163,11 +144,7 @@ bool nPlugin::cPluginManager::SetCallBack(string  id, cCallBackList *cb)
 	return mCallBacks.AddWithHash(cb,mCallBacks.Key2Hash(id));
 }
 
-
-/*!
-    \fn nPlugin::cPluginManager::RegisterCallBack(string id, cPluginBase *pi)
- */
-bool nPlugin::cPluginManager::RegisterCallBack(string id, cPluginBase *pi)
+bool cPluginManager::RegisterCallBack(string id, cPluginBase *pi)
 {
 	cCallBackList *cbl = mCallBacks.GetByHash(mCallBacks.Key2Hash(id));
 	if(!cbl)
@@ -177,10 +154,7 @@ bool nPlugin::cPluginManager::RegisterCallBack(string id, cPluginBase *pi)
 	return cbl->Register(pi);
 }
 
-/*!
-    \fn nPlugin::cPluginManager::UnregisterCallBack(string id, cPluginBase *pi)
- */
-bool nPlugin::cPluginManager::UnregisterCallBack(string id, cPluginBase *pi)
+bool cPluginManager::UnregisterCallBack(string id, cPluginBase *pi)
 {
 	cCallBackList *cbl = mCallBacks.GetByHash(mCallBacks.Key2Hash(id));
 	if(!cbl)
@@ -190,7 +164,7 @@ bool nPlugin::cPluginManager::UnregisterCallBack(string id, cPluginBase *pi)
 	return cbl->Unregister(pi);
 }
 
-void nPlugin::cPluginManager::List(ostream &os)
+void cPluginManager::List(ostream &os)
 {
 	os << " " << setw(40) << setiosflags(ios::left) << toUpper(_("Name"));
 	os << toUpper(_("Version")) << "\n";
@@ -201,7 +175,7 @@ void nPlugin::cPluginManager::List(ostream &os)
 	}
 }
 
-void nPlugin::cPluginManager::ListAll(ostream &os)
+void cPluginManager::ListAll(ostream &os)
 {
 	tCBList::iterator it;
 	for (it = mCallBacks.begin(); it != mCallBacks.end(); ++it) {
@@ -210,7 +184,7 @@ void nPlugin::cPluginManager::ListAll(ostream &os)
 	}
 }
 
-nPlugin::cPluginBase * nPlugin::cPluginManager::GetPlugin(const string &Name)
+cPluginBase * cPluginManager::GetPlugin(const string &Name)
 {
 	cPluginLoader *pi;
 	pi = mPlugins.GetByHash(mPlugins.Key2Hash(Name));
@@ -220,7 +194,7 @@ nPlugin::cPluginBase * nPlugin::cPluginManager::GetPlugin(const string &Name)
 		return NULL;
 }
 
-nPlugin::cPluginBase * nPlugin::cPluginManager::GetPluginByLib(const string &lib)
+cPluginBase * cPluginManager::GetPluginByLib(const string &lib)
 {
 	tPlugins::iterator it;
 	for (it = mPlugins.begin(); it != mPlugins.end(); ++it) {
@@ -228,3 +202,5 @@ nPlugin::cPluginBase * nPlugin::cPluginManager::GetPluginByLib(const string &lib
 	}
 	return NULL;
 }
+	}; // namespace nPlugin
+}; // namespace nVerliHub

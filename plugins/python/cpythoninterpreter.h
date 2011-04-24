@@ -24,18 +24,14 @@
 
 #include "wrapper.h"
 #include <string>
-#include <iostream>
-#include "src/cserverdc.h"
-#include "src/cuser.h"
+//#include <iostream>
 #include "src/script_api.h"
 #include <iostream>
 #include <string>
 
 using namespace std;
-using namespace nDirectConnect;
-
-namespace nScripts
-{
+namespace nVerliHub {
+	namespace nPythonPlugin {
 
 class cPythonInterpreter
 {
@@ -48,7 +44,7 @@ public:
 	int id;
 	bool online;
 };
-
-};
+	}; // namespace nPythonPlugin
+}; // namespace namespace
 
 #endif

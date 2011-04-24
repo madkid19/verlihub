@@ -26,13 +26,12 @@
 #include "src/cvhplugin.h"
 #include "src/ctimeout.h"
 #include "src/cmeanfrequency.h"
+#include "src/cmessagedc.h"
+#include "src/cserverdc.h"
 #include "cstats.h"
 
-using namespace nDirectConnect::nPlugin;
-using namespace nDirectConnect;
-using namespace nUtils;
-using namespace nStats;
-
+namespace nVerliHub {
+	namespace nStatsPlugin {
 /**
 \brief a statistics plugin for verlihub
 
@@ -40,21 +39,21 @@ users may leave offline messages for registered users or reg users may leave off
 
 @author Daniel Muller
 */
-class cpiStats : public cVHPlugin
+class cpiStats : public nPlugin::cVHPlugin
 {
 public:
 	cpiStats();
 	virtual ~cpiStats();
 	virtual bool RegisterAll();
-	virtual bool OnParsedMsgSearch(cConnDC *, cMessageDC *);
-	virtual void OnLoad(cServerDC *);
+	virtual bool OnParsedMsgSearch(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual void OnLoad(nSocket::cServerDC *);
 	virtual bool OnTimer();
 	cStats * mStats;
 private:
-	cTimeOut mStatsTimer;
-	cMeanFrequency<int> mFreqSearchA;
-	cMeanFrequency<int> mFreqSearchP;
+	nUtils::cTimeOut mStatsTimer;
+	nUtils::cMeanFrequency<int> mFreqSearchA;
+	nUtils::cMeanFrequency<int> mFreqSearchP;
 };
-
-
+	}; // namespace nStatsPlugin
+}; // namespace nVerliHub
 #endif

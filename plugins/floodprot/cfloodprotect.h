@@ -18,34 +18,34 @@
 #include "src/thasharray.h"
 #include "src/ctime.h"
 #include "src/cconfigbase.h"
+#include "src/cserverdc.h"
+#include "src/cconndc.h"
 
 #include <vector>
-
-using namespace nUtils;
-using namespace nConfig;
-
-namespace nDirectConnect {
-
-	class cConnDC;
-	class cServerDC;
-
-namespace nTables {
-
-typedef enum { eFT_CHAT, eFT_PRIVATE, eFT_SEARCH, eFT_MYINFO } tFloodType;
+namespace nVerliHub {
+	namespace nEnums {
+		typedef enum {
+			eFT_CHAT,
+			eFT_PRIVATE,
+			eFT_SEARCH,
+			eFT_MYINFO
+		} tFloodType;
+	};
+	namespace nFloodProtectPlugin {
 
 struct sUserInfo
 {
-	cTime mLastAction;
-	cTime mElapsedTime;
+	nUtils::cTime mLastAction;
+	nUtils::cTime mElapsedTime;
 	unsigned short mActionCounter;
 	string mIP;
 	string mFTStr;
 	bool mDisabled;
-	list<tFloodType> mFloodTypes;
+	list<nEnums::tFloodType> mFloodTypes;
 
 	sUserInfo(string ip) : mIP(ip), mActionCounter(0), mDisabled(false) {}
 	~sUserInfo() {}
-	void addFloodType(tFloodType ft)
+	void addFloodType(nEnums::tFloodType ft)
 	{
 	    if(mFloodTypes.size() == 10)
 	    {
@@ -56,17 +56,17 @@ struct sUserInfo
 	string & getFloodTypes()
 	{
 	    mFTStr.clear();
-	    for(list<tFloodType>::iterator it=mFloodTypes.begin(); it!=mFloodTypes.end(); ++it)
+	    for(list<nEnums::tFloodType>::iterator it=mFloodTypes.begin(); it!=mFloodTypes.end(); ++it)
 	    {
 		switch(*it)
 		{
-		    case eFT_CHAT: mFTStr += "CHAT ";
+			case nEnums::eFT_CHAT: mFTStr += "CHAT ";
 		    break;
-		    case eFT_PRIVATE: mFTStr += "PRIVATE ";
+			case nEnums::eFT_PRIVATE: mFTStr += "PRIVATE ";
 		    break;
-		    case eFT_SEARCH: mFTStr += "SEARCH ";
+			case nEnums::eFT_SEARCH: mFTStr += "SEARCH ";
 		    break;
-		    case eFT_MYINFO: mFTStr += "MYINFO ";
+			case nEnums::eFT_MYINFO: mFTStr += "MYINFO ";
 		    break;
 		    default: mFTStr += "UNKNOWN ";
 		    break;
@@ -76,14 +76,14 @@ struct sUserInfo
 	}
 };
 
-class cFloodCfg : public cConfigBase
+class cFloodCfg : public nConfig::cConfigBase
 {
 public:
-	cFloodCfg(cServerDC *);
+	cFloodCfg(nSocket::cServerDC *);
 	int mMaxConnPerIP;
 	int mMaxUsersPerIP;
 	int mBanTimeOnFlood;
-	cServerDC *mS;
+	nSocket::cServerDC *mS;
 	virtual int Load();
 	virtual int Save();
 };
@@ -91,16 +91,17 @@ public:
 class cFloodprotect
 {
 public:
-	cFloodprotect(cServerDC *);
+	cFloodprotect(nSocket::cServerDC *);
 	~cFloodprotect();
 	bool CleanUp(int secs);
-	bool CheckFlood(cConnDC *, tFloodType);
-	bool AddConn(cConnDC *, short diff = 1);
-	int KickAll(cConnDC *);
+	bool CheckFlood(nSocket::cConnDC *, nEnums::tFloodType);
+	bool AddConn(nSocket::cConnDC *, short diff = 1);
+	int KickAll(nSocket::cConnDC *);
 
-	cServerDC * mS;
+	nSocket::cServerDC * mS;
 
 	typedef tcHashListMap<sUserInfo *> tUserInfo;
+	//FIXME: DataType in tHashArray template must be a pointer!
 	typedef tHashArray<short int> tConnCounter;
 	typedef tUserInfo::iterator tUIIt;
 	tUserInfo mUserInfo;
@@ -108,7 +109,7 @@ public:
 	cFloodCfg mCfg;
 };
 
-};
-};
+	}; // namespace nFloodProtectPlugin
+}; // namespace nVerliHub
 
 #endif

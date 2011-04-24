@@ -32,9 +32,8 @@
 #include "cpluginbase.h"
 
 using std::string;
-
-namespace nPlugin {
-
+namespace nVerliHub {
+	namespace nPlugin {
 /**
 class for encapsulating plugins to be loaded
 
@@ -53,14 +52,14 @@ public:
 	{
 		#ifdef _WIN32
 		LPVOID buff;
-		FormatMessage( 
+		FormatMessage(
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_HMODULE,
 			mHandle,
 			GetLastError(),
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 			(LPTSTR) &buff,
 			0,
-			NULL 
+			NULL
 		);
 		mError= (const char *) buff;
 		LocalFree(buff);
@@ -87,6 +86,7 @@ protected:
 	tcbGetPluginFunc mcbGetPluginFunc;
 };
 
-};
+	}; // namespace nPlugin
+};  // namespace nVerliHub
 
 #endif

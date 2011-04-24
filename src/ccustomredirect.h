@@ -26,7 +26,7 @@
 
 using namespace std;
 
-namespace nDirectConnect {
+namespace nVerliHub {
 	namespace nEnums {
 		enum {
 			eKick = 0x000001,
@@ -39,8 +39,6 @@ namespace nDirectConnect {
 			eReconnect =  0x000080
 		};
 	};
-	class cConnDC;
-	class cServerDC;
 
 	namespace nTables {
 
@@ -86,7 +84,7 @@ namespace nDirectConnect {
 				// Enable or disable redirect
 				int mEnable;
 		};
-	};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 #endif

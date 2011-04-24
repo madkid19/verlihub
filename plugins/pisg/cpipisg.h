@@ -19,20 +19,30 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#ifndef __CBANLIST_INTERFACE_H
-#define __CBANLIST_INTERFACE_H
 
-class cBanListInterface
+#ifndef CPIPISG_H
+#define CPIPISG_H
+
+#include "src/cvhplugin.h"
+#include "src/ctimeout.h"
+#include "src/cmeanfrequency.h"
+#include <fstream>
+
+using namespace std;
+using namespace nVerliHub::nPlugin;
+using namespace nVerliHub;
+using namespace nUtils;
+
+class cpiPisg : public cVHPlugin
 {
 public:
-    cBanListInterface() {}
-    virtual ~cBanListInterface() {}
-
-
+	cpiPisg();
+	virtual ~cpiPisg();
+	virtual bool RegisterAll();
+	bool OnParsedMsgChat(cConnDC *conn, cMessageDC *msg);
 private:
-    cBanListInterface( const cBanListInterface& source );
-    void operator = ( const cBanListInterface& source );
+	ofstream logFile;
 };
 
 
-#endif // __CBANLIST_INTERFACE_H
+#endif

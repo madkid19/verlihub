@@ -27,13 +27,16 @@
 #include "src/ctime.h"
 #include <dirent.h>
 #include <string>
-#include <string.h>
+//#include <string.h>
 #include <algorithm>
 
-using namespace nStringUtils;
-using namespace nUtils;
-using namespace nTables;
-using namespace nDirectConnect;
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nTables;
+	using namespace nEnums;
+	using namespace nSocket;
+	using namespace nMySQL;
+	namespace nPythonPlugin {
 
 // initializing static members
 void*         cpiPython::lib_handle = NULL;
@@ -84,23 +87,23 @@ void cpiPython::OnLoad(cServerDC *server)
 	mQuery = new cQuery(server->mMySQL);
 	mScriptDir = mServer->mConfigBaseDir + "/scripts/";
 	this->server = server;
-	
+
 
 	botname = server->mC.hub_security;
 	opchatname = server->mC.opchat_name;
-	
+
 	log4("PY: cpiPython::OnLoad   dlopen...\n");
 	//if (wrapper_path) lib_handle = dlopen( (string(wrapper_path) + "/libvh_python_wrapper.so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
 	if (!lib_handle)  lib_handle = dlopen("@CMAKE_INSTALL_PREFIX@/lib/libvh_python_wrapper.so", RTLD_LAZY | RTLD_GLOBAL);
 	// RTLD_GLOBAL exports all symbols from libvh_python_wrapper.so
 	// without RTLD_GLOBAL the lib will fail to import other python modules
 	// because they won't see any symbols from the linked libpython2.5
-	if (!lib_handle) 
+	if (!lib_handle)
 	{
     		log("PY: cpiPython::OnLoad   Error during dlopen(): %s\n", dlerror());
     		return;
 	}
-	
+
 	*(void **)(&lib_begin)     = dlsym(lib_handle, "w_Begin");
 	*(void **)(&lib_end)       = dlsym(lib_handle, "w_End");
 	*(void **)(&lib_reserveid) = dlsym(lib_handle, "w_ReserveID");
@@ -113,11 +116,11 @@ void cpiPython::OnLoad(cServerDC *server)
 	*(void **)(&lib_unpack)    = dlsym(lib_handle, "w_unpack");
 	*(void **)(&lib_loglevel)  = dlsym(lib_handle, "w_LogLevel");
 	*(void **)(&lib_packprint) = dlsym(lib_handle, "w_packprint");
-	
-	
-	if (!lib_begin || !lib_end || !lib_reserveid || !lib_load || !lib_unload || !lib_hashook || !lib_callhook || !lib_hookname || !lib_pack || !lib_unpack || !lib_loglevel || !lib_packprint) 
+
+
+	if (!lib_begin || !lib_end || !lib_reserveid || !lib_load || !lib_unload || !lib_hashook || !lib_callhook || !lib_hookname || !lib_pack || !lib_unpack || !lib_loglevel || !lib_packprint)
 	{ log("PY: cpiPython::OnLoad   Error locating vh_python_wrapper function symbols: %s\n", dlerror()); return; }
-	
+
 	w_Tcallback* callbacklist = (w_Tcallback*) calloc(W_MAX_CALLBACKS, sizeof(void*));
 	callbacklist[W_SendDataToUser] = &_SendDataToUser;
 	callbacklist[W_SendDataToAll] = &_SendDataToAll;
@@ -147,17 +150,17 @@ void cpiPython::OnLoad(cServerDC *server)
 	callbacklist[W_GetTotalShareSize] = &_GetTotalShareSize;
 	callbacklist[W_UserRestrictions] = &_UserRestrictions;
 	callbacklist[W_Topic] = &_Topic;
-	
-	
+
+
 	const char *level = GetConf("pi_python", "log_level");
 	if (level && strlen(level) > 0) log_level = char2int(level[0]);
-	
-	
+
+
 	if ( !lib_begin(callbacklist) )
 	{ log("PY: cpiPython::OnLoad   Initiating vh_python_wrapper failed!\n"); return; }
 	online = true;
 	lib_loglevel(log_level);
-	
+
 	AutoLoad();
 }
 
@@ -203,7 +206,7 @@ bool cpiPython::AutoLoad()
 		return false;
 	}
 	struct dirent *dent = NULL;
-	
+
 	while(NULL != (dent=readdir(dir)))
 	{
 		filename = dent->d_name;
@@ -212,10 +215,10 @@ bool cpiPython::AutoLoad()
 			pathname = mScriptDir + filename;
 			cPythonInterpreter *ip = new cPythonInterpreter (pathname);
 			if(!ip) continue;
-			
+
 			mPython.push_back(ip);
 			if(ip->Init())
-			{ 
+			{
 				if (log_level < 1) { if(Log(1)) LogStream() << "Success loading Python script: " << filename << endl; }
 				log1( "PY: Autoload   Success loading script: [ %d ] %s\n", ip->id, filename.c_str() );
 			}
@@ -228,7 +231,7 @@ bool cpiPython::AutoLoad()
 			}
 		}
 	}
-	
+
 	closedir(dir);
 	return true;
 }
@@ -266,7 +269,7 @@ int cpiPython::SplitMyINFO(const char *msg, const char **nick, const char **desc
 	}
 	if (dollars[4] != len-1 || !spacepos) return 0;
 	if (tagstart && tagend && msg[tagend+1] == '$') validtag = 1;
-	
+
 	string s = msg;
 	string _nick  = s.substr( start, spacepos - start );
 	string _desc  = (validtag) ? s.substr( spacepos + 1, tagstart - spacepos - 1 ) : s.substr( spacepos + 1, dollars[0] - spacepos - 1 );
@@ -274,18 +277,18 @@ int cpiPython::SplitMyINFO(const char *msg, const char **nick, const char **desc
 	string _speed = s.substr( dollars[1] + 1, dollars[2] - dollars[1] - 1 );
 	string _mail  = s.substr( dollars[2] + 1, dollars[3] - dollars[2] - 1 );
 	string _size  = s.substr( dollars[3] + 1, dollars[4] - dollars[3] - 1 );
-	
+
 	(*nick)  =  strdup(  _nick.c_str());
 	(*desc)  =  strdup(  _desc.c_str());
 	(*tag)   =  strdup(   _tag.c_str());
 	(*speed) =  strdup( _speed.c_str());
 	(*mail)  =  strdup(  _mail.c_str());
 	(*size)  =  strdup(  _size.c_str());
-	
-	log5("PY: SplitMyINFO: [%s] \n    dollars:%d,%d,%d,%d,%d / tag start:%d,end:%d / space:%d\n    nick:%s/desc:%s/tag:%s/speed:%s/mail:%s/size:%s\n", 
-			s.c_str(), dollars[0], dollars[1], dollars[2], dollars[3], dollars[4], tagstart, tagend, spacepos, 
+
+	log5("PY: SplitMyINFO: [%s] \n    dollars:%d,%d,%d,%d,%d / tag start:%d,end:%d / space:%d\n    nick:%s/desc:%s/tag:%s/speed:%s/mail:%s/size:%s\n",
+			s.c_str(), dollars[0], dollars[1], dollars[2], dollars[3], dollars[4], tagstart, tagend, spacepos,
 			*nick, *desc, *tag, *speed, *mail, *size);
-	
+
 	return 1;
 }
 
@@ -316,7 +319,7 @@ w_Targs* cpiPython::SQL (int id, w_Targs* args) // (char *query)
 		row = mQuery->Row();
 		if (!row)
 		{ log1("PY: SQL   failed to fetch row: %d\n", r); mQuery->Clear(); return lib_pack("lllp", (long)0, (long)0, (long)0, (void*)NULL); }
-		
+
 		for (int i = 0; i < cols; i++)
 			res[(r*cols)+i] = strdup( (row[i]) ? row[i] : nil );
 	}
@@ -355,7 +358,7 @@ const char *cpiPython::GetConf(const char *conf, const char *var)
 			GetConfig((char*)conf, (char*)var, s, 999);
 			return s;
 		}*/
-		
+
 	}
 	// let's try searching the database directly:
 	if (!lib_begin || !lib_pack || !lib_unpack || !lib_packprint) return NULL;
@@ -372,7 +375,7 @@ const char *cpiPython::GetConf(const char *conf, const char *var)
 	if (!lib_unpack( ret, "lllp", &res, &rows, &cols, (void**) &list ))
 	{
 		log3("PY: GetConf   call to SQL function failed\n");
-		freee(ret); return NULL; 
+		freee(ret); return NULL;
 	}
 	freee(ret);
 	if (!res || !rows || !cols || !list || !list[0]) return NULL;
@@ -421,7 +424,7 @@ bool cpiPython::SetConf(const char *conf, const char *var, const char *val)
 	freee(ret->args[3].p);
 	freee(ret);
 	if (!res) { log2("requested config variable ( %s in %s ) does not exist\n", var, conf); };
-	
+
 	query = string("") + "insert into SetupList (file, var, val) values ('" + conf + "', '" + var + "', '" + val + "')";
 	a = lib_pack( "sl", query.c_str(), (long)1 );
 	log3("PY: SetConf   calling SQL with params: %s\n", lib_packprint(a));
@@ -490,7 +493,7 @@ cPythonInterpreter *cpiPython::GetInterpreter(int id)
 bool cpiPython::CallAll(int func, w_Targs* args)  // the default handler: returns true unless the calback returns 0
 {
 	if (!online) return true;
-	w_Targs* result; 
+	w_Targs* result;
 	bool ret = true;
 	long l;
 	if (func != W_OnTimer) log2("PY: CallAll %s: parameters %s\n", lib_hookname(func), lib_packprint(args))  // no ';' since this would break 'else'
@@ -507,7 +510,7 @@ bool cpiPython::CallAll(int func, w_Targs* args)  // the default handler: return
 				if (func != W_OnTimer) log4("PY: CallAll %s: returned NULL\n", lib_hookname(func));
 				continue;
 			}
-			if(lib_unpack(result, "l", &l))  // default return value is 1L meaning: further processing, 
+			if(lib_unpack(result, "l", &l))  // default return value is 1L meaning: further processing,
 			{
 				if (func != W_OnTimer) log3("PY: CallAll %s: returned l:%ld\n", lib_hookname(func), l);
 				if (!l) ret = false;  // 0L means no more processing outside this plugin
@@ -557,7 +560,7 @@ bool cpiPython::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
 		long l;
 		char *nick = NULL;
 		char *message = NULL;
-		
+
 		if(Size())
 		{
 			tvPythonInterpreter::iterator it;
@@ -569,7 +572,7 @@ bool cpiPython::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
 					log3("PY: Call %s: returned NULL\n", lib_hookname(func));
 					continue;
 				}
-				if(lib_unpack(result, "l", &l))  // default return value is 1L meaning: further processing, 
+				if(lib_unpack(result, "l", &l))  // default return value is 1L meaning: further processing,
 				{
 					log3("PY: Call %s: returned l:%ld\n", lib_hookname(func), l);
 					if (!l) ret = false;  // 0L means no more processing outside this plugin
@@ -580,13 +583,13 @@ bool cpiPython::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
 					// but this kind of message modification allows you to process it not by just one but as many scripts as you want
 					log2("PY: modifying message - Call %s: returned %s\n", lib_hookname(func), lib_packprint(result));
 					if (nick)
-					{ 
+					{
 						string &nick0 = msg->ChunkString(eCH_CH_NICK);
 						nick0 = nick;
 						msg->ApplyChunk(eCH_CH_NICK);
 					}
 					if (message)
-					{ 
+					{
 						string &message0 = msg->ChunkString(eCH_CH_MSG);
 						message0 = message;
 						msg->ApplyChunk(eCH_CH_MSG);
@@ -600,7 +603,7 @@ bool cpiPython::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
 		}
 		free(args);
 		return ret;
-		
+
 	}
 	return true;
 }
@@ -692,8 +695,8 @@ bool cpiPython::OnParsedMsgMyINFO(cConnDC *conn, cMessageDC *msg)
 		bool ret = true;
 		w_Targs *result;
 		long l;
-		
-		
+
+
 		if(Size())
 		{
 			tvPythonInterpreter::iterator it;
@@ -705,7 +708,7 @@ bool cpiPython::OnParsedMsgMyINFO(cConnDC *conn, cMessageDC *msg)
 					log3("PY: Call %s: returned NULL\n", lib_hookname(func));
 					continue;
 				}
-				if(lib_unpack(result, "l", &l))  // default return value is 1L meaning: further processing, 
+				if(lib_unpack(result, "l", &l))  // default return value is 1L meaning: further processing,
 				{
 					log3("PY: Call %s: returned l:%ld\n", lib_hookname(func), l);
 					if (!l) ret = false;  // 0L means no more processing outside this plugin
@@ -730,9 +733,9 @@ bool cpiPython::OnParsedMsgMyINFO(cConnDC *conn, cMessageDC *msg)
 						newinfo += "$";
 						newinfo += (size) ? size : origsize;
 						newinfo += "$";
-						
+
 						log3("myinfo: [ %s ] will become: [ %s ]\n", original, newinfo.c_str());
-						
+
 						msg->ReInit();
 						msg->mStr = newinfo;
 						//msg->mType = eDC_MYNIFO;
@@ -741,7 +744,7 @@ bool cpiPython::OnParsedMsgMyINFO(cConnDC *conn, cMessageDC *msg)
 							log1("cpiPython::OnParsedMsgMyINFO: failed to split new MyINFO into chunks\n");
 						conn->mpUser->mEmail = msg->ChunkString(eCH_MI_MAIL);
 					}
-					
+
 					ret = true;  // we've changed myinfo so we want the hub to store it now
 				}
 				else   // something unknown was returned... we will let the hub call other plugins
@@ -791,7 +794,7 @@ bool cpiPython::OnOperatorCommand(cConnDC *conn, string *command)
 	if((conn != NULL) && (conn->mpUser != NULL) && (command != NULL))
 	{
 		if(mConsole.DoCommand(*command, conn)) return false;
-	
+
 		w_Targs* args = lib_pack( "ss", conn->mpUser->mNick.c_str(), command->c_str());
 		return CallAll(W_OnOperatorCommand, args);
 	}
@@ -861,7 +864,7 @@ bool cpiPython::OnUserLogout(cUser *user)
 
 bool cpiPython::OnTimer()
 {
-	
+
 	//return true;  // disabled for now
 	w_Targs* args = lib_pack( "" );
 	return CallAll(W_OnTimer, args);
@@ -888,7 +891,8 @@ bool cpiPython::OnNewBan(cBan *ban)
 	return true;
 }
 
-
+	}; // namespace nPythonPlugin
+	using namespace nPythonPlugin;
 // CALLBACKS:
 
 
@@ -931,7 +935,7 @@ w_Targs* _classmc (int id, w_Targs* args) // (char *data)
 	// we would use the call below but it is buggy - it does not care about provided class range
 	//cpiPython::me->server->SendToAll(msg, minclass, maxclass);
 	// therefore we have to do this the hard way:
-	
+
 	// nlist looks like this: "$NickList nick1$$nick2$$lastnick$$"
 	string nlist = cpiPython::me->server->mUserList.GetNickList();
 	string nick;
@@ -948,8 +952,8 @@ w_Targs* _classmc (int id, w_Targs* args) // (char *data)
 		log4("Py: classmc   got nick: %s\n", nick.c_str());
 		start = pos + 2;
 		u = cpiPython::me->server->mUserList.GetUserByNick(nick.c_str());
-		if (u && u->mxConn) 
-		{ 
+		if (u && u->mxConn)
+		{
 			if (u->mClass < minclass || u->mClass > maxclass) continue;
 			u->mxConn->Send( msg, true );
 			log4("PY: classmc   sending message to %s\n", nick.c_str());
@@ -990,7 +994,7 @@ w_Targs* _SendDataToAll (int id, w_Targs* args) // (char *data, long min_class, 
 	// we would use the call below but it is buggy - it does not care about provided class range
 	//cpiPython::me->server->SendToAll(msg, minclass, maxclass);
 	// therefore we have to do this the hard way:
-	
+
 	// nlist looks like this: "$NickList nick1$$nick2$$lastnick$$"
 	string nlist = cpiPython::me->server->mUserList.GetNickList();
 	string nick;
@@ -1007,8 +1011,8 @@ w_Targs* _SendDataToAll (int id, w_Targs* args) // (char *data, long min_class, 
 		log4("Py: SendDataToAll   got nick: %s\n", nick.c_str());
 		start = pos + 2;
 		u = cpiPython::me->server->mUserList.GetUserByNick(nick.c_str());
-		if (u && u->mxConn) 
-		{ 
+		if (u && u->mxConn)
+		{
 			if (u->mClass < minclass || u->mClass > maxclass) continue;
 			u->mxConn->Send( msg, true );
 			log4("PY: SendDataToAll   sending message to %s\n", nick.c_str());
@@ -1026,7 +1030,7 @@ w_Targs* _SendPMToAll (int id, w_Targs* args) // (char *data, char *from, long m
 	string start, end;
 	cpiPython::me->server->mP.Create_PMForBroadcast(start, end, from, from, data);
 	cpiPython::me->server->SendToAllWithNick(start,end, min_class, max_class);
-	cpiPython::me->server->LastBCNick = from;	
+	cpiPython::me->server->LastBCNick = from;
 	return w_ret1;
 }
 
@@ -1061,14 +1065,14 @@ w_Targs* _SetMyINFO (int id, w_Targs* args) // (char *nick)
 	if (!nick) { log1( "PY SetMyINFO   parameter error: nick is NULL\n"); return NULL; }
 	cUser *u = cpiPython::me->server->mUserList.GetUserByNick(nick);
 	if(!u) { log1( "PY SetMyINFO   user %s not found\n", nick ); return NULL; }
-	
+
 	string nfo = u->mMyINFO;
 	if (nfo.length() < 20) { log1( "PY SetMyINFO   couldn't read user's current MyINFO\n"); return NULL; }
-	
+
 	const char *n, *origdesc = NULL, *origtag = NULL, *origspeed = NULL, *origmail = NULL, *origsize = NULL;
 	if (!cpiPython::me->SplitMyINFO(nfo.c_str(), &n, &origdesc, &origtag, &origspeed, &origmail, &origsize))
 	{ log1("PY: Call SetMyINFO   malformed myinfo message: %s\n", nfo.c_str()); return NULL; }
-	
+
 	string newinfo = "$MyINFO $ALL ";
 	newinfo += n;
 	newinfo += " ";
@@ -1081,14 +1085,14 @@ w_Targs* _SetMyINFO (int id, w_Targs* args) // (char *nick)
 	newinfo += "$";
 	newinfo += (size) ? size : origsize;
 	newinfo += "$";
-	
+
 	log3("PY SetMyINFO   myinfo: %s  --->  %s\n", nfo.c_str(), newinfo.c_str());
-	
+
 	freee(n); freee(origdesc); freee(origtag); freee(origspeed); freee(origmail); freee(origsize);
-	
+
 	u->mMyINFO = newinfo;
 	u->mMyINFO_basic = newinfo;
-	cpiPython::me->server->mUserList.SendToAll(newinfo, true, true);	
+	cpiPython::me->server->mUserList.SendToAll(newinfo, true, true);
 	return w_ret1;
 }
 
@@ -1163,7 +1167,7 @@ w_Targs* _KickUser (int id, w_Targs* args) // (char *op, char *nick, char *data)
 	cUser *u = cpiPython::me->server->mUserList.GetUserByNick(op);
 	if (!u) return NULL;
 	ostringstream os;
-	cpiPython::me->server->DCKickNick(&os, u, nick, data, cServerDC::eKCK_Drop|cServerDC::eKCK_Reason|cServerDC::eKCK_PM|cServerDC::eKCK_TBAN);
+	cpiPython::me->server->DCKickNick(&os, u, nick, data, eKCK_Drop | eKCK_Reason | eKCK_PM | eKCK_TBAN);
 	return w_ret1;
 }
 
@@ -1201,7 +1205,7 @@ w_Targs* _AddRobot (int id, w_Targs* args) // (char *nick, long uclass, char *de
 	{
 		cpiPython::me->server->mP.Create_MyINFO(robot->mMyINFO, robot->mNick, desc, speed, email, share);
 		robot->mMyINFO_basic = robot->mMyINFO;
-		
+
 		string omsg = "$Hello ";
 		omsg+= robot->mNick;
 		cpiPython::me->server->mHelloUsers.SendToAll(omsg, true, true);
@@ -1253,15 +1257,15 @@ w_Targs* _UserRestrictions (int id, w_Targs* args) // (char *nick, char *nochatt
 	string pm = (nopmtime) ? nopmtime : "";
 	string search = (nosearchtime) ? nosearchtime : "";
 	string ctm = (noctmtime) ? noctmtime : "";
-	
+
 	if (!nick || strlen(nick)==0) return NULL;
 	cUser *u = (cUser *)cpiPython::me->server->mUserList.GetUserByNick(nick);
 	if(!u) return NULL;
-	
+
 	long period;
 	long now = (long) nUtils::cTime().Sec();
 	long week = 3600 * 24 * 7;
-	
+
 	if (chat.length())
 	{
 		if (chat == "0") u->mGag = 1;
@@ -1307,7 +1311,7 @@ w_Targs* _UserRestrictions (int id, w_Targs* args) // (char *nick, char *nochatt
 		}
 	}
 	if (res) return NULL;
-	
+
 	if (!u->mGag || u->mGag > now) 			res |= w_UR_CHAT;
 	if (!u->mNoPM || u->mNoPM > now) 		res |= w_UR_PM;
 	if (!u->mNoSearch || u->mNoSearch > now) 	res |= w_UR_SEARCH;
@@ -1330,6 +1334,6 @@ w_Targs* _Topic (int id, w_Targs* args) // (char* topic)
 	}
 	return cpiPython::lib_pack("s", strdup(cpiPython::me->server->mC.hub_topic.c_str()));
 }
-
-REGISTER_PLUGIN(cpiPython);
+}; // namespace nVerliHub
+REGISTER_PLUGIN(nVerliHub::nPythonPlugin::cpiPython);
 

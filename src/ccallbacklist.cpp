@@ -26,7 +26,8 @@
 #pragma warning( disable : 4355)
 #endif
 
-namespace nPlugin {
+namespace nVerliHub {
+	namespace nPlugin {
 
 cCallBackList::cCallBackList(cPluginManager *mgr, string id) :
 	mMgr(mgr), mCallOne(mMgr,this), mName(id)
@@ -47,13 +48,7 @@ void cCallBackList::ufCallOne::operator()(cPluginBase *pi)
 	if (!pi->IsAlive()) mMgr->UnloadPlugin(pi->Name());
 }
 
-};
-
-
-/*!
-    \fn nPlugin::cCallBackList::Register(cPluginBase *pi)
- */
-bool nPlugin::cCallBackList::Register(cPluginBase *pi)
+bool cCallBackList::Register(cPluginBase *pi)
 {
 	if(!pi) return false;
 	tPICont::iterator i = find(mPlugins.begin(), mPlugins.end(),pi);
@@ -62,11 +57,7 @@ bool nPlugin::cCallBackList::Register(cPluginBase *pi)
 	return true;
 }
 
-
-/*!
-    \fn nPlugin::cCallBackList::Unregister(cPluginBase *pi)
- */
-bool nPlugin::cCallBackList::Unregister(cPluginBase *pi)
+bool cCallBackList::Unregister(cPluginBase *pi)
 {
 	if(!pi) return false;
 	tPICont::iterator i = find(mPlugins.begin(), mPlugins.end(),pi);
@@ -75,13 +66,13 @@ bool nPlugin::cCallBackList::Unregister(cPluginBase *pi)
 	return true;
 }
 
-bool nPlugin::cCallBackList::CallAll()
+bool cCallBackList::CallAll()
 {
 	mCallOne.mCall = true;
 	return for_each( mPlugins.begin() , mPlugins.end(), mCallOne ).mCall;
 }
 
-void nPlugin::cCallBackList::ListRegs(ostream &os, const char *indent)
+void cCallBackList::ListRegs(ostream &os, const char *indent)
 {
 	tPICont::iterator i;
 	for (i = mPlugins.begin(); i != mPlugins.end(); ++i)
@@ -89,3 +80,5 @@ void nPlugin::cCallBackList::ListRegs(ostream &os, const char *indent)
 		os << indent << (*i)->Name() << "\r\n";
 	}
 }
+	}; // namespace nPlugin
+}; // namespace nVerliHub

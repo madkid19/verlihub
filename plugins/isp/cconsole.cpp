@@ -25,7 +25,10 @@
 #include "cpiisp.h"
 #include "cisps.h"
 
-using namespace nDirectConnect;
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nEnums;
+	namespace nIspPlugin {
 
 
 cISPs *cISPConsole::GetTheList()
@@ -48,10 +51,10 @@ void cISPConsole::GetHelpForCommand(int cmd, ostream &os)
 	string help_str;
 	switch(cmd)
 	{
-		case eLC_LST: 
+		case eLC_LST:
 		help_str = "!lstisp\r\n" + string(_("Give a list of ISPs"));
 		break;
-		case eLC_ADD: 
+		case eLC_ADD:
 		case eLC_MOD:
 		help_str = "!(add|mod)isp <iprange>"
 			" [-N <\"name\">]"
@@ -83,7 +86,7 @@ const char * cISPConsole::GetParamsRegex(int cmd)
 	switch(cmd)
 	{
 		case eLC_ADD:
-		case eLC_MOD:	
+		case eLC_MOD:
 			return "^(\\S+)(" // <iprange>
 			      "( -N ?(\")?((?(4)[^\"]+?|\\S+))(?(4)\"))|" // <name>|"<<name>>"
 			      "( -CC ?(\\S+))|"   //[ -CC<country_codes>]
@@ -98,7 +101,7 @@ const char * cISPConsole::GetParamsRegex(int cmd)
 			      "( -R ?(-?\\d+))|" //[ -R<max_share_reg>]
 			      "( -V ?(-?\\d+))|" //[ -V<max_share_vip>]
 			      "( -O ?(-?\\d+))|" //[ -O<max_share_op>]
-			      "( -mn ?(\")?((?(32)[^\"]+?|\\S+))(?(32)\"))|" 
+			      "( -mn ?(\")?((?(32)[^\"]+?|\\S+))(?(32)\"))|"
 			      "( -mc ?(\")?((?(35)[^\"]+?|\\S+))(?(35)\"))|"
 			      ")*\\s*$" // the end of message
 			      ; break;
@@ -138,9 +141,9 @@ bool cISPConsole::ReadDataFromCmd(cfBase *cmd, int id, cISP &data)
 		*(cmd->mOS) << _("Sorry the regular expression for nickname you provided is not valid.");
 		return false;
 	}
-	
+
 	cmd->GetParStr(eADD_DESC, data.mAddDescPrefix);
-	
+
 	if(!cmd->GetParRegex(eADD_CONN, data.mConnPattern) && cmd->PartFound(eADD_CONN)) {
 		data.mConnPattern = "";
 		*(cmd->mOS) << _("Sorry the regular expression for connection you provided is not valid.");
@@ -164,3 +167,5 @@ bool cISPConsole::ReadDataFromCmd(cfBase *cmd, int id, cISP &data)
 
 cISPConsole::~cISPConsole(){}
 
+	}; // namespace nIspPlugin
+}; // namespace nVerliHub

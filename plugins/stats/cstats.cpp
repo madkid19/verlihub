@@ -24,12 +24,13 @@
 #include "cstats.h"
 #include <stdlib.h>
 #include "src/ctime.h"
-#include "src/cserverdc.h"
 
-using namespace nDirectConnect;
-using namespace nUtils;
-namespace nStats
-{
+namespace nVerliHub {
+	//using namespace nUtils;
+	using namespace nSocket;
+	using namespace nConfig;
+	using namespace nTables;
+	namespace nStatsPlugin {
 
 cStats::cStats(cServerDC *server): cConfMySQL(server->mMySQL), mS(server)
 {
@@ -79,5 +80,5 @@ void cStats::AddFields()
 
 	SetBaseTo(this);
 }
-
-};
+	}; // namespace nStatsPlugin
+}; // namespace nVerliHub

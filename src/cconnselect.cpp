@@ -21,12 +21,13 @@
 ***************************************************************************/
 #include "cconnselect.h"
 #if ! HAVE_SYS_POLL_H
-namespace nServer {
 
+namespace nVerliHub {
+	using namespace nEnums;
+	namespace nSocket {
 cConnSelect::cConnSelect()
 {
 }
-
 
 cConnSelect::~cConnSelect()
 {
@@ -47,7 +48,7 @@ cConnSelect::~cConnSelect()
 	}
 }
 
-void cConnSelect::OptIn ( tSocket sock, tChEvent mask)
+void cConnSelect::OptIn(tSocket sock, tChEvent mask)
 {
 	if( mask & eCC_INPUT  ) mReadFS.Set(sock);
 	if( mask & eCC_OUTPUT ) mWriteFS.Set(sock);
@@ -68,7 +69,7 @@ void cConnSelect::OptIn ( tSocket sock, tChEvent mask)
 
 }
 
-void cConnSelect::OptOut( tSocket sock, tChEvent mask)
+void cConnSelect::OptOut(tSocket sock, tChEvent mask)
 {
 	if( mask & eCC_INPUT  ) mReadFS.Clr(sock);
 	if( mask & eCC_OUTPUT ) mWriteFS.Clr(sock);
@@ -185,6 +186,7 @@ void cConnSelect::FDSet2HashRevents(sFDSet &fdset, unsigned mask)
 	#endif
 }
 
-};
+	}; // namespace nSocket
+}; // namespace nVerliHub
 #endif
 

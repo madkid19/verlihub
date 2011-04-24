@@ -20,11 +20,13 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cconndc.h"
+#include "cuser.h"
 #include "ckicklist.h"
 
-namespace nDirectConnect {
-
-namespace nTables {
+namespace nVerliHub {
+	using namespace nMySQL;
+	using namespace nConfig;
+	namespace nTables {
 
 cKickList::cKickList(cMySQL &mysql) : cConfMySQL(mysql)
 {
@@ -127,7 +129,7 @@ bool cKickList::FindKick(cKick &Kick, const string &Nick, const string &OpNick, 
 	return found;
 }
 
-};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 

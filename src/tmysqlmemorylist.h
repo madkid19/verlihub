@@ -30,10 +30,10 @@
 #include <dirsettings.h>
 
 using std::vector;
-using nConfig::cConfMySQL;
-using namespace nStringUtils;
-
-namespace nConfig {
+namespace nVerliHub {
+	using nConfig::cConfMySQL;
+	using namespace nUtils;
+	namespace nConfig {
 
   /**
   * Load data to memory from a given table and store and modify them.
@@ -44,14 +44,14 @@ namespace nConfig {
 template<class DataType, class OwnerType> class tMySQLMemoryList : public cConfMySQL
 {
 public:
-	
+
 	/**
 	* Class constructor.
 	    * @param mysql The connection object to MySQL database.
 	    * @param owner An instance of the object that owns DataType.
 	    * @param tablename The name of the table where to store data.
 	*/
-	tMySQLMemoryList(cMySQL &mysql, OwnerType *owner, string tablename) :
+	tMySQLMemoryList(nMySQL::cMySQL &mysql, OwnerType *owner, string tablename) :
 		cConfMySQL(mysql), mOwner(owner)
 	{
 		mMySQLTable.mName = tablename;
@@ -89,7 +89,7 @@ public:
 	{
 		Data.OnLoad();
 	}
-	
+
 	/**
 	* Add columns to the table and specify where to store the value of the column for each row.
 	    * @see cConfMySQL::AddCol()
@@ -121,14 +121,14 @@ public:
 	*/
 	virtual int ReloadAll()
 	{
-		cQuery Query(mQuery); // make a second query for safety reasons
+		nMySQL::cQuery Query(mQuery); // make a second query for safety reasons
 		Empty();
 		Query.Clear();
 		SelectFields(Query.OStream());
 
 		if(this->mWhereString.size())
 			Query.OStream() << " WHERE " << this->mWhereString;
-		if(this->mOrderString.size()) 
+		if(this->mOrderString.size())
 			Query.OStream() << " ORDER BY " << this->mOrderString;
 		int n=0;
 		db_iterator it;
@@ -136,8 +136,7 @@ public:
 		DataType CurData, *AddedData;
 		SetBaseTo(&CurData);
 
-		for(it = db_begin(Query); it != db_end(); ++it)
-		{
+		for(it = db_begin(Query); it != db_end(); ++it) {
 			AddedData = this->AppendData(CurData);
 			OnLoadData(*AddedData);
 			n++;
@@ -188,8 +187,7 @@ public:
 		SetBaseTo(&data);
 		DeletePK();
 		iterator it;
-		for (it = begin(); it != end(); ++it)
-		{
+		for(it = begin(); it != end(); ++it) {
 			DataType* CurrentData =  *it;
 			if((CurrentData != NULL) && CompareDataKey(data, *CurrentData))
 			{
@@ -238,7 +236,7 @@ public:
 	{
 		this->mWhereString = Order;
 	}
-	
+
 	/**
 	* Save data to the given position in the table.
 	    * @param n The position
@@ -283,13 +281,13 @@ public:
 		if( i < 0 || i >= Size() ) return NULL;
 		return mData[i];
 	}
-      
+
 	/**
 	* Return an iterator to the first element of the list.
 	* @return The i-th element.
 	*/
 	iterator begin() { return mData.begin();}
-	
+
 	/**
 	* Return an iterator to the last element of the list.
 	* @return The i-th element.
@@ -303,7 +301,7 @@ private:
 protected:
 	// How data should be ordered when fetching them
 	string mOrderString;
-	
+
 	// Extra condition in WHERE clause
 	string mWhereString;
 
@@ -314,6 +312,7 @@ protected:
 	OwnerType *mOwner;
 };
 
-};
+	}; // namespace nConfig
+}; // namespace nVerliHub
 
 #endif

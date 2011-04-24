@@ -10,13 +10,14 @@
 
 #include "src/ckick.h"
 #include "src/cban.h"
-#include "src/cconndc.h"
 #include "src/cbanlist.h"
-#include "src/cserverdc.h"
 #include "cfloodprotect.h"
 
-namespace nDirectConnect {
-namespace nTables {
+namespace nVerliHub {
+	using namespace nTables;
+	using namespace nSocket;
+	using namespace nEnums;
+	namespace nFloodProtectPlugin {
 
 cFloodCfg::cFloodCfg(cServerDC *server) : mS(server)
 {
@@ -135,7 +136,7 @@ bool cFloodprotect::CheckFlood(cConnDC * conn, tFloodType ft)
 				Kick.mIP = usr->mIP;
 				Kick.mTime = cTime().Sec();
 				Kick.mReason = "HIGH FLOOD FREQUENCY DETECTED!";
-				mS->mBanList->NewBan(Ban, Kick, mCfg.mBanTimeOnFlood, cBan::eBF_IP);
+				mS->mBanList->NewBan(Ban, Kick, mCfg.mBanTimeOnFlood, eBF_IP);
 				mS->mBanList->AddBan(Ban);
 				usr->mDisabled = true;
 				usr->mActionCounter = 0;

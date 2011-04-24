@@ -20,10 +20,11 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 
-#include "cconnchoose.h"
-
 #ifndef CASYNCSOCKETSERVER_H
 #define CASYNCSOCKETSERVER_H
+
+#include "cconnchoose.h"
+
 #if USE_SELECT
 #include "cconnselect.h"
 #else
@@ -32,15 +33,15 @@
 #include "ctimeout.h"
 #include <list>
 #include "cobj.h"
+//#include "cconndc.h" // added
 #include "casyncconn.h"
 #include "cmeanfrequency.h"
 
 using namespace std;
-using namespace nUtils;
 
-namespace nServer {
-
-
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nSocket {
 /**
  * General asynchronous (non-blocking) socket server with some basic functionality.
  *
@@ -48,78 +49,80 @@ namespace nServer {
  */
 class cAsyncSocketServer : public cObj
 {
-    public:
-	friend class cAsyncConn;
-	
+public:
+	friend class nVerliHub::nSocket::cAsyncConn;
+
 	/**
 	* Class constructor.
 	* Create a server and start listening on given port.
 	* @param port The port to listen on.
 	*/
 	cAsyncSocketServer(int port=0);
-	
+
 	/**
 	* Class destructor.
 	*/
 	virtual ~cAsyncSocketServer();
-	
+
 	/**
 	* Stop main process loop and delete all connections.
 	*/
 	void close();
-	
+
 	/**
 	* Return the port on which the server is listening on.
 	* @return The port.
 	*/
-	virtual const int& getmPort();
-	
+	virtual unsigned int getPort() const;
+
 	/**
 	* This event is triggered when a connection is closed.
 	* @param conn Closed connection.
 	*/
 	void OnConnClose(cAsyncConn*);
-	
+
 	/**
 	* This event is triggered every period of time.
 	* @param now Current time.
 	* @return The result.
 	*/
 	virtual int OnTimer(cTime &now);
-	
+
 	/**
 	* This event is trigger every N seconds and triggers the event OnTimerBase for every connections.
 	* @param now Current time.
 	*/
 	int OnTimerBase(cTime &now);
-	
+
 	/**
 	* Main process loop. Run it until it is stopped or paused.
 	* @return The error code.
 	*/
 	int run();
-	
+
 	/**
 	* Stop main process loop and set error code.
 	* @param code The error code.
 	*/
 	void stop(int);
-	
+
 	/**
-	* Time step. 
+	* Time step.
 	* This method accepts new incoming connection, take care of existing ones and close connections that are not actived anymore.
 	*/
 	void TimeStep();
-	
+
 	virtual cAsyncConn * ListenWithConn(cAsyncConn *, int OnPort, bool UDP=false);
 	virtual cAsyncConn * Listen(int OnPort, bool UDP = false);
 	virtual bool StopListenConn(cAsyncConn *);
 	virtual int StartListening(int OverrideDefaultPort=0);
 	/** Write property of int mPort. */
-	virtual void setmPort( const int& _newVal);
-	
+	virtual void setPort(const unsigned int _newVal);
+
 	// Listening address
 	string mAddr;
+	// The port to listen on
+	unsigned int mPort;
 	// Connection period for timer
 	int timer_conn_period;
 	// Server period for timer
@@ -133,13 +136,11 @@ class cAsyncSocketServer : public cObj
 	// Current time
 	cTime mTime;
 	// Measure the frequency of the server
-	cMeanFrequency<unsigned ,21> mFrequency;
+	nUtils::cMeanFrequency<unsigned ,21> mFrequency;
 
     protected:
 	// Indicate if the loop should be run or not
 	bool mbRun;
-	// The port to listen on
-	int mPort;
 
 	typedef list<cAsyncConn*> tConnList;
 	// Iterator to iterate over connections list
@@ -152,7 +153,7 @@ class cAsyncSocketServer : public cObj
 		cConnSelect mConnChooser;
 	#endif
 
-	// True if Windows sockets is initialized 
+	// True if Windows sockets is initialized
 	static bool WSinitialized;
 	cConnFactory *mFactory;
 
@@ -161,28 +162,28 @@ class cAsyncSocketServer : public cObj
 	* @param conn The connection to add.
 	*/
 	virtual void addConnection(cAsyncConn *);
-	
+
 	/** return true if accept is allowed */
 	/**
 	* Return true if the server accepts new incoming connection.
 	* @return True if the server accepts a new connection or false otherwise.
 	*/
 	virtual bool AllowNewConn() { return true; };
-	
+
 	/**
 	* Remove the connection from the server.
 	* The pointer to the connection will be deleted and not valid anymore.
 	* @param conn The connection to remove.
 	*/
 	void delConnection(cAsyncConn *);
-	
+
 	/**
 	* Create a new string buffer for input/ouput operation.
 	* @param conn The connection.
 	* @return Pointer to the new string.
 	*/
 	virtual string * FactoryString(cAsyncConn *);
-	
+
 	/**
 	* Perform input operation on the given connection.
 	* This method will read all data from the connection
@@ -191,7 +192,7 @@ class cAsyncSocketServer : public cObj
 	* @return Number of read bytes.
 	*/
 	virtual int input(cAsyncConn *conn);
-	
+
 	/**
 	* This event is triggered when there is a new incoming message
 	* from a single connection.
@@ -199,7 +200,7 @@ class cAsyncSocketServer : public cObj
 	* @param message Pointer to the new message
 	*/
 	virtual void OnNewMessage(cAsyncConn *, string *);
-	
+
 	/**
 	* Perform output operation on the given connection.
 	* This method will send all data from the connection
@@ -208,7 +209,7 @@ class cAsyncSocketServer : public cObj
 	* @return Number of sent bytes.
 	*/
 	int output(cAsyncConn * conn);
-	
+
 	/**
 	* This event is triggered when there is a new incoming connection.
 	* @param conn The new connection.
@@ -226,7 +227,7 @@ class cAsyncSocketServer : public cObj
 	};
 	// Timer structure
 	sTimers mT;
-	
+
 	// Errore code when main loop ends
 	int mRunResult;
     private:
@@ -235,6 +236,6 @@ class cAsyncSocketServer : public cObj
 
 
 };
-};
-
+	}; // namespace nSocket
+}; // namespace nVerliHub
 #endif

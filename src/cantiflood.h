@@ -28,14 +28,16 @@
 #include <string>
 
 using namespace std;
-using namespace nUtils;
+
+namespace nVerliHub {
+	namespace nUtils {
 /**antiflood mechanism
   *@author Daniel Muller
   */
 
 class cAntiFlood: public cFreqLimiter
 {
-public: 
+public:
 	cAntiFlood(double min_delay, double period, long max, long too, string msg, const cTime &now):
 		cFreqLimiter(min_delay, period, max, now),
 		mFloodMsg(msg),
@@ -56,7 +58,8 @@ public:
 			return r;
 		}
 		return 0;
-	}	
+	}
 };
-
+	}; // namespace nUtils
+}; // namespace nVerliHub
 #endif

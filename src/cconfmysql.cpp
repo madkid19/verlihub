@@ -26,9 +26,11 @@
 #define DEFAULT_CHARSET "utf8"
 
 using namespace std;
-
-namespace nConfig
-{
+namespace nVerliHub {
+	using namespace nConfig;
+	using namespace nMySQL;
+	using namespace nEnums;
+	namespace nMySQL {
 
 cMySQLColumn::cMySQLColumn()
 {}
@@ -42,8 +44,7 @@ void cMySQLColumn::AppendDesc(ostream &os) const
 	mNull ? isNull = "" : isNull = " NOT NULL";
 	//Who added charset here? Query fails
 	os << mName << " " << mType /*<< " CHARACTER SET utf8 COLLATE utf8_unicode_ci "*/ << isNull;
-	if (mDefault.size())
-	{
+	if (mDefault.size()) {
 		os << " DEFAULT '";
 		cConfMySQL::WriteStringConstant(os, mDefault);
 		os << "'";
@@ -71,25 +72,24 @@ cMySQLTable::~cMySQLTable()
 
 bool cMySQLTable::GetCollation()
 {
-            int i = 0, n;
-            MYSQL_ROW row;            
-            mQuery.OStream() << "SELECT TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_NAME='" << mName << "' AND TABLE_SCHEMA='" << mQuery.getMySQL().GetDBName() << "'";
-            if(mQuery.Query() <= 0) {
-	 mQuery.Clear();
-	 return false;
-            }
-            
-            n = mQuery.StoreResult();
-            
-            cMySQLColumn col;
-            for( ; i < n; i++)
-            {
-	 row = mQuery.Row();
-	 mCollation = row[0];
-            }
-            
-            mQuery.Clear();
-            return true;
+	int i = 0, n;
+	MYSQL_ROW row;
+	mQuery.OStream() << "SELECT TABLE_COLLATION FROM information_schema.TABLES WHERE TABLE_NAME='" << mName << "' AND TABLE_SCHEMA='" << mQuery.getMySQL().GetDBName() << "'";
+	if(mQuery.Query() <= 0) {
+		mQuery.Clear();
+		return false;
+	}
+
+	n = mQuery.StoreResult();
+
+	cMySQLColumn col;
+	for( ; i < n; i++) {
+		row = mQuery.Row();
+		mCollation = row[0];
+	}
+
+	mQuery.Clear();
+	return true;
 }
 
 bool cMySQLTable::GetDescription(const string &tableName)
@@ -98,11 +98,10 @@ bool cMySQLTable::GetDescription(const string &tableName)
 	MYSQL_ROW row;
 
 	mName = tableName;
-	
-	
+
+
 	mQuery.OStream() << "SHOW COLUMNS FROM " << tableName;
-	if(mQuery.Query() <= 0)
-	{
+	if(mQuery.Query() <= 0) {
 		mQuery.Clear();
 		return false;
 	}
@@ -110,8 +109,7 @@ bool cMySQLTable::GetDescription(const string &tableName)
 	n = mQuery.StoreResult();
 
 	cMySQLColumn col;
-	for( ; i < n; i++)
-	{
+	for( ; i < n; i++) {
 		// 0=Field, 1=Type, 2=Null, 3=Key, 4=Default, 5=Extra
 		row = mQuery.Row();
 		col.ReadFromRow(row);
@@ -137,8 +135,7 @@ bool cMySQLTable::CreateTable()
 
 	// Try to create first
 	mQuery.OStream() << "CREATE TABLE IF NOT EXISTS " << mName << " (";
-	for(it = mColumns.begin(); it != mColumns.end(); ++it)
-	{
+	for(it = mColumns.begin(); it != mColumns.end(); ++it) {
 		mQuery.OStream() << (IsFirstCol?"":", ");
 		it->AppendDesc(mQuery.OStream());
 		IsFirstCol = false;
@@ -168,8 +165,7 @@ bool cMySQLTable::AutoAlterTable(const cMySQLTable &original)
 	const cMySQLColumn *col;
 	bool NeedAdd = false, NeedModif = false, result = false;
 
-	for(it = mColumns.begin(); it != mColumns.end(); ++it)
-	{
+	for(it = mColumns.begin(); it != mColumns.end(); ++it) {
 		NeedAdd = NeedModif = false;
 
 		if ((col = original.GetColumn(it->mName)) == NULL)
@@ -177,11 +173,10 @@ bool cMySQLTable::AutoAlterTable(const cMySQLTable &original)
 		else
 			NeedModif = ((*it) != (*col));
 
-		if (NeedAdd || NeedModif)
-		{
+		if(NeedAdd || NeedModif) {
 			result = true;
-			if(Log(1)) LogStream() << "Altering table " << mName << (NeedAdd?" add column ":" modify column")
-				<< it->mName << " with type: " << it->mType << endl;
+			if(Log(1))
+				LogStream() << "Altering table " << mName << (NeedAdd?" add column ":" modify column") << it->mName << " with type: " << it->mType << endl;
 			mQuery.OStream() << "ALTER TABLE  " << mName << (NeedAdd?" ADD COLUMN ":" MODIFY COLUMN ");
 			it->AppendDesc(mQuery.OStream());
 			mQuery.Query();
@@ -190,18 +185,21 @@ bool cMySQLTable::AutoAlterTable(const cMySQLTable &original)
 	}
 	GetCollation();
 	if(mCollation != DEFAULT_COLLATION) {
-		if(Log(1)) LogStream() << "Altering table " << mName << " setting collation to " << DEFAULT_COLLATION << endl;
+		if(Log(1))
+			LogStream() << "Altering table " << mName << " setting collation to " << DEFAULT_COLLATION << endl;
 		mQuery.OStream() << "ALTER TABLE  " << mName << " CHARACTER SET " << DEFAULT_CHARSET << " COLLATE " << DEFAULT_COLLATION;
 		mQuery.Query();
 		mQuery.Clear();
 	}
 	return result;
 }
-
+	}; // namespace nMySQL
+	namespace nConfig {
 cConfMySQL::cConfMySQL(cMySQL &mysql) :
 	mMySQL(mysql), mQuery(mMySQL), mMySQLTable(mMySQL)
 {
-	if (mItemCreator != NULL) delete mItemCreator;
+	if(mItemCreator != NULL)
+		delete mItemCreator;
 	mItemCreator = new cMySQLItemCreator;
 }
 
@@ -238,7 +236,8 @@ int cConfMySQL::Load()
 int cConfMySQL::Load(cQuery &Query)
 {
 	MYSQL_ROW row;
-	if(!(row= Query.Row())) return -1;
+	if(!(row= Query.Row()))
+		return -1;
 
 	for_each(mhItems.begin(), mhItems.end(), ufLoad(row));
 	return 0;
@@ -253,8 +252,7 @@ int cConfMySQL::StartQuery()
 int cConfMySQL::StartQuery(cQuery &Query)
 {
 	int ret = Query.Query();
-	if(ret <= 0)
-	{
+	if(ret <= 0) {
 		Query.Clear();
 		return ret;
 	}
@@ -281,13 +279,7 @@ int cConfMySQL::EndQuery(cQuery &Query)
 	return 0;
 }
 
-};
-
-
-/*!
-    \fn nConfig::cConfMySQL::AddPrimaryKey(const char*)
- */
-void nConfig::cConfMySQL::AddPrimaryKey(const char*key)
+void cConfMySQL::AddPrimaryKey(const char*key)
 {
 	string Key(key);
 	tItemHashType Hash = msHasher(Key);
@@ -295,59 +287,37 @@ void nConfig::cConfMySQL::AddPrimaryKey(const char*key)
 	if( item != NULL) mPrimaryKey.AddWithHash(item,Hash);
 }
 
-
-/*!
-    \fn nConfig::cConfMySQL::WherePKey(ostream &os)
- */
-void nConfig::cConfMySQL::WherePKey(ostream &os)
+void cConfMySQL::WherePKey(ostream &os)
 {
 	os << " WHERE (";
 	AllPKFields(os , true, true, false, string(" AND "));
 	os << " )";
 }
 
-
-/*!
-    \fn nConfig::cConfMySQL::AllFields(ostream &, bool DoF=true, bool DoV=false, string joint)
- */
-void nConfig::cConfMySQL::AllFields(ostream &os, bool DoF, bool DoV, bool IsAff, string joint)
+void cConfMySQL::AllFields(ostream &os, bool DoF, bool DoV, bool IsAff, string joint)
 {
 	 for_each(mhItems.begin(), mhItems.end(), ufEqual(os, joint , DoF, DoV, IsAff));
 }
 
-/*!
-    \fn nConfig::cConfMySQL::AllPKFields(ostream &, bool DoF=true, bool DoV=false, string joint)
- */
-void nConfig::cConfMySQL::AllPKFields(ostream &os, bool DoF, bool DoV, bool IsAff, string joint)
+void cConfMySQL::AllPKFields(ostream &os, bool DoF, bool DoV, bool IsAff, string joint)
 {
 	 for_each(mPrimaryKey.begin(), mPrimaryKey.end(), ufEqual(os, joint , DoF, DoV, IsAff));
 }
 
-/*!
-    \fn nConfig::cConfMySQL::SelectFields(ostream &)
- */
-void nConfig::cConfMySQL::SelectFields(ostream &os)
+void cConfMySQL::SelectFields(ostream &os)
 {
 	os << "SELECT ";
 	AllFields(os, true, false, false,string(", "));
 	os << " FROM " << mMySQLTable.mName << " ";
 }
 
-
-/*!
-    \fn nConfig::cConfMySQL::UpdateFields(ostream &os)
- */
-void nConfig::cConfMySQL::UpdateFields(ostream &os)
+void cConfMySQL::UpdateFields(ostream &os)
 {
 	os << "UPDATE " << mMySQLTable.mName  << " SET ";
 	AllFields(mQuery.OStream(), true, true, true, string(", "));
 }
 
-
-/*!
-    \fn nConfig::cConfMySQL::LoadPK()
- */
-bool nConfig::cConfMySQL::LoadPK()
+bool cConfMySQL::LoadPK()
 {
 	ostringstream query;
 
@@ -360,11 +330,7 @@ bool nConfig::cConfMySQL::LoadPK()
 	return found;
 }
 
-
-/*!
-    \fn nConfig::cConfMySQL::SavePK(bool dup)
- */
-bool nConfig::cConfMySQL::SavePK(bool dup)
+bool cConfMySQL::SavePK(bool dup)
 {
 	mQuery.OStream() << "INSERT IGNORE INTO " << mMySQLTable.mName << " (";
 	AllFields(mQuery.OStream(), true, false, false, string(", "));
@@ -381,11 +347,7 @@ bool nConfig::cConfMySQL::SavePK(bool dup)
 	return ret;
 }
 
-
-/*!
-    \fn nConfig::cConfMySQL::DeletePK()
- */
-void nConfig::cConfMySQL::DeletePK()
+void cConfMySQL::DeletePK()
 {
 	mQuery.Clear();
 	mQuery.OStream() << "DELETE FROM " << mMySQLTable.mName << " ";
@@ -394,12 +356,12 @@ void nConfig::cConfMySQL::DeletePK()
 	mQuery.Clear();
 }
 
-nConfig::cConfMySQL::db_iterator &nConfig::cConfMySQL::db_begin()
+cConfMySQL::db_iterator &cConfMySQL::db_begin()
 {
 	return db_begin(mQuery);
 }
 
-nConfig::cConfMySQL::db_iterator &nConfig::cConfMySQL::db_begin(cQuery &Query)
+cConfMySQL::db_iterator &cConfMySQL::db_begin(cQuery &Query)
 {
 	if((-1 == this->StartQuery(Query)) || (Load(Query) < 0))
 		mDBBegin = NULL;
@@ -408,12 +370,10 @@ nConfig::cConfMySQL::db_iterator &nConfig::cConfMySQL::db_begin(cQuery &Query)
 	return mDBBegin;
 }
 
-nConfig::cConfMySQL::db_iterator &nConfig::cConfMySQL::db_iterator::operator++()
+cConfMySQL::db_iterator &cConfMySQL::db_iterator::operator++()
 {
-	if ((mConf != NULL) && (mQuery != NULL))
-	{
-		if (mConf->Load(*mQuery) < 0)
-		{
+	if((mConf != NULL) && (mQuery != NULL)) {
+		if (mConf->Load(*mQuery) < 0) {
 			mConf->EndQuery(*mQuery);
 			mConf = NULL;
 			mQuery = NULL;
@@ -422,7 +382,17 @@ nConfig::cConfMySQL::db_iterator &nConfig::cConfMySQL::db_iterator::operator++()
 	return *this;
 }
 
-std::ostream &nConfig::cConfigItemMySQLPChar::WriteToStream (std::ostream& os)
+ostream &cConfigItemMySQLPChar::WriteToStream (ostream& os)
+{
+	if(!IsEmpty()) {
+		os << '"';
+		cConfMySQL::WriteStringConstant(os, this->Data());
+		os << '"';
+	} else os << " NULL ";
+	return os;
+}
+
+ostream &cConfigItemMySQLString::WriteToStream (ostream& os)
 {
 	if( !IsEmpty() )
 	{
@@ -433,23 +403,7 @@ std::ostream &nConfig::cConfigItemMySQLPChar::WriteToStream (std::ostream& os)
 	return os;
 }
 
-std::ostream &nConfig::cConfigItemMySQLString::WriteToStream (std::ostream& os)
-{
-	if( !IsEmpty() )
-	{
-		os << '"';
-		cConfMySQL::WriteStringConstant(os, this->Data());
-		os << '"';
-	} else os << " NULL ";
-	return os;
-}
-
-//@todo readfrom stream and char*
-
-/*!
-    \fn nConfig::cConfMySQL::UpdatePKVar(const char* var_name, string &new_val)
- */
-bool nConfig::cConfMySQL::UpdatePKVar(const char* var_name, string &new_val)
+bool cConfMySQL::UpdatePKVar(const char* var_name, string &new_val)
 {
 	cConfigItemBase * item = NULL;
 	string var(var_name);
@@ -460,11 +414,7 @@ bool nConfig::cConfMySQL::UpdatePKVar(const char* var_name, string &new_val)
 	return UpdatePKVar(item);
 }
 
-
-/*!
-    \fn nConfig::cConfMySQL::UpdatePKVar(cConfigItemBase *item)
- */
-bool nConfig::cConfMySQL::UpdatePKVar(cConfigItemBase *item)
+bool cConfMySQL::UpdatePKVar(cConfigItemBase *item)
 {
 	mQuery.OStream() << "UPDATE " << mMySQLTable.mName << " SET ";
 	ufEqual(mQuery.OStream(), string(", "), true, true, true)(item);
@@ -474,16 +424,12 @@ bool nConfig::cConfMySQL::UpdatePKVar(cConfigItemBase *item)
 	return ret;
 }
 
-
-/*!
-    \fn nConfig::cConfMySQL::UpdatePK()
- */
-bool nConfig::cConfMySQL::UpdatePK()
+bool cConfMySQL::UpdatePK()
 {
 	return UpdatePK(mQuery);
 }
 
-bool nConfig::cConfMySQL::UpdatePK(cQuery &Query)
+bool cConfMySQL::UpdatePK(cQuery &Query)
 {
 	UpdateFields(Query.OStream());
 	WherePKey(Query.OStream());
@@ -492,18 +438,14 @@ bool nConfig::cConfMySQL::UpdatePK(cQuery &Query)
 	return ret;
 }
 
-
-/*!
-    \fn nConfig::cConfMySQL::UpdatePKVar(const char *field)
- */
-bool nConfig::cConfMySQL::UpdatePKVar(const char *field)
+bool cConfMySQL::UpdatePKVar(const char *field)
 {
 	cConfigItemBase *item = operator[](field);
 	if(!item) return false;
 	return UpdatePKVar(item);
 }
 
-void nConfig::cConfMySQL::WriteStringConstant(ostream &os, const string &str)
+void cConfMySQL::WriteStringConstant(ostream &os, const string &str)
 {
 	string tmp;
 
@@ -527,7 +469,7 @@ void nConfig::cConfMySQL::WriteStringConstant(ostream &os, const string &str)
 	os << tmp;
 }
 
-void nConfig::cConfMySQL::ufEqual::operator()(cConfigItemBase* item)
+void cConfMySQL::ufEqual::operator()(cConfigItemBase* item)
 {
 	if(!start) mOS << mJoint; else start=false;
 	if(mDoField) mOS << (item->mName);
@@ -546,5 +488,5 @@ void nConfig::cConfMySQL::ufEqual::operator()(cConfigItemBase* item)
 		else item->WriteToStream(mOS);
 	}
 }
-
-
+	}; // namespace nConfig
+}; // namespace nVerliHub

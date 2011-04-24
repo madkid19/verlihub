@@ -22,8 +22,11 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#include <ostream>
 #include "casyncsocketserver.h"
 #include "cserverdc.h"
+
 #if defined _WIN32
 #  include <Winsock2.h>
 #  define ECONNRESET WSAECONNRESET
@@ -33,12 +36,9 @@
 #  define sockoptval_t char
 #endif
 
-#include <ostream>
-
 #if HAVE_ERRNO_H
 #include <errno.h>
 #endif
-
 #include "casyncconn.h"
 #include "cprotocol.h"
 #if !defined _WIN32
@@ -64,10 +64,11 @@ inline int closesocket(int s ){ return ::close(s);}
 #endif
 
 using namespace std;
-using namespace nUtils;
-using namespace nStringUtils;
 
-namespace nServer {
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	namespace nSocket {
 
 char *cAsyncConn::msBuffer = new char[MAX_MESS_SIZE+1];
 unsigned long cAsyncConn::sSocketCounter = 0;
@@ -170,7 +171,7 @@ void cAsyncConn::Close()
 	if(errno != EINTR){
 		sSocketCounter --;
 		if (Log(3)) LogStream() << "Closing socket " << mSockDesc << endl;
-	}		
+	}
 	else if(ErrLog(1)) LogStream() << "Socket not closed" << endl;
 	mSockDesc=0;
 }
@@ -208,7 +209,7 @@ int cAsyncConn::ReadLineLocal()
 	mxLine->append((char*)buf,len);
 	mBufReadPos += len+1;
 	meLineStatus = AC_LS_LINE_DONE;
-	
+
 	return len+1;
 }
 
@@ -248,7 +249,7 @@ void cAsyncConn::CloseNice(int msec)
 		CloseNow();
 		return;
 	}
-	
+
 	mCloseAfter.Get();
 	mCloseAfter += int(msec);
 }
@@ -257,10 +258,11 @@ void cAsyncConn::CloseNow()
 {
 	mWritable = false;
 	ok = false;
-	if(mxServer)
-		mxServer->mConnChooser.cConnChoose::OptOut((cConnBase*)this, cConnChoose::eCC_ALL);
-	if(mxServer)
-		mxServer->mConnChooser.cConnChoose::OptIn((cConnBase*)this, cConnChoose::eCC_CLOSE);
+	if(mxServer) {
+		mxServer->mConnChooser.OptOut((cConnBase*)this, eCC_ALL);
+		mxServer->mConnChooser.OptIn((cConnBase*)this, eCC_CLOSE);
+
+	}
 }
 
 int cAsyncConn::ReadAll()
@@ -269,7 +271,7 @@ int cAsyncConn::ReadAll()
 	mBufReadPos = 0;
 	mBufEnd = 0;
 	bool udp = (this->GetType() == eCT_CLIENTUDP);
-	
+
 	if(!ok || !mWritable)
 		return -1;
 
@@ -346,7 +348,7 @@ int cAsyncConn::SendAll(const char *buf, size_t &len)
 #else
 				int RetryCount = 0;
 				do
-				{ 
+				{
 					if ((n = send(mSockDesc, buf + total, (int)bytesleft, 0)) != SOCKET_ERROR)
 						break;
 					if (WSAGetLastError() == WSAEWOULDBLOCK)
@@ -495,7 +497,7 @@ tSocket cAsyncConn::CreateSock(bool udp)
 {
 	tSocket sock;
 	sockoptval_t yes=1;
-	
+
 	if(!udp)
 	{
 		/* Create tcp socket */
@@ -526,7 +528,7 @@ int cAsyncConn::BindSocket(int sock, int port, const char *ia)
 	memset(&mAddrIN, 0, sizeof(struct sockaddr_in));
 	mAddrIN.sin_family = AF_INET;
 	mAddrIN.sin_addr.s_addr = INADDR_ANY; // default listen address
-	if(ia) 
+	if(ia)
 #if !defined _WIN32
 	inet_aton(ia, &mAddrIN.sin_addr); // override it
 #else
@@ -616,14 +618,14 @@ tSocket cAsyncConn::AcceptSock()
 		#else
    	socknum = accept(mSockDesc, (struct sockaddr *)&client, &namelen);
 		#endif
-		
+
 		#if ! defined _WIN32
 			::usleep(50);
 		#else
          ::Sleep(1);
 		#endif
 	}
-	if(socknum == INVALID_SOCKET) 
+	if(socknum == INVALID_SOCKET)
 	{
 		#ifdef _WIN32
 		cout << WSAGetLastError() << "  " << sizeof(fd_set) << endl;
@@ -667,7 +669,7 @@ cAsyncConn * cAsyncConn::Accept()
 	sd = AcceptSock();
 	if(sd == INVALID_SOCKET ) return NULL;
 	mTimeLastIOAction.Get();
-	
+
 	AcceptingFactory = this->GetAcceptingFactory();
 	if (AcceptingFactory != NULL)
 		new_conn = AcceptingFactory->CreateConn(sd);
@@ -713,13 +715,13 @@ int cAsyncConn::Write(const string &data, bool Flush)
 	}
 
 	Flush = Flush || (mBufSend.size() > (mMaxBuffer >> 1));
-	
+
 	// Pointer to buffer for data to send
 	const char *send_buffer;
-	
+
 	// Size of buffer
 	size_t send_size;
-	
+
 	// Data are added to old buffer content
 	bool appended;
 
@@ -742,13 +744,13 @@ int cAsyncConn::Write(const string &data, bool Flush)
 	// We have appended data, so do not send now
 	if (!Flush)
 		return 0;
-	
+
 	// Make copy of send_size, because SendALl method will change it
 	size_t size_sent = send_size;
 	// Send the data as much as possible
 	if(SendAll(send_buffer,size_sent) == -1) {
 		if(Log(6)) {
-			nDirectConnect::cServerDC *server = (nDirectConnect::cServerDC *) mxServer;
+			nVerliHub::cServerDC *server = (nVerliHub::cServerDC *) mxServer;
 			server->mNetOutLog << "[" << AddrIP() << "]" << "Error sending data " << send_buffer << "(size:" << send_size << "; sent: " << size_sent << "; buffsent size:" << mBufSend.size() << ")" << endl;
 			server->mNetOutLog << "Error: " << strerror(errno) << " (code: " << errno << endl;
 		}
@@ -779,20 +781,20 @@ int cAsyncConn::Write(const string &data, bool Flush)
 		// Buffer overfill protection - only on registered connections
 		if(mxServer && ok) {
 			// Choose the connection to send the rest of data as soon as possible
-			mxServer->mConnChooser.cConnChoose::OptIn(this, cConnChoose::eCC_OUTPUT);
+			mxServer->mConnChooser.OptIn(this, eCC_OUTPUT);
 
 			// If buffer size is lower then UNBLOCK size, allow read operation on the connection
 			if(mBufSend.size() < MAX_SEND_UNBLOCK_SIZE) {
-				mxServer->mConnChooser.cConnChoose::OptIn(this, cConnChoose::eCC_INPUT);
+				mxServer->mConnChooser.OptIn(this, eCC_INPUT);
 				if(Log(5)) {
-					((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Unblocking read operation on socket " << endl;
+					((nVerliHub::cServerDC*) mxServer)->mNetOutLog << "Unblocking read operation on socket " << endl;
 					LogStream() << "UnBlock INPUT" << endl;
 				}
 			} // If buffer is bigger than max send size, block read operation
 			else if(mBufSend.size() >= MAX_SEND_FILL_SIZE) {
-				mxServer->mConnChooser.cConnChoose::OptOut(this, cConnChoose::eCC_INPUT);
+				mxServer->mConnChooser.OptOut(this, eCC_INPUT);
 				if(Log(5)) {
-					((nDirectConnect::cServerDC*) mxServer)->mNetOutLog << "Blocking read operation on socket " << endl;
+					((nVerliHub::cServerDC*) mxServer)->mNetOutLog << "Blocking read operation on socket " << endl;
 					LogStream() << "Block INPUT" << endl;
 				}
 			}
@@ -809,7 +811,7 @@ int cAsyncConn::Write(const string &data, bool Flush)
 
 		// Unregister the connection for write operation
 		if(mxServer && ok) {
-			mxServer->mConnChooser.cConnChoose::OptOut(this, cConnChoose::eCC_OUTPUT);
+			mxServer->mConnChooser.OptOut(this, eCC_OUTPUT);
 			if(Log(5)) LogStream() << "Blocking OUTPUT " << endl;
 		}
 
@@ -847,14 +849,11 @@ string * cAsyncConn::FactoryString()
 }
 
 
-};
-
-
 /*!
-    \fn nServer::cAsyncConn::DNSLookup()
+    \fn nSocket::cAsyncConn::DNSLookup()
  */
 //*NOTE:DNSLookup is extremely heavy on resources when dealing with a large amount of connections.
-bool nServer::cAsyncConn::DNSLookup()
+bool cAsyncConn::DNSLookup()
 {
 	struct hostent *hp;
 	if(mAddrHost.size())
@@ -864,8 +863,8 @@ bool nServer::cAsyncConn::DNSLookup()
 	return (hp != NULL);
 }
 
-unsigned long nServer::cAsyncConn::DNSResolveHost(const string &host)
-{	
+unsigned long cAsyncConn::DNSResolveHost(const string &host)
+{
 	struct sockaddr_in AddrIN;
 	memset(&AddrIN, 0, sizeof(sockaddr_in));
 	struct hostent *he = gethostbyname(host.c_str());
@@ -876,7 +875,7 @@ unsigned long nServer::cAsyncConn::DNSResolveHost(const string &host)
 	return AddrIN.sin_addr.s_addr;
 }
 
-bool nServer::cAsyncConn::DNSResolveReverse(const string &ip, string &host)
+bool cAsyncConn::DNSResolveReverse(const string &ip, string &host)
 {
 	struct hostent *hp;
 	struct in_addr addr;
@@ -890,7 +889,7 @@ bool nServer::cAsyncConn::DNSResolveReverse(const string &ip, string &host)
 	return hp != NULL;
 }
 
-string nServer::cAsyncConn::IPAsString(unsigned long addr)
+string cAsyncConn::IPAsString(unsigned long addr)
 {
 	struct in_addr in;
 	in.s_addr = addr;
@@ -900,21 +899,23 @@ string nServer::cAsyncConn::IPAsString(unsigned long addr)
 	return string(ip);
 }
 
-/**************************** 
-          cConnFactory 
+/****************************
+          cConnFactory
 *****************************/
-nServer::cAsyncConn * nServer::cConnFactory::CreateConn(tSocket sd)
+cAsyncConn * cConnFactory::CreateConn(tSocket sd)
 {
 	cAsyncConn *conn = new cAsyncConn(sd);
 	conn->mxMyFactory = this;
 	return conn;
 }
 
-void nServer::cConnFactory::DeleteConn(cAsyncConn * &conn)
+void cConnFactory::DeleteConn(cAsyncConn * &conn)
 {
 	conn->Close();
 	delete conn;
 	conn = NULL;
 }
 
+	}; // namespace nSocket
+}; // namespace nVerliHub
 

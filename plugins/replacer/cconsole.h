@@ -24,17 +24,11 @@
 #define NREPLACECCONSOLE_H
 
 #include "src/ccmdr.h"
+#include "src/cconndc.h"
 
-class cpiReplace;
-using namespace nCmdr;
-
-namespace nDirectConnect { class cConnDC; };
-using namespace nDirectConnect;
-
-namespace nReplace
-{
-
-
+namespace nVerliHub {
+	namespace nReplacePlugin {
+		class cpiReplace;
 /**
 a console that parses commands
 @author Daniel Muller
@@ -45,23 +39,23 @@ class cConsole
 public:
 	cConsole(cpiReplace *);
 	virtual ~cConsole();
-	int DoCommand(const string &str, cConnDC * conn);
+	int DoCommand(const string &str, nSocket::cConnDC * conn);
 protected:
 	cpiReplace *mReplace;
 	enum {eMSG_SEND, eMSG_Read };
-	class cfBase : public cCommand::sCmdFunc {
+	class cfBase : public nCmdr::cCommand::sCmdFunc {
 		public:
 		cpiReplace *GetPI(){ return ((cConsole *)(mCommand->mCmdr->mOwner))->mReplace;}
 	};
 	class cfAddReplacer : public cfBase { virtual bool operator()();} mcfReplaceAdd;
 	class cfGetReplacer : public cfBase { virtual bool operator()();} mcfReplaceGet;
 	class cfDelReplacer : public cfBase { virtual bool operator()();} mcfReplaceDel;
-	cCommand mCmdReplaceAdd;
-	cCommand mCmdReplaceGet;	
-	cCommand mCmdReplaceDel;
-	cCmdr mCmdr;
+	nCmdr::cCommand mCmdReplaceAdd;
+	nCmdr::cCommand mCmdReplaceGet;
+	nCmdr::cCommand mCmdReplaceDel;
+	nCmdr::cCmdr mCmdr;
 };
-
-};
+	}; // namespace nReplacePlugin
+}; // namespace nReplacePlugin
 
 #endif

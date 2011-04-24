@@ -19,62 +19,54 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#ifndef NCONFIGTMYSQLMEMORYHASH_H
-#define NCONFIGTMYSQLMEMORYHASH_H
-#include "tmysqlmemorylist.h"
-#include "thasharray.h"
 
-namespace nVerliHub {
-	using namespace nUtils;
-	namespace nConfig {
+#include "cpipisg.h"
+#include "src/cserverdc.h"
+#include <time.h>
 
-/**
-a list mirroring the mysql data, loaded in ram, and hashed for searching
+using namespace nVerliHub;
 
-@author Daniel Muller
-*/
-template<class DataType, class OwnerType>
-class tMySQLMemoryHash : public tMySQLMemoryList<DataType,OwnerType>
+cpiPisg::cpiPisg() : 
+	mStats(NULL),
+	mStatsTimer(300.0,0.0,cTime().Sec()),
+	mFreqSearchA(cTime(), 300.0, 10),
+	mFreqSearchP(cTime(), 300.0, 10)
 {
-protected:
-	typedef tHashArray<DataType*> tDataHashArray;
-	typedef typename tDataHashArray::tHashType tDataHashType;
+	mName = "Pisg";
+	mVersion = PISG_VERSION;
+}
 
-	virtual tDataHashType GetHash(DataType & data) = 0;
+cpiPisg::~cpiPisg()
+{
+	logFile.close();
+}
 
-	tDataHashArray mDataHash;
 
-public:
-	tMySQLMemoryHash(nMySQL::cMySQL& mysql, OwnerType* owner, string tablename):
-		tMySQLMemoryList<DataType, OwnerType> (mysql, owner, tablename)
-	{}
+void cpiPisg::OnLoad(cServerDC *server)
+{
+	cVHPlugin::OnLoad(server);
+	mServer = server;
+	logFile.open(server->mConfigBaseDir + "/" + "pisg.log");
+}
 
-	virtual ~tMySQLMemoryHash() {}
+bool cpiPisg::RegisterAll()
+{
+	RegisterCallBack("VH_OnParsedMsgChat");
+	return true;
+}
 
-	virtual DataType* AppendData(DataType const& data)
-	{
-		DataType* pData = tMySQLMemoryList<DataType,OwnerType>::AppendData(data);
-		tDataHashType Hash = this->GetHash(*pData);
-		mDataHash.AddWithHash(pData, Hash);
-		return pData;
+bool cpiPisg::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
+{
+	if(logFile.is_open && conn != NULL && conn->mpUser != NULL && msg != NULL) {
+		 time_t rawtime;
+		struct tm * timeinfo;
+		time(&rawtime);
+		timeinfo = localtime (&rawtime);
+		logFile << "[[" << (timeinfo->tm_year + 1900) << "%s-%s-%s|%s:%s]] <" << conn->mpUser->mNick.c_str() << "> " << msg->ChunkString(eCH_CH_MSG).c_str() << endl;
+	//date =  os.date ("*t") io.write("[["..date.year.."-"..formatTF(date.month).."-"..formatTF(date.day).."|"..formatTF(date.hour)..":"..formatTF(date.min).."]] <"..nick.."> "..data..lf)
 	}
+	return true;
+}
 
-	virtual void DelData(DataType& data)
-	{
-		tDataHashType Hash = this->GetHash(data);
-		tMySQLMemoryList<DataType,OwnerType>::DelData(data);
-		mDataHash.RemoveByHash(Hash);
-	}
+REGISTER_PLUGIN(cpiPisg);
 
-	virtual void Empty()
-	{
-		tMySQLMemoryList<DataType,OwnerType>::Empty();
-		mDataHash.Clear();
-	}
-
-};
-
-	}; // namespace nConfig
-}; // namespace nVerliHub
-
-#endif

@@ -34,24 +34,23 @@
 #include "cconntypes.h"
 
 using namespace std;
-using namespace nCmdr;
 
-// nDirectConnect namespace
-namespace nDirectConnect {
-
-namespace nTables {
-	class cTriggers;
-	class cTriggerConsole;
-	class cRedirects;
-	class cDCClients;
-	class cRedirectConsole;
-	class cDCClientConsole;
-}
-using namespace nTables;
-using namespace nInfo;
-
-class cConnDC;
-class cServerDC;
+namespace nVerliHub {
+	namespace nTables {
+		class cTriggers;
+		class cTriggerConsole;
+		class cRedirects;
+		class cDCClients;
+		class cRedirectConsole;
+		class cDCClientConsole;
+	}
+	namespace nSocket {
+		class cConnDC;
+		class cServerDC;
+	};
+	using namespace nTables;
+	using namespace nUtils;
+	using namespace nCmdr;
 
 /**
 	 * cDCConsole class. VerliHub console and command interpreter for users' and operators' commands.
@@ -69,7 +68,7 @@ public:
 	* @param s Pointer to VerliHub server.
 	* @param mysql The connection object to MySQL database.
 	*/
-	cDCConsole(cServerDC *s, cMySQL &mysql);
+	cDCConsole(nSocket::cServerDC *s, nMySQL::cMySQL &mysql);
 
 	/**
 	* Class destructor.
@@ -83,7 +82,7 @@ public:
 	* @param conn The user's connection that wants to run the command.
 	* @return Zero if an error occurred, 1 otherwise.
 	*/
-	virtual int OpCommand(const string &, cConnDC*);
+	virtual int OpCommand(const string &, nSocket::cConnDC*);
 
 	/**
 	* Handle user's commands like +myinfo, +chat, +report, etc.
@@ -92,7 +91,7 @@ public:
 	* @param conn The user's connection that wants to run the command.
 	 @return Zero if an error occurred, 1 otherwise.
 	*/
-	virtual int UsrCommand(const string & , cConnDC * );
+	virtual int UsrCommand(const string & , nSocket::cConnDC * );
 
 	/**
 	* Handle !getip or !gi hub command.
@@ -101,7 +100,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1.
 	*/
-	int  CmdGetip(istringstream &, cConnDC *);
+	int  CmdGetip(istringstream &, nSocket::cConnDC *);
 
 	/**
 	* Handle !gethost <user1> <user2>.. or !gh hub command.
@@ -110,7 +109,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1.
 	*/
-	int CmdGethost(istringstream & , cConnDC * );
+	int CmdGethost(istringstream & , nSocket::cConnDC * );
 
 	/**
 	* Handle !getinfo <user1> <user2>.. or !gi hub command.
@@ -119,7 +118,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Zero if an error occurred, 1 otherwise.
 	*/
-	int CmdGetinfo(istringstream &cmd_line , cConnDC *conn );
+	int CmdGetinfo(istringstream &cmd_line , nSocket::cConnDC *conn );
 
 	/**
 	* Handle !quit or !restart hub command.
@@ -128,7 +127,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1.
 	*/
-	int CmdQuit(istringstream &, cConnDC * conn,int code);
+	int CmdQuit(istringstream &, nSocket::cConnDC * conn,int code);
 
 	/**
 	* Handle !help hub command.
@@ -138,7 +137,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1.
 	*/
-	int CmdHelp(istringstream & cmd_line, cConnDC * conn);
+	int CmdHelp(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle !ccbroadcast <CC list> <message> or !ccbc  hub command.
@@ -147,7 +146,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1.
 	*/
-	int CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn,int cl_min, int cl_max);
+	int CmdCCBroadcast(istringstream & cmd_line, nSocket::cConnDC * conn,int cl_min, int cl_max);
 
 	/**
 	* Handle +password <password> hub command.
@@ -156,7 +155,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return 0 if an error occurred, 1 otherwise.
 	*/
-	int CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn);
+	int CmdRegMyPasswd(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle +info  hub command.
@@ -166,8 +165,8 @@ public:
 	* @return 0 if an error occurred, 1 otherwise.
 	*/
 
-	int CmdUInfo(istringstream & cmd_line, cConnDC * conn);
-	int CmdRInfo(istringstream & cmd_line, cConnDC * conn);
+	int CmdUInfo(istringstream & cmd_line, nSocket::cConnDC * conn);
+	int CmdRInfo(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle +myinfo  hub command.
@@ -176,7 +175,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1.
 	*/
-	int CmdMyInfo(istringstream & cmd_line, cConnDC * conn);
+	int CmdMyInfo(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle +myip hub command.
@@ -185,7 +184,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1.
 	*/
-	int CmdMyIp(istringstream & cmd_line, cConnDC * conn);
+	int CmdMyIp(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle +me <message> hub command.
@@ -194,7 +193,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return 0 if an error occured or 1 otherwise.
 	*/
-	int CmdMe(istringstream & cmd_line, cConnDC * conn);
+	int CmdMe(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle +regme <password> hub command.
@@ -203,7 +202,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return 0 if an error occured or 1 otherwise.
 	*/
-	int CmdRegMe(istringstream & cmd_line, cConnDC * conn);
+	int CmdRegMe(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle +kick <user> <reason>.
@@ -212,7 +211,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1.
 	*/
-	int CmdKick(istringstream & cmd_line, cConnDC * conn);
+	int CmdKick(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle +chat and +nochat hub command.
@@ -222,7 +221,7 @@ public:
 	* @param switchon. If set to true add the user to mChatUsers list that contains the users that can talk in mainchat. False value does the opposite.
 	* @return 0 if the user does not exist or 1 otherwise.
 	*/
-	int CmdChat(istringstream & cmd_line, cConnDC * conn, bool switchon);
+	int CmdChat(istringstream & cmd_line, nSocket::cConnDC * conn, bool switchon);
 
 	/**
 	* Handle !hideme or !hm <class> hub command.
@@ -231,7 +230,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1
 	*/
-	int CmdHideMe(istringstream & cmd_line, cConnDC * conn);
+	int CmdHideMe(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle !ul(imit) <users> <time>  hub command.
@@ -240,7 +239,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1
 	*/
-	int CmdUserLimit(istringstream & cmd_line, cConnDC * conn);
+	int CmdUserLimit(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	/**
 	* Handle !unhidekick <user> hub command.
@@ -249,7 +248,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1
 	*/
-	int CmdUnHideKick(istringstream &cmd_line, cConnDC *conn);
+	int CmdUnHideKick(istringstream &cmd_line, nSocket::cConnDC *conn);
 
 	/**
 	* Handle !hidekick <user> hub command.
@@ -258,7 +257,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1
 	*/
-	int CmdHideKick(istringstream &cmd_line, cConnDC *conn);
+	int CmdHideKick(istringstream &cmd_line, nSocket::cConnDC *conn);
 
 	/**
 	* Handle !class <nick> <new_class> hub command.
@@ -267,7 +266,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1
 	*/
-	int CmdClass(istringstream &cmd_line, cConnDC *conn);
+	int CmdClass(istringstream &cmd_line, nSocket::cConnDC *conn);
 
 
 	/**
@@ -277,7 +276,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1
 	*/
-	int CmdProtect(istringstream &cmd_line, cConnDC *conn);
+	int CmdProtect(istringstream &cmd_line, nSocket::cConnDC *conn);
 
 	/**
 	* Handle !reload command to reload VerliHub cache like triggers, custom redirects, configuration and reglist.
@@ -285,7 +284,7 @@ public:
 	* @param conn Pointer to user's connection which to send the result message.
 	* @return Always 1
 	*/
-	int CmdReload (istringstream &cmd_line, cConnDC *conn);
+	int CmdReload (istringstream &cmd_line, nSocket::cConnDC *conn);
 
 	/**
 	* Handle !commands or !cmds to show the list of available and register commands in VerliHub console.
@@ -293,7 +292,7 @@ public:
 	* @param conn Pointer to user's connection which to send the list of command.
 	* @return Always 1
 	*/
-	int CmdCmds (istringstream &cmd_line, cConnDC *conn);
+	int CmdCmds (istringstream &cmd_line, nSocket::cConnDC *conn);
 
 	/**
 	* Handle !topic <msg> command to set the hub topic for the hub. The topic will be appended after the hub name and look like this: <HUB NAME> - <TOPIC>
@@ -301,7 +300,7 @@ public:
 	* @param conn Pointer to user's connection which set the hub topic. It is used to send error message.
 	* @return Always 1
 	*/
-	int CmdTopic(istringstream & cmd_line, cConnDC * conn);
+	int CmdTopic(istringstream & cmd_line, nSocket::cConnDC * conn);
 
 	static cPCRE mIPRangeRex;
 	static bool GetIPRange(const string &range, unsigned long &from, unsigned long &to);
@@ -312,7 +311,7 @@ public:
 	enum{ eCM_CMD, eCM_BAN, eCM_GAG, eCM_TRIGGER, eCM_CUSTOMREDIR, eCM_DCCLIENT, eCM_SET, eCM_REG, eCM_INFO, eCM_RAW, eCM_WHO, eCM_KICK, eCM_PLUG, eCM_REPORT, eCM_BROADCAST, eCM_CONNTYPE, eCM_TRIGGERS, eCM_GETCONFIG, eCM_CLEAN };
 
 	// Pointr to VerliHub server
-	cServerDC *mServer;
+	nSocket::cServerDC *mServer;
 
 	// Pointer to Trigger console to handle custom commands not defined here
 	cTriggers *mTriggers;
@@ -379,6 +378,6 @@ private:
 	cDCClientConsole *mDCClientConsole;
 };
 
-};
+}; // namespace nVerliHub
 
 #endif

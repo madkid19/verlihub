@@ -33,8 +33,9 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-namespace nStringUtils
-{
+
+namespace nVerliHub {
+	namespace nUtils {
 
 int StrCompare(const string &str1, int start, int count, const string &str2)
 {
@@ -278,4 +279,5 @@ bool LimitLines(const string &str, int max)
 	return true;
 }
 
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub

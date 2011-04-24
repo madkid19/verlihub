@@ -23,8 +23,8 @@
 #define NTHREADSCMUTEX_H
 #include <pthread.h>
 
-namespace nThreads
-{
+namespace nVerliHub {
+	namespace nThread {
 
 /** mutual lock
 
@@ -46,6 +46,7 @@ private:
 	int mLastError;
 };
 
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub
 
 #endif

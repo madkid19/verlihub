@@ -37,12 +37,13 @@
 #include "i18n.h"
 
 using std::string;
-using namespace nStringUtils;
-using namespace nDirectConnect;
-namespace nDirectConnect
-{
-namespace nProtocol
-{
+
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	using namespace nSocket;
+	using namespace nSocket;
+	namespace nProtocol {
 
 cDCProto::cDCProto(cServerDC *serv):mS(serv)
 {
@@ -413,8 +414,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		return -1;
 	}
 
-	if( tag->mClientMode == nDirectConnect::nEnums::eCM_PASSIVE ||
-			 tag->mClientMode == nDirectConnect::nEnums::eCM_SOCK5 )
+	if( tag->mClientMode == eCM_PASSIVE ||  tag->mClientMode == eCM_SOCK5 )
 					conn->mpUser->IsPassive = true;
 	////////////////////// END TAG VERRIFICATION
 	delete tag;
@@ -520,7 +520,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) {
 		cBan Ban(mS);
 		bool banned = false;
-		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, cBan::eBF_SHARE | cBan::eBF_EMAIL);
+		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, eBF_SHARE | eBF_EMAIL);
 		if(banned && conn->GetTheoricalClass() <= eUC_REGUSER) {
 			stringstream msg;
 			msg << _("Banned.") << endl;
@@ -846,7 +846,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 			string nick;
 			mKickChatPattern.Extract(3,text,nick);
 
-			mS->DCKickNick(NULL, conn->mpUser, nick, kick_reason, cServerDC::eKCK_Reason);
+			mS->DCKickNick(NULL, conn->mpUser, nick, kick_reason, eKCK_Reason);
 		}
 		return 0;
 	}
@@ -872,7 +872,7 @@ int cDCProto::DC_Kick(cMessageDC * msg, cConnDC * conn)
 	// check rights
 	if(conn->mpUser->Can(eUR_KICK, mS->mTime.Sec()))
 	{
-		mS->DCKickNick(NULL, conn->mpUser, nick, mS->mEmpty, cServerDC::eKCK_Drop|cServerDC::eKCK_TBAN);
+		mS->DCKickNick(NULL, conn->mpUser, nick, mS->mEmpty, eKCK_Drop | eKCK_TBAN);
 		return 0;
 	}
 	else
@@ -1351,10 +1351,10 @@ int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 	os.str(mS->mEmpty);
 
 	cBan ban(mS);
-	mS->mBanList->NewBan(ban, other->mxConn, conn->mpUser->mNick, msg->ChunkString(eCH_NB_REASON), period, cBan::eBF_NICKIP);
+	mS->mBanList->NewBan(ban, other->mxConn, conn->mpUser->mNick, msg->ChunkString(eCH_NB_REASON), period, eBF_NICKIP);
 	mS->mBanList->AddBan(ban);
 
-	mS->DCKickNick(NULL, conn->mpUser, msg->ChunkString(eCH_NB_NICK), mS->mEmpty, cServerDC::eKCK_Drop);
+	mS->DCKickNick(NULL, conn->mpUser, msg->ChunkString(eCH_NB_NICK), mS->mEmpty, eKCK_Drop);
 
 	ban.DisplayKick(os);
 	mS->DCPublicHS(os.str(),conn);
@@ -1452,7 +1452,7 @@ int cDCProto::DCO_UnBan(cMessageDC * msg, cConnDC * conn)
 	if(msg->mType == eDCO_UNBAN)
 		ip = msg->ChunkString(eCH_1_PARAM);
 
-	int n = mS->mBanList->DeleteAllBansBy(ip, nick , cBan::eBF_NICKIP);
+	int n = mS->mBanList->DeleteAllBansBy(ip, nick , eBF_NICKIP);
 
 	if(n <= 0) {
 		os << autosprintf(_("No banned user found with ip %s."), msg->ChunkString(eCH_1_PARAM).c_str());
@@ -1674,14 +1674,7 @@ const string &cDCProto::GetMyInfo(cUserBase * User, int ForClass)
 		return User->mMyINFO_basic;
 }
 
-};
-};
-
-
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &, string &)
- */
-void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, string &dst, bool WithDCN)
+void cDCProto::UnEscapeChars(const string &src, string &dst, bool WithDCN)
 {
 	size_t pos;
 	dst = src;
@@ -1698,7 +1691,7 @@ void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, strin
 	}
 }
 
-void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, char *dst, int &len ,bool WithDCN)
+void cDCProto::UnEscapeChars(const string &src, char *dst, int &len ,bool WithDCN)
 {
 	size_t pos, pos2 = 0;
 	string start, end;
@@ -1734,10 +1727,7 @@ void nDirectConnect::nProtocol::cDCProto::UnEscapeChars(const string &src, char 
 	len = i;
 }
 
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::EscapeChars(const string &, string &)
- */
-void nDirectConnect::nProtocol::cDCProto::EscapeChars(const string &src, string &dst, bool WithDCN)
+void cDCProto::EscapeChars(const string &src, string &dst, bool WithDCN)
 {
 	dst = src;
 	size_t pos;
@@ -1752,7 +1742,7 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const string &src, string 
 	}
 }
 
-void nDirectConnect::nProtocol::cDCProto::EscapeChars(const char *buf, int len, string &dest, bool WithDCN)
+void cDCProto::EscapeChars(const char *buf, int len, string &dest, bool WithDCN)
 {
 	dest ="";
 	unsigned char c;
@@ -1782,7 +1772,7 @@ void nDirectConnect::nProtocol::cDCProto::EscapeChars(const char *buf, int len, 
 	}
 }
 
-void nDirectConnect::nProtocol::cDCProto::Lock2Key(const string &Lock, string &fkey)
+void cDCProto::Lock2Key(const string &Lock, string &fkey)
 {
 	int count = 0, len = Lock.size();
 	char *key = 0;
@@ -1805,3 +1795,6 @@ void nDirectConnect::nProtocol::cDCProto::Lock2Key(const string &Lock, string &f
 	delete [] key;
 	delete [] lock;
 }
+
+	}; // namespace nProtocol
+}; // namespace nVerliHub

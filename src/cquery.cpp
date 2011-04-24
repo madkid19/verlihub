@@ -21,7 +21,8 @@
 ***************************************************************************/
 #include "cquery.h"
 
-namespace nMySQL {
+namespace nVerliHub {
+	namespace nMySQL {
 
 cQuery::cQuery(cMySQL & mysql)
 	: cObj("nMySQL::cQuery"), mMySQL(mysql), mResult(NULL)
@@ -87,4 +88,5 @@ bool cQuery::GetResult()
 	return mResult ? true : false;
 }
 
-};
+	}; // namespace nMySQL
+}; // namespace nVerliHub

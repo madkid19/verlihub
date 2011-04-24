@@ -29,32 +29,29 @@
 
 using std::ostream;
 
-using nConfig::cConfigBase;
+namespace nVerliHub {
+	namespace nSocket {
+		class cServerDC;
+	};
 
-namespace nDirectConnect {
-
-class cServerDC;
-
-namespace nInfo {
 /**
 info about the server
 @author Daniel Muller
 */
 
-class cInfoServer : public cConfigBase
+class cInfoServer : public nConfig::cConfigBase
 {
 public:
 	cInfoServer();
 	~cInfoServer();
 	void SystemInfo(ostream &os);
-	void SetServer(cServerDC *Server);
+	void SetServer(nSocket::cServerDC *Server);
 	void Output(ostream &os, int Class);
 	virtual int Save(){return 0;}
 	virtual int Load(){return 0;}
 private:
-	cServerDC *mServer;
+	nSocket::cServerDC *mServer;
 };
-};
-};
+}; // namespace nVerliHub
 
 #endif

@@ -22,8 +22,8 @@
 #ifndef NTHREADSCTHREADWORK_H
 #define NTHREADSCTHREADWORK_H
 
-namespace nThreads
-{
+namespace nVerliHub {
+	namespace nThread {
 
 /**
 a definition of work what a WorkerThread should do..
@@ -62,7 +62,8 @@ protected:
 	Typ2 mPar2;
 	Typ3 mPar3;
 };
-};
+	}; // namespace nThread
+}; // namespace nVerliHub
 
 
 #endif

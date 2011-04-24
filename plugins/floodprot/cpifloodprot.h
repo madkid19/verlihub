@@ -18,13 +18,12 @@
 #include "src/ctime.h"
 #include "src/cconndc.h"
 #include "src/cvhplugin.h"
+#include "src/cmessagedc.h"
 #include "src/cserverdc.h"
 
-using namespace nDirectConnect::nPlugin;
-using namespace nDirectConnect::nTables;
-using namespace nDirectConnect;
-
-class cpiFloodprot : public cVHPlugin
+namespace nVerliHub {
+	namespace nFloodProtectPlugin {
+class cpiFloodprot : public nPlugin::cVHPlugin
 {
 public:
 	cpiFloodprot();
@@ -32,16 +31,17 @@ public:
 	virtual void OnLoad(cServerDC *);
 	virtual bool RegisterAll();
 	virtual bool OnTimer();
-	virtual bool OnParsedMsgChat(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgPM(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgSearch(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgMyINFO(cConnDC *, cMessageDC *);
-	virtual bool OnNewConn(cConnDC *);
+	virtual bool OnParsedMsgChat(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgPM(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgSearch(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgMyINFO(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnNewConn(nSocket::cConnDC *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
-	virtual bool OnCloseConn(cConnDC *);
+	virtual bool OnCloseConn(nSocket::cConnDC *);
 
 	cFloodprotect * mFloodprotect;
 };
-
+	}; // namespace nFloodProtectPlugin
+}; // namespace nVerliHub
 #endif

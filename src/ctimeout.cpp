@@ -20,8 +20,10 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "ctimeout.h"
-
-namespace nUtils {
-cTimeOut::~cTimeOut(){
+namespace nVerliHub {
+	namespace nUtils {
+cTimeOut::~cTimeOut()
+{
 }
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub

@@ -24,7 +24,8 @@
 #include "cserverdc.h"
 #include "i18n.h"
 
-namespace nDirectConnect {
+namespace nVerliHub {
+	using namespace nEnums;
 	namespace nTables {
 
 	cRedirects::cRedirects( cServerDC *server ) :
@@ -224,7 +225,7 @@ namespace nDirectConnect {
 	{
 		return (conn && conn->mpUser && conn->mpUser->mClass >= eUC_ADMIN);
 	}
-	};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 

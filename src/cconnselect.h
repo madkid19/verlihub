@@ -30,7 +30,8 @@
 #endif
 #include "thasharray.h"
 
-namespace nServer {
+namespace nVerliHub {
+	namespace nSocket {
 
 /**
 selecting connection chooser
@@ -58,28 +59,27 @@ public:
 	* @param event Bitwise OR list of I/O operation.
 	*/
 	virtual void OptIn(tSocket sock, tChEvent events);
-	
+
 	/**
 	* Unregister the connection for the given I/O operation.
 	* @param conn The connection.
 	* @param event Bitwise OR list of I/O operation.
 	*/
 	virtual void OptOut(tSocket, tChEvent);
-	
+
 	/**
 	* Return I/O operations for the given connection.
 	* @param conn The connection.
 	* @return Bitwise OR list of I/O operation.
 	* @see OptIn(tSocket sock, tChEvent events)
 	*/
-	virtual int OptGet( tSocket );
+	virtual int OptGet(tSocket sock);
 	/// \brief get the result after Choose operation
-	virtual int RevGet( tSocket );
+	virtual int RevGet(tSocket sock);
 	/// \brief test wheather the choose result is non-nul
-	virtual bool RevTest( tSocket );
+	virtual bool RevTest(tSocket sock);
 
-	
-	/** 
+	/**
 	* Wrapper for fd_set structure. It provides constructor and = operator.
 	* @author Daniel Muller
 	*/
@@ -163,8 +163,8 @@ protected:
 };
 
 
-
-};
+	}; // namespace nSocket
+}; // namespace nVerliHub
 
 #endif
 #endif

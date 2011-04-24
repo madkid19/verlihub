@@ -22,9 +22,11 @@
 #include "cpiisp.h"
 #include <stringutils.h>
 
-using namespace nStringUtils;
-using namespace nDirectConnect::nProtocol::nEnums;
-
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	using namespace nSocket;
+	namespace nIspPlugin {
 cpiISP::cpiISP()
 {
 	mName = "ISP";
@@ -53,8 +55,8 @@ bool cpiISP::RegisterAll()
 	return true;
 }
 
-bool cpiISP::OnParsedMsgMyINFO(cConnDC * conn, cMessageDC *msg) 
-{ 
+bool cpiISP::OnParsedMsgMyINFO(cConnDC * conn, cMessageDC *msg)
+{
 	cISP *isp;
 	if (conn->mpUser && (conn->GetTheoricalClass() <= mCfg->max_check_isp_class))
 	{
@@ -69,7 +71,7 @@ bool cpiISP::OnParsedMsgMyINFO(cConnDC * conn, cMessageDC *msg)
 				return false;
 			} else return true;
 		}
-		
+
 
 		if (!conn->mpUser->mInList)
 		{
@@ -95,7 +97,7 @@ bool cpiISP::OnParsedMsgMyINFO(cConnDC * conn, cMessageDC *msg)
 				return false;
 			}
 		}
-	
+
 		if (conn->GetTheoricalClass() <= mCfg->max_insert_desc_class)
 		{
 			string &desc = msg->ChunkString(eCH_MI_DESC);
@@ -114,7 +116,7 @@ bool cpiISP::OnParsedMsgMyINFO(cConnDC * conn, cMessageDC *msg)
 
 bool cpiISP::OnParsedMsgValidateNick(cConnDC * conn, cMessageDC *msg)
 {
-	cISP *isp;	
+	cISP *isp;
 	if (conn->GetTheoricalClass() <= mCfg->max_check_nick_class)
 	{
 		string & nick = msg->ChunkString(eCH_1_PARAM);
@@ -125,9 +127,9 @@ bool cpiISP::OnParsedMsgValidateNick(cConnDC * conn, cMessageDC *msg)
 			string omsg;
 			//cout << "ISP - got a wrong nick" << endl;
 			ReplaceVarInString(isp->mPatternMessage, "pattern", omsg, isp->mNickPattern);
-			ReplaceVarInString(omsg, "nick", omsg, nick); 
-			ReplaceVarInString(omsg, "CC", omsg, conn->mCC); 
-			
+			ReplaceVarInString(omsg, "nick", omsg, nick);
+			ReplaceVarInString(omsg, "CC", omsg, conn->mCC);
+
 			mServer->DCPublicHS(omsg,conn);
 			conn->CloseNice(500);
 			return false;
@@ -142,6 +144,8 @@ bool cpiISP::OnOperatorCommand(cConnDC *conn, string *str)
 	if( mConsole.DoCommand(*str, conn) ) return false;
 	return true;
 }
+	}; // namespace nIspPlugin
+}; // namespace nVerliHub
 
-REGISTER_PLUGIN(cpiISP);
+REGISTER_PLUGIN(nVerliHub::nIspPlugin::cpiISP);
 

@@ -26,19 +26,19 @@
 #include "tlistconsole.h"
 #include "cdcconsole.h"
 
-using nConfig::tMySQLMemoryList;
-
-namespace nDirectConnect {
-	
-	class cServerDC;
+namespace nVerliHub {
+	namespace nSocket {
+		class cServerDC;
+		class cConnDC;
+	};
 	class cDCConsole;
 	namespace nTables {
 
-		typedef tMySQLMemoryList<cRedirect, cServerDC> tRedirectsBase;
+		typedef nConfig::tMySQLMemoryList<cRedirect, nSocket::cServerDC> tRedirectsBase;
 		class cRedirects : public tRedirectsBase
 		{
 			public:
-				cRedirects(cServerDC *);
+				cRedirects(nSocket::cServerDC *);
 				virtual ~cRedirects(){};
 				virtual void AddFields();
 				cRedirect * Find(const string &name); //@todo Trigger stuff
@@ -49,7 +49,7 @@ namespace nDirectConnect {
 		};
 
 
-		typedef tListConsole<cRedirect, cRedirects, cDCConsole> tRedirectConsoleBase;
+		typedef nConfig::tListConsole<cRedirect, cRedirects, cDCConsole> tRedirectConsoleBase;
 
 		class cRedirectConsole: public tRedirectConsoleBase
 		{
@@ -61,16 +61,13 @@ namespace nDirectConnect {
 				virtual const char *CmdSuffix();
 				virtual const char *CmdPrefix();
 				virtual void ListHead(ostream *os);
-				virtual bool IsConnAllowed(cConnDC *conn,int cmd);
+				virtual bool IsConnAllowed(nSocket::cConnDC *conn,int cmd);
 				virtual bool ReadDataFromCmd(cfBase *cmd, int CmdID, cRedirect &data);
 				virtual void GetHelpForCommand(int cmd, ostream &os);
 				virtual void GetHelp(ostream &os);
 
 		};
-
-
-	};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
 #endif
- 

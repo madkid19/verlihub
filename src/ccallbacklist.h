@@ -29,10 +29,11 @@
 
 using namespace std;
 
+namespace nVerliHub {
 /**
   * General usage plugin library
 */
-namespace nPlugin {
+	namespace nPlugin {
 
 class cPluginBase;
 class cPluginManager;
@@ -76,6 +77,7 @@ public:
 	virtual bool CallOne(cPluginBase *pi) = 0;
 };
 
-};
+	}; // namespace nPlugin
+}; // namespace nVerliHub
 
 #endif

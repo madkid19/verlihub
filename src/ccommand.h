@@ -23,12 +23,14 @@
 #ifndef NCMDRCCOMMAND_H
 #define NCMDRCCOMMAND_H
 #include "cpcre.h"
+#include <string>
+#include <ostream>
 
-using namespace nUtils;
-using std::ostream;
 using std::string;
+using std::ostream;
 
-namespace nCmdr {
+namespace nVerliHub {
+	namespace nCmdr {
 
 	class cCmdr;
 /**
@@ -38,7 +40,7 @@ describes how commmand should be recognized an then how it should be treated
 */
 class cCommand
 {
-	friend class ::nCmdr::cCmdr;
+	friend class cCmdr;
 public:
 	/**
 		A function calling structure for the commander
@@ -48,18 +50,18 @@ public:
 	public:
 		string mIdStr;
 		string mParStr;
-		cPCRE * mIdRex;
-		cPCRE * mParRex;
+		nUtils::cPCRE * mIdRex;
+		nUtils::cPCRE * mParRex;
 		ostream *mOS;
 		cCommand *mCommand;
 
 		void *mExtra;
 		sCmdFunc():mIdRex(NULL), mParRex(NULL), mOS(NULL), mCommand(NULL){}
-		
+
 		virtual ~sCmdFunc(){};
 		// this is an executive function of a command
 		virtual bool operator() (void) = 0;
-		virtual bool operator() (cPCRE &idrex, cPCRE &parrex, ostream &os, void *extra)
+		virtual bool operator() (nUtils::cPCRE &idrex, nUtils::cPCRE &parrex, ostream &os, void *extra)
 		{
 			mIdRex = &idrex;
 			mParRex = &parrex;
@@ -67,14 +69,14 @@ public:
 			mOS = &os;
 			return operator()();
 		}
-		
+
 		virtual void GetSyntaxHelp(ostream &os, cCommand *){};
 
 		virtual bool PartFound(int rank)
 		{
 			return this->mParRex->PartFound(rank);
 		}
-		
+
 		virtual bool GetParStr(int rank, string &dest)
 		{
 			if(! this->mParRex->PartFound(rank)) return false;
@@ -97,13 +99,13 @@ public:
 			dest = (tmp == "1") || (tmp == "on") || (tmp == "true") || (tmp == "yes");
 			return true;
 		}
-		
+
 		virtual bool GetParDouble(int rank, double &dest)
 		{
 			string tmp;
 			if (!GetParStr(rank, tmp)) return false;
 			dest = atof(tmp.c_str());
-			return true;			
+			return true;
 		}
 
 		virtual bool GetParLong(int rank, long &dest)
@@ -111,9 +113,9 @@ public:
 			string tmp;
 			if (!GetParStr(rank, tmp)) return false;
 			dest = atoi(tmp.c_str());
-			return true;			
+			return true;
 		}
-		
+
 		virtual bool GetIDStr (int rank, string &dest)
 		{
 			if(! this->mIdRex->PartFound(rank)) return false;
@@ -135,11 +137,11 @@ public:
 	virtual void Init(void *){};
 	virtual void ListCommands(ostream &os);
 	void GetParamSyntax(ostream &os);
-	::nCmdr::cCmdr *mCmdr;
+	cCmdr *mCmdr;
 protected:
 	int mID;
-	cPCRE mIdentificator;
-	cPCRE mParamsParser;
+	nUtils::cPCRE mIdentificator;
+	nUtils::cPCRE mParamsParser;
 	sCmdFunc *mCmdFunc;
 	string mIdStr;
 	string mParStr;
@@ -147,6 +149,6 @@ protected:
 	string mParRegexStr;
 };
 
-};
-
+	}; // namespace nCmdr
+}; // namespace nVerliHub
 #endif

@@ -24,7 +24,8 @@
 #include <string.h>
 #include "cobj.h"
 
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 
 /**
 resizable hash array with non-persistent hashes
@@ -51,7 +52,7 @@ public:
 	virtual unsigned Size();
 	/** return the reserved capacity */
 	virtual unsigned Capacity();
-	
+
 	/// iterator thourg non NULL data items in the container
 	struct iterator
 	{
@@ -81,32 +82,24 @@ public:
 		return iterator(mData, mCapacity , mCapacity);
 	}
 
-	unsigned   Key2ShortHash(const string &Key){ return ShortHashString(Key); }
-
-	/*
-	bool     AddWithHash(DataType Data, const unsigned &Hash)
+	unsigned Key2ShortHash(const string &Key)
 	{
-		bool ret= ((DataType)NULL == Insert(Data, Hash));
-		if (ret) OnAdd(Data);
-		return ret;
+		return ShortHashString(Key);
 	}
-	bool     RemoveByHash(const unsigned &Hash)
-	{
-		DataType old = Remove(Hash);
-		if(old != (DataType)NULL)
-		{
-			OnRemove(old);
-			return true;
-		}
-		else return false;
-	}
-	*/
-	bool     ContainsHash(const unsigned &Hash){ return (DataType)NULL != Get(Hash);}
-	DataType GetByHash(const unsigned &Hash){return Get(Hash);}
-	unsigned size(){ return mSize; }
 
-	//virtual void OnAdd(DataType){};
-	//virtual void OnRemove(DataType){};
+	bool ContainsHash(const unsigned &Hash)
+	{
+		return (DataType)NULL != Get(Hash);
+	}
+
+	DataType GetByHash(const unsigned &Hash)
+	{
+		return Get(Hash);
+	}
+	unsigned size()
+	{
+		return mSize;
+	}
 
 	DataType *mData;
 	unsigned mSize;
@@ -124,8 +117,7 @@ public:
 	typedef unsigned long tHashType;
 	class iterator;
 private:
-	
-	/***/
+
 	struct sItem
 	{
 		friend struct iterator;
@@ -157,7 +149,7 @@ private:
 			}
 			return i;
 		}
-		
+
 		DataType Find(tHashType Hash)
 		{
 			if (mHash == Hash) return mData;
@@ -432,12 +424,12 @@ public:
 			for(unsigned i=0;i < mData->mCapacity; ++i) {
 					if (mData->mData[i] != NULL) {
 						cumulative = 0;
-						os << "i = " << i << " nulls = " << cumulative << " count = " << 
+						os << "i = " << i << " nulls = " << cumulative << " count = " <<
 								((sItem*)mData->mData[i])->size() << endl;
 					} else {
 						cumulative ++;
 					}
-			}				
+			}
 	}
 protected:
 	tData * mData;
@@ -546,5 +538,6 @@ template <class DataType> unsigned tUniqueHashArray<DataType>::Capacity()
 	return mCapacity;
 }
 
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub
 #endif

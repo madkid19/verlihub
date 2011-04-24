@@ -25,13 +25,16 @@
 #include "src/tlistconsole.h"
 #include "crooms.h"
 
-class cpiChatroom;
-using namespace nCmdr;
+namespace nVerliHub {
+	using namespace nCmdr;
+	namespace nSocket {
+		class cConnDC;
+	};
+	namespace nChatRoom {
+		class cpiChatroom;
 
-namespace nDirectConnect { class cConnDC; };
-using namespace nDirectConnect;
 
-typedef class tListConsole<cRoom, cRooms, cpiChatroom> tRoomConsoleBase;
+		typedef class tListConsole<cRoom, cRooms, cpiChatroom> tRoomConsoleBase;
 
 /**
 a console that parses commands
@@ -51,7 +54,9 @@ public:
 	virtual cRooms *GetTheList();
 	virtual bool ReadDataFromCmd(cfBase *cmd, int CmdID, cRoom &data);
 	virtual void GetHelpForCommand(int cmd, ostream &os);
-	virtual bool IsConnAllowed(cConnDC *conn,int cmd);
+	virtual bool IsConnAllowed(nSocket::cConnDC *conn,int cmd);
 };
 
+	}; // namespace nChatRoom
+}; // namespace nVerliHub
 #endif

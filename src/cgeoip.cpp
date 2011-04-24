@@ -21,12 +21,13 @@
 ***************************************************************************/
 #include "cgeoip.h"
 
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 
 cGeoIP::cGeoIP()
 : mGI(GeoIP_new(GEOIP_STANDARD))
 {
-	
+
 }
 
 bool cGeoIP::GetCC(const string &hostname, string &CC)
@@ -46,5 +47,5 @@ cGeoIP::~cGeoIP()
 {
 	GeoIP_delete(mGI);
 }
-
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub

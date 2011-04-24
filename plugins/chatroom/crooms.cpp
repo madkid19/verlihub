@@ -25,9 +25,11 @@
 #include "src/cdcproto.h"
 #include "src/i18n.h"
 
-using namespace nUtils;
+namespace nVerliHub {
+	using namespace nUtils;
+	namespace nChatRoom {
 
-cXChatRoom::cXChatRoom(const string &nick, cRoom *room) : 
+cXChatRoom::cXChatRoom(const string &nick, cRoom *room) :
 	cChatRoom(nick, room->mUsers, room->mServer),
 	mRoom(room)
 {
@@ -40,8 +42,8 @@ bool cXChatRoom::IsUserAllowed(cUser *user)
 
 cRoom::cRoom()
 {
-	mMinClass = 0; 
-	mAutoClassMin = 11; 
+	mMinClass = 0;
+	mAutoClassMin = 11;
 	mAutoClassMax=4;
 	mChatRoom = NULL;
 	mServer = NULL;
@@ -65,7 +67,6 @@ cRoom::~cRoom()
 
 void cRoom::OnLoad()
 {
-	//string nick="[CHAT]"+mNick;
 	string omsg;
 	string start(mNick);
 
@@ -78,7 +79,7 @@ void cRoom::OnLoad()
 		mChatRoom=new cXChatRoom(mNick, this);
 		mChatRoom->mClass = tUserCl(10);
 		desc += mTopic;
-		::nDirectConnect::nProtocol::cDCProto::Create_MyINFO(mChatRoom->mMyINFO, mNick,desc,speed,mail,share);
+		nProtocol::cDCProto::Create_MyINFO(mChatRoom->mMyINFO, mNick,desc,speed,mail,share);
 		mChatRoom->mMyINFO_basic = mChatRoom->mMyINFO;
 
 		mPlugin->AddRobot(mChatRoom);
@@ -175,9 +176,6 @@ bool cRooms::CompareDataKey(const cRoom &D1, const cRoom &D2)
 	return D1.mNick == D2.mNick;
 }
 
-//--------------------------
-//
-
 cRoomCfg::cRoomCfg(cServerDC *s) : mS(s)
 {
 	Add("min_class_add",min_class_add,5);
@@ -197,5 +195,5 @@ int cRoomCfg::Save()
 	mS->mSetupList.SaveFileTo(this,"pi_chatroom");
 	return 0;
 }
-
-
+	}; // namespace nChatRoom
+}; // namespace nVerliHub

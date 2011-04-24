@@ -21,7 +21,7 @@
 ***************************************************************************/
 #include "stdafx.h"
 #ifdef WIN32
-#include <windows.h> 
+#include <windows.h>
 #include <tchar.h>
 #define BUFSIZE MAX_PATH
 #include <local.h>
@@ -40,7 +40,8 @@
 #include "dirsettings.h"
 
 using namespace std;
-using nDirectConnect::cServerDC;
+using namespace nVerliHub;
+using namespace nVerliHub::nSocket;
 
 #if ! defined _WIN32
 void mySigPipeHandler(int i)
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
 {
 	int result = 0;
 	string ConfigBase;
-	
+
 	#ifdef _WIN32
 	TCHAR Buffer[BUFSIZE];
 	if(!GetCurrentDirectory(BUFSIZE, Buffer)) {
@@ -124,9 +125,9 @@ int main(int argc, char *argv[])
 	setlocale(LC_ALL, server.mDBConf.locale.c_str());
 	bindtextdomain("verlihub", LOCALEDIR);
 	textdomain("verlihub");
-	
+
 	int port=0;
-	
+
 	if(argc > 1) {
 		stringstream arg(argv[1]);
 		arg >> port;

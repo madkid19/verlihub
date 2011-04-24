@@ -27,10 +27,9 @@
 #include "cpimessanger.h"
 #include "cmsglist.h"
 
-using namespace nDirectConnect;
-
-namespace nMessanger
-{
+namespace nVerliHub {
+	using namespace nSocket;
+	namespace nMessangerPlugin {
 
 cConsole::cConsole(cpiMessanger *msn) :
 	mMessanger(msn),
@@ -67,7 +66,7 @@ bool cConsole::cfMessageSend::operator ( )()
 	this->GetParStr(1,msg.mReceiver);
 	this->GetParStr(2,msg.mSubject);
 	this->GetParStr(4,msg.mBody);
-	
+
 	receiver = GetMessanger()->mServer->mUserList.GetUserByNick(msg.mReceiver);
 	if ((receiver != NULL) && (receiver->mxConn != NULL)) {
 		GetMessanger()->mMsgs->DeliverOnline(receiver, msg);
@@ -91,4 +90,5 @@ bool cConsole::cfMessageRead::operator ( )()
 	return true;
 }
 
-};
+	}; // namespace nMessangerPlugin
+}; // namespace nVerliHub

@@ -22,20 +22,19 @@
 #include "cprotocol.h"
 #include "stringutils.h"
 
-using namespace nStringUtils;
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nEnums;
+	namespace nProtocol {
 
-namespace nServer
-{
-
-cProtocol::cProtocol()
-        : cObj("cProtocol")
+cProtocol::cProtocol() : cObj("cProtocol")
 {}
 
 
 cProtocol::~cProtocol()
 {}
 
-cMessageParser::cMessageParser(int MaxChunks) : 
+cMessageParser::cMessageParser(int MaxChunks) :
 	cObj("cMessageParser"),
 	mChunks(MaxChunks),
 	mChStrings(NULL),
@@ -55,7 +54,7 @@ cMessageParser::cMessageParser(int MaxChunks) :
 cMessageParser::~cMessageParser()
 {
 	mChunks.clear();
-	if (mChStrings != NULL) 
+	if (mChStrings != NULL)
 		delete[] mChStrings;
 	mChStrings = NULL;
 }
@@ -105,8 +104,8 @@ string &cMessageParser::ChunkString(unsigned int n)
 		try
 		{
 			tChunk &chu=mChunks[n];
-			if (chu.first >= 0 && chu.second >= 0 && 
-				chu.first < mStr.length() && chu.second < mStr.length()) 
+			if (chu.first >= 0 && chu.second >= 0 &&
+				chu.first < mStr.length() && chu.second < mStr.length())
 			{
 					mChStrings[n].assign(mStr, chu.first, chu.second);
 			} else {
@@ -167,14 +166,14 @@ bool cMessageParser::SplitOnTwo(size_t start, const char lim, int cn1, int cn2, 
 bool cMessageParser::SplitOnTwo(const char lim, int ch, int cn1, int cn2, bool left)
 {
 	tChunk &chu = mChunks[ch];
-	return SplitOnTwo(chu.first, lim, cn1, cn2,chu.second, left );	
+	return SplitOnTwo(chu.first, lim, cn1, cn2,chu.second, left );
 }
 
 /** splits the chunk number "ch" into two chunks by a delimiter adn stores them in the chunklist under numbers cn1 and cn2 */
 bool cMessageParser::SplitOnTwo(const string &lim, int ch, int cn1, int cn2, bool left)
 {
 	tChunk &chu = mChunks[ch];
-	return SplitOnTwo(chu.first, lim, cn1, cn2,chu.second, left );	
+	return SplitOnTwo(chu.first, lim, cn1, cn2,chu.second, left );
 }
 
 /** reduce the chunk from left by amount, cn is the chunk number */
@@ -212,6 +211,5 @@ void cMessageParser::SetChunk(int n,int start,int len)
 	ch.second=len;
 }
 
-
-}
-;
+	}; // namespace nProtocol
+}; // namespace nVerliHub

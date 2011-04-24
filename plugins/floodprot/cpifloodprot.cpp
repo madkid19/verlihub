@@ -9,8 +9,11 @@
  ***************************************************************************/
 
 #include "cpifloodprot.h"
-#include <iostream>
 
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nEnums;
+	namespace nFloodProtectPlugin {
 cpiFloodprot::cpiFloodprot() : mFloodprotect(0)
 {
 	mName = "Floodprotect";
@@ -124,5 +127,6 @@ bool cpiFloodprot::OnParsedMsgMyINFO(cConnDC *conn, cMessageDC *msg)
 
 	return true;
 }
-
-REGISTER_PLUGIN(cpiFloodprot);
+	}; // namespace nFloodProtectPlugin
+}; // namespace nVerliHub
+REGISTER_PLUGIN(nVerliHub::nFloodProtectPlugin::cpiFloodprot);

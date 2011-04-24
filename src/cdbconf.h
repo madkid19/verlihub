@@ -23,10 +23,8 @@
 #define NCONFIGCDBCONF_H
 #include "cconfigfile.h"
 
-using nConfig::cConfigFile;
-
-namespace nDirectConnect {
-
+namespace nVerliHub {
+	namespace nConfig {
 /**
 config of the database
 
@@ -46,9 +44,9 @@ public:
 	string locale;
 	bool allow_exec;
 	bool allow_exec_mod;
-	
-};
 
 };
 
+	}; // namespace nConfig
+};// namespace nVerliHub
 #endif

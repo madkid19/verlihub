@@ -22,9 +22,9 @@
 #include "cinterpolexp.h"
 #include <iostream>
 
-using std::cout;
-
-namespace nUtils {
+using namespace std;
+namespace nVerliHub {
+	namespace nUtils {
 
 cInterpolExp::cInterpolExp(unsigned int &var, long toval, int togo, int skip):
 	mVariable(var),
@@ -66,5 +66,5 @@ bool cInterpolExp::done()
 {
 	return ( mStepsToGo <= 0 );
 }
-
-};
+	}; // namespace nUtils
+}; // namespace nVerliHub

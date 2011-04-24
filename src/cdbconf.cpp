@@ -21,8 +21,8 @@
 ***************************************************************************/
 #include "cdbconf.h"
 
-namespace nDirectConnect {
-
+namespace nVerliHub {
+	namespace nConfig {
 cDBConf::cDBConf(const string &file):cConfigFile(file,false)
 {
 	msLogLevel = 1;
@@ -40,5 +40,5 @@ cDBConf::~cDBConf()
 {
 }
 
-
-};
+	}; // namespace nConfig
+}; // namespace nVerliHub

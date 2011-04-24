@@ -27,11 +27,8 @@
 #include "cconsole.h"
 #include "ciplog.h"
 
-using namespace nDirectConnect::nPlugin;
-using namespace nDirectConnect;
-using namespace nUtils;
-using namespace nIPLog;
-
+namespace nVerliHub {
+	namespace nIPLogPlugin {
 /**
 \brief a statistics plugin for verlihub
 
@@ -39,22 +36,23 @@ users may leave offline messages for registered users or reg users may leave off
 
 @author Daniel Muller
 */
-class cpiIPLog : public cVHPlugin
+class cpiIPLog : public nPlugin::cVHPlugin
 {
 public:
 	cpiIPLog();
 	virtual ~cpiIPLog();
 	virtual bool RegisterAll();
-	virtual bool OnOperatorCommand(cConnDC *, string *);
-	virtual bool OnNewConn(cConnDC * conn);
-	virtual bool OnCloseConn(cConnDC *conn);
-	virtual void OnLoad(cServerDC *);
+	virtual bool OnOperatorCommand(nSocket::cConnDC *, string *);
+	virtual bool OnNewConn(nSocket::cConnDC * conn);
+	virtual bool OnCloseConn(nSocket::cConnDC *conn);
+	virtual void OnLoad(nSocket::cServerDC *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
 	cConsole mConsole;
 	cIPLog * mIPLog;
 	int mLogFlags;
 };
-
+	}; // namespace using namespace ::nPlugin;
+}; // namespace nVerliHub
 
 #endif

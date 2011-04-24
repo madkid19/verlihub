@@ -25,9 +25,9 @@
 #include "cpcre.h"
 #include "i18n.h"
 
-using nUtils::cPCRE;
-namespace nDirectConnect {
-  
+namespace nVerliHub {
+	using nUtils::cPCRE;
+	using namespace nEnums;
 	cDCTagParser cDCClients::mParser;
 
 	cDCTagParser::cDCTagParser()
@@ -43,7 +43,7 @@ namespace nDirectConnect {
 			6 - The rest of the tag (called body)
 
 		*/
-	
+
 		//General regex PREFIX VERSION<NAME V:version, M:mode, H:i/i/i, S:slot>
 		//"(<?([A-Za-z\\+]*)[\\[ ]?([.0-9]*)\\]?>?)?<([\\+:A-Za-z]+) ?V\\:([^,]+),([^>]*)>"
 		if(!mTagRE.Compile("(<([A-Za-z\\+]*) ?([.0-9]*)>)?<([\\+:A-Za-z]+) ?V\\:([^,]+),([^>]*)>"))
@@ -89,7 +89,7 @@ namespace nDirectConnect {
 	{
 		SetClassName("nDC::cDCClients");
 	}
-	
+
 	void cDCClients::AddFields()
 	{
 		AddCol("name", "varchar(125)", "", false, mModel.mName);
@@ -102,7 +102,7 @@ namespace nDirectConnect {
 		mMySQLTable.mExtra = "PRIMARY KEY(name)";
 		SetBaseTo(&mModel);
 	}
-	
+
 	cDCClient* cDCClients::FindTag(const string &tagID)
 	{
 		iterator it;
@@ -120,7 +120,7 @@ namespace nDirectConnect {
 	{
 		return (D1.mName == D2.mName);
 	}
-	
+
 	bool cDCClients::ParsePos(const string &desc)
 	{
 		mPositionInDesc = -1;
@@ -129,7 +129,7 @@ namespace nDirectConnect {
 			mPositionInDesc = mParser.mTagRE.StartOf(0);
 		return mPositionInDesc > -1;
 	}
-	
+
 	cDCTag* cDCClients::ParseTag(const string &desc)
 	{
 		string str;
@@ -145,7 +145,7 @@ namespace nDirectConnect {
 			6 - The rest of the tag (called body)
 
 		*/
-	
+
 		enum { eTP_COMPLETE, eTP_PREFIX, eTP_PTAGID, eTP_PVERSION, eTP_TAGID, eTP_VERSION, eTP_BODY};
 		//TODO: Detect invalid tag
 		//tag->mClientType = eCT_NOTAG;
@@ -184,7 +184,7 @@ namespace nDirectConnect {
 		istringstream is(version);
 		is >> tag->mClientVersion;
 		is.clear();
-		
+
 		int hubs = -1,tmp;
 		char c;
 		// Number of hubs
@@ -244,10 +244,10 @@ namespace nDirectConnect {
 		string help_str;
 		switch(cmd)
 		{
-			case eLC_LST: 
-				help_str = "!lstclient\r\nGive the list of clients"; 
+			case eLC_LST:
+				help_str = "!lstclient\r\nGive the list of clients";
 				break;
-			case eLC_ADD: 
+			case eLC_ADD:
 			case eLC_MOD:
 				help_str = "!(add|mod)client <name>"
 						" -t <client_id>"
@@ -263,7 +263,7 @@ namespace nDirectConnect {
 		cDCProto::EscapeChars(help_str,help_str);
 		os << help_str;
 	}
-	
+
 	void cDCClientConsole::GetHelp(ostream &os)
 	{
 		string help;
@@ -273,11 +273,11 @@ namespace nDirectConnect {
 		help += "-v \tMinimum version number\r\n";
 		help += "-V \tMaximum version number\r\n";
 		help += "-e \tEnable or disable this rule (possible values are 0 or 1)\r\n";
-		
+
 		cDCProto::EscapeChars(help,help);
 		os << help;
 	}
-	
+
 	const char * cDCClientConsole::GetParamsRegex(int cmd)
 	{
 		switch(cmd)
@@ -300,7 +300,7 @@ namespace nDirectConnect {
 	bool cDCClientConsole::ReadDataFromCmd(cfBase *cmd, int CmdID, cDCClient &data)
 	{
 		enum {
-			eDATA_ALL, 
+			eDATA_ALL,
    			eDATA_NAME, eDATA_CHOICE,
    			eDATA_TAGIDp, eDATA_TAGID,
 			eDATA_CLIENTBANNEDp, eDATA_CLIENTBANNED,
@@ -319,7 +319,7 @@ namespace nDirectConnect {
 		cmd->GetParDouble(eDATA_MAXV, data.mMaxVersion);
 		return true;
 	}
-		
+
 	cDCClients *cDCClientConsole::GetTheList()
 	{
 		return mOwner->mDCClients;
@@ -332,12 +332,12 @@ namespace nDirectConnect {
 	{
 		*os << _("Existing clients are:") << "\r\n";
 	}
-		
+
 	bool cDCClientConsole::IsConnAllowed(cConnDC *conn,int cmd)
 	{
 		return (conn && conn->mpUser && conn->mpUser->mClass >= eUC_ADMIN);
 	}
-	};
-};
+	}; // namespace nTables
+}; // namespace nVerliHub
 
- 
+

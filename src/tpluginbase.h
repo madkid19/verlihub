@@ -28,7 +28,8 @@
 #endif
 using std::string;
 
-namespace nPlugin {
+namespace nVerliHub {
+	namespace nPlugin {
 
 /**
 the plugin base class suitable for any application
@@ -55,6 +56,7 @@ protected:
 
 };
 
-};
+	}; // namespace nPlugin
+}; // namespace nVerliHub
 
 #endif

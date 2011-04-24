@@ -37,43 +37,41 @@
 #define PYTHON_PI_VERSION "1.1"
 
 using std::vector;
-using namespace nScripts;
-using namespace nDirectConnect;
-using namespace nDirectConnect::nPlugin;
+namespace nVerliHub {
+	namespace nPythonPlugin {
 
-
-class cpiPython : public cVHPlugin
+class cpiPython : public nPlugin::cVHPlugin
 {
 public:
 	cpiPython();
 	virtual ~cpiPython();
 	bool RegisterAll();
-	virtual void OnLoad(cServerDC *);
-	virtual bool OnNewConn(cConnDC *);
-	virtual bool OnCloseConn(cConnDC *);
-	virtual bool OnParsedMsgChat(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgPM(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgSearch(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgSR(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgMyINFO(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgValidateNick(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgAny(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgSupport(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgMyPass(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgConnectToMe(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgRevConnectToMe(cConnDC *, cMessageDC *);
-	virtual bool OnUnknownMsg(cConnDC *, cMessageDC *);
-	virtual bool OnOperatorCommand(cConnDC *, std::string *);
+	virtual void OnLoad(nSocket::cServerDC *);
+	virtual bool OnNewConn(nSocket::cConnDC *);
+	virtual bool OnCloseConn(nSocket::cConnDC *);
+	virtual bool OnParsedMsgChat(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgPM(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgSearch(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgSR(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgMyINFO(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgValidateNick(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgAny(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgSupport(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgMyPass(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgConnectToMe(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgRevConnectToMe(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnUnknownMsg(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnOperatorCommand(nSocket::cConnDC *, std::string *);
 	virtual bool OnOperatorKicks(cUser *, cUser *, std::string *);
 	virtual bool OnOperatorDrops(cUser *, cUser *);
-	virtual bool OnValidateTag(cConnDC *, cDCTag *);
-	virtual bool OnUserCommand(cConnDC *, std::string *);
+	virtual bool OnValidateTag(nSocket::cConnDC *, cDCTag *);
+	virtual bool OnUserCommand(nSocket::cConnDC *, std::string *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
 	virtual bool OnTimer();
-	virtual bool OnNewReg(cRegUserInfo *);
-	virtual bool OnNewBan(cBan *);
-	
+	virtual bool OnNewReg(nTables::cRegUserInfo *);
+	virtual bool OnNewBan(nTables::cBan *);
+
 	bool AutoLoad();
 	const char *GetName (const char *path);
 	int SplitMyINFO(const char *msg, const char **nick, const char **desc, const char **tag, const char **speed, const char **mail, const char **size);
@@ -86,7 +84,7 @@ public:
 	cPythonInterpreter *GetInterpreter(int id);
 	bool CallAll(int func, w_Targs* args);
 	int Size() { return mPython.size(); }
-	
+
 	void Empty()
 	{
 		tvPythonInterpreter::iterator it;
@@ -97,25 +95,25 @@ public:
 		}
 		mPython.clear();
 	}
-	
+
 	void AddData(cPythonInterpreter *ip)
 	{
-		mPython.push_back(ip); 
+		mPython.push_back(ip);
 	}
-	
+
 	cPythonInterpreter * operator[](int i)
 	{
 		if(i < 0 || i > Size()) return NULL;
 		return mPython[i];
 	}
-	
+
 	cConsole mConsole;
-	cQuery *mQuery;
+	nMySQL::cQuery *mQuery;
 	typedef vector<cPythonInterpreter *> tvPythonInterpreter;
 	tvPythonInterpreter mPython;
 	string mScriptDir;
 	bool online;
-	
+
 	static void*        lib_handle;
 	static w_TBegin     lib_begin;
 	static w_TEnd       lib_end;
@@ -133,9 +131,10 @@ public:
 	static string botname;
 	static string opchatname;
 	static int log_level;
-	static cServerDC *server;
+	static nSocket::cServerDC *server;
 	static cpiPython *me;
 };
+	}; // namespace nPythonPlugin
 
 extern "C" w_Targs* _SendDataToUser    (int id, w_Targs* args);  //(char *data, char *nick);
 extern "C" w_Targs* _SendDataToAll     (int id, w_Targs* args);  //(char *data, long min_class, long max_class);
@@ -165,7 +164,7 @@ extern "C" w_Targs* _GetUsersCount     (int id, w_Targs* args);  //();
 extern "C" w_Targs* _GetTotalShareSize (int id, w_Targs* args);  //();
 extern "C" w_Targs* _UserRestrictions  (int id, w_Targs* args);  //(char *nick, char *gagtime, char *nopmtime, char *nosearchtime, char *noctmtime);
 extern "C" w_Targs* _Topic             (int id, w_Targs* args);  //(char* topic);
-
+}; // namespace nVerliHub
 #define w_ret0    cpiPython::lib_pack("l", (long)0)
 #define w_ret1    cpiPython::lib_pack("l", (long)1)
 #define w_retnone cpiPython::lib_pack("")

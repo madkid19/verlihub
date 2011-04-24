@@ -25,17 +25,12 @@
 #include "src/cserverdc.h"
 #include "src/cconfmysql.h"
 
-using namespace nConfig;
-
-namespace nDirectConnect { class cServerDC; };
-using namespace nDirectConnect;
-namespace nStats
-{
-
+namespace nVerliHub {
+	namespace nStatsPlugin {
 /**
 @author Daniel Muller
 */
-class cStats : public cConfMySQL
+class cStats : public nConfig::cConfMySQL
 {
 public:
 	time_t mTime;
@@ -50,12 +45,12 @@ public:
 	double mFreqMyINFOSent;
 	double mFreqMyINFOReceived;
 
-	cServerDC * mS;
-	cStats(cServerDC *server);
+	nSocket::cServerDC * mS;
+	cStats(nSocket::cServerDC *server);
 	void AddFields();
 	virtual void CleanUp();
 	virtual ~cStats();
 };
-
-};
+	}; // namespace nStatsPlugin
+}; // namespace nVerliHub
 #endif

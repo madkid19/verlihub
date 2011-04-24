@@ -25,80 +25,103 @@
 #include <unistd.h>
 #endif
 
-namespace nServer {
-
+namespace nVerliHub {
+	using namespace nEnums;
+	namespace nSocket {
 cConnPoll::cConnPoll() : mBlockSize(1024)
 {
 	mFDs.reserve(20480);
 }
 
-cConnPoll::~cConnPoll(){}
+cConnPoll::~cConnPoll()
+{}
 
-void cConnPoll::OptIn ( tSocket sock, cConnPoll::tChEvent mask)
+void cConnPoll::OptIn(tSocket sock, tChEvent mask)
 {
  	unsigned event = FD(sock).events;
-	if(!event && mask) FD(sock).fd = sock;
+	if(!event && mask)
+		FD(sock).fd = sock;
 
-	if (mask & eCC_CLOSE) FD(sock).events = 0;
-	else
-	{
-		if (mask & eCC_INPUT) event = POLLIN|POLLPRI;
-		if (mask & eCC_OUTPUT) event |= POLLOUT;
-		if (mask & eCC_ERROR) event |= POLLERR | POLLHUP | POLLNVAL;
+	if(mask & eCC_CLOSE)
+		FD(sock).events = 0;
+	else {
+		if(mask & eCC_INPUT)
+			event = POLLIN|POLLPRI;
+		if(mask & eCC_OUTPUT)
+			event |= POLLOUT;
+		if(mask & eCC_ERROR)
+			event |= POLLERR | POLLHUP | POLLNVAL;
 		FD(sock).events |= event;
 	}
 }
 
-void cConnPoll::OptOut( tSocket sock, cConnPoll::tChEvent mask)
+void cConnPoll::OptOut( tSocket sock, tChEvent mask)
 {
  	unsigned event = ~(0u);
-	if (mask & eCC_INPUT) event = ~unsigned(POLLIN|POLLPRI);
-	if (mask & eCC_OUTPUT) event &= ~unsigned(POLLOUT);
-	if (mask & eCC_ERROR) event &= ~unsigned(POLLERR | POLLHUP | POLLNVAL);
-	if(!(FD(sock).events &= event)) FD(sock).reset(); // nothing left
+	if(mask & eCC_INPUT)
+		event = ~unsigned(POLLIN|POLLPRI);
+	if(mask & eCC_OUTPUT)
+		event &= ~unsigned(POLLOUT);
+	if(mask & eCC_ERROR)
+		event &= ~unsigned(POLLERR | POLLHUP | POLLNVAL);
+	if(!(FD(sock).events &= event))
+		FD(sock).reset(); // nothing left
 }
 
-int cConnPoll::OptGet( tSocket sock )
+int cConnPoll::OptGet(tSocket sock)
 {
 	int mask = 0;
  	unsigned event = FD(sock).events;
-	if (!event && (FD(sock).fd == sock)) mask = eCC_CLOSE;
-	else
-	{
-		if (event & (POLLIN|POLLPRI)              ) mask |= eCC_INPUT;
-		if (event & POLLOUT                       ) mask |= eCC_OUTPUT;
-		if (event & (POLLERR | POLLHUP | POLLNVAL)) mask |= eCC_ERROR;
+	if(!event && (FD(sock).fd == sock))
+		mask = eCC_CLOSE;
+	else {
+		if(event & (POLLIN|POLLPRI))
+			mask |= eCC_INPUT;
+		if(event & POLLOUT)
+			mask |= eCC_OUTPUT;
+		if(event & (POLLERR | POLLHUP | POLLNVAL))
+			mask |= eCC_ERROR;
 	}
 	return mask;
 }
 
-int cConnPoll::RevGet( tSocket sock )
+int cConnPoll::RevGet(tSocket sock)
 {
 	int mask = 0;
 	cPollfd &theFD = FD(sock);
  	unsigned event = theFD.revents;
-	if (!theFD.events && (theFD.fd == sock)) mask = eCC_CLOSE;
-	if (event & (POLLIN|POLLPRI)              ) mask |= eCC_INPUT;
-	if (event & POLLOUT                       ) mask |= eCC_OUTPUT;
-	if (event & (POLLERR | POLLHUP | POLLNVAL)) mask |= eCC_ERROR;
+	if(!theFD.events && (theFD.fd == sock))
+		mask = eCC_CLOSE;
+	if(event & (POLLIN|POLLPRI))
+		mask |= eCC_INPUT;
+	if(event & POLLOUT)
+		mask |= eCC_OUTPUT;
+	if(event & (POLLERR | POLLHUP | POLLNVAL))
+		mask |= eCC_ERROR;
 
 	return mask;
 }
 
-bool cConnPoll::RevTest( cPollfd &theFD )
+bool cConnPoll::RevTest(cPollfd &theFD)
 {
- 	if (theFD.fd == INVALID_SOCKET ) return false;
-	if (!theFD.events) return true;
+ 	if(theFD.fd == INVALID_SOCKET)
+		return false;
+	if(!theFD.events)
+		return true;
  	unsigned event = theFD.revents;
- 	if (!event) return false;
+ 	if(!event)
+		return false;
 
-	if (event & POLLOUT                       ) return true;
-	if (event & (POLLIN|POLLPRI)              ) return true;
-	if (event & (POLLERR | POLLHUP | POLLNVAL)) return true;
+	if (event & POLLOUT)
+		return true;
+	if (event & (POLLIN|POLLPRI))
+		return true;
+	if (event & (POLLERR | POLLHUP | POLLNVAL))
+		return true;
 	return false;
 }
 
-bool cConnPoll::RevTest( tSocket sock )
+bool cConnPoll::RevTest(tSocket sock)
 {
 	cPollfd &theFD = FD(sock);
 	return RevTest(theFD);
@@ -111,14 +134,15 @@ int cConnPoll::poll(int wp_sec)
 	int todo = mFDs.size();
 	int done = 0;
 	int tmp;
-	while(todo)
-	{
+	while(todo) {
 		tmp = todo;
-		if (tmp > mBlockSize) tmp = mBlockSize;
+		if (tmp > mBlockSize)
+			tmp = mBlockSize;
 		//TEMP_FAILURE_RETRY( //@todo TEMP_FAILURE_RETRY for the poll
 			ret = ::poll(&(mFDs[done]), tmp, wp_sec + 1);
 		//);
-		if(ret < 0) continue;
+		if(ret < 0)
+			continue;
 		todo -= tmp;
 		done += tmp;
 		n+= ret;
@@ -131,14 +155,16 @@ int cConnPoll::poll(int wp_sec)
 
 bool cConnPoll::AddConn(cConnBase *conn)
 {
-	if (!cConnChoose::AddConn(conn)) return false;
+	if(!cConnChoose::AddConn(conn))
+		return false;
 
-	if( mLastSock >= (tSocket)mFDs.size())
+	if(mLastSock >= (tSocket)mFDs.size())
 		mFDs.resize(mLastSock + mLastSock/2);
 	return true;
 }
 
+	}; // namepsace nSocket
 
-};
+}; // namespace nVerliHub
 #endif
 
