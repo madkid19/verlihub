@@ -1,7 +1,6 @@
 INCLUDE_DIRECTORIES(${VERLIHUB_BINARY_DIR} ${VERLIHUB_SOURCE_DIR}/src)
 
 SET(VERLIHUB_HDRS
-	cantiflood.h
 	casyncconn.h
 	casyncsocketserver.h
 	cban.h
@@ -97,7 +96,6 @@ SET(VERLIHUB_HDRS
 	i18n.h
 )
 SET(VERLIHUB_SRCS
-	cantiflood.cpp
 	casyncconn.cpp
 	casyncsocketserver.cpp
 	cban.cpp

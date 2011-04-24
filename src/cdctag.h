@@ -26,32 +26,60 @@
 #include "cserverdc.h"
 
 using namespace std;
-
+/// VerliHub namespace that contains all classes.
 namespace nVerliHub {
 	namespace nEnums {
+		/**
+		 * Identify the mode used by a user as corresponding in client tag.
+		 */
 		typedef enum
 		{
+			/// The user sends no tag in $MyINFO to the hub
 			eCM_NOTAG,
+			/// The user sends a valid tag in $MyINFO and client is in active mode
 			eCM_ACTIVE,
+			/// The user sends a valid tag in $MyINFO and client is in passive mode
 			eCM_PASSIVE,
+			/// The user sends a valid tag in $MyINFO and client is connected
+			/// to the hub through a proxy
 			eCM_SOCK5
 		} tClientMode;
 
-		// Validate tag error code
+		/// Used to signal that an error occurred while validating the tag of the client.
+		/// These error codes are returned in response to a cDCTag::ValidateTag() call.
+		/// For example the user has too many open hubs or client version is not valid.
 		enum {
-			eTC_BANNED, // Banned client
-			eTC_UNKNOWN, // Unkown client
-			eTC_PARSE, // Tag parse error
-			eTC_MAX_HUB, // Too many hubs
-			eTC_MAX_SLOTS, // Too many slots
-			eTC_MIN_SLOTS, // Too few slots
-			eTC_MAX_HS_RATIO, // Hubs per slot
-			eTC_MIN_LIMIT, // Small upload limiter
-			eTC_MIN_LS_RATIO, // Small limiter per slot
-			eTC_MIN_VERSION, // Version too old
-			eTC_MAX_VERSION, // Version too recent
-			eTC_SOCK5, // Not allowed sock5
-			eTC_PASSIVE, // Restrict passive connections
+			/// The client of the user is banned
+			eTC_BANNED,
+			/// The client of the user is unknown
+			eTC_UNKNOWN,
+			/// The tag cannot be parsed
+			eTC_PARSE,
+			/// User has too many open hubs
+			eTC_MAX_HUB,
+			/// User has too many open slots
+			eTC_MAX_SLOTS,
+			/// User has too few open slots
+			eTC_MIN_SLOTS,
+			/// The ratio between open hubs and slots is too high
+			eTC_MAX_HS_RATIO,
+			/// The client is limiting the upload bandwidth
+			/// and the limit is too low
+			eTC_MIN_LIMIT,
+			/// The upload limit per slot is too low
+			eTC_MIN_LS_RATIO,
+			/// The client version is not valid
+			/// and too old
+			eTC_MIN_VERSION,
+			/// The client version is not valid
+			/// and too recent
+			eTC_MAX_VERSION,
+			/// The client is connected to the hub through a
+			/// proxy and it is not allowed
+			eTC_SOCK5,
+			/// The client is in passive mode
+			/// but passive connections are restricted
+			eTC_PASSIVE,
 		};
 	}
 
@@ -60,64 +88,86 @@ namespace nVerliHub {
 		class cConnType;
 	};
 	using namespace nTables;
+	/// @addtogroup Core
+	/// @{
+	/**
+	 * @brief This class represents a tag of a client that is sent in $MyINFO protocol message..
+	 * A tag looks like this <++ V:0.00,S:0,H:1>.
+	 * Every token of the tag are parsed and st*ored inside
+	 * an instance of this class. The parsing process is
+	 * triggered by cDCTag::ValidateTag() call.
+	 * @author Daniel Muller
+	 * @author Davide Simoncelli
+	 */
+	class cDCTag
+	{
+		public:
+			/**
+			 * Class constructor.
+			 * @param mS A pointer to cServerDC instance.
+			 */
+			cDCTag(nSocket::cServerDC *mS);
 
-/**dc info tag the <++ V:0.00,S:0,H:1> thing
-  *@author Daniel Muller
-  */
+			/**
+			 * Class constructor.
+			 * @param mS A pointer to cServerDC instance.
+			 * @param c A pointer to cDCClient instance.
+			 */
+			cDCTag(nSocket::cServerDC *mS, cDCClient *c);
 
-class cDCTag
-{
-	public:
-		cDCTag(nSocket::cServerDC *mS);
-		cDCTag(nSocket::cServerDC *mS, cDCClient *c);
+			/**
+			 * Class destructor.
+			 */
+			~cDCTag();
 
-		~cDCTag();
+			/**
+			 * Validate the tag of the client and identify it.
+			 * @param os A stream that contains an error message after validation.
+			 * @param conn_type The type of the connection of the user.
+			 * @param code An integer that contains an error code after validation.
+			 * @return The parsing result
+			 */
+			bool ValidateTag(ostream &os, cConnType *conn_type, int &code);
 
-		nSocket::cServerDC *mServer;
+			/**
+			 * Friend << operator to output a cDCTag instance.
+			 * @param os A stream that should contains the output.
+			 * @param tag An instance of this clas.
+			 */
+			friend ostream &operator << (ostream&os, cDCTag &tag);
 
-		cDCClient *client;
+			/// Instance of cServerDC class that is used
+			/// to access VerliHub configuration.
+			nSocket::cServerDC *mServer;
 
-		/** the parsed tag if available **/
+			/// Instance of cDCClient class that describes
+			/// the client of the user.
+			cDCClient *client;
 
-		string mTag;
+			/// The tag of the client.
+			string mTag;
 
-		/** The name of the client **/
+			/// The identification of the client inside the tag.
+			string mTagID;
 
-		//string mClientName;
+			/// The version of the client.
+			double mClientVersion;
 
-		/** The chunck in the tag that identify the client **/
+			/// The number of open hubs.
+			int mTotHubs;
 
-		string mTagID;
+			/// The number of open slots.
+			int mSlots;
 
+			/// The upload bandwidth limit.
+			int mLimit;
 
-		/** The client version */
+			/// The mode of the client.
+			tClientMode mClientMode;
 
-		double mClientVersion;
-
-		/** The number of the hubs connected to **/
-
-		int mTotHubs;
-
-		/** The number of open slots **/
-
-		int mSlots;
-
-		/** Limit **/
-
-		int mLimit;
-
-		/** The mode of the client (active, passive or socket) **/
-
-		tClientMode mClientMode;
-
-		/** The rest of tag (after the mode part to the end) **/
-
-		string mTagBody;
-
-		bool ValidateTag(ostream &os, cConnType *conn_type, int &code);
-
-		friend ostream &operator << (ostream&os, cDCTag &tag);
-};
-
+			/// The body of the tag (the string after the mode part)
+			string mTagBody;
+	};
+	/// @}
 }; // namespace nVerliHub
 #endif

@@ -32,6 +32,7 @@ using namespace std;
 namespace nVerliHub {
 	using namespace nTables;
 	using namespace nSocket;
+	using namespace nEnums;
 cDCTag::cDCTag(cServerDC *mS, cDCClient *c) : mServer(mS), client(c)
 {
 	mTotHubs = -1;
