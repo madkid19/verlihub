@@ -28,7 +28,12 @@
 #include <string>
 #include "src/script_api.h"
 
-using namespace nStringUtils;
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nSocket;
+	using namespace nPlugin;
+	using namespace nMySQL;
+	namespace nLuaPlugin {
 
 cpiLua    *cpiLua::me = NULL;
 int	  cpiLua::log_level = 1;
@@ -67,10 +72,10 @@ void cpiLua::SetLogLevel( int level )
 void cpiLua::OnLoad(cServerDC *server)
 {
 	cVHPlugin::OnLoad(server);
-	
+
 	mQuery = new cQuery(server->mMySQL);
 	mScriptDir = mServer->mConfigBaseDir + "/scripts/";
-	
+
 	AutoLoad();
 }
 
@@ -119,7 +124,7 @@ bool cpiLua::AutoLoad()
 		return false;
 	}
 	struct dirent *dent = NULL;
-	
+
 	while(NULL != (dent=readdir(dir))) {
 		filename = dent->d_name;
 		if((filename.size() > 4) && (StrCompare(filename,filename.size()-4,4,".lua")==0)) {
@@ -139,7 +144,7 @@ bool cpiLua::AutoLoad()
 			}
 		}
 	}
-	
+
 	closedir(dir);
 	return true;
 }
@@ -283,7 +288,7 @@ bool cpiLua::OnParsedMsgSR(cConnDC *conn, cMessageDC *msg)
 		char * args[] = {
 					(char *)conn->mpUser->mNick.c_str(),
 					(char *)msg->ChunkString(eCH_SR_ALL).c_str(),
-					NULL  
+					NULL
 		}; // eCH_SR_ALL, eCH_SR_FROM, eCH_SR_PATH, eCH_SR_SIZE, eCH_SR_SLOTS, eCH_SR_SL_FR, eCH_SR_SL_TO, eCH_SR_HUBINFO, eCH_SR_TO
 		return CallAll("VH_OnParsedMsgSR", args);
 	}
@@ -346,7 +351,7 @@ bool cpiLua::OnOperatorCommand(cConnDC *conn, string *command)
 	if((conn != NULL) && (conn->mpUser != NULL) && (command != NULL)) {
 		if(mConsole.DoCommand(*command, conn))
 			return false;
-	
+
 		char * args[] = {
 					(char *)conn->mpUser->mNick.c_str(),
 					(char *)command->c_str(),
@@ -364,7 +369,7 @@ bool cpiLua::OnOperatorKicks(cUser *OP, cUser *user, string *reason)
 					(char *)OP->mNick.c_str(),
 					(char *)user->mNick.c_str(),
 					(char *)reason->c_str(),
-					NULL 
+					NULL
 		};
 		return CallAll("VH_OnOperatorKicks", args);
 	}
@@ -506,7 +511,7 @@ bool cpiLua::OnHubName(string nick, string hubname)
 				NULL
 	};
 	return CallAll("VH_OnHubName", args);
-	
+
 }
 
 const char * cpiLua::toString(int number)
@@ -515,5 +520,6 @@ const char * cpiLua::toString(int number)
 	os << number;
 	return os.str().c_str();
 }
-
-REGISTER_PLUGIN(cpiLua);
+	}; // namepsace nLuaPlugin
+}; // namespace nVerliHub
+REGISTER_PLUGIN(nVerliHub::nLuaPlugin::cpiLua);

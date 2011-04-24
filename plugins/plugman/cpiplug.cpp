@@ -24,7 +24,9 @@
 #include "cplugs.h"
 #include "cserverdc.h"
 
-using namespace ;
+namespace nVerliHub {
+	using namespace nSocket;
+	namespace nPlugMan {
 
 cpiPlug::cpiPlug()
 {
@@ -55,6 +57,8 @@ bool cpiPlug::OnOperatorCommand(cConnDC *conn, string *str)
 		return false;
 	return true;
 }
+	}; // namespace nPlugMan
+}; // namespace nVerliHub
 
-REGISTER_PLUGIN(cpiPlug);
+REGISTER_PLUGIN(nVerliHub::nPlugMan::cpiPlug);
 

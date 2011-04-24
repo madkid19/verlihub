@@ -25,10 +25,10 @@
 #include "cpiiplog.h"
 #include "ciplog.h"
 
-using namespace ;
-
-namespace nIPLog
-{
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nEnums;
+	namespace nIPLogPlugin {
 
 cConsole::cConsole(cpiIPLog *iplog) :
 	mIPLog(iplog),
@@ -64,15 +64,15 @@ bool cConsole::cfLastIp::operator ( )()
 	const char *ids[]={"ip","nick","range", NULL};
 	const int ids_nums[]={eLAST_IP,eLAST_NICK, eLAST_RANGE};
 	int id;
-	
+
 	GetIDEnum(1,id, ids, ids_nums);
-	
+
 	GetParStr(eIP_WHO,who);
 	GetParInt(eIP_COUNT,count);
 
 	unsigned long range_min,range_max;
 	switch(id) {
-		case eLAST_IP: 
+		case eLAST_IP:
 			GetPI()->mIPLog->GetLastIP(who, count, *mOS); break;
 		case eLAST_NICK:
 			GetPI()->mIPLog->GetLastNick(who, count, *mOS); break;
@@ -92,22 +92,21 @@ bool cConsole::cfHistoryOf::operator ( )()
 	const char *ids[]={"ip","nick", NULL};
 	const int ids_nums[]={eHIST_IP,eHIST_NICK};
 	int id=-1;
-	
+
 	GetIDEnum(1,id, ids, ids_nums);
-	
+
 	GetParStr(eHI_WHO,who);
 	GetParInt(eHI_COUNT,count);
 	switch(id) {
-		case eHIST_IP: 
+		case eHIST_IP:
 			GetPI()->mIPLog->GetIPHistory(who, count, *mOS); break;
 		case eHIST_NICK:
 			GetPI()->mIPLog->GetNickHistory(who, count, *mOS); break;
 		default: break;
 	}
-	
+
 	return true;
 }
 
-
-
-};
+	}; // namespace nIPLogPlugin
+}; // namespace nVerliHub

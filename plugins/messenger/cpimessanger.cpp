@@ -25,9 +25,9 @@
 #include "src/cserverdc.h"
 #include "src/cdcproto.h"
 
-
-using namespace ;
-
+namespace nVerliHub {
+	using namespace nSocket;
+	namespace nMessangerPlugin {
 cpiMessanger::cpiMessanger() : mConsole(this), mMsgs(NULL), mReloadTimer(30., 0., cTime())
 {
 	mName = "Messanger";
@@ -81,6 +81,8 @@ bool cpiMessanger::OnUserCommand(cConnDC *conn, string *str)
 	if( mConsole.DoCommand(*str, conn) ) return false;
 	return true;
 }
+	}; // namespace nMessangerPlugin
+}; // namespace nVerliHub
 
-REGISTER_PLUGIN(cpiMessanger);
+REGISTER_PLUGIN(nVerliHub::nMessangerPlugin::cpiMessanger);
 

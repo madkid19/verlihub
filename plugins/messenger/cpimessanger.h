@@ -23,16 +23,16 @@
 #ifndef CPIMESSANGER_H
 #define CPIMESSANGER_H
 
+#include <string>
 #include "src/cvhplugin.h"
 #include "src/ctimeout.h"
 #include "src/cdcproto.h"
 #include "cconsole.h"
 #include "cmsglist.h"
 
-using namespace ::nPlugin;
-using namespace ;
-using namespace nUtils;
-using namespace nMessanger;
+using namespace std;
+namespace nVerliHub {
+	namespace nMessangerPlugin {
 
 /**
 \brief a messanger plugin for verlihub
@@ -41,20 +41,20 @@ users may leave offline messages for registered users or reg users may leave off
 
 @author Daniel Muller
 */
-class cpiMessanger : public cVHPlugin
+class cpiMessanger : public nPlugin::cVHPlugin
 {
 public:
 	cpiMessanger();
 	virtual ~cpiMessanger();
 	virtual bool RegisterAll();
-	virtual bool OnUserCommand(cConnDC *, string *);
+	virtual bool OnUserCommand(nSocket::cConnDC *, string *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnTimer();
-	virtual void OnLoad(cServerDC *);
+	virtual void OnLoad(nSocket::cServerDC *);
 	cConsole mConsole;
 	cMsgList * mMsgs;
-	cTimeOut mReloadTimer;
+	nUtils::cTimeOut mReloadTimer;
 };
-
-
+	}; // namespace nMessangerPlugin
+}; // namespace nVerliHub
 #endif

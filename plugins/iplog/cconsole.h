@@ -26,16 +26,19 @@
 #include "src/ccmdr.h"
 #include "src/cdccommand.h"
 
-class cpiIPLog;
-using namespace nCmdr;
-
-namespace  { class cConnDC; };
-using namespace ;
-
-namespace nIPLog
-{
-
-	class cIPLog;
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+	};
+	namespace nEnums {
+		enum {
+			eIL_LASTIP,
+			eIL_HISTORY
+		};
+	};
+	namespace nIPLogPlugin {
+		class cIPLog;
+		class cpiIPLog;
 
 /**
 a console that parses commands
@@ -47,21 +50,21 @@ class cConsole
 public:
 	cConsole(cpiIPLog *);
 	virtual ~cConsole();
-	int DoCommand(const string &str, cConnDC * conn);
+	int DoCommand(const string &str, nSocket::cConnDC * conn);
 	cpiIPLog *mIPLog;
 protected:
-	enum {eIL_LASTIP, eIL_HISTORY };
+
 	class cfBase : public cDCCommand::sDCCmdFunc {
 		public:
 		cpiIPLog *GetPI(){ return ((cConsole *)(mCommand->mCmdr->mOwner))->mIPLog;}
 	};
 	class cfLastIp : public cfBase { virtual bool operator()();} mcfLastIp;
 	class cfHistoryOf : public cfBase { virtual bool operator()();} mcfHistoryOf;
-	cCommand mCmdLastIp;
-	cCommand mCmdHistoryOf;
-	cCmdr mCmdr;
+	nCmdr::cCommand mCmdLastIp;
+	nCmdr::cCommand mCmdHistoryOf;
+	nCmdr::cCmdr mCmdr;
 };
-
-};
+	}; // namespace nIPLogPlugin
+}; // namespace nVerliHub
 
 #endif

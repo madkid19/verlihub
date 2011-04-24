@@ -23,15 +23,19 @@
 #include "cplugs.h"
 #include "cvhpluginmgr.h"
 #include "cserverdc.h"
+#include "stringutils.h"
 #include "src/i18n.h"
 #include <sys/stat.h>
 
 #define PADDING 15
 
-using namespace ;
-using namespace ::nPlugin;
+namespace nVerliHub {
+	using namespace nPlugin;
+	using namespace nUtils;
+	using namespace nEnums;
+	namespace nPlugMan {
 
-cPlug::cPlug() : 
+cPlug::cPlug() :
 	mLoadOnStartup(true),
 	mReloadNext(false),
 	mUnloadNext(false),
@@ -292,3 +296,5 @@ time_t cPlugs::GetFileTime(const string &filename)
 	return 0;
 }
 
+	}; // namespace nPlugMan
+}; // namespace nVerliHub

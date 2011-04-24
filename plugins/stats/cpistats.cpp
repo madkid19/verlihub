@@ -19,13 +19,13 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-
 #include "cpistats.h"
-#include "src/cserverdc.h"
 
-using namespace ;
-
-cpiStats::cpiStats() : 
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nEnums;
+	namespace nStatsPlugin {
+cpiStats::cpiStats() :
 	mStats(NULL),
 	mStatsTimer(300.0,0.0,cTime().Sec()),
 	mFreqSearchA(cTime(), 300.0, 10),
@@ -103,6 +103,7 @@ cpiStats::~cpiStats()
 	if (mStats)
 		delete mStats;
 }
-
-REGISTER_PLUGIN(cpiStats);
+	}; // namespace nStatsPlugin
+}; // namespace nVerliHub
+REGISTER_PLUGIN(nVerliHub::nStatsPlugin::cpiStats);
 

@@ -26,11 +26,13 @@
 #include "src/cserverdc.h"
 #include "src/i18n.h"
 
-using namespace nUtils;
-namespace nMessanger
-{
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nSocket;
+	using namespace nTables;
+	namespace nMessangerPlugin {
 
-cMsgList::cMsgList(cServerDC *server): 
+cMsgList::cMsgList(cServerDC *server):
 	cConfMySQL(server->mMySQL),
 	mCache(server->mMySQL,"pi_messages", "receiver", "date_sent"),
 	mServer(server)
@@ -45,7 +47,7 @@ cMsgList::~cMsgList()
 void cMsgList::CleanUp()
 {
 	mQuery.Clear();
-	mQuery.OStream() << "DELETE FROM " << mMySQLTable.mName << 
+	mQuery.OStream() << "DELETE FROM " << mMySQLTable.mName <<
 		" WHERE (date_expires > date_sent) AND (date_expires < " << mServer->mTime.Sec() << ")";
 	mQuery.Query();
 	mQuery.Clear();
@@ -68,7 +70,7 @@ void cMsgList::AddFields()
 	AddCol("date_expires","int(11)","0",true, mModel.mDateExpires );
 	AddCol("subject","varchar(128)","",true, mModel.mSubject );
 	AddCol("body","text","",true, mModel.mBody );
-	
+
 	mMySQLTable.mExtra="PRIMARY KEY (sender, date_sent)";
 	SetBaseTo(&mModel);
 }
@@ -116,12 +118,12 @@ int cMsgList::PrintSubjects(ostream &os, const string &nick, bool IsSender)
 	return 0;
 }
 
-void cMsgList::DeliverOnline(cUser *dest, sMessage &msg) 
+void cMsgList::DeliverOnline(cUser *dest, sMessage &msg)
 {
 	string omsg;
 	ostringstream os;
 	os << msg.AsOnline();
-	cDCProto::Create_PM(omsg, msg.mSender, dest->mNick, 
+	cDCProto::Create_PM(omsg, msg.mSender, dest->mNick,
 			msg.mSender, os.str() );
 	dest->mxConn->Send(omsg, true);
 }
@@ -131,7 +133,7 @@ int cMsgList::DeliverMessagesForUser(cUser *dest)
 	db_iterator it;
 	int n = 0;
 	long max_date = 0;
-	
+
 	mQuery.Clear();
 	SelectFields(mQuery.OStream());
 	mQuery.OStream() << "WHERE "  << "receiver" << "='" ;
@@ -139,7 +141,7 @@ int cMsgList::DeliverMessagesForUser(cUser *dest)
 	mQuery.OStream()<< "'";
 
 	SetBaseTo(&mModel);
-	
+
 	for( it = db_begin(); it != db_end(); ++it, ++n ) {
 		if (mModel.mDateSent > max_date)
 			max_date = mModel.mDateSent;
@@ -151,7 +153,7 @@ int cMsgList::DeliverMessagesForUser(cUser *dest)
 	WriteStringConstant(mQuery.OStream(),dest->mNick);
 	mQuery.OStream() << "' AND date_sent <= " << max_date;
 	mQuery.Query();
-	
+
 	return n;
 }
 
@@ -160,8 +162,8 @@ int cMsgList::DeliverMessagesSinceSync(unsigned sync)
 	db_iterator it;
 	int n = 0;
 	cUser *user = NULL;
-	cQuery DelQ(mQuery);
-	
+	nMySQL::cQuery DelQ(mQuery);
+
 	SetBaseTo(&mModel);
 	mQuery.Clear();
 	SelectFields(mQuery.OStream());
@@ -180,7 +182,7 @@ int cMsgList::DeliverMessagesSinceSync(unsigned sync)
 			DelQ.Query();
 		}
 	}
-	
+
 	DelQ.Clear();
 	mQuery.Clear();
 	return n;
@@ -191,7 +193,7 @@ int cMsgList::DeliverModelToUser(cUser *dest)
 	string omsg;
 	ostringstream os;
 	bool SenderOffline;
-	
+
 	os.str("");
 	omsg.erase();
 	SenderOffline =  (NULL == mServer->mUserList.GetUserByNick(mModel.mSender));
@@ -201,16 +203,16 @@ int cMsgList::DeliverModelToUser(cUser *dest)
 		omsg += mModel.mSender;
 		omsg += "|";
 	}
-	
+
 	os << mModel.AsDelivery();
-	
+
 	cDCProto::Create_PM(omsg, mModel.mSender, dest->mNick, mModel.mSender, os.str());
-	
+
 	if (SenderOffline) {
 		omsg += "|$Quit ";
 		omsg += mModel.mSender;
 	}
-	
+
 	dest->mxConn->Send(omsg, true);
 	return 0;
 }
@@ -244,5 +246,5 @@ ostream & operator << (ostream &os, sMessage &Msg)
 	}
 	return os;
 }
-
-};
+	}; // namespace nMessangerPlugin
+}; // namespace nVerliHub

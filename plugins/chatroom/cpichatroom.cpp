@@ -98,4 +98,4 @@ bool cpiChatroom::OnOperatorCommand(cConnDC *conn, string *str)
 
 	}; // namespace nChatRoom
 }; // namespace nVerliHub
-REGISTER_PLUGIN(cpiChatroom);
+REGISTER_PLUGIN(nVerliHub::nChatRoom::cpiChatroom);

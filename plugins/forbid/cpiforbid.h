@@ -25,12 +25,12 @@
 #include "src/tlistplugin.h"
 #include "cconsole.h"
 #include "cforbidden.h"
+#include "src/cmessagedc.h"
+#include "src/cconndc.h"
+#include "src/cserverdc.h"
 
-using namespace ::nPlugin;
-using namespace ::nTables;
-using namespace ;
-using namespace nForbid;
-using namespace nConfig;
+namespace nVerliHub {
+	namespace nForbidPlugin {
 
 typedef tpiListPlugin<cForbidden, cForbidConsole> tpiForbidBase;
 
@@ -49,12 +49,12 @@ public:
 	cpiForbid();
 	virtual ~cpiForbid();
 	virtual bool RegisterAll();
-	virtual bool OnOperatorCommand(cConnDC *, string *);
-	virtual bool OnParsedMsgChat(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgPM(cConnDC *, cMessageDC *);
-	virtual void OnLoad(cServerDC *);
+	virtual bool OnOperatorCommand(nSocket::cConnDC *, string *);
+	virtual bool OnParsedMsgChat(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgPM(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual void OnLoad(nSocket::cServerDC *);
 	cForbidCfg *mCfg;
 };
-
-
+	}; // namespace nForbidPlugin
+}; // namespace nVerliHub
 #endif

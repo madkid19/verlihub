@@ -25,21 +25,20 @@
 
 #include "creplacerworker.h"
 #include <vector>
-#include "cconfmysql.h"
+#include "src/cconfmysql.h"
+#include "src/cconndc.h"
+#include "src/cserverdc.h"
 
 using std::vector;
-using nConfig::cConfMySQL;
-
-namespace  {
-namespace nTables {
-
+namespace nVerliHub {
+	namespace nReplacePlugin {
 /**
 the vector of triggers, with load, reload, save functions..
 @author Daniel Muller
 changes by Pralcio
 */
 
-class cReplacer : public cConfMySQL
+class cReplacer : public nConfig::cConfMySQL
 {
 public:
 	cReplacer(cServerDC *server);
@@ -54,7 +53,7 @@ public:
 	int AddReplacer(cReplacerWorker &);
 	void DelReplacer(cReplacerWorker &);
 
-	string ReplacerParser(const string & str, cConnDC * conn);
+	string ReplacerParser(const string & str, nSocket::cConnDC * conn);
 
 	cReplacerWorker * operator[](int );
 private:
@@ -63,20 +62,19 @@ private:
 	// a model of a replacer worker
 	cReplacerWorker mModel;
 
-	cServerDC *mS;
+	nSocket::cServerDC *mS;
 };
 
-class cReplaceCfg : public cConfigBase
+class cReplaceCfg : public nConfig::cConfigBase
 {
 public:
-	cReplaceCfg(cServerDC *);
+	cReplaceCfg(nSocket::cServerDC *);
 
-	cServerDC *mS;
+	nSocket::cServerDC *mS;
 	virtual int Load();
 	virtual int Save();
 };
-
-};
-};
+	}; // namespace nReplacePlugin
+}; // namespace nVerliHub
 
 #endif

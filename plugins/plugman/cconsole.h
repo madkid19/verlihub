@@ -29,21 +29,22 @@
 
 #include <tlistconsole.h>
 
-class cpiPlug;
-class cPlugs;
-class cPlug;
-using namespace nCmdr;
+namespace nVerliHub {
+	using namespace nCmdr;
 
-namespace  {
-	class cConnDC;
+	namespace nSocket {
+		class cConnDC;
+	};
 	namespace nPlugin{
 		class cVHPlugin;
 	};
-};
-using namespace ;
-using namespace ::nPlugin;
 
-typedef class tListConsole<cPlug, cPlugs, cpiPlug> tPlugConsoleBase;
+	namespace nPlugMan {
+		class cpiPlug;
+		class cPlugs;
+		class cPlug;
+
+		typedef class nConfig::tListConsole<cPlug, cPlugs, cpiPlug> tPlugConsoleBase;
 
 /**
 a console that parses commands
@@ -55,7 +56,7 @@ class cPlugConsole : public tPlugConsoleBase
 {
 public:
 	// -- required methods
-	cPlugConsole(cVHPlugin *pi) : tPlugConsoleBase(pi){AddCommands();}
+	cPlugConsole(nPlugin::cVHPlugin *pi) : tPlugConsoleBase(pi){AddCommands();}
 	virtual ~cPlugConsole();
 	virtual cPlugs *GetTheList();
 	virtual void ListHead(ostream *os);
@@ -68,7 +69,7 @@ public:
 	virtual const char *CmdWord(int cmd);
 	virtual bool IsConnAllowed(cConnDC* conn,int cmd);
 	virtual void GetHelpForCommand(int cmd, ostream &os);
-	
+
 	enum {eLC_ON = eLC_FREE, eLC_OFF, eLC_RE};
 
 	class cfOn  : public tPlugConsoleBase::cfBase{ virtual bool operator()();} mcfOn;
@@ -82,5 +83,7 @@ public:
 	virtual void AddCommands();
 	// end of extra commands
 };
+	}; // namespace nPlugMan
+}; // namespace nVerliHub
 
 #endif

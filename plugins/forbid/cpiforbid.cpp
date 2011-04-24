@@ -20,9 +20,12 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cpiforbid.h"
-#include "src/cserverdc.h"
 
-using namespace ;
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nProtocol;
+	using namespace nEnums;
+	namespace nForbidPlugin {
 
 cpiForbid::cpiForbid() : mCfg(NULL)
 {
@@ -55,7 +58,7 @@ cpiForbid::~cpiForbid()
 bool cpiForbid::OnParsedMsgPM(cConnDC *conn, cMessageDC *msg)
 {
 	string text = msg->ChunkString(eCH_PM_MSG);
-	
+
 	cUser *dest = mServer->mUserList.GetUserByNick(msg->ChunkString(eCH_PM_TO));
 	if(dest && dest->mxConn && (dest->mClass > mCfg->max_class_dest))
 		return true;
@@ -74,7 +77,7 @@ bool cpiForbid::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
 	/** Check that the user inputs forbidden words into GLOBAL*/
 	if(mList->ForbiddenParser(text, conn , cForbiddenWorker::eCHECK_CHAT) == 0)
 		return false;
-	
+
 	if(conn->mpUser->mClass < eUC_OPERATOR)
 	{
 		/** Check repeating characters */
@@ -84,7 +87,7 @@ bool cpiForbid::OnParsedMsgChat(cConnDC *conn, cMessageDC *msg)
 			mServer->DCPublic(conn->mpUser->mNick,text,conn);
 			return false;
 		}
-		
+
 		if(!mList->CheckUppercasePercent(text, mCfg->max_upcase_percent))
 		{
 			/** send only to the bitch */
@@ -100,5 +103,7 @@ bool cpiForbid::OnOperatorCommand(cConnDC *conn, string *str)
 	if( mConsole.DoCommand(*str, conn) ) return false;
 	return true;
 }
+	}; // namespace nForbidPlugin
+}; // namespace nVerliHub
 
-REGISTER_PLUGIN(cpiForbid);
+REGISTER_PLUGIN(nVerliHub::nForbidPlugin::cpiForbid);

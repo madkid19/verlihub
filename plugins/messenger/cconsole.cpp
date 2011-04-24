@@ -27,10 +27,9 @@
 #include "cpimessanger.h"
 #include "cmsglist.h"
 
-using namespace nDirectConnect;
-
-namespace nMessanger
-{
+namespace nVerliHub {
+	using namespace nSocket;
+	namespace nMessangerPlugin {
 
 cConsole::cConsole(cpiMessanger *msn) :
 	mMessanger(msn),
@@ -91,4 +90,5 @@ bool cConsole::cfMessageRead::operator ( )()
 	return true;
 }
 
-};
+	}; // namespace nMessangerPlugin
+}; // namespace nVerliHub

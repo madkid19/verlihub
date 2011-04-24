@@ -21,12 +21,13 @@
 ***************************************************************************/
 #include "cpythoninterpreter.h"
 #include "cpipython.h"
-#include <iostream>
+//#include <iostream>
+#include "src/cserverdc.h"
+#include "src/cuser.h"
 
 using namespace std;
-
-namespace nScripts
-{
+namespace nVerliHub {
+	namespace nPythonPlugin {
 
 cPythonInterpreter::cPythonInterpreter(string scriptname) : mScriptName(scriptname)
 {
@@ -84,5 +85,5 @@ w_Targs* cPythonInterpreter::CallFunction(int func, w_Targs *args)
 	w_Targs* res = cpiPython::lib_callhook (id , func, args);
 	return res;
 }
-
-};
+	}; // namespace nPythonPlugin
+}; // namespace nVerliHub

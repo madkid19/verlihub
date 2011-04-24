@@ -26,12 +26,10 @@
 #include "cisps.h"
 #include "cpiisp.h"
 
-using namespace ::nTables;
-using namespace ::nEnums;
-using namespace ::nProtocol;
-using namespace nStringUtils;
-
-cISP::cISP() : 
+namespace nVerliHub {
+	using namespace nTables;
+	namespace nIspPlugin {
+cISP::cISP() :
 	mIPMin(0),
 	mIPMax(0),
 	mpNickRegex(NULL),
@@ -123,7 +121,7 @@ ostream& operator << (ostream &os, const cISP &isp)
 			<< isp.mMinShare[1] << "/" << isp.mMaxShare[1] << ","
 			<< isp.mMinShare[2] << "/" << isp.mMaxShare[2] << ","
 			<< isp.mMinShare[3] << "/" << isp.mMaxShare[3] << "]\r\n";
-		
+
 	return os;
 }
 
@@ -199,10 +197,10 @@ cISP * cISPs::FindISP(const string &ip, const string &cc)
 	iterator it;
 	cISP *isp4all = NULL;
        	cISP *CurISP  = NULL;
-	
+
 	cISP Sample;
 	int Pos = 0;
-	
+
 	Sample.mIPMin = ipnum;
 	// find the closest bigger or equal item
 	//cout << "Searching: " << Sample.mIPMin << endl;
@@ -216,7 +214,7 @@ cISP * cISPs::FindISP(const string &ip, const string &cc)
 	// none found by ip range, try the cc
 	CurISP = this->FindISPByCC(cc);
 	if (CurISP) return CurISP;
-	
+
 	// look for the zeroth element - O..xx
 	Sample.mIPMin = 0;
 	isp4all = this->FindDataPosition(Sample, Pos);
@@ -230,7 +228,7 @@ int cISPs::OrderTwoItems(const cISP &D1, const cISP &D2)
 	if(D1.mIPMin > D2.mIPMin) return  1;
 	return 0;
 }
-		
+
 bool cISPs::CompareDataKey(const cISP &D1, const cISP &D2)
 {
 	return D1.mIPMin == D2.mIPMin;
@@ -250,7 +248,7 @@ void cISPs::DelData(cISP &isp)
 	cISP *pData = this->FindData(isp);
 	if (isp.mCC.size() && pData) {
 		tISPCCList::iterator it;
-		it = find(mCCList.begin(), mCCList.end(), pData);	
+		it = find(mCCList.begin(), mCCList.end(), pData);
 		if( it != mCCList.end()) mCCList.erase(it);
 	}
 	tISPListBase::DelData(isp);
@@ -269,3 +267,5 @@ cISP *cISPs::FindISPByCC(const string &cc)
 
 	return NULL;
 }
+	}; // namespace nIspPlugin
+}; // namespace nVerliHub

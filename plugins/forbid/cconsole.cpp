@@ -19,16 +19,14 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#include "src/cconndc.h"
+//#include "src/cconndc.h"
 #include "cconsole.h"
 #include "cpiforbid.h"
 #include "cforbidden.h"
 #include "src/i18n.h"
 
-using namespace ;
-
-namespace nForbid
-{
+namespace nVerliHub {
+	namespace nForbidPlugin {
 
 cForbidden *cForbidConsole::GetTheList()
 {
@@ -49,10 +47,10 @@ void cForbidConsole::GetHelpForCommand(int cmd, ostream &os)
 {
 	string help_str;
 	switch(cmd) {
-		case eLC_LST: 
+		case eLC_LST:
 		help_str = "!lstforbid\r\n" + string(_("Give a list of forbidden expressions"));
 		break;
-		case eLC_ADD: 
+		case eLC_ADD:
 		case eLC_MOD:
 		help_str = "!(add|mod)forbid <\"expression\">"
 			"[ -f <flags>]"
@@ -78,7 +76,7 @@ const char * cForbidConsole::GetParamsRegex(int cmd)
       "( -f ?(\\d+))?|" //[ -f <flags>]
 			"( -C ?(\\d+))?|" // [ -C <max_class>]
 			"( -r ?(\")?((?(9)[^\"]+?|\\S+))(?(9)\"))?|" //[ -r <"kick_reason">]
-			")*\\s*$";			
+			")*\\s*$";
 			//return "^(\\S+)( (\\d)( (\\d+)( ([^\\r\\n]*))?)?)?$"; break;
 		case eLC_DEL: return "(.*)"; break;
 		default : return ""; break;
@@ -87,9 +85,9 @@ const char * cForbidConsole::GetParamsRegex(int cmd)
 
 bool cForbidConsole::ReadDataFromCmd(cfBase *cmd, int id, cForbiddenWorker &data)
 {
-	enum {eADD_ALL, eADD_PATTERNq, eADD_PATTERN, eADD_PARAMS, 
-		eADD_MASKp, eADD_MASK, 
-		eADD_CLASSp, eADD_CLASS, 
+	enum {eADD_ALL, eADD_PATTERNq, eADD_PATTERN, eADD_PARAMS,
+		eADD_MASKp, eADD_MASK,
+		eADD_CLASSp, eADD_CLASS,
 		eADD_REASONp, eADD_REASONq, eADD_REASON};
 
 	switch(id) {
@@ -104,10 +102,10 @@ bool cForbidConsole::ReadDataFromCmd(cfBase *cmd, int id, cForbiddenWorker &data
 			cmd->GetParInt(eADD_MASK, data.mCheckMask);
 			cmd->GetParInt(eADD_CLASS, data.mAfClass);
 			cmd->GetParStr(eADD_REASON, data.mReason);
-	}	
-	return true;	
+	}
+	return true;
 }
 
 cForbidConsole::~cForbidConsole(){}
-
-};
+	}; // namespace nForbidPlugin
+}; // namespace nVerliHub

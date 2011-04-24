@@ -23,15 +23,17 @@
 #ifndef CMGSLIST_H
 #define CMGSLIST_H
 
+#include <string>
 #include "src/cconfmysql.h"
 #include "src/tcache.h"
 
-using namespace nConfig;
-namespace  { class cUser; class cServerDC; };
-using namespace ;
-
-namespace nMessanger
-{
+using namespace std;
+namespace nVerliHub {
+	namespace nSocket {
+		class cServerDC;
+	};
+	class cUser;
+	namespace nMessangerPlugin {
 
 struct sMessage
 {
@@ -46,7 +48,7 @@ struct sMessage
 	sMessage(){mDateSent =mDateExpires = 0;};
 	// output stuff
 	mutable enum { AS_SUBJECT, AS_BODY, AS_DELIVERY, AS_ONLINE } mPrintType;
-	sMessage &AsSubj() { mPrintType = AS_SUBJECT; return *this; } 
+	sMessage &AsSubj() { mPrintType = AS_SUBJECT; return *this; }
 	sMessage &AsOnline() { mPrintType = AS_ONLINE ; return *this; }
 	sMessage &AsBody() { mPrintType = AS_BODY; return *this; }
 	sMessage &AsDelivery() { mPrintType = AS_DELIVERY; return *this; }
@@ -56,16 +58,16 @@ struct sMessage
 /**
 @author Daniel Muller
 */
-class cMsgList : public cConfMySQL
+class cMsgList : public nConfig::cConfMySQL
 {
 public:
-	cMsgList(cServerDC *server);
+	cMsgList(nSocket::cServerDC *server);
 	virtual ~cMsgList();
 	virtual void CleanUp();
 	virtual void AddFields();
-	
+
 	int CountMessages(const string &nick, bool IsSender);
-	bool AddMessage( sMessage &msg );
+	bool AddMessage(sMessage &msg );
 	int PrintSubjects(ostream &os, const string &nick, bool IsSender);
 	int DeliverMessagesForUser(cUser *dest);
 	int DeliverMessagesSinceSync(unsigned sync);
@@ -75,10 +77,10 @@ public:
 	int SendAllTo(cUser *, bool IsSender);
 	void UpdateCache();
 
-	tCache<string> mCache;
+	nConfig::tCache<string> mCache;
 	sMessage mModel;
-	cServerDC *mServer;
+	nSocket::cServerDC *mServer;
 };
-
-};
+	}; // namespace nMessangerPlugin
+}; // namespace nVerliHub
 #endif

@@ -25,13 +25,13 @@
 #include "src/tlistconsole.h"
 #include "cisps.h"
 
-class cpiISP;
-using namespace nCmdr;
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+	};
+	namespace nIspPlugin {
 
-namespace  { class cConnDC; };
-using namespace ;
-
-typedef class tListConsole<cISP, cISPs, cpiISP> tISPConsoleBase;
+typedef class nConfig::tListConsole<cISP, cISPs, cpiISP> tISPConsoleBase;
 /**
 a console that parses commands
 
@@ -40,7 +40,7 @@ a console that parses commands
 class cISPConsole : public tISPConsoleBase
 {
 public:
-	cISPConsole(cVHPlugin *pi) : tISPConsoleBase(pi)
+	cISPConsole(nPlugin::cVHPlugin *pi) : tISPConsoleBase(pi)
 	{
 		AddCommands();
 	}
@@ -53,5 +53,7 @@ public:
 	virtual bool ReadDataFromCmd(cfBase *cmd, int CmdID, cISP &data);
 	virtual void GetHelpForCommand(int cmd, ostream &os);
 };
+	}; // namespace nIspPlugin
+}; // namespace nVerliHub
 
 #endif

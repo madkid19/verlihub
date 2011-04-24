@@ -33,23 +33,23 @@ extern "C"
 #include <string>
 #include <iostream>
 #include <vector>
-using namespace std;
 
-namespace nScripts
-{
+using namespace std;
+namespace nVerliHub {
+	namespace nLuaPlugin {
 
 class cLuaInterpreter
 {
 public:
 	cLuaInterpreter(string);
 	~cLuaInterpreter();
-	
+
 	bool Init();
 	void ReportLuaError(char *);
 	bool CallFunction(const char *, char * []);
 	void RegisterFunction(const char *, int (*)(lua_State *));
 	void Load();
-	
+
 	string mScriptName;
 	struct mScriptBot {
 		char * uNick;
@@ -59,7 +59,7 @@ public:
 	};
 	typedef vector<mScriptBot *> tvBot;
 	tvBot botList;
-	
+
 	void addBot(char * Nick, char * Share, char * MyINFO, int Class)
 	{
 		mScriptBot *temp = new mScriptBot;
@@ -70,7 +70,7 @@ public:
 		botList.push_back(temp);
 		//cout << "BOTLIST size is " << botList.size() << endl;
 	}
-	
+
 	void editBot(char * Nick, char * Share, char * MyINFO, int Class)
 	{
 		mScriptBot *bot = NULL;
@@ -79,7 +79,7 @@ public:
 				bot = botList[i];
 			}
 		}
-		
+
 		if(bot != NULL) {
 			bot->uNick = Nick;
 			bot->uShare = Share;
@@ -87,7 +87,7 @@ public:
 			bot->uClass = Class;
 		}
 	}
-	
+
 	void delBot(char *nick)
 	{
 		for(unsigned int i = 0; i < botList.size(); i++) {
@@ -96,23 +96,23 @@ public:
 			}
 		}
 	}
-	
+
 	void clean()
 	{
 		tvBot::iterator it;
-		
+
 		for(it = botList.begin(); it != botList.end(); ++it)
 		{
 			if(*it != NULL)
 				delete *it;
 			*it = NULL;
 		}
-		botList.clear();	
+		botList.clear();
 	}
-	
+
 	lua_State * mL;
 };
 
-};
-
+	}; // namespace nLuaPlugin
+}; // namespace nVerliHub
 #endif

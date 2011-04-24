@@ -23,14 +23,14 @@
 #ifndef CPIREPLACE_H
 #define CPIREPLACE_H
 
+#include "src/cconndc.h"
+#include "src/cserverdc.h"
 #include "src/cvhplugin.h"
 #include "cconsole.h"
 #include "creplacer.h"
 
-using namespace ::nPlugin;
-using namespace ::nTables;
-using namespace ;
-using namespace nReplace;
+namespace nVerliHub {
+	namespace nReplacePlugin {
 
 /**
 \brief a plugin that replaces chosen words with other in main chat of DC
@@ -38,19 +38,21 @@ using namespace nReplace;
 @author Daniel Muller (plugin part of it)
 @author Pralcio
 */
-class cpiReplace : public cVHPlugin
+class cpiReplace : public nPlugin::cVHPlugin
 {
 public:
 	cpiReplace();
 	virtual ~cpiReplace();
 	virtual bool RegisterAll();
-	virtual bool OnOperatorCommand(cConnDC *, string *);
-	virtual bool OnParsedMsgChat(cConnDC *, cMessageDC *);
-	virtual void OnLoad(cServerDC *);
+	virtual bool OnOperatorCommand(nSocket::cConnDC *, string *);
+	virtual bool OnParsedMsgChat(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual void OnLoad(nSocket::cServerDC *);
 	cConsole mConsole;
 	cReplacer *mReplacer;
 	cReplaceCfg *mCfg;
 };
 
+	}; // namespace nReplacePlugin
+}; // namespace nVerliHub
 
 #endif

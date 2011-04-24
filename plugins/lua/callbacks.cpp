@@ -22,7 +22,7 @@
 ***************************************************************************/
 #define ERR_PARAM "wrong parameter(s)"
 #define ERR_CALL "call error"
- 
+
 extern "C"
 {
 	#include <lua.h>
@@ -40,8 +40,10 @@ extern "C"
 #define lua_tablepush(L, key, value) lua_pushstring(L, key); lua_pushnumber(L, value); lua_settable(L, -3);
 
 using namespace std;
-using namespace ;
-
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nEnums;
+	using namespace nLuaPlugin;
 cServerDC * GetCurrentVerlihub()
 {
 	return (cServerDC *)cServerDC::sCurrentServer;
@@ -142,7 +144,7 @@ int _SendPMToAll(lua_State *L)
 {
 	string data, from;
 	int min_class = 0, max_class = 10;
-	
+
 	if(lua_gettop(L) >= 2) {
 		if(!lua_isstring(L, 2)) {
 			luaerror(L, ERR_PARAM);
@@ -154,15 +156,15 @@ int _SendPMToAll(lua_State *L)
 			return 2;
 		}
 		from = (char *) lua_tostring(L, 3);
-		
+
 		if(lua_isnumber(L, 4)) {
 			min_class = (int) lua_tonumber(L, 4);
 		}
-		
+
 		if(lua_isnumber(L, 5)) {
 			max_class = (int) lua_tonumber(L, 5);
 		}
-		
+
 		/*string start, end;
 		cServerDC *server = GetCurrentVerlihub();
 		if(server == NULL) {
@@ -180,9 +182,9 @@ int _SendPMToAll(lua_State *L)
 	}
 	lua_pushboolean(L, 1);
 	return 1;
-  
-  
-  
+
+
+
 }
 
 int _Disconnect(lua_State *L)
@@ -248,7 +250,7 @@ int _GetUserCC(lua_State *L)
 			return 2;
 		}
 		nick = (char *)lua_tostring(L, 2);
-		cc = GetUserCC(nick);	
+		cc = GetUserCC(nick);
 		if(cc == NULL) {
 			lua_pushboolean(L, 0);
 			luaerror(L, "User not found");
@@ -386,7 +388,7 @@ int _GetUserHost(lua_State *L)
 int _GetUserIP(lua_State *L)
 {
 	string nick, ip;
-	
+
 	if(lua_gettop(L) == 2) {
 		if(!lua_isstring(L, 2)) {
 			luaerror(L, ERR_PARAM);
@@ -635,19 +637,19 @@ int _RegBot(lua_State *L)
 			luaerror(L, "Error getting LUA plugin");
 			return 2;
 		}
-		
+
 		if(!lua_isstring(L, 2)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
 		nick = (char *)lua_tostring(L, 2);
-		
+
 		if(!lua_isnumber(L, 3)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
 		uclass = (int)lua_tonumber(L, 3);
-		
+
 		if(!lua_isstring(L, 4)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
@@ -665,19 +667,19 @@ int _RegBot(lua_State *L)
 			return 2;
 		}
 		email = (char *)lua_tostring(L, 6);
-		
+
 		if(!lua_isstring(L, 7)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
 		share = (char *)lua_tostring(L, 7);
-		
+
 		cPluginRobot *robot = pi->NewRobot(nick, uclass);
-		
+
 		if(robot != NULL) {
 			server->mP.Create_MyINFO(robot->mMyINFO, robot->mNick, desc, speed, email, share);
 			robot->mMyINFO_basic = robot->mMyINFO;
-			
+
 			cLuaInterpreter *li = FindLua(L);
 			if(li == NULL) {
 				luaerror(L,"Lua not found");
@@ -723,19 +725,19 @@ int _EditBot(lua_State *L)
 			luaerror(L, "Error getting LUA plugin");
 			return 2;
 		}
-		
+
 		if(!lua_isstring(L, 2)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
 		nick = (char *)lua_tostring(L, 2);
-		
+
 		if(!lua_isnumber(L, 3)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
 		uclass = (int)lua_tonumber(L, 3);
-		
+
 		if(!lua_isstring(L, 4)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
@@ -753,19 +755,19 @@ int _EditBot(lua_State *L)
 			return 2;
 		}
 		email = (char *)lua_tostring(L, 6);
-		
+
 		if(!lua_isstring(L, 7)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
 		share = (char *)lua_tostring(L, 7);
-		
+
 		if(!server->mRobotList.ContainsNick(nick)) {
 			luaerror(L, "Bot not found");
 			return 2;
 		}
 		cUserRobot *robot = (cUserRobot*) server->mRobotList.GetUserBaseByNick(nick);
-		
+
 		if(robot != NULL) {
 			cLuaInterpreter *li = FindLua(L);
 			if(li == NULL) {
@@ -795,20 +797,20 @@ int _EditBot(lua_State *L)
 int _UnRegBot(lua_State *L)
 {
 	string nick;
-	
+
 	if(lua_gettop(L) == 2) {
 		cServerDC *server = GetCurrentVerlihub();
 		if(server == NULL) {
 			luaerror(L, "Error getting server");
 			return 2;
 		}
-		
+
 		cpiLua *pi = (cpiLua *)server->mPluginManager.GetPlugin(LUA_PI_IDENTIFIER);
 		if(pi == NULL) {
 			luaerror(L, "Error getting LUA plugin");
 			return 2;
 		}
-	
+
 		if(!lua_isstring(L, 2)) {
 		    luaerror(L, ERR_PARAM);
 		    return 2;
@@ -860,7 +862,7 @@ int _IsBot(lua_State *L)
 		lua_pushnil(L);
 		return 2;
 	}
-  
+
 }
 
 int _SQLQuery(lua_State *L)
@@ -871,12 +873,12 @@ int _SQLQuery(lua_State *L)
 			luaerror(L, "Error getting server");
 			return 2;
 		}
-		
+
 		cpiLua *pi = (cpiLua *)server->mPluginManager.GetPlugin(LUA_PI_IDENTIFIER);
 		if(pi == NULL) {
 			luaerror(L, "Error getting LUA plugin");
 			return 2;
-		}		
+		}
 		if(!lua_isstring(L, 2)) {
 		    luaerror(L, ERR_PARAM);
 		    return 2;
@@ -885,7 +887,7 @@ int _SQLQuery(lua_State *L)
 		pi->mQuery->OStream() << (char *) lua_tostring(L, 2);
 		pi->mQuery->Query();
 		int i = pi->mQuery->StoreResult();
-		
+
 		lua_pushboolean(L, 1);
 		if(i > 0)
 			lua_pushnumber(L, i);
@@ -908,37 +910,37 @@ int _SQLFetch(lua_State *L)
 			luaerror(L, "Error getting server");
 			return 2;
 		}
-		
+
 		cpiLua *pi = (cpiLua *)server->mPluginManager.GetPlugin(LUA_PI_IDENTIFIER);
 		if(pi == NULL) {
 			luaerror(L, "Error getting LUA plugin");
 			return 2;
 		}
-		
+
 		if(!lua_isnumber(L, 2)) {
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
-		
+
 		int r = (int)lua_tonumber(L, 2);
-		
+
 		if(!pi->mQuery->GetResult()) {
 			luaerror(L, "No result");
 			return 2;
 		}
-		
+
 		pi->mQuery->DataSeek(r);
-		
+
 		MYSQL_ROW row;
-		
+
 		if(!(row = pi->mQuery->Row()))
 		{
 			luaerror(L, "Error fetching row");
 			return 2;
 		}
-		
+
 		lua_pushboolean(L, 1);
-		
+
 		int j = 0;
 		while(j < pi->mQuery->Cols()) {
 			lua_pushstring(L, (char *)row[j]);
@@ -955,21 +957,21 @@ int _SQLFetch(lua_State *L)
 
 int _SQLFree(lua_State *L)
 {
-	if(lua_gettop(L) == 1) {	
+	if(lua_gettop(L) == 1) {
 		cServerDC *server = GetCurrentVerlihub();
 		if(server == NULL) {
 			luaerror(L, "Error getting server");
 			return 2;
 		}
-		
+
 		cpiLua *pi = (cpiLua *)server->mPluginManager.GetPlugin(LUA_PI_IDENTIFIER);
 		if(pi == NULL)
 		{
 			luaerror(L, "Error getting LUA plugin");
 			return 2;
 		}
-		
-		pi->mQuery->Clear();	
+
+		pi->mQuery->Clear();
 	} else {
 		luaL_error(L, "Error calling VH:SQLFree; expected 0 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
@@ -985,7 +987,7 @@ int _GetVHCfgDir(lua_State *L)
 	if(lua_gettop(L) == 1) {
 		lua_pushboolean(L, 1);
 		lua_pushstring(L,  GetVHCfgDir());
-		return 2;	
+		return 2;
 	} else {
 		luaL_error(L, "Error calling VH:GetVHCfgDir; expected 0 argument but got %d", lua_gettop(L) -1);
 		lua_pushboolean(L, 0);
@@ -1050,7 +1052,7 @@ int _GetTotalShareSize(lua_State *L)
 int _ReportUser(lua_State *L)
 {
 	string nick, message;
-	
+
 	if(lua_gettop(L) == 3) {
 		if(!lua_isstring(L, 2)) {
 			luaerror(L, ERR_PARAM);
@@ -1062,12 +1064,12 @@ int _ReportUser(lua_State *L)
 			return 2;
 		}
 		message = (char *) lua_tostring(L, 3);
-		
+
 		cUser *usr = GetUser(nick);
 		if (!usr) {
 			luaerror(L, "User not found");
 			return 2;
-		} else if(!usr->mxConn) {	
+		} else if(!usr->mxConn) {
 			luaerror(L, "User found but it's a bot");
 			return 2;
 		}
@@ -1080,7 +1082,7 @@ int _ReportUser(lua_State *L)
 			server->ReportUserToOpchat(usr->mxConn, message, false);
 			lua_pushboolean(L, 1);
 			return 1;
-		}	
+		}
 	} else {
 		luaL_error(L, "Error calling VH:ReportUser; expected 1 argument but got %d", lua_gettop(L) -1);
 		lua_pushboolean(L, 0);
@@ -1119,35 +1121,35 @@ int _GetBots(lua_State *L)
 	vSize = cpiLua::me->Size();
 	lua_newtable(L);
 	z = lua_gettop(L);
-	
+
 	for(int i = 0; i < vSize; i++) {
 		li = cpiLua::me->mLua[i];
-		
+
 		for(unsigned int j = 0; j < li->botList.size(); j++) {
 			lua_pushnumber(L, ++key);
-				
+
 				lua_newtable(L);
 				int k = lua_gettop(L);
 				lua_pushliteral(L, "sScriptname");
 				lua_pushstring(L, (char *) li->mScriptName.c_str());
 				lua_rawset(L, k);
-				
+
 				lua_pushliteral(L, "sNick");
 				lua_pushstring (L, li->botList[j]->uNick);
 				lua_rawset(L, k);
-			
+
 				lua_pushliteral(L, "iClass");
 				lua_pushnumber(L, li->botList[j]->uClass);
 				lua_rawset(L, k);
-			
+
 				lua_pushliteral(L, "iShare");
 				lua_pushstring(L, li->botList[j]->uShare);
 				lua_rawset(L, k);
-										
+
 				lua_pushliteral(L, "sMyINFO");
 				lua_pushstring(L, li->botList[j]->uMyINFO);
 				lua_rawset(L, k);
-				
+
 			lua_rawset(L, z);
 		}
 	}
@@ -1184,7 +1186,7 @@ int _AddRegUser(lua_State *L)
 		luaL_error(L, "Error calling VH:AddRegUser; expected at least 3 arguments and max 4 but got %d", lua_gettop(L) -1);
 		lua_pushboolean(L, 0);
 		return 1;
-	}	
+	}
 }
 
 int _DelRegUser(lua_State *L)
@@ -1215,7 +1217,7 @@ int _GetTopic(lua_State *L)
 		return 2;
 	}
 	lua_pushstring(L, server->mC.hub_topic.c_str());
-	return 1; 
+	return 1;
 }
 
 int _SetTopic(lua_State *L)
@@ -1233,12 +1235,12 @@ int _SetTopic(lua_State *L)
 		}
 		topic = (char *) lua_tostring(L, 2);
 	}
-	
+
 	string message;
 	cDCProto::Create_HubName(message, server->mC.hub_name, topic);
 	server->SendToAll(message, eUC_NORMUSER, eUC_MASTER);
 	lua_pushboolean(L, 1);
-	return 1; 
+	return 1;
 }
 
 void luaerror(lua_State *L, const char * errstr)
@@ -1246,3 +1248,4 @@ void luaerror(lua_State *L, const char * errstr)
 	lua_pushboolean(L, 0);
 	lua_pushstring(L, errstr);
 }
+}; // namespace nVerliHub

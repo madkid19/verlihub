@@ -28,17 +28,24 @@
 #include <tlistplugin.h>
 
 using namespace std;
-
-namespace  {
+namespace nVerliHub {
 	namespace nPlugin {
 		class cVHPluginMgr;
 	};
-};
-using namespace ::nPlugin;
-class cpiPlug;
-class cPlugs;
 
-enum { ePLUG_AUTOLOAD, ePLUG_LOAD, ePLUG_AUTORELOAD, ePLUG_RELOAD, ePLUG_AUTOUNLOAD, ePLUG_UNLOAD };
+	namespace nEnums {
+		enum {
+			ePLUG_AUTOLOAD,
+			ePLUG_LOAD,
+			ePLUG_AUTORELOAD,
+			ePLUG_RELOAD,
+			ePLUG_AUTOUNLOAD,
+			ePLUG_UNLOAD
+		};
+	};
+	namespace nPlugMan {
+		class cpiPlug;
+		class cPlugs;
 
 class cPlug
 {
@@ -90,7 +97,7 @@ public:
 	time_t GetFileTime(const string &filename);
 
 	// -- required methods
-	cPlugs(cVHPlugin *pi);
+	cPlugs(nPlugin::cVHPlugin *pi);
 	virtual void AddFields();
 	virtual bool CompareDataKey(const cPlug &D1, const cPlug &D2);
 
@@ -98,9 +105,10 @@ public:
 	virtual void OnLoadData(cPlug &plug);
 
 	// -- data
-	cVHPluginMgr *mPM;
+	nPlugin::cVHPluginMgr *mPM;
 	time_t mVHTime;
 
 };
-
+	}; // namespace nPlugMan
+}; // namespace nVerliHub
 #endif//CPLUG_H

@@ -28,11 +28,10 @@
 #include "creplacer.h"
 #include "src/stringutils.h"
 
-using namespace nStringUtils;
-using namespace ;
-
-namespace nReplace
-{
+namespace nVerliHub {
+	using namespace nUtils;
+	using namespace nSocket;
+	namespace nReplacePlugin {
 
 cConsole::cConsole(cpiReplace *replace) :
 	mReplace(replace),
@@ -153,5 +152,5 @@ bool cConsole::cfAddReplacer::operator ( )()
 
 	return true;
 }
-
-};
+	}; // namespace nReplacePlugin
+}; // namespace nVerliHub

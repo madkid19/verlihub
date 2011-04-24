@@ -31,10 +31,10 @@
 #include "cconfigitembase.h"
 
 using namespace std;
-using namespace nVerliHub;
-using namespace nVerliHub::nSocket;
-using namespace nVerliHub::nEnums;
-using namespace nVerliHub::nMySQL;
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nEnums;
+	using namespace nMySQL;
 
 cServerDC *GetCurrentVerlihub()
 {
@@ -443,3 +443,4 @@ extern "C" {
 	}
 }
 
+}; // namespace nVerliHub

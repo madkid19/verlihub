@@ -23,19 +23,18 @@
 #define CSIPS_H
 
 #include <string>
+#include "src/cpcre.h"
 #include "src/cconndc.h"
 #include "src/tlistplugin.h"
 
 using namespace std;
-using namespace ::nEnums;
-using namespace ::nPlugin;
-
-namespace { class cServerDC;};
-using namespace ;
-
-class cpiISP;
-class cISPs;
-
+namespace nVerliHub {
+	namespace nSocket {
+		class cServerDC;
+	};
+	namespace nIspPlugin {
+		class cpiISP;
+		class cISPs;
 class cISP
 {
 public:
@@ -57,25 +56,25 @@ public:
 	long mMaxShare[4];
 
 	// --- memory data
-	cPCRE *mpNickRegex;
-	cPCRE *mpConnRegex;
+	nUtils::cPCRE *mpNickRegex;
+	nUtils::cPCRE *mpConnRegex;
 	bool mOK;
 
 	//-- methods
 	bool CheckNick(const string &Nick, const string &cc);
 	bool CheckConn(const string &ConnType);
 	int CheckShare(int cls, __int64 share, __int64 min_unit, __int64 max_unit);
-	
+
 	cpiISP *mPI;
 	virtual void OnLoad();
 	friend ostream& operator << (ostream &, const cISP &isp);
 };
 
 
-class cISPCfg : public cConfigBase
+class cISPCfg : public nConfig::cConfigBase
 {
 public:
-	cISPCfg(cServerDC *);
+	cISPCfg(nSocket::cServerDC *);
 	int max_check_nick_class;
 	int max_check_conn_class;
 	int max_check_isp_class;
@@ -88,7 +87,7 @@ public:
 	bool allow_all_connections;
 	bool case_sensitive_nick_pattern;
 
-	cServerDC *mS;
+	nSocket::cServerDC *mS;
 	virtual int Load();
 	virtual int Save();
 };
@@ -98,7 +97,7 @@ typedef class tOrdList4Plugin<cISP, cpiISP> tISPListBase;
 class cISPs : public tISPListBase
 {
 public:
-	cISPs(cVHPlugin *pi);	
+	cISPs(nPlugin::cVHPlugin *pi);
 	virtual void AddFields();
 	cISP *FindISPByCC(const string &cc);
 	cISP *FindISP(const string &ip,const string &cc);
@@ -110,9 +109,10 @@ public:
 protected:
 	// CC hash ?? either quickly locate the isp by given CC - complicates the CC parsing
 	// or just maintain a list of CC isps - simplier, slower (but probably not much, easier to use)
-	// I deciced for the second way - 
+	// I deciced for the second way -
 	typedef vector<cISP*> tISPCCList;
 	tISPCCList mCCList;
 };
-
+	}; // namespace nIspPlugin
+}; // namespace nVerliHub
 #endif//CSIPS_H

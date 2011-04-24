@@ -25,15 +25,12 @@
 
 #include "src/ccmdr.h"
 
-class cpiMessanger;
-using namespace nCmdr;
-
-namespace  { class cConnDC; };
-using namespace ;
-
-namespace nMessanger
-{
-
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+	};
+	namespace nMessangerPlugin {
+		class cpiMessanger;
 
 /**
 a console that parses commands
@@ -46,22 +43,23 @@ public:
 	cConsole(cpiMessanger *);
 
 	virtual ~cConsole();
-	int DoCommand(const string &str, cConnDC * conn);
+	int DoCommand(const string &str, nSocket::cConnDC * conn);
 
 	cpiMessanger *mMessanger;
 protected:
 	enum {eMSG_SEND, eMSG_Read };
-  class cfBase : public cCommand::sCmdFunc {
+  class cfBase : public nCmdr::cCommand::sCmdFunc {
 		public:
 		cpiMessanger *GetMessanger(){ return ((cConsole *)(mCommand->mCmdr->mOwner))->mMessanger;}
 	};
 	class cfMessageSend : public cfBase { virtual bool operator()();} mcfMsgSend;
 	class cfMessageRead : public cfBase { virtual bool operator()();} mcfMsgRead;
-	cCommand mCmdMsgSend;
-	cCommand mCmdMsgRead;
-	cCmdr mCmdr;
+	nCmdr::cCommand mCmdMsgSend;
+	nCmdr::cCommand mCmdMsgRead;
+	nCmdr::cCmdr mCmdr;
 };
 
-};
+	}; // namespace nMessangerPlugin
+}; // namespace nVerliHub
 
 #endif

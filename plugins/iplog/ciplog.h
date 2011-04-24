@@ -27,26 +27,23 @@
 #include "src/cserverdc.h"
 #include "src/cconndc.h"
 
-using namespace nConfig;
+namespace nVerliHub {
+	namespace nSocket {
+		class cConnDC;
+		class cServerDC;
+	};
+	namespace nEnums {
+		enum {
+			eLT_CONNECT =  0,
+			eLT_LOGIN = 1,
+			eLT_LOGOUT = 2,
+			eLT_DISCONNECT = 3,
+			eLT_DEFAULT = 1 << eLT_CONNECT |  1 << eLT_LOGOUT,
+			eLT_ALL = 255
+		};
 
-namespace  { 
-	class cConnDC;
-	class cServerDC;
-};
-
-using namespace ;
-namespace nIPLog
-{
-
-
-enum {
-	eLT_CONNECT =  0, 
-	eLT_LOGIN = 1, 
-	eLT_LOGOUT = 2, 
-	eLT_DISCONNECT = 3, 
-	eLT_DEFAULT = 1 << eLT_CONNECT |  1 << eLT_LOGOUT,
-	eLT_ALL = 255
-};
+	};
+	namespace nIPLogPlugin {
 
 struct sUserStruct {
 	sUserStruct()
@@ -66,15 +63,14 @@ struct sUserStruct {
 /**
 @author Daniel Muller
 */
-class cIPLog : public cConfMySQL
+class cIPLog : public nConfig::cConfMySQL
 {
 public:
-	//time_t mTime;
-	cServerDC * mS;
-	cIPLog(cServerDC *server);
+	nSocket::cServerDC * mS;
+	cIPLog(nSocket::cServerDC *server);
         //bool SetVar(const string &nick, string &field, string &value);
 	/** log that user logged in */
-        bool Log(cConnDC *conn, int action, int info);
+        bool Log(nSocket::cConnDC *conn, int action, int info);
 	void AddFields();
 	virtual void CleanUp();
 	virtual ~cIPLog();
@@ -90,6 +86,6 @@ public:
 	void MakeSearchQuery(const string &who, bool IsNick, int action, int limit);
 	struct sUserStruct mModel;
 };
-
-};
+	}; // namespace nIPLogPlugin
+}; // namespace nVerliHub
 #endif

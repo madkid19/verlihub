@@ -61,7 +61,7 @@ class cBanList : public nConfig::cConfMySQL
 		string mReason;
 	};
 	public:
-		cBanList(cServerDC*);
+		cBanList(nSocket::cServerDC*);
 		~cBanList();
 		int UpdateBan(cBan &);
 		bool LoadBanByKey(cBan &ban);
@@ -96,7 +96,7 @@ class cBanList : public nConfig::cConfMySQL
 		typedef tHashArray<sTempBan *> tTempNickBans;
 		tTempNickBans mTempNickBanlist;
 		tTempNickBans mTempIPBanlist;
-		cServerDC* mS;
+		nSocket::cServerDC* mS;
 	protected:
 		cBan mModel;
 };
@@ -109,7 +109,7 @@ Banlist uses this class to produce unbans
 class cUnBanList : public cBanList
 {
 	public:
-		cUnBanList(cServerDC*);
+		cUnBanList(nSocket::cServerDC*);
 		~cUnBanList();
 		virtual void Cleanup();
 	protected:

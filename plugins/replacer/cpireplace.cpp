@@ -21,9 +21,12 @@
 ***************************************************************************/
 
 #include "cpireplace.h"
-#include "src/cserverdc.h"
 
-using namespace ;
+namespace nVerliHub {
+	using namespace nSocket;
+	using namespace nProtocol;
+	using namespace nEnums;
+	namespace nReplacePlugin {
 
 cpiReplace::cpiReplace() : mConsole(this), mReplacer(NULL), mCfg(NULL)
 {
@@ -76,5 +79,7 @@ bool cpiReplace::OnOperatorCommand(cConnDC *conn, string *str)
 		return false;
 	return true;
 }
+	}; // namespace nReplacePlugin
+}; // namespace nVerliHub
 
-REGISTER_PLUGIN(cpiReplace);
+REGISTER_PLUGIN(nVerliHub::nReplacePlugin::cpiReplace);

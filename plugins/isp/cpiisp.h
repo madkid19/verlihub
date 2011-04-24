@@ -25,9 +25,12 @@
 #include "src/tlistplugin.h"
 #include "cisps.h"
 #include "cconsole.h"
+#include "src/cserverdc.h"
+#include "src/cconndc.h"
+#include "src/cmessagedc.h"
 
-using namespace ;
-using namespace ::nPlugin;
+namespace nVerliHub {
+	namespace nIspPlugin {
 
 typedef tpiListPlugin<cISPs,cISPConsole> tpiISPBase;
 
@@ -36,13 +39,15 @@ class cpiISP : public tpiISPBase
 public:
 	cpiISP();
 	virtual ~cpiISP();
-	virtual void OnLoad(cServerDC *server);
+	virtual void OnLoad(nSocket::cServerDC *server);
 
 	virtual bool RegisterAll();
-	virtual bool OnParsedMsgMyINFO(cConnDC * conn, cMessageDC *mess);
-	virtual bool OnParsedMsgValidateNick(cConnDC * conn, cMessageDC *mess);
-	virtual bool OnOperatorCommand(cConnDC *, string *);
+	virtual bool OnParsedMsgMyINFO(nSocket::cConnDC * conn, nProtocol::cMessageDC *mess);
+	virtual bool OnParsedMsgValidateNick(nSocket::cConnDC * conn, nProtocol::cMessageDC *mess);
+	virtual bool OnOperatorCommand(nSocket::cConnDC *, string *);
 	cISPCfg *mCfg;
 };
+	}; // namespace nIspPlugin
+}; // namespace nVerliHub
 
 #endif

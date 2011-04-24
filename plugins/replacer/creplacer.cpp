@@ -22,12 +22,14 @@
 
 #include "creplacer.h"
 #include "src/cconfigitembase.h"
-#include "src/cserverdc.h"
 
-namespace  {
-namespace nTables {
+namespace nVerliHub {
+	using namespace nTables;
+	using namespace nSocket;
+	using namespace nConfig;
+	namespace nReplacePlugin {
 
-cReplacer::cReplacer( cServerDC *server )
+cReplacer::cReplacer(cServerDC *server)
  : cConfMySQL(server->mMySQL) , mS(server)
 {
 	SetClassName("nDC::cReplacer");
@@ -45,7 +47,7 @@ cReplacer::~cReplacer()
 
 void cReplacer::CreateTable(void)
 {
-	cQuery query(mMySQL);
+	nMySQL::cQuery query(mMySQL);
 	query.OStream() <<
 		"CREATE TABLE IF NOT EXISTS " << mMySQLTable.mName << " ("
 		"word varchar(30) not null primary key,"
@@ -166,5 +168,5 @@ int cReplaceCfg::Save()
 	return 0;
 }
 
-};
-};
+	}; // namespace nReplacePlugin
+}; // namespace nVerliHub

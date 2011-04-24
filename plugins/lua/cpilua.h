@@ -26,6 +26,7 @@
 #include "cluainterpreter.h"
 #include "callbacks.h"
 #include "cconsole.h"
+#include "cquery.h"
 #include "src/cconndc.h"
 #include "src/cvhplugin.h"
 #include <vector>
@@ -33,36 +34,35 @@
 #define LUA_PI_IDENTIFIER "LuaScript"
 
 using std::vector;
-using namespace nScripts;
-using namespace ;
-using namespace ::nPlugin;
+namespace nVerliHub {
+	namespace nLuaPlugin {
 
-class cpiLua : public cVHPlugin
+class cpiLua : public nPlugin::cVHPlugin
 {
 public:
 	cpiLua();
 	virtual ~cpiLua();
 	virtual void OnLoad(cServerDC *);
 	virtual bool RegisterAll();
-	virtual bool OnNewConn(cConnDC *);
-	virtual bool OnCloseConn(cConnDC *);
-	virtual bool OnParsedMsgChat(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgPM(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgSearch(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgSR(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgMyINFO(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgValidateNick(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgAny(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgSupport(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgMyPass(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgConnectToMe(cConnDC *, cMessageDC *);
-	virtual bool OnParsedMsgRevConnectToMe(cConnDC *, cMessageDC *);
-	virtual bool OnUnknownMsg(cConnDC *, cMessageDC *);
-	virtual bool OnOperatorCommand(cConnDC *, std::string *);
+	virtual bool OnNewConn(nSocket::cConnDC *);
+	virtual bool OnCloseConn(nSocket::cConnDC *);
+	virtual bool OnParsedMsgChat(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgPM(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgSearch(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgSR(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgMyINFO(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgValidateNick(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgAny(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgSupport(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgMyPass(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgConnectToMe(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgRevConnectToMe(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnUnknownMsg(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnOperatorCommand(nSocket::cConnDC *, std::string *);
 	virtual bool OnOperatorKicks(cUser *, cUser *, std::string *);
 	virtual bool OnOperatorDrops(cUser *, cUser *);
-	virtual bool OnValidateTag(cConnDC *, cDCTag *);
-	virtual bool OnUserCommand(cConnDC *, std::string *);
+	virtual bool OnValidateTag(nSocket::cConnDC *, cDCTag *);
+	virtual bool OnUserCommand(nSocket::cConnDC *, std::string *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
 	virtual bool OnTimer();
@@ -73,7 +73,7 @@ public:
 	virtual bool OnUnBan(string nick, string op, string reason);
 	virtual bool OnHubName(std::string, std::string);
 	const char * toString(int);
-	
+
 	bool AutoLoad();
 	bool CallAll(const char *, char * []);
 	int Size() { return mLua.size(); }
@@ -82,7 +82,7 @@ public:
 	void Empty()
 	{
 		tvLuaInterpreter::iterator it;
-		
+
 		for(it = mLua.begin(); it != mLua.end(); ++it) {
 			if(*it != NULL)
 				delete *it;
@@ -90,27 +90,28 @@ public:
 		}
 		mLua.clear();
 	}
-	
+
 	void AddData(cLuaInterpreter *ip)
 	{
 		mLua.push_back(ip);
 	}
-	
+
 	cLuaInterpreter * operator[](int i)
 	{
 		if(i < 0 || i > Size()) return NULL;
 			return mLua[i];
 	}
-		
+
 	cConsole mConsole;
-	cQuery *mQuery;
+	nMySQL::cQuery *mQuery;
 	typedef vector<cLuaInterpreter *> tvLuaInterpreter;
 	tvLuaInterpreter mLua;
-	
+
 	string mScriptDir;
-	
+
 	static int log_level;
 	static cpiLua *me;
 };
-
+	}; // namespace nLuaPlugin
+}; // namespace nVerliHub
 #endif
