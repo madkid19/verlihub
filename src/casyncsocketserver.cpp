@@ -54,39 +54,38 @@ cAsyncSocketServer::cAsyncSocketServer(int port):
 	mRunResult(0)
 {
 	#ifdef _WIN32
-	if(!this->WSinitialized)
-	{
+	if(!this->WSinitialized) {
 
 		WORD wVersionRequested;
 		WSADATA wsaData;
 		int err;
 
-		wVersionRequested = MAKEWORD( 2, 2 );
+		wVersionRequested = MAKEWORD(2, 2);
 
-		err = WSAStartup( wVersionRequested, &wsaData );
-		if ( err != 0 ) {
+		err = WSAStartup(wVersionRequested, &wsaData);
+		if(err != 0) {
 			/* Tell the user that we could not find a usable */
 			/* WinSock DLL.                                  */
 			return;
 		}
 
-		/* Confirm that the WinSock DLL supports 2.2.*/
-		/* Note that if the DLL supports versions greater    */
-		/* than 2.2 in addition to 2.2, it will still return */
-		/* 2.2 in wVersion since that is the version we      */
-		/* requested.                                        */
-
-		if ( LOBYTE( wsaData.wVersion ) != 2 ||
-			HIBYTE( wsaData.wVersion ) != 2 ) {
-			/* Tell the user that we could not find a usable */
-			/* WinSock DLL.                                  */
-			WSACleanup( );
+		/*
+		 * Confirm that the WinSock DLL supports 2.2.
+		 * Note that if the DLL supports versions greater
+		 * than 2.2 in addition to 2.2, it will still return
+		 * 2.2 in wVersion since that is the version we
+		 * requested.
+		 */
+		if(LOBYTE( wsaData.wVersion ) != 2 ||  HIBYTE( wsaData.wVersion ) != 2) {
+			/* Tell the user that we could not find a usable
+			 * WinSock DLL.
+			 */
+			WSACleanup();
 			return;
 		}
 
-		/* The WinSock DLL is acceptable. Proceed. */
+		// The WinSock DLL is acceptable. Proceed.
 		this->WSinitialized = true;
-
 	}
 	#endif
 }
@@ -142,8 +141,10 @@ void cAsyncSocketServer::close()
 	for(it = mConnList.begin(); it != mConnList.end(); it++) {
 		if (*it) {
 			mConnChooser.DelConn(*it);
-			if( mFactory!= NULL) mFactory->DeleteConn(*it);
-			else delete *it;
+			if(mFactory!= NULL)
+				mFactory->DeleteConn(*it);
+			else
+				delete *it;
 			*it = NULL;
 		}
 	}
@@ -162,10 +163,11 @@ void cAsyncSocketServer::setPort(unsigned int _newVal)
 void cAsyncSocketServer::addConnection(cAsyncConn *new_conn)
 {
 
-	if(!new_conn) throw "addConnection null pointer";
-	if(!new_conn->ok)
-	{
-		if(new_conn->Log(3)) new_conn->LogStream() << "Access refused " << new_conn->AddrIP() << endl;
+	if(!new_conn)
+		throw "addConnection null pointer";
+	if(!new_conn->ok) {
+		if(new_conn->Log(3))
+			new_conn->LogStream() << "Access refused " << new_conn->AddrIP() << endl;
 		new_conn->mxMyFactory->DeleteConn(new_conn);
 		return;
 	}
@@ -393,14 +395,13 @@ cAsyncConn * cAsyncSocketServer::ListenWithConn(cAsyncConn *ListenSock, int OnPo
 	return NULL;
 }
 
-bool cAsyncSocketServer::StopListenConn(cAsyncConn *ListenSock)
+bool cAsyncSocketServer::StopListenConn(cAsyncConn *connection)
 {
-	if (ListenSock != NULL) {
-		this->mConnChooser.DelConn(ListenSock);
+	if (connection != NULL) {
+		this->mConnChooser.DelConn(connection);
 		return true;
 	}
 	return false;
 }
-
 	}; // namespace nSocket
 }; // namespace nVerliHub

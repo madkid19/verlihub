@@ -362,7 +362,7 @@ namespace nVerliHub {
 				 * Event handler function called every period of time by OnTimerBase().
 				 * The frequency of this method is called depends on
 				 * the value of timer_serv_period config variable.
-				 * @param now Current time.
+				 * @param now The current time.
 				 * @return Always zero.
 				 * @see OnTimerBase()
 				 */
@@ -371,7 +371,7 @@ namespace nVerliHub {
 				/**
 				 * This event is trigger every N seconds by cAsyncSocketServer::OnTimerBase()
 				 * that handles all socket connections to the server.
-				 * @param now Current time.
+				 * @param now The current time.
 				 * @return Always zero.
 				 */
 				int OnTimerBase(cTime &now);
