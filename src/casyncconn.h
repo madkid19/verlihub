@@ -42,19 +42,33 @@ using namespace std;
 namespace nVerliHub {
 	namespace nEnums {
 
-		// Type of socket connection
+		/**
+		 * Identify the type of socket connection
+		 */
 		enum tConnType {
-			eCT_LISTEN,    // Listening tcp connection
-			eCT_CLIENT,    // TCP client connection that is connected to the server
-			eCT_CLIENTUDP, // UDP cleint connection
-			eCT_SERVER,    // TCP server connection
-			eCT_SERVERUDP  // UDP server connection
+			/// TCP connection is listening
+			eCT_LISTEN,
+			/// TCP client connection
+			eCT_CLIENT,
+			/// UDP client connection
+			eCT_CLIENTUDP,
+			/// TCP server connection
+			eCT_SERVER,
+			/// UDP server connection
+			eCT_SERVERUDP
 		};
 
-		enum {
+		/**
+		 * Identify the status when reading a line in the buffer.
+		 */
+		enum tLineStatus {
+			/// No line has been read from the buffer.
 			AC_LS_NO_LINE,
+			/// Line is read partially.
 			AC_LS_PARTLY,
+			/// Line is read.
 			AC_LS_LINE_DONE,
+			/// An error occurred while reading a line from the buffer.
 			AC_LS_ERROR
 		};
 	};
@@ -67,246 +81,534 @@ namespace nVerliHub {
 	namespace nSocket {
  		class cAsyncSocketServer;
  		class cAsyncConn;
-// 		class cConnBase;
 
 		using namespace nEnums;
 		using namespace nUtils;
 
-
+		/// @addtogroup Core
+		/// @{
+		/**
+		 * @brief Connection factory to create and delete a connection.
+		 * This class is used by cAsyncConn and cServerDC to create and delete
+		 * user connection.
+		 * @author Daniel Muller
+		 */
 		class cConnFactory
 		{
-		public:
-			cConnFactory(nProtocol::cProtocol *Protocol): mProtocol(Protocol) {};
-			virtual ~cConnFactory(){};
-			virtual cAsyncConn * CreateConn(nSocket::tSocket sd=0);
-			virtual void DeleteConn(cAsyncConn * &);
-			nProtocol::cProtocol *mProtocol;
+			public:
+				/**
+				 * Class constructor.
+				 * @param protocol Pointer to an instance of cProtocol interface.
+				 */
+				cConnFactory(nProtocol::cProtocol *protocol): mProtocol(protocol) {};
+
+				/**
+				 * Class destructor.
+				 */
+				virtual ~cConnFactory(){};
+
+				/**
+				 * Create a new connection for the given socket.
+				 * @param sd Socket identifier of the connection.
+				 * @return A new connection object that is an instance of cAsyncConn class.
+				 */
+				virtual cAsyncConn * CreateConn(nSocket::tSocket sd=0);
+
+				/**
+				 * Delete a connection.
+				 * @param conn A pointer to the connection to delete.
+				 */
+				virtual void DeleteConn(cAsyncConn * &conn);
+
+				/// Pointer to an instance of cProtocol interface.
+				nProtocol::cProtocol *mProtocol;
 		};
 
-/**
- * Network connection class for asynchronous (aka non-blocking) connection.
- * @author Daniel Muller
- * @author Janos Horvath (UDP support)
- */
-
-class cAsyncConn : public cConnBase, public cObj
-{
-	public:
-		cAsyncConn(int sd=0, cAsyncSocketServer *s=NULL, tConnType ct= nEnums::eCT_CLIENT);
-		cAsyncConn(const string & host, int port, bool udp=false);
-		virtual ~cAsyncConn();
 
 		/**
-		* Close the connection.
-		*/
-		void Close();
+		 * @brief Network connection class for asynchronous or non-blocking connection.
+		 * This is the base class for an user connection.
+		 * @author Daniel Muller
+		 * @author Janos Horvath (UDP support)
+		 */
+		class cAsyncConn : public cConnBase, public cObj
+		{
+			public:
+				/// Define a list of connections.
+				typedef list<cAsyncConn*> tConnList;
 
-		/**
-		* Flush and send output buffer data as much as possible to I/O channel.
-		*/
-		void Flush();
+				/// Define an iterator to a list of connections.
+				typedef tConnList::iterator tCLIt;
 
-		// Socket descriptor
-		tSocket mSockDesc;
+				/**
+				 * Class constructor.
+				 * @param sd Socket identifier of the connection.
+				 * @param s Pointer to cAsyncSocketServer instance.
+				 * @param ct The type of connection. See tConnType for more information.
+				 * @see tConnType
+				 */
+				cAsyncConn(int sd=0, cAsyncSocketServer *s=NULL, tConnType ct= nEnums::eCT_CLIENT);
 
-	private:
-		//Pointer to read line string
-		string *mxLine;
+				/**
+				 * Class constructor.
+				 * @param host The hostname of the connection
+				 * @param port The port of the connection.
+				 * @param udp If the connection is UDP socket.
+				 */
+				cAsyncConn(const string & host, int port, bool udp=false);
 
-		// Line status (partily read, no line, etc.)
-		int meLineStatus;
+				/**
+				 * Class destructor.
+				 */
+				virtual ~cAsyncConn();
 
-		// End buffer position
-		int mBufEnd;
+				/**
+				 * Create a new connection.
+				 * @see AcceptSock()
+				 */
+				virtual cAsyncConn * Accept();
 
-		// Read buffer position
-		int mBufReadPos;
+				/**
+				 * Return the hostname.
+				 * @return The hostname.
+				 */
+				const string & AddrHost()
+				{
+					return mAddrHost;
+				}
 
-		// Registered flags
-		int mRegFlag;
+				/**
+				 * Return the IP address.
+				 * @return The IP address.
+				 */
+				const string & AddrIP()
+				{
+					return mAddrIP;
+				}
 
-		// Time when to close the connection
-		cTime mCloseAfter;
+				/**
+				 * Return the port.
+				 * @return The port.
+				 */
+				const int AddrPort()
+				{
+					return mAddrPort;
+				}
 
-		// Connection list
-		typedef list<cAsyncConn*> tConnList;
+				/**
+				 * Return if the buffer that contains stock data is empty.
+				 * @return True if buffer is empty.
+				 */
+				bool BufferEmpty()
+				{
+					 return mBufEnd == mBufReadPos;
+				};
 
-		// Connection iterator
-		typedef tConnList::iterator tCLIt;
-
-	public:
-		/**
-		* Reset the status of the line and delimiter to default value (new line).
-		*/
-		void ClearLine();
-
-		/**
-		* Close the connection after given milliseconds.
-		* @param msec Millisecond
-		*/
-		void CloseNice(int msec=0);
-
-		/**
-		* Return the pointer to the line.
-		* @return Pointer string
-		*/
-		string * GetLine();
-
-		/**
-		* Return the status of the line.
-		* @return Line status
-		*/
-		int LineStatus() { return meLineStatus; }
-
-		/**
-		* Set a pointer where to store the line to read and the delimiter.
-		* @param strp Pointer to allocated memory area where to store read line (default delimiter is new line).
-		* @param delimiter Delimiter for lines
-		* @param max Max length of line
-		*/
-		void SetLineToRead(string *,char , int max=-1);
+				/**
+				* Reset the status of the line and the delimiter to default value (new line).
+				*/
+				void ClearLine();
 
 
-		/**
-		* Read a line and store it to internal buffer. Use GetLine() to return the content of the buffer.
-		* @return Number of read bytes
-		*/
-		int ReadLineLocal();
+				/**
+				 * Close the connection.
+				 */
+				void Close();
 
-		// Connection iterator
-		tCLIt mIterator;
+				/**
+				* Close the connection after given milliseconds.
+				* @param msec Number in millisecond to wait before closing the connection.
+				*/
+				void CloseNice(int msec=0);
 
-		// Indicate if the server should take care of this connection or not
-		bool ok;
+				/**
+				 * Close immediatly the connection.
+				 * Use CloseNice() not to close it immediately.
+				 * @see CloseNice()
+				 */
+				void CloseNow();
 
-		// Indicate if data is allowed to be stored in the out buffer
-		bool mWritable;
+				/**
+				 * Connect to given host and port
+				 * @param host The hostname.
+				 * @param port The port.
+				 * @return -1 in case of errors.
+				 */
+				int Connect(const string &hostname, int port);
 
-		/** flags externall to poll, but used by poller in a way */
-		int mExtraPoll;
-	public:
-		// Pointer to server class
-		cAsyncSocketServer *mxServer;
-		cConnFactory * mxMyFactory;
-		cConnFactory * mxAcceptingFactory;
-		nProtocol::cProtocol * mxProtocol;
-		nProtocol::cMessageParser *mpMsgParser;
-		static unsigned long sSocketCounter;
-	protected: // Protected methods
-		/** static buffer as intermediate place to stock data when reading parts of lines */
-		static char *msBuffer;
-		/** send buffer, what is not sent immediately, is sent later from this buffer */
-		string mBufSend;
-		/** line spearator */
-		char mSeparator;
-		/** byte count already in the line */
-		int mLineSize;
-		/** ip address */
-		string mAddrHost;
-		string mAddrIP;
-		int mAddrPort;
-		unsigned long mMaxBuffer;
-		/** byte count limit for the line */
-		unsigned mLineSizeMax;
-		/** the ip address - binary format */
-		unsigned long mIp;
-		/** connestion type */
-		tConnType mType;
+				/**
+				 * Create a new message parser instance.
+				 * This method is called by FactoryString() when creating
+				 * a new string.
+				 * @return An pointer to an instance of message parser.
+				 */
+				virtual nProtocol::cMessageParser *CreateParser();
 
-		/**
-		* Send len bytes in the buffer.
-		* See http://www.ecst.csuchico.edu/~beej/guide/net/html/.
-		* @param buf Buffer to send
-		* @param len Number of bytes to send
-		* @return Number of sent bytes
-		*/
-		int SendAll(const char *buf, size_t &len);
+				/**
+				 * Delete a message parser instance.
+				 */
+				virtual void DeleteParser(nProtocol::cMessageParser *);
 
-		/** create a tcp or udp socket (default tcp) */
-		tSocket CreateSock(bool udp=false);
-		/** binds given socket to a port */
-		int BindSocket(int sock, int port, const char *addr=NULL);
-		/** listen on given socket */
-		int ListenSock(int sock);
-		/** set socket for non-blocking */
-		tSocket NonBlockSock(int sock);
-		/** return new socket */
-		tSocket AcceptSock();
-		/** function called before closing nicely */
-		virtual int OnCloseNice(void);
-		/** for udp */
-		struct sockaddr_in mAddrIN;
+				/**
+				 * Return the hostname for the IP address of the connection.
+				 * The hostname is stored in mAddrHost attribute and mIp attribute is used.
+				 *
+				 * Please note that DNS lookup may be extremely slow when dealing with a large amount of connections.
+				 * @return True on success or false on failure.
+				 */
+				bool DNSLookup();
 
-	public:
-		virtual nProtocol::cMessageParser *CreateParser();
-		virtual void DeleteParser(nProtocol::cMessageParser *);
-		virtual string * FactoryString();
+				/**
+				 * Return the hostname for the given IP address.
+				 *
+				 * Please note that DNS lookup may be extremely slow when dealing with a large amount of connections.
+				 * @param ip The IP address to resolve.
+				 * @param host A string that contains the result.
+				 * @return True on success or false on failure.
+				 */
+				static bool DNSResolveReverse(const string &ip, string &host);
 
-		/** retrun IP address */
-		const string & AddrIP(){return mAddrIP;}
-		const string & AddrHost(){return mAddrHost;}
-		const int AddrPort(){return mAddrPort;}
-		const unsigned long GetSockAddress() { return mAddrIN.sin_addr.s_addr; }
+				/**
+				 * Resolve the given host to an IP address.
+				 * @param host The hostname to resolve.
+				 * @return The IP address in network byte order.
+				 */
+				static unsigned long DNSResolveHost(const string &host);
 
-		/**
-		* Read all available data from the socket and store it into a static member buffer
-		* @return Number of read bytes
-		*/
-		int ReadAll();
+				/**
+				 * Create a new string that may be used to store the result
+				 * of ReadLineLocal() call.
+				 * This method will also create a new instance of the message
+				 * parser if it does not exist and re-initialize its state.
+				 * @return A pointer to an allocated string object.
+				 */
+				virtual string * FactoryString();
 
-		/** tells if msBuffer has some more data available or not
-		return value: true if not */
-		int BufferEmpty(){ return mBufEnd == mBufReadPos;};
-		/** No descriptions */
-		int ListenOnPort(int port, const char *ia=NULL, bool udp=false);
-		/** create new connection from the listening port */
-		virtual cAsyncConn * Accept();
-		/** Read property of tConnType mType. */
-		virtual const tConnType& getType();
-		/** this is called every period of time */
-		virtual int OnTimer(cTime &now);
-		/** this function is going to be executed periodicaly every N seconds by the  function of the same name in server */
-		int OnTimerBase(cTime &now);
+				/**
+				 * Flush the buffer and send the output data.
+				 */
+				void Flush();
 
-		/**
-		* Immediatly close the connection. Use CloseNice(int msec) not to close it immediately.
-		*/
-		void CloseNow();
-		/** this is called when write buffer gets empty */
-		virtual void OnFlushDone();
-		/** write given data or store into buffer */
-		int Write(const string &data, bool Flush);
-		/** register the connection into given selector */
-		//void UnRegister(cPoller & );
-		/** register the connection into given selector */
-		//int Register(cPoller & , int );
-		/** No descriptions */
-		tConnType GetType(){return mType;};
-		/** connect to given host (ip) on port */
-		int Connect(const string &, int);
+				/**
+				 * Return the connection type object.
+				 * @return The connection object.
+				 */
+				virtual const tConnType& getType();
 
-		/**
-		* Setup UDP socket.
-		* @param host The hostname
-		* @param port The port
-		* @return Zero on success or -1 on failure
-		*/
-		int SetupUDP(const string &, int);
-		bool DNSLookup();
-		bool DNSResolveReverse(const string &ip, string &host);
-		virtual operator tSocket()const {return mSockDesc;}
-		cTime mTimeLastIOAction;
-		// for UDP messages to given host and port
-		static int SendUDPMsg(const string &host, int port, const string &data);
-		static unsigned long DNSResolveHost(const string &host);
-		static string IPAsString(unsigned long addr);
+				/**
+				 * Return the connection type object.
+				 * @return The connection object.
+				 */
+				tConnType GetType();
 
-		int SetSockOpt(int optname, const void *optval, int optlen);
-		int GetSockOpt(int optname,       void *optval, int &optlen);
-	protected:
-		virtual cConnFactory * GetAcceptingFactory();
+				/**
+				 * Return the IP address as binary data in network byte order.
+				 * @return The IP address in network byte order.
+				 */
+				const unsigned long GetSockAddress()
+				{
+					return mAddrIN.sin_addr.s_addr;
+				}
+
+				/**
+				* Return the pointer to current read line.
+				* @return Pointer to a string.
+				*/
+				string * GetLine();
+
+				/**
+				 * Return the value for the given option of the socket.
+				 * This method does nothing on Windows OS.
+				 * @param optname The name of the option.
+				 * @param optval Buffer where value is stored.
+				 * @param optlen The length of the buffer.
+				 * @return A negative number if value is not retrived.
+				 * @see getsockopt
+				 */
+				int GetSockOpt(int optname, void *optval, int &optlen);
+
+				/**
+				 * Convert a given IP address in network byte order to a string.
+				 * @param addr IP address in network byte order.
+				 * @return The IP address.
+				 */
+				static string IPAsString(unsigned long addr);
+
+				/**
+				* Return the status of the line.
+				* @return The line status.
+				*/
+				int LineStatus()
+				{
+					return meLineStatus;
+				}
+
+				/**
+				 * Create a new connection and listen on a given port.
+				 * If TCP connection is created, then it is non-blocking.
+				 * @param port The port.
+				 * @param address The address.
+				 * @param udp True if it is an UDP connection.
+				 * @return The socket descriptor or -1 if the connection already exists.
+				 */
+				int ListenOnPort(int port, const char *ia=NULL, bool udp=false);
+
+				/**
+				 * Event handler function called when write buffer gets empty.
+				 */
+				virtual void OnFlushDone();
+
+				/**
+				 * Event handler function called every period of time by OnTimerBase().
+				 * The frequency of this method is called depends on
+				 * the value of timer_serv_period config variable.
+				 * @param now Current time.
+				 * @return Always zero.
+				 * @see OnTimerBase()
+				 */
+				virtual int OnTimer(cTime &now);
+
+				/**
+				 * This event is trigger every N seconds by cAsyncSocketServer::OnTimerBase()
+				 * that handles all socket connections to the server.
+				 * @param now Current time.
+				 * @return Always zero.
+				 */
+				int OnTimerBase(cTime &now);
+
+				/**
+				 * Read all available data from the socket and store them in the buffer.
+				 * @see ReadLineLocal()
+				 * @return Number of read bytes
+				 */
+				int ReadAll();
+
+				/**
+				 * Read a line and store it in the internal line buffer.
+				 * Use GetLine() to return the content of the read line.
+				 * @see GetLine()
+				 * @return Number of read bytes.
+				 */
+				int ReadLineLocal();
+
+				/**
+				 * Send data using UDP connection.
+				 * @param host The hostname.
+				 * @param port The destination port.
+				 * @param data The data to send.
+				 * @return A negative number of failure.
+				 */
+				static int SendUDPMsg(const string &host, int port, const string &data);
+
+				/**
+				* Set a pointer where to store the line to read and the delimiter.
+				* @param strp Pointer to an allocated memory area where to store the line to read.
+				* @param delimiter New delimiter.
+				* @param max Length of allocated memory and so of the line.
+				*/
+				void SetLineToRead(string *,char , int max=-1);
+
+				/**
+				 * Set the value for the given option on the socket.
+				 * This method does nothing on Windows OS.
+				 * @param optname The name of the option.
+				 * @param optval Buffer where the value is stored.
+				 * @param optlen The length of the buffer.
+				 * @return A negative number if value is not set.
+				 * @see setsockopt
+				 */
+				int SetSockOpt(int optname, const void *optval, int optlen);
+
+				/**
+				 * Setup an UDP socket.
+				 * @param host The hostname.
+				 * @param port The port.
+				 * @return Zero on success or -1 on failure.
+				 */
+				int SetupUDP(const string &, int);
+
+				/**
+				 * Return the socket identification or descriptor.
+				 * @return The socket descriptor.
+				 */
+				virtual operator tSocket() const
+				{
+					return mSockDesc;
+				}
+
+				/**
+				 * Write the given data into the output buffer.
+				 * The content of the buffer may be flushed manually or when the buffer
+				 * overflows its maximum capacity.
+				 * @param data Data to be written.
+				 * @param Flush True if the buffer must be flushed.
+				 * @return Number of sent bytes. Zero in case buffer is not flushed or negative number in case of errors.
+				 */
+				int Write(const string &data, bool Flush);
+
+				/// Timer of last IO operation.
+				cTime mTimeLastIOAction;
+
+				/// Connection iterator.
+				tCLIt mIterator;
+
+				/// Indicate if the connection is still valid.
+				bool ok;
+
+				/// Indicate if we can write data to the connection.
+				bool mWritable;
+
+				/// Socket descriptor.
+				tSocket mSockDesc;
+
+				/// Pointer to an instance of cAsyncSocketServer.
+				cAsyncSocketServer *mxServer;
+
+				/// Pointer to an instance of connection factory.
+				cConnFactory * mxMyFactory;
+
+				/// Pointer to an instance of accepted connection factory.
+				/// @deprecated
+				cConnFactory * mxAcceptingFactory;
+
+				/// Pointer to an instance of the protocol handler.
+				nProtocol::cProtocol * mxProtocol;
+
+				/// Pointer to an instance of the message parser.
+				nProtocol::cMessageParser *mpMsgParser;
+
+				/// Number of connections whit a socket.
+				static unsigned long sSocketCounter;
+
+			protected:
+				/// Static buffer that contains stock data.
+				/// Buffer is filled by ReadAll() call but data are fetched
+				/// line per line by calling ReadLineLocal().
+				static char *msBuffer;
+
+				/// Buffer that contains the data to send.
+				/// If data are not sent immediately, they are store in this buffer
+				string mBufSend;
+
+				/// Line separator character.
+				/// Delimiter is used to split lines in the buffer and the default one is new line.
+				char mSeparator;
+
+				/// Read bytes from the buffer after ReadLocalLine() call.
+				/// This represents the length of the line.
+				int mLineSize;
+
+				/// Host name of the connection.
+				string mAddrHost;
+
+				/// IP address of the connection.
+				string mAddrIP;
+
+				/// Integer that represents the numeric value of the IP address of the connection.
+				unsigned long mIp;
+
+				/// Port of the connection.
+				int mAddrPort;
+
+				/// The maximum size of the buffer that contains stock data.
+				/// @see msBuffer
+				unsigned long mMaxBuffer;
+
+				/// The maximum size of the buffer that contains the read line.
+				/// This value can be changed with SetLineToRead() call and by
+				/// allocating a new memory area.
+				/// @see SetLineToRead()
+				unsigned mLineSizeMax;
+
+				/// Structure for Internet address.
+				struct sockaddr_in mAddrIN;
+
+				/// The type of the connection.
+				tConnType mType;
+
+				/**
+				 * Validate and accept a new socket connection.
+				 * @return A negative value indicates that the connection is not accepted.
+				 */
+				tSocket AcceptSock();
+
+				/**
+				 * Bind the given socket to an address and port.
+				 * @param sock The identifier of the socket to bind.
+				 * @param port The port.
+				 * @param add The address.
+				 */
+				int BindSocket(int sock, int port, const char *addr=NULL);
+
+				/**
+				 * Create a new socket connection.
+				 * @param udp True if the connection is UDP one. Default to TCP.
+				 * @return A negative value indicates that the connection is not created.
+				 */
+				tSocket CreateSock(bool udp=false);
+
+				/**
+				 * Return a pointer to an instance of connection factory
+				 * that is capable of accepting new connection.
+				 * @return A pointer to cConnFactory instance.
+				 */
+				virtual cConnFactory * GetAcceptingFactory();
+
+				/**
+				 * Listen on the given socket for new connection.
+				 * The maximum length of the queue of pending connection is 100.
+				 * @param sock The identifier of the socket to listen on.
+				 * @return A negative value if the operation failed or the identifier of the socket.
+				 */
+				int ListenSock(int sock);
+
+				/**
+				 * Set socket in non-blocking mode.
+				 * @param sock The identifier of the socket.
+				 * @return A negative value if the operation failed or the identifier of the socket.
+				 */
+				tSocket NonBlockSock(int sock);
+
+				/**
+				 * Event handler function called before the connection is closed.
+				 * @return Always zero.
+				 */
+				virtual int OnCloseNice(void);
+
+				/**
+				* Send len bytes in the buffer.
+				* See http://www.ecst.csuchico.edu/~beej/guide/net/html/.
+				* @param buf Buffer to send
+				* @param len Number of bytes to send
+				* @return Number of sent bytes
+				*/
+				int SendAll(const char *buf, size_t &len);
+			private:
+				/// Pointer to a line in the buffer.
+				/// The string is stored by ReadLineLocal() call and then fetched with GetLine() call.
+				/// Buffer is split in lines depending on the delimiter stored in mSeparator.
+				/// @see GetLine()
+				/// @see ReadLineLocal()
+				/// @see msBuffer
+				string *mxLine;
+
+				/// The status of the read line from the buffer.
+				/// @see tLineStatus
+				nEnums::tLineStatus meLineStatus;
+
+				/// End position in the buffer.
+				int mBufEnd;
+
+				// Read buffer position
+				/// Current position in the buffer.
+				/// The position is pushed forward when a new line is read from the buffer.
+				/// @see ReadLineLocal()
+				int mBufReadPos;
+
+				/// The time when the connection has been closed.
+				cTime mCloseAfter;
 };
-
+		/// @}
 	}; // namespace nSocket
 }; // namespace nVerliHub
 #endif
