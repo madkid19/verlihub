@@ -30,9 +30,12 @@ namespace nVerliHub {
 	namespace nPlugin {
 
 cCallBackList::cCallBackList(cPluginManager *mgr, string id) :
-	mMgr(mgr), mCallOne(mMgr,this), mName(id)
+mMgr(mgr),
+mCallOne(mMgr,this),
+mName(id)
 {
-	if(mMgr) mMgr->SetCallBack(id, this);
+	if(mMgr)
+		mMgr->SetCallBack(id, this);
 }
 
 const string &cCallBackList::Name() const
@@ -40,28 +43,36 @@ const string &cCallBackList::Name() const
 	return mName;
 }
 
-cCallBackList::~cCallBackList(){}
+cCallBackList::~cCallBackList()
+{}
 
 void cCallBackList::ufCallOne::operator()(cPluginBase *pi)
 {
-	if( mCall ) mCall = mCBL->CallOne(pi);
-	if (!pi->IsAlive()) mMgr->UnloadPlugin(pi->Name());
+	if(mCall)
+		mCall = mCBL->CallOne(pi);
+	// If the plugin is not alive, unload it with plugin manager
+	if(!pi->IsAlive())
+		mMgr->UnloadPlugin(pi->Name());
 }
 
-bool cCallBackList::Register(cPluginBase *pi)
+bool cCallBackList::Register(cPluginBase *plugin)
 {
-	if(!pi) return false;
-	tPICont::iterator i = find(mPlugins.begin(), mPlugins.end(),pi);
-	if(i != mPlugins.end()) return false;
-	mPlugins.push_back(pi);
+	if(!plugin)
+		return false;
+	tPICont::iterator i = find(mPlugins.begin(), mPlugins.end(), plugin);
+	if(i != mPlugins.end())
+		return false;
+	mPlugins.push_back(plugin);
 	return true;
 }
 
-bool cCallBackList::Unregister(cPluginBase *pi)
+bool cCallBackList::Unregister(cPluginBase *plugin)
 {
-	if(!pi) return false;
-	tPICont::iterator i = find(mPlugins.begin(), mPlugins.end(),pi);
-	if(i == mPlugins.end()) return false;
+	if(!plugin)
+		return false;
+	tPICont::iterator i = find(mPlugins.begin(), mPlugins.end(), plugin);
+	if(i == mPlugins.end())
+		return false;
 	mPlugins.erase(i);
 	return true;
 }
@@ -69,16 +80,13 @@ bool cCallBackList::Unregister(cPluginBase *pi)
 bool cCallBackList::CallAll()
 {
 	mCallOne.mCall = true;
-	return for_each( mPlugins.begin() , mPlugins.end(), mCallOne ).mCall;
+	return for_each(mPlugins.begin() , mPlugins.end(), mCallOne).mCall;
 }
 
 void cCallBackList::ListRegs(ostream &os, const char *indent)
 {
-	tPICont::iterator i;
-	for (i = mPlugins.begin(); i != mPlugins.end(); ++i)
-	{
+	for(tPICont::iterator i = mPlugins.begin(); i != mPlugins.end(); ++i)
 		os << indent << (*i)->Name() << "\r\n";
-	}
 }
 	}; // namespace nPlugin
 }; // namespace nVerliHub
