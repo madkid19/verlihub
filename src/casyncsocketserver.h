@@ -301,6 +301,7 @@ namespace nVerliHub {
 			/// Pointer to the connection that server is currently handling
 			cAsyncConn * mNowTreating;
 		};
+		/// @}
 	}; // namespace nSocket
 }; // namespace nVerliHub
 #endif

@@ -29,6 +29,7 @@
 namespace nVerliHub {
 	using namespace nUtils;
 	using namespace nEnums;
+	using namespace nSocket;
 	namespace nTables {
 
 cBanList::cBanList(cServerDC *s) : cConfMySQL(s->mMySQL), mS(s),mModel(s)
@@ -49,9 +50,9 @@ cBanList::cBanList(cServerDC *s) : cConfMySQL(s->mMySQL), mS(s),mModel(s)
 	AddCol("share_size", "varchar(15)", "", true, mModel.mShare);
 	AddCol("email", "varchar(128)", "", true, mModel.mMail);
 	mMySQLTable.mExtra = "UNIQUE (ip,nick), ";
-	mMySQLTable.mExtra+= "INDEX nick_index (nick), ";
-	mMySQLTable.mExtra+= "INDEX date_index (date_limit), ";
-	mMySQLTable.mExtra+= "INDEX range_index (range_fr)";
+	mMySQLTable.mExtra += "INDEX nick_index (nick), ";
+	mMySQLTable.mExtra += "INDEX date_index (date_limit), ";
+	mMySQLTable.mExtra += "INDEX range_index (range_fr)";
 	SetBaseTo(&mModel);
 }
 
@@ -92,9 +93,6 @@ void cUnBanList::Cleanup()
 	mQuery.Clear();
 }
 
-/*!
-    \fn cBanList::UpdateBan(cBan &ban)
- */
 int cBanList::UpdateBan(cBan &ban)
 {
 	nMySQL::cQuery query(mMySQL);
@@ -106,57 +104,31 @@ int cBanList::UpdateBan(cBan &ban)
 	return 0;
 }
 
-
-/*!
-    \fn cBanList::LoadBanByKey(cBan &ban)
-    \param ban the destination and a structure containing the primary key
-    \param return wheather loaded
- */
 bool cBanList::LoadBanByKey(cBan &ban)
 {
-	SetBaseTo( &ban );
+	SetBaseTo(&ban);
 	return LoadPK();
 }
 
-/*!
-	\brief Generate - fill in a ban structure ready to be added
-	\fn cBanList::NewBan(cBan &ban, cConnDC *conn, const string &nick_op, const string &reason, unsigned length, unsigned type)
-	\param ban Destination of the new ban
-	\param conn the currently being banned connection
-	\param nick_op operator performing the ban
-	\param reason ban reason
-	\param length number of seconds to be banned, 0 - means permban
-	\param type use the enum from cBan::tBanFlags, only accepted are values defined in the enum
-	\sa cBan::tBanFlags
- */
-void cBanList::NewBan(cBan &ban, cConnDC *conn, const string &nick_op, const string &reason, unsigned length, unsigned type)
+void cBanList::NewBan(cBan &ban, cConnDC *connection, const string &nickOp, const string &reason, unsigned length, unsigned mask)
 {
-	if(conn != NULL) {
-		ban.mIP   = conn->AddrIP();
-		ban.mHost = conn->AddrHost();
+	if(connection) {
+		ban.mIP   = connection->AddrIP();
+		ban.mHost = connection->AddrHost();
 		ban.mDateStart = cTime().Sec();
 		ban.mDateEnd = ban.mDateStart + length;
 		ban.mReason = reason;
-		ban.mNickOp = nick_op;
-		ban.SetType(type);
-		if(conn->mpUser) {
-			ban.mNick  = conn->mpUser->mNick;
-			ban.mShare = conn->mpUser->mShare;
+		ban.mNickOp = nickOp;
+		ban.SetType(mask);
+		if(connection->mpUser) {
+			ban.mNick  = connection->mpUser->mNick;
+			ban.mShare = connection->mpUser->mShare;
 		} else {
 			ban.mNick = "nonick_" + ban.mIP;
 		}
 	}
 }
 
-/*!
-	\brief Add ban to the database
-	\fn cBanList::AddBan(cBan &ban)
-	\param ban the Ban to be added, created by NewBan or similar
-	\sa NewBan
-
-	This one finnished up the filling of ban structure. Searches for the ban record in database.
-	When found the time adition is performed. Otherwise the ban is  inserted as it is.
- */
 void cBanList::AddBan(cBan &ban)
 {
 	//@todo nick2dbkey
@@ -231,21 +203,14 @@ void cBanList::AddBan(cBan &ban)
 		SavePK(false);
 }
 
-/*!
-    \fn cBanList::TestBan(cBan &ban, cConnDC *conn, const string &Nick, unsigned mask)
-    \param ban destination where found ban record is loaded
-    \param conn a connection for which the bans is testes
-    \param Nick maybe banned nickname
-    \param mask binary OR'ed sum of cBan flags to test ban for
- */
-bool cBanList::TestBan(cBan &ban, cConnDC *conn, const string &Nick, unsigned mask)
+bool cBanList::TestBan(cBan &ban, cConnDC *connection, const string &nick, unsigned mask)
 {
 	ostringstream query;
-	if(conn != NULL) {
+	if(connection != NULL) {
 		bool fristWhere = false;
-		string ip = conn->AddrIP();
+		string ip = connection->AddrIP();
 		SelectFields(query);
-		string host = conn->AddrHost();
+		string host = connection->AddrHost();
 		// IP and NICK and BOTH are done by this first one
 		query << " WHERE (";
 		if(mask & (eBF_NICKIP | eBF_IP)) {
@@ -254,14 +219,14 @@ bool cBanList::TestBan(cBan &ban, cConnDC *conn, const string &Nick, unsigned ma
 			fristWhere = true;
 		}
 		if(mask & (eBF_NICKIP | eBF_NICK))
-			AddTestCondition(query , Nick , eBF_NICK);
+			AddTestCondition(query , nick , eBF_NICK);
 
 		if(mask & eBF_RANGE)
 			AddTestCondition(query << " OR ", ip , eBF_RANGE);
-		if(conn->mpUser != NULL) {
+		if(connection->mpUser != NULL) {
 			if(mask & eBF_SHARE) {
 				ostringstream os (ostringstream::out);
-				os << conn->mpUser->mShare;
+				os << connection->mpUser->mShare;
 				if(fristWhere) query << " OR ";
 				AddTestCondition (query, os.str(), eBF_SHARE); //fix OR condition
 			}
@@ -275,13 +240,13 @@ bool cBanList::TestBan(cBan &ban, cConnDC *conn, const string &Nick, unsigned ma
 		if(mask & eBF_HOSTR1)
 			AddTestCondition (query << " OR ", host, eBF_HOSTR1);
 		if(mask & eBF_PREFIX)
-			AddTestCondition (query << " OR ", Nick, eBF_PREFIX);
+			AddTestCondition (query << " OR ", nick, eBF_PREFIX);
 
 		query << " ) AND ( (date_limit >= " << cTime().Sec() <<
 			") OR date_limit IS NULL OR (date_limit = 0)) ORDER BY date_limit DESC LIMIT 1";
 
 		if(StartQuery(query.str()) == -1)
-		return false;
+			return false;
 		SetBaseTo(&ban);
 		bool found = (Load() >= 0);
 		EndQuery();
@@ -290,58 +255,46 @@ bool cBanList::TestBan(cBan &ban, cConnDC *conn, const string &Nick, unsigned ma
 	return false;
 }
 
-/*!
-    \fn cBanList::DelBan(cBan &Ban)
- */
 void cBanList::DelBan(cBan &Ban)
 {
 	SetBaseTo(&Ban);
 	DeletePK();
 }
 
-
-/*!
-    \fn cBanList::DeleteAllBansBy(const string &IP, const string &Nick, int Flags)
- */
-int cBanList::DeleteAllBansBy(const string &IP, const string &Nick, int Flags)
+int cBanList::DeleteAllBansBy(const string &ip, const string &nick, int mask)
 {
 	mQuery.OStream() << "DELETE FROM " << mMySQLTable.mName << " WHERE ";
-	if(Flags & eBF_IP)
-		mQuery.OStream() << " ip = '" << IP << "'";
-	if(Flags & (eBF_IP | eBF_NICK))
+	if(mask & eBF_IP)
+		mQuery.OStream() << " ip = '" << ip << "'";
+	if(mask & (eBF_IP | eBF_NICK))
 		mQuery.OStream() << " AND";
-	if(Flags & eBF_NICK)
-		mQuery.OStream() << " nick = '" << Nick << "'";
+	if(mask & eBF_NICK)
+		mQuery.OStream() << " nick = '" << nick << "'";
 
 	return mQuery.Query();
 }
 
-
-/*!
-    \fn cBanList::NewBan(cBan &Dest, const  cKick &Kick, time_t period, int Flags)
- */
-void cBanList::NewBan(cBan &ban, const cKick &Kick, long period, int type)
+void cBanList::NewBan(cBan &ban, const cKick &kick, long period, int mask)
 {
-	ban.mIP   = Kick.mIP;
+	ban.mIP   = kick.mIP;
 	ban.mDateStart = cTime().Sec();
 	if(period)
 		ban.mDateEnd = ban.mDateStart + period;
 	else
 		ban.mDateEnd = 0;
-	ban.mReason = Kick.mReason;
-	ban.mNickOp = Kick.mOp;
-	ban.mNick  = Kick.mNick;
-	ban.SetType(type);
-	ban.mHost = Kick.mHost;
-	ban.mMail = Kick.mEmail;
-	ban.mShare = Kick.mShare;
+	ban.mReason = kick.mReason;
+	ban.mNickOp = kick.mOp;
+	ban.mNick  = kick.mNick;
+	ban.SetType(mask);
+	ban.mHost = kick.mHost;
+	ban.mMail = kick.mEmail;
+	ban.mShare = kick.mShare;
 }
 
-// Remove ban for given ip nick or whatever.. and also corresponding bans.
-int cBanList::Unban(ostream &os, const string &What, const string &reason, const string &NickOp, int TypeOfWhat, bool DoIt)
+int cBanList::Unban(ostream &os, const string &value, const string &reason, const string &nickOp, int mask, bool deleteEntry)
 {
 	SelectFields(mQuery.OStream());
-	if(!AddTestCondition(mQuery.OStream() << " WHERE ", What, TypeOfWhat)) {
+	if(!AddTestCondition(mQuery.OStream() << " WHERE ", value, mask)) {
 		mQuery.Clear();
 		return 0;
 	}
@@ -352,10 +305,10 @@ int cBanList::Unban(ostream &os, const string &What, const string &reason, const
 
 	for(it = db_begin(); it != db_end(); ++it) {
 		mModel.DisplayComplete(os);
-		if(DoIt) {
+		if(deleteEntry) {
 			unban = new cUnBan(mModel, mS);
 			unban->mUnReason = reason;
-			unban->mUnNickOp = NickOp;
+			unban->mUnNickOp = nickOp;
          		unban->mDateUnban = cTime().Sec();
 			mUnBanList->SetBaseTo(unban);
 			mUnBanList->SavePK();
@@ -364,113 +317,101 @@ int cBanList::Unban(ostream &os, const string &What, const string &reason, const
 		i++;
 	}
 	mQuery.Clear();
-	if(DoIt) {
+	if(deleteEntry) {
 		mQuery.OStream() << "DELETE FROM " << this->mMySQLTable.mName << " WHERE ";
-		AddTestCondition(mQuery.OStream() , What, TypeOfWhat);
+		AddTestCondition(mQuery.OStream() , value, mask);
 		mQuery.Query();
 		mQuery.Clear();
 	}
 	return i;
 }
 
-/*
- * Extract the host (of given level) substring from a given string
- */
-bool cBanList::GetHostSubstring(const string &src, string &dest, int level)
+bool cBanList::GetHostSubstring(const string &hostname, string &result, int level)
 {
 	string tmp(".");
 	size_t pos;
 	if(level > 0) {
-		tmp += src;
+		tmp += hostname;
 		pos = tmp.npos;
 		for(int i = 0; i < level; i++) {
 			if(!pos)
 				return false;
 			pos = tmp.rfind('.',pos-1);
 		}
-		dest.assign(tmp, pos, tmp.size()-pos);
+		result.assign(tmp, pos, tmp.size()-pos);
 	} else if(level < 0) {
-		tmp = src;
+		tmp = hostname;
 		pos = 0;
 		for (int i = 0; i < -level; i++) {
 			if (pos == tmp.npos)
 				return false;
 			pos = tmp.find('.',pos+1);
 		}
-		dest.assign(tmp, 0, pos);
+		result.assign(tmp, 0, pos);
 	}
 
 	return true;
 }
 
-
-
-/*!
-    \fn cBanList::AddTestCondition(ostream &os, const string &What, int Type)
- */
-bool cBanList::AddTestCondition(ostream &os, const string &What, int Type)
+bool cBanList::AddTestCondition(ostream &os, const string &value, int mask)
 {
 	string host;
 	unsigned long num;
-	switch(Type) {
+	switch(mask) {
 		case eBF_NICK:
-			os << "( nick = '"; cConfMySQL::WriteStringConstant(os, What); os << "')";
+			os << "( nick = '"; cConfMySQL::WriteStringConstant(os, value); os << "')";
 		break;
 		case eBF_IP:
-			os << "(ip='"; cConfMySQL::WriteStringConstant(os, What); os << "')";
+			os << "(ip='"; cConfMySQL::WriteStringConstant(os, value); os << "')";
 		break;
-		//case (int)eBF_NICK  : os << "(ip='_nickban_' AND nick='" << What << "')"; break;
-		//case (int)eBF_IP    : os << "(nick='_ipban_' AND ip='" << What << "')"; break;
+		//case (int)eBF_NICK  : os << "(ip='_nickban_' AND nick='" << value << "')"; break;
+		//case (int)eBF_IP    : os << "(nick='_ipban_' AND ip='" << value << "')"; break;
 		case eBF_RANGE :
-			num = Ip2Num(What);
+			num = Ip2Num(value);
 			os << "(nick='_rangeban_' AND " << num << " BETWEEN range_fr AND range_to )";
 		break;
 		case eBF_SHARE :
-			os << "(nick='_shareban_' AND share_size = '" << What << "')";
+			os << "(nick='_shareban_' AND share_size = '" << value << "')";
 		break;
 		case eBF_EMAIL :
-			os << "(nick='_emailban_' AND ip = '" << What << "')";
+			os << "(nick='_emailban_' AND ip = '" << value << "')";
 		break;
 		case eBF_HOST1 :
-			if(!this->GetHostSubstring(What, host, 1)) {
+			if(!this->GetHostSubstring(value, host, 1)) {
 				os << " 0 ";
 				return false;
 			}
 			os << "(ip='_host1ban_' AND '" << host << "' = nick)";
 		break;
 		case eBF_HOST2 :
-			if(!this->GetHostSubstring(What, host, 2)) {
+			if(!this->GetHostSubstring(value, host, 2)) {
 				os << " 0 ";
 				return false;
 			}
 			os << "(ip='_host2ban_' AND '" << host << "' = nick)";
 		break;
 		case eBF_HOST3 :
-			if(!this->GetHostSubstring(What, host, 3)) {
+			if(!this->GetHostSubstring(value, host, 3)) {
 				os << " 0 ";
 				return false;
 			};
 			os << "(ip='_host3ban_' AND '" << host << "' = nick)";
 		break;
 		case eBF_HOSTR1 :
-			if(!this->GetHostSubstring(What, host, -1)) {
+			if(!this->GetHostSubstring(value, host, -1)) {
 				os << " 0 ";
 				return false;
 			};
 			os << "(ip='_hostr1ban_' AND '" << host << "' = nick)";
 		break;
 		case eBF_PREFIX :
-			os << "(ip='_prefixban_' AND nick=LEFT('";cConfMySQL::WriteStringConstant(os, What); os << "',LENGTH(nick)))";
+			os << "(ip='_prefixban_' AND nick=LEFT('";cConfMySQL::WriteStringConstant(os, value); os << "',LENGTH(nick)))";
 		break;
 		default: return false;
 	}
 	return true;
 }
 
-
-/*!
-    \fn cBanList::List(ostream &os, int)
- */
 void cBanList::List(ostream &os, int count)
 {
 	mQuery.Clear();
@@ -493,10 +434,6 @@ void cBanList::List(ostream &os, int count)
 	mQuery.Clear();
 }
 
-
-/*!
-    \fn cBanList::Ip2Num(const string &ip)
- */
 unsigned long cBanList::Ip2Num(const string &ip)
 {
 	int i;
@@ -521,7 +458,6 @@ void cBanList::Num2Ip(unsigned long mask, string &ip)
 	ip = os.str();
 }
 
-/// \return 0 if not found else time of the end
 long cBanList::IsNickTempBanned(const string &nick)
 {
 	unsigned long hash= mTempNickBanlist.HashStringLower(nick);
@@ -532,7 +468,6 @@ long cBanList::IsNickTempBanned(const string &nick)
 	return 0;
 }
 
-/// \return 0 if not found else time of the end
 long cBanList::IsIPTempBanned(unsigned long ip)
 {
 	unsigned long hash=ip;
@@ -589,9 +524,6 @@ void cBanList::DelIPTempBan(unsigned long ip)
 	}
 }
 
-/**
-  * \return the number of removed items
-  */
 int cBanList::RemoveOldShortTempBans(long before)
 {
 	int n = 0;
@@ -626,6 +558,5 @@ int cBanList::RemoveOldShortTempBans(long before)
 	}
 	return n;
 }
-
 	}; // namespace nTables
 }; // namespace nVerliHub

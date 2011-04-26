@@ -66,10 +66,17 @@ cUnBan::~cUnBan(){}
 ostream & operator << (ostream &os, cBan &ban)
 {
 	switch(ban.mDisplayType) {
-		case 0: ban.DisplayComplete(os); break;
-		case 1: ban.DisplayUser(os); break;
-		case 2: ban.DisplayKick(os); break;
-		default: os << _("Unknown ban") << "\r\n";
+		case 0:
+			ban.DisplayComplete(os);
+			break;
+		case 1:
+			ban.DisplayUser(os);
+			break;
+		case 2:
+			ban.DisplayKick(os);
+			break;
+		default:
+			os << _("Unknown ban") << "\r\n";
 	}
 	return os;
 }
@@ -170,6 +177,5 @@ void cBan::DisplayInline(ostream &os)
 	DisplayKick(os);
 	os << sep << GetBanType();
 }
-
 	}; // namespace nTables
 }; // Namespace nVerliHub

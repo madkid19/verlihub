@@ -607,7 +607,7 @@ namespace nVerliHub {
 
 				/// The time when the connection has been closed.
 				cTime mCloseAfter;
-};
+		};
 		/// @}
 	}; // namespace nSocket
 }; // namespace nVerliHub
