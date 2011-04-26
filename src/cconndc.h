@@ -23,7 +23,6 @@
 #define CCONNDC_H
 #include "casyncconn.h"
 #include "cmessagedc.h"
-//#include "cuser.h"
 #include "creguserinfo.h"
 #include "ctimeout.h"
 
@@ -31,285 +30,383 @@ namespace nVerliHub {
 	using namespace nSocket;
 	using namespace nUtils;
 	using namespace nTables;
-	namespace nTables{ class cConnType; };
-	namespace nProtocol { class cDCProto; }
+	namespace nTables {
+		class cConnType;
+	};
+	namespace nProtocol {
+		class cDCProto;
+	}
 	using nProtocol::cDCProto;
 
 	class cUser;
-	namespace nSocket {class cServerDC; };
+	namespace nSocket {
+		class cServerDC;
+	};
 
 	namespace nEnums {
 
-		// Login status flags
+		/**
+		 * Login flags.
+		 * These flags are used to track the status of the login procedure
+		 * of a single user in the hub.
+		 */
 		typedef enum
 		{
-			eLS_KEYOK   = 1 << 0, // Key is ok
-			eLS_VALNICK = 1 << 1, // Validate nick sent
-			eLS_PASSWD  = 1 << 2, // User does not need to send a password or password is ok
-			eLS_VERSION = 1 << 3, // Client version is ok
-			eLS_MYINFO  = 1 << 4, // MyInfo received and parsed
-			eLS_ALOWED  = 1 << 5, // User can enter the hub
-			eLS_NICKLST = 1 << 6, // User received complete nicklist
-			eLS_LOGIN_DONE = eLS_KEYOK|eLS_VALNICK|eLS_PASSWD|eLS_VERSION|eLS_MYINFO|eLS_ALOWED|eLS_NICKLST // All flags set (login complete)
+			/// The key sends by the client is valid.
+			eLS_KEYOK   = 1 << 0,
+			/// The client sent $ValidateNick protocol message.
+			eLS_VALNICK = 1 << 1,
+			/// The user does not need to send the password
+			/// or the password sends is valid. The hub just requests
+			/// for a password only if the user is registered.
+			eLS_PASSWD  = 1 << 2,
+			/// The version of the client is valid.
+			eLS_VERSION = 1 << 3,
+			/// The client sent $MyINFO protocol message
+			/// and it parsed correctly.
+			eLS_MYINFO  = 1 << 4,
+			/// The user is allowed to enter the hub
+			eLS_ALLOWED  = 1 << 5,
+			/// The client received by the hub $NickList protocol message
+			/// with the list of all users in the hub.
+			eLS_NICKLST = 1 << 6,
+			/// All the flags explained above. This means the login
+			/// procedure is complete.
+			eLS_LOGIN_DONE = eLS_KEYOK | eLS_VALNICK | eLS_PASSWD | eLS_VERSION | eLS_MYINFO | eLS_ALLOWED | eLS_NICKLST
 		} tLogStatus;
 
-		// Login timeout flags
+		/**
+		 * Timeout flags for login procedure.
+		 */
 		typedef enum
 		{
-			eTO_KEY=0,  	// Waiting for key after lock
-			eTO_VALNICK,	// Waiting for validate nick after lock
-			eTO_LOGIN,  	// User is logging in
-			eTO_MYINFO, 	// Waiting for MyINFO
-			eTO_FLUSH, 	// Waiting for flushing data from buffer
-			eTO_SETPASS, 	// Waiting for password
-			eTO_MAXTO   	// Not used
+			/// The hub is waiting for $Key protocol message.
+			/// This timeout is set after $Lock is received.
+			eTO_KEY=0,
+			/// The hub is waiting for $ValidateNick protocol message.
+			/// This timeout is set after $Key is received.
+			eTO_VALNICK,
+			/// Login timeout of login procedure.
+			/// This timeout is set when a cConnDC instance is created.
+			eTO_LOGIN,
+			/// The hub is waiting for $MyINFO protocol message.
+			/// This timeout is set after $ValidateNick is received.
+			eTO_MYINFO,
+			/// The hub is waiting for the user to set a valid password.
+			/// This timeout is set when the user should set a password
+			/// in cServerDC::AfterUserLogin() call.
+			eTO_SETPASS,
+			/// This is NOT a timeout flag but it is used to count the
+			/// number of flags.
+			eTO_MAXTO
 		} tTimeOut;
 
-		// Support flags ($Support)
+		/**
+		 * Support flags for client and hub features sent in $Support
+		 * protocol message.
+		 */
 		typedef enum
 		{
-			eSF_OPPLUS    = 1     , // OpPlus
-			eSF_NOHELLO   = 1 << 1, // NoHello
-			eSF_NOGETINFO = 1 << 2, // NoGetINFO
-			eSF_PASSIVE   = 1 << 3, // Passive user
-			eSF_QUICKLIST = 1 << 4, // Quicklist extention
-			eSF_BOTINFO   = 1 << 5, // BOTinfo extention
-			eSF_ZLIB      = 1 << 6 	// ZPipe extention
+			/// OpPlus feature.
+			eSF_OPPLUS = 1,
+			/// NoHello feature.
+			eSF_NOHELLO = 1 << 1,
+			/// NoGetINFO feature.
+			eSF_NOGETINFO = 1 << 2,
+			/// Passive user feature.
+			eSF_PASSIVE = 1 << 3,
+			/// Quicklist feature.
+			eSF_QUICKLIST = 1 << 4,
+			/// BOTinfo feature.
+			eSF_BOTINFO = 1 << 5,
+			/// ZLib feature.
+			eSF_ZLIB = 1 << 6
 		} tSupportFeature;
 	};
 
-using namespace nEnums;
+	using namespace nEnums;
 
-class cDCBanRecord;
-//class cConnDC;
-
+	class cDCBanRecord;
 	namespace nSocket {
 
-class cDCConnFactory : public cConnFactory
-{
- public:
-		cDCConnFactory(cServerDC *server);
-		virtual ~cDCConnFactory(){}
-		virtual cAsyncConn * CreateConn(tSocket sd=0);
-		virtual void DeleteConn(cAsyncConn * &);
- protected:
-		cServerDC *mServer;
-};
+		/// @addtogroup Core
+		/// @{
+		/**
+		 * Connection factory to create and delete a connection of type cConnDC
+		 * between DC users.
+		 * This class is used by cAsyncConn and cServerDC to create and delete
+		 * user connection.
+		 * @author Daniel Muller
+		 */
+		class cDCConnFactory : public cConnFactory
+		{
+		public:
+				/**
+				 * Class constructor.
+				 * @param server A pointer to cServerDC instance.
+				 */
+				cDCConnFactory(cServerDC *server);
 
-/**
-* This class represents a connection.
-*
-* @author Daniel Muller
-* @version 1.0
-*/
+				/**
+				 * Class destructor.
+				 */
+				virtual ~cDCConnFactory()
+				{}
 
-class cConnDC : public cAsyncConn
-{
-	friend class nProtocol::cDCProto;
- public:
-	/**
-	* Class constructor.
-	*/
-	cConnDC(int sd=0, cAsyncSocketServer *server=NULL);
+				/**
+				 * Create a new connection for the given socket.
+				 * This method will also assign a protocol handler to
+				 * the cAsyncConn instance, assign a country zone if GeoIP
+				 * is installed and increment the number of the user in the hub.
+				 * @param sd Socket identifier of the connection.
+				 * @return A new connection object that is an instance of cAsyncConn class.
+				 */
+				virtual cAsyncConn * CreateConn(tSocket sd=0);
 
-	/**
-	* Class destructor.
-	*/
-	virtual ~cConnDC();
+				/**
+				 * Delete a connection.
+				 * This method will also decrement the number of
+				 * the user in the hub.
+				 * @param connection A pointer to the connection to delete.
+				 */
+				virtual void DeleteConn(cAsyncConn * &connection);
+			protected:
+				/// Pointer to cServerDC instance.
+				cServerDC *mServer;
+		};
+		/**
+		 * Network connection class for asynchronous or non-blocking connection
+		 * between two enteties that talks a DC protocol.
+		 * @author Daniel Muller
+		 */
 
-	/**
-	* Check if timeout is expired for the given action.
-	* @param t The action.
-	* @param now Current time.
-	* @return 1 if timeout is expired or 0 otherwise.
-	*/
-	int CheckTimeOut(tTimeOut t, cTime &now);
+		class cConnDC : public cAsyncConn
+		{
+			friend class nProtocol::cDCProto;
+			public:
+				/**
+				 * Class constructor.
+				 * @param sd Socket identifier of the connection.
+				 * @param server Pointer to cAsyncSocketServer instance.
+				 */
+				cConnDC(int sd = 0, cAsyncSocketServer *server=NULL);
 
-	/**
-	* Reset and clear the timeout for the given action.
-	* @return 1 if timeout is cleared or 0 otherwise.
-	*/
-	int ClearTimeOut(tTimeOut);
+				/**
+				 * Class destructor.
+				 */
+				virtual ~cConnDC();
 
-	/**
-	* Close the connection with the given reason after msec milliseconds are elapsed.
-	* @param Reason The reason.
-	* @param msed Time in milliseconds before closing the connection.
-	*/
-	virtual void CloseNice(int msec, int Reason = 0);
+				/**
+				 * Check if the given timeout is expired..
+				 * @param timeout The timeout.
+				 * @param now Current time.
+				 * @return 1 if timeout is expired or 0 otherwise.
+				 */
+				int CheckTimeOut(tTimeOut timeout, cTime &now);
 
-	/**
-	* Close the connection with the given reason.
-	* @param Reason The reason.
-	*/
-	virtual void CloseNow(int Reason = 0);
+				/**
+				 * Reset and clear the given timeout.
+				 * @param timeout Time timeout.
+				 * @return 1 if timeout is cleared or 0 otherwise.
+				 */
+				int ClearTimeOut(tTimeOut timeout);
 
-	/**
-	* Return if the given login status flag is set or not.
-	* @param st Status flag.
-	* @return Zero if flag is not set or the value of the given status flag if set.
-	*/
-	unsigned int GetLSFlag(unsigned int st);
+				/**
+				 * Close the connection with the given reason after msec milliseconds are elapsed.
+				 * @param msed Time in milliseconds before closing the connection.
+				 * @param reason The reason.
+				 */
+				virtual void CloseNice(int msec, int reason = 0);
 
-	/**
-	* Return a string describing the timeout.
-	* @param t tTimeOut Timeout type.
-	* @return A translated string describing the timeout.
-	*/
-	const char *GetTimeOutType(tTimeOut t);
+				/**
+				 * Close the connection with the given reason.
+				 * @param reason The reason.
+				 */
+				virtual void CloseNow(int reason = 0);
 
-	/**
-	* Try to guess the class of the user. Remember a valid class is returned only when the user is validated
-	* @param ostr The message of the event
-	* @param level The log level of the event.
-	* @return The user class.
-	*/
-	int GetTheoricalClass()
-	{
-		if (!mRegInfo)
-			return 0;
-		if(!mRegInfo->mEnabled)
-			return 0;
-		//if (mRegInfo->mClass < 0) return 1; /* wtf ?*/
-		return mRegInfo->mClass;
-	}
+				/**
+				 * Return if the given login status flag is set or not.
+				 * @param statusFlag Status flag.
+				 * @return Zero if flag is not set or the value of the given status flag if set.
+				 */
+				unsigned int GetLSFlag(unsigned int statusFlag);
 
-	/**
-	* Check if the user needs a password.
-	* @return True if the user must provide a password, false otherwise.
-	*/
-	bool NeedsPassword();
+				/**
+				 * Return a string describing the timeout.
+				 * @param timeout tTimeOut Timeout type.
+				 * @return A translated string describing the timeout.
+				 */
+				const char *GetTimeOutType(tTimeOut timeout);
 
-	/**
-	* This method is called when output/write buffer is flushed and got empty.
-	*/
-	void OnFlushDone();
+				/**
+				 * Try to guess the class of the user.
+				 * Remember a valid class is returned only when the
+				 * login procedure of the user is valid.
+				 * @return The user class.
+				 */
+				int GetTheoricalClass()
+				{
+					if (!mRegInfo)
+						return 0;
+					if(!mRegInfo->mEnabled)
+						return 0;
+					//if (mRegInfo->mClass < 0) return 1; /* wtf ?*/
+					return mRegInfo->mClass;
+				}
 
-	/**
-	* This method is called every period of time.
-	* @param now Current time.
-	* @return Always zero.
-	*/
-	virtual int OnTimer(cTime &now);
+				/**
+				 * Check if the user needs a password.
+				 * @return True if the user must provide a password, false otherwise.
+				 */
+				bool NeedsPassword();
 
-	/**
-	* Reset login status flag and set a new value.
-	* @param st Status flag.
-	*/
-	void ReSetLSFlag(unsigned int st);
+				/**
+				 * Event handler function called when write buffer gets empty.
+				 */
+				void OnFlushDone();
 
-	/**
-	* Set login status flag. Other flags are not override.
-	* @param st Status flag.
-	*/
-	void SetLSFlag(unsigned int st);
+				/**
+				 * This method is called every period of time.
+				 * @param now Current time.
+				 * @return Always zero.
+				 */
+				virtual int OnTimer(cTime &now);
 
-	/**
-	* Set the cUser object linked with the connection.
-	* @param usr Pointer to cUser object.
-	* @return True if successful, otherwise false.
-	*/
-	bool SetUser(cUser *usr);
+				/**
+				 * Reset login status flag and set a new value.
+				 * @param statusFlag Status flag.
+				 */
+				void ReSetLSFlag(unsigned int statusFlag);
 
-	/**
-	* Send raw data to the user.
-	* @param data Raw data to send.
-	* @param AddPipe Set it to true if a pipe must be added to the end of data.
-	* @param Flush Set it to true if raw data should be send immediatly or stored in internal buffer.
-	* @return The result.
-	*/
-	int Send(string & data, bool AddPipe=true, bool Flush = true);
+				/**
+				 * Set login status flag.
+				 * The other set flags are not resetted.
+				 * @param statusFlag Status flag.
+				 */
+				void SetLSFlag(unsigned int statusFlag);
 
-	/**
-	* Return a pointer to cServerDC object.
-	* @return The pointer to cServerDC object.
-	*/
-	inline cServerDC * Server(){return (cServerDC*) mxServer;}
+				/**
+				 * Set the cUser instance linked with this connection.
+				 * @param usr Pointer to cUser instance.
+				 * @return True if successful, otherwise false.
+				 */
+				bool SetUser(cUser *usr);
 
-	/**
-	* Set the timeout for the given action.
-	* If timeout is not cleared (action is timeout), the connection is closed.
-	* @param action The action.
-	* @param Sec Timeout in seconds.
-	* @param now Current time.
-	* @return 1 if timeout is set or 0 otherwise.
-	*/
-	int SetTimeOut(tTimeOut, double Sec, cTime &now);
+				/**
+				* Send raw data to the user.
+				* @param data Raw data to send.
+				* @param addPipe Set it to true if a pipe must be added to the end of data.
+				* @param flush Set it to true if raw data should be send immediatly or stored in the internal buffer.
+				* @return The number of sent bytes.
+				*/
+				int Send(string & data, bool addPipe=true, bool flush = true);
 
-	/**
-	* Log an event.
-	* @param ostr The message of the event.
-	* @param level The log level of the event.
-	* @return 1 if message is logged or 0 otherwise.
-	*/
-	virtual int StrLog(ostream & ostr, int level);
+				/**
+				* Return a pointer to cServerDC instance.
+				* @return The pointer to cServerDC instance.
+				*/
+				inline cServerDC * Server() const
+				{
+					return (cServerDC*) mxServer;
+				}
 
-	// Pointer to cUser object
-	cUser * mpUser;
+				/**
+				* Set the given timeout.
+				* @param timeout The timeout.
+				* @param seconds Timeout in seconds.
+				* @param now Current time.
+				* @return 1 if timeout is set or 0 otherwise.
+				*/
+				int SetTimeOut(tTimeOut timeout, double seconds, cTime &now);
 
-	// Client version
-	string mVersion;
+				/**
+				* Log an event.
+				* @param ostr The message of the event.
+				* @param level The log level of the event.
+				* @return 1 if message is logged or 0 otherwise.
+				*/
+				virtual int StrLog(ostream &ostr, int level);
 
-	// Protocol extenstion supported by the client
-	unsigned mFeatures;
+				/// Pointer to cUser instance.
+				cUser * mpUser;
 
-	// Pointer to cRegUserInfo that handles registration
-	cRegUserInfo *mRegInfo;
+				/// Protocol extenstion supported by the client.
+				/// @see tSupportFeature
+				/// @todo Move to cProtocol class.
+				unsigned mFeatures;
 
-	// True if nicklist is sent on user login
-	bool mSendNickList;
+				/// Protocol version
+				/// @todo Move to cProtocol class.
+				string mVersion;
 
-	// True while sending nicklist
-	bool mNickListInProgress;
+				/// Pointer to cRegUserInfo instance
+				/// to manage user registration.
+				cRegUserInfo *mRegInfo;
 
-	// True if nicklist should be skipped
-	bool mSkipNickList;
+				/// True if nicklist is sent on user login.
+				bool mSendNickList;
 
-	// Pointer to cConnType object that represent the type of connection
-	cConnType *mConnType;
+				/// True if the hub is sending nicklist to the user.
+				bool mNickListInProgress;
 
-	// Country code
-	string mCC;
+				/// True if nicklist should be skipped.
+				bool mSkipNickList;
 
-	// Geographic zone according to country code
-	int mGeoZone;
+				/// Pointer to cConnType instance
+				/// that represents the type of connection.
+				cConnType *mConnType;
 
-	// Reason of why connection was closed
-	int mCloseReason;
+				/// The country code of the connection.
+				string mCC;
 
- private:
-	// Last login attempt
-	cTime mTimeLastAttempt;
+				/// Geographic zone according to country code.
+				int mGeoZone;
 
-	// Login status flags
-	unsigned int mLogStatus;
+				/// Reason of why connection was closed.
+				int mCloseReason;
+			private:
+				/// The attempt of last login.
+				cTime mTimeLastAttempt;
 
- protected:
-	/**
-	* This method is called before closing the connection.
-	* Send the redirect protocol message ($ForceMove) to the user.
-	* @return 1 if message is sent or 0 otherwise.
-	* @see CloseNice(int msec, int Reason = 0)
-	*/
-	int OnCloseNice();
+				/// Login status flags.
+				/// @see tLogStatus
+				unsigned int mLogStatus;
 
-	// Timeout handlers
-	cTimeOut mTO[eTO_MAXTO];
+		protected:
+			/**
+			 * Event handler function called before the connection is closed.
+			 * This method will also send the redirect protocol message ($ForceMove) to the user.
+			 * @return Always zero.
+			 */
+			int OnCloseNice();
 
-	// Structure that is used to ping the user and check if he is stil alive
-	struct sTimes
-	{
-		cTime key;
-		cTime ping;
-		sTimes():key(0l),ping(0l){};
-	};
-	// Ping handler
-	sTimes mT;
+			/// List of timeout.
+			cTimeOut mTO[eTO_MAXTO];
 
-	// Search result counter
-	int mSRCounter;
-};
+			/// Structure that is used to ping the user
+			///and check if he is stil alive
+			struct sTimes
+			{
+				/// Time when the $Key is received.
+				/// @todo Is still used?
+				cTime key;
+				/// Time of last ping.
+				cTime ping;
+				/**
+				 * Constructor.
+				 */
+				sTimes():key(0l),ping(0l){};
+			};
 
+			/// Ping handler.
+			sTimes mT;
+
+			/// Search result counter.
+			/// @todo Is still used? If yes we have to move it somewhere
+			/// outside this class.
+			int mSRCounter;
+		};
+		/// @}
 	}; // namespace nSocket
 }; // namespace nVerliHub
 

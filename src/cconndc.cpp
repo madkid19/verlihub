@@ -57,19 +57,22 @@ cConnDC::cConnDC(int sd, cAsyncSocketServer *server)
 
 cConnDC::~cConnDC()
 {
-	if (mRegInfo) delete mRegInfo;
+	if(mRegInfo)
+		delete mRegInfo;
 	mRegInfo = NULL;
 }
 
 bool cConnDC::SetUser(cUser *usr)
 {
 	if(!usr) {
-		if(ErrLog(0)) LogStream() << "Trying to add a NULL user" << endl;
+		if(ErrLog(0))
+			LogStream() << "Trying to add a NULL user" << endl;
 		return false;
 	}
 
 	if(mpUser) {
-		if(ErrLog(1)) LogStream() << "Trying to add user when it's actually done" << endl;
+		if(ErrLog(1))
+			LogStream() << "Trying to add user when it's actually done" << endl;
 		delete usr;
 		return false;
 	}
@@ -80,7 +83,7 @@ bool cConnDC::SetUser(cUser *usr)
 	return true;
 }
 
-int cConnDC::Send(string & data, bool IsComplete, bool Flush)
+int cConnDC::Send(string & data, bool IsComplete, bool flush)
 {
 	if(!mWritable)
 		return 0;
@@ -103,7 +106,7 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 	string dataToSend = data;
 	if((!Server()->mC.disable_zlib) && (mFeatures & eSF_ZLIB)) {
 		// If data should be buffered append content to zlib buffer
-		if(!Flush) {
+		if(!flush) {
 			Server()->mZLib->AppendData(dataToSend.c_str(), dataToSend.size());
 			return 1;
 		}
@@ -121,14 +124,15 @@ int cConnDC::Send(string & data, bool IsComplete, bool Flush)
 			dataToSend.assign(compressedData, compressedDataLen);
 		}
 	}
-	int ret = Write(dataToSend, Flush);
+	int ret = Write(dataToSend, flush);
 	mTimeLastAttempt.Get();
 	if (mxServer) {
 		// Server()->mUploadZone[mGeoZone].Dump();
 		Server()->mUploadZone[mGeoZone].Insert(Server()->mTime, (int) dataToSend.size());
 		// Server()->mUploadZone[mGeoZone].Dump();
 	}
-	if(IsComplete) data.erase(data.size()-1,1);
+	if(IsComplete)
+		data.erase(data.size()-1,1);
 	return ret;
 }
 
@@ -147,25 +151,25 @@ int cConnDC::StrLog(ostream & ostr, int level)
 	return 0;
 }
 
-void cConnDC::SetLSFlag(unsigned int st)
+void cConnDC::SetLSFlag(unsigned int statusFlag)
 {
-	mLogStatus |= st;
+	mLogStatus |= statusFlag;
 }
 
-void cConnDC::ReSetLSFlag(unsigned int st)
+void cConnDC::ReSetLSFlag(unsigned int statusFlag)
 {
-	mLogStatus = st;
+	mLogStatus = statusFlag;
 }
 
-unsigned int cConnDC::GetLSFlag(unsigned int st)
+unsigned int cConnDC::GetLSFlag(unsigned int statusFlag)
 {
-	return mLogStatus & st;
+	return mLogStatus & statusFlag;
 }
 
-const char *cConnDC::GetTimeOutType(tTimeOut t)
+const char *cConnDC::GetTimeOutType(tTimeOut timeout)
 {
-	static const char *timeoutType [] = { _("Key"), _("ValidateNick"), _("Login"), _("MyINFO"), _("Flush"), _("Set Password")};
-	return timeoutType[t];
+	static const char *timeoutType [] = { _("Key"), _("ValidateNick"), _("Login"), _("MyINFO"), _("Flush"), _("Set Password") };
+	return timeoutType[timeout];
 }
 
 int cConnDC::OnTimer(cTime &now)
@@ -193,48 +197,37 @@ int cConnDC::OnTimer(cTime &now)
 	// check frozen users, send to every user, every minute an empty message
 	cTime ten_min_ago;
 	ten_min_ago = ten_min_ago - 600;
-	if(
-		Server()->MinDelay(mT.ping,Server()->mC.delayed_ping) &&
-		mpUser &&
-		mpUser->mInList &&
-		mpUser->mT.login < ten_min_ago
-		)
-	{
+	if(Server()->MinDelay(mT.ping,Server()->mC.delayed_ping) && mpUser && mpUser->mInList && mpUser->mT.login < ten_min_ago) {
 		omsg="";
 		Send(omsg,true);
 	}
 
 	// upload line optimisation  - upload userlist slowlier
-	if(mpUser && mpUser->mQueueUL.size())
-	{
+	if(mpUser && mpUser->mQueueUL.size()) {
 		unsigned long pos = 0,ppos=0;
 		string buf,nick;
 		cUser *other;
-		for(i=0; i < Server()->mC.ul_portion; i++)
-		{
+		for(i=0; i < Server()->mC.ul_portion; i++) {
 			pos=mpUser->mQueueUL.find_first_of('|',ppos);
 			if(pos == mpUser->mQueueUL.npos) break;
 
 			nick = mpUser->mQueueUL.substr(ppos, pos-ppos);
-			other = Server()->mUserList.GetUserByNick( nick );
+			other = Server()->mUserList.GetUserByNick(nick);
 			ppos=pos+1;
 
 			// check if user found
-			if(!other)
-			{
-				if(nick != Server()->mC.hub_security && nick != Server()->mC.opchat_name)
-				{
+			if(!other) {
+				if(nick != Server()->mC.hub_security && nick != Server()->mC.opchat_name) {
 					cDCProto::Create_Quit(buf, nick);
 				}
-			}
-			else
-			{
+			} else {
 				buf.append(Server()->mP.GetMyInfo(other, mpUser->mClass));
 			}
 		}
 		Send(buf,true);
 
-		if(pos != mpUser->mQueueUL.npos) pos++;
+		if(pos != mpUser->mQueueUL.npos)
+			pos++;
 		// I can spare some RAM here by copying it to intermediate buffer and back
 		mpUser->mQueueUL.erase(0,pos);
 		mpUser->mQueueUL.reserve(0);
@@ -243,42 +236,41 @@ int cConnDC::OnTimer(cTime &now)
 	return 0;
 }
 
-int cConnDC::ClearTimeOut(tTimeOut to)
+int cConnDC::ClearTimeOut(tTimeOut timeout)
 {
-	if(to >= eTO_MAXTO) return 0;
-	mTO[to].Disable();
+	if(timeout >= eTO_MAXTO)
+		return 0;
+	mTO[timeout].Disable();
 	return 1;
 }
 
-int cConnDC::SetTimeOut(tTimeOut to, double Sec, cTime &now)
+int cConnDC::SetTimeOut(tTimeOut timeout, double seconds, cTime &now)
 {
-	if(to >= eTO_MAXTO) return 0;
-	if(Sec == 0.) return 0;
-	mTO[to].mMaxDelay = Sec;
-	mTO[to].Reset(now);
+	if(timeout >= eTO_MAXTO)
+		return 0;
+	if(seconds == 0.)
+		return 0;
+	mTO[timeout].mMaxDelay = seconds;
+	mTO[timeout].Reset(now);
 	return 1;
 }
 
-int cConnDC::CheckTimeOut(tTimeOut to, cTime &now)
+int cConnDC::CheckTimeOut(tTimeOut timeout, cTime &now)
 {
-	if(to >= eTO_MAXTO) return 0;
-	return 0 == mTO[to].Check(now);
-	return 1;
+	if(timeout >= eTO_MAXTO)
+		return 0;
+	return 0 == mTO[timeout].Check(now);
 }
 
 void cConnDC::OnFlushDone()
 {
 	mBufSend.erase(0,mBufSend.size());
-	if (mNickListInProgress)
-	{
+	if(mNickListInProgress) {
 		SetLSFlag(eLS_NICKLST);
 		mNickListInProgress = false;
-		if(!ok || !mWritable)
-		{
+		if(!ok || !mWritable) {
 			if(Log(2)) LogStream() << "Connection closed during nicklist" << endl;
-		}
-		else
-		{
+		} else {
 			if(Log(2)) LogStream() << "Login after nicklist" << endl;
 			Server()->DoUserLogin(this);
 		}
@@ -297,15 +289,15 @@ int cConnDC::OnCloseNice()
 	return 0;
 }
 
-void cConnDC::CloseNow(int Reason)
+void cConnDC::CloseNow(int reason)
 {
-	this->mCloseReason = Reason;
+	this->mCloseReason = reason;
 	this->cAsyncConn::CloseNow();
 }
 
-void cConnDC::CloseNice(int msec, int Reason)
+void cConnDC::CloseNice(int msec, int reason)
 {
-	this->mCloseReason = Reason;
+	this->mCloseReason = reason;
 	this->cAsyncConn::CloseNice(msec);
 }
 
@@ -325,18 +317,17 @@ bool cConnDC::NeedsPassword()
 	);
 }
 
-/***************************************
-   DC Connection Factory
-****************************************/
-
-cDCConnFactory::cDCConnFactory(cServerDC *server) : cConnFactory(&(server->mP)), mServer(server)
+cDCConnFactory::cDCConnFactory(cServerDC *server) :
+cConnFactory(&(server->mP)),
+mServer(server)
 {}
 
 
 cAsyncConn *cDCConnFactory::CreateConn(tSocket sd)
 {
 	cConnDC *conn;
-	if (!mServer) return NULL;
+	if(!mServer)
+		return NULL;
 
 	conn = new cConnDC(sd, mServer);
 	conn->mxMyFactory = this;
@@ -345,12 +336,8 @@ cAsyncConn *cDCConnFactory::CreateConn(tSocket sd)
 		mServer->sGeoIP.GetCC(conn->AddrIP(),conn->mCC) &&
 		mServer->mC.cc_zone[0].size()
 	){
-		for (int i = 0; i < 3; i ++)
-		{
-			if(
-		 		(conn->mCC == mServer->mC.cc_zone[i]) ||
-				(mServer->mC.cc_zone[i].find(conn->mCC) != mServer->mC.cc_zone[i].npos)
-			){
+		for (int i = 0; i < 3; i ++)  {
+			if((conn->mCC == mServer->mC.cc_zone[i]) || (mServer->mC.cc_zone[i].find(conn->mCC) != mServer->mC.cc_zone[i].npos)) {
 				conn->mGeoZone = i+1;
 				break;
 			}
@@ -359,44 +346,42 @@ cAsyncConn *cDCConnFactory::CreateConn(tSocket sd)
 #endif
 	long IPConn, IPMin, IPMax;
 	IPConn = cBanList::Ip2Num(conn->AddrIP());
-	if (mServer->mC.ip_zone4_min.size())
-	{
+	if(mServer->mC.ip_zone4_min.size()) {
 		IPMin = cBanList::Ip2Num(mServer->mC.ip_zone4_min);
 		IPMax = cBanList::Ip2Num(mServer->mC.ip_zone4_max);
-		if( (IPMin <= IPConn) && (IPMax >= IPConn)) conn->mGeoZone = 4;
+		if((IPMin <= IPConn) && (IPMax >= IPConn))
+			conn->mGeoZone = 4;
 	}
-	if (mServer->mC.ip_zone5_min.size())
-	{
+	if(mServer->mC.ip_zone5_min.size()) {
 		IPMin = cBanList::Ip2Num(mServer->mC.ip_zone5_min);
 		IPMax = cBanList::Ip2Num(mServer->mC.ip_zone5_max);
-		if( (IPMin <= IPConn) && (IPMax >= IPConn)) conn->mGeoZone = 5;
+		if((IPMin <= IPConn) && (IPMax >= IPConn))
+			conn->mGeoZone = 5;
 	}
-	if (mServer->mC.ip_zone6_min.size())
-	{
+	if(mServer->mC.ip_zone6_min.size()) {
 		IPMin = cBanList::Ip2Num(mServer->mC.ip_zone6_min);
 		IPMax = cBanList::Ip2Num(mServer->mC.ip_zone6_max);
-		if( (IPMin <= IPConn) && (IPMax >= IPConn)) conn->mGeoZone = 6;
+		if((IPMin <= IPConn) && (IPMax >= IPConn))
+			conn->mGeoZone = 6;
 	}
 	conn->mxProtocol = mProtocol;
 	return (cAsyncConn*) conn;
 }
 
-void cDCConnFactory::DeleteConn(cAsyncConn * &Conn)
+void cDCConnFactory::DeleteConn(cAsyncConn * &connection)
 {
-	cConnDC *conn = (cConnDC*)Conn;
-	if (conn)
-	{
-		if (conn->GetLSFlag(eLS_ALOWED))
-		{
-			mServer->mUserCountTot --;
-			mServer->mUserCount[conn->mGeoZone] --;
-			if (conn->mpUser)
+	cConnDC *conn = (cConnDC*)connection;
+	if (conn) {
+		if(conn->GetLSFlag(eLS_ALLOWED)) {
+			mServer->mUserCountTot--;
+			mServer->mUserCount[conn->mGeoZone]--;
+			if(conn->mpUser)
 				mServer->mTotalShare -= conn->mpUser->mShare;
 		}
-		if (conn->mpUser)
-		{
+		if(conn->mpUser) {
 			mServer->RemoveNick(conn->mpUser);
-			if (conn->mpUser->mClass) mServer->mR->Logout(conn->mpUser->mNick);
+			if(conn->mpUser->mClass)
+				mServer->mR->Logout(conn->mpUser->mNick);
 			delete conn->mpUser;
 			conn->mpUser  = NULL;
 		}
@@ -404,9 +389,8 @@ void cDCConnFactory::DeleteConn(cAsyncConn * &Conn)
 		mServer->mCallBacks.mOnCloseConn.CallAll(conn);
 		#endif
 	}
-	cConnFactory::DeleteConn(Conn);
+	cConnFactory::DeleteConn(connection);
 }
-
 	}; // namespace nSocket
 }; // namespace nVerliHub
 
