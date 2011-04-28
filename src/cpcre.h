@@ -23,44 +23,143 @@
 #define NUTILSCPCRE_H
 #include <pcre.h>
 #include <string>
+
 using std::string;
 
 namespace nVerliHub {
 	namespace nUtils {
+		/// @addtogroup Command
+		/// @{
+		/**
+		 * Wrapper class for pcre library.
+		 * @author Daniel Muller
+		 */
+		class cPCRE
+		{
+			public:
+				/**
+				* Class constructor.
+				* @param offsetResultSize Size of array of ints that contains result offsets.
+				*/
+				cPCRE(int offsetResultSize=30);
 
-/**
-class wrapper for pcre API
-with usage optimized for some special cases, to be specified :o)
-@author Daniel Muller
-*/
+				/**
+				* Class constructor.
+				* @param pattern The regular expression to compile.
+				* @param options Option bit for pcre_compile.
+				* @param offsetResultSize Size of array of ints that contains result offsets.
+				*/
+				cPCRE(const char *pattern, unsigned int options, int offsetResultSize=30);
 
-class cPCRE
-{
-public:
-	cPCRE(int coord=30);
-	~cPCRE();
-	cPCRE(const char *, unsigned int options, int coord=30);
-	cPCRE(const string&, unsigned int options, int coord=30);
-	bool Compile(const char *, unsigned int options = 0);
-	int Exec(const string &text);
-	int Compare(const string &name, const string &text, const string &text2);
-	int Compare(int rank, const string &text, const string &text2);
-	int Compare(int rank, const string &text, const char   *text2);
-	int StartOf(int rank){ if(rank < 0 || rank >= mResult) return -1; return mCoords[rank << 1];}
-	void Extract( int rank, const string &src, string &dst);
-	void Replace(int rank, string &InString, const string &ByThis);
-	int GetStringRank(const string &ame);
-	bool PartFound(int index);
-private:
-	pcre * mPattern;
-	pcre_extra * mPatternE;
-	int mResult;
-	int *mCoords;
-	int mCoordsCount;
-private:
-	void Clear();
-};
+				/**
+				* Class constructor.
+				* @param pattern The regular expression to compile.
+				* @param options Option bit for pcre_compile.
+				* @param offsetResultSize Size of array of ints that contains result offsets.
+				*/
+				cPCRE(const string&pattern, unsigned int options, int offsetResultSize=30);
 
+				/**
+				* Class destructor.
+				*/
+				~cPCRE();
+
+				/**
+				 * Compare the given string with the captured substring at given offset.
+				 *
+				 * in a compiled pattern.
+				 * @param name Named substring.
+				 * @param text
+				 * @param text2
+				 * @return 0 if the compared characters sequences are equal, otherwise a
+				 * number different from 0 is returned, with its sign indicating whether the
+				 * string is considered greater than the comparing string passed as
+				 * parameter (positive sign), or smaller (negative sign).
+				 */
+				int Compare(const string &name, const string &text, const string &text2);
+
+				/**
+				 * Compare the given string with the captured substring at given offset.
+				 *
+				 * @param index The offset.
+				 * @param text
+				 * @param text2
+				 * @return 0 if the compared characters sequences are equal, otherwise a
+				 * number different from 0 is returned, with its sign indicating whether the
+				 * string is considered greater than the comparing string passed as
+				 * parameter (positive sign), or smaller (negative sign).
+				 */
+
+				int Compare(int index, const string &text, const string &text2);
+				/**
+				 * Compare the given string with the captured substring at given offset.
+				 *
+				 * @param index The offset.
+				 * @param text
+				 * @param text2
+				 * @return 0 if the compared characters sequences are equal, otherwise a
+				 * number different from 0 is returned, with its sign indicating whether the
+				 * string is considered greater than the comparing string passed as
+				 * parameter (positive sign), or smaller (negative sign).
+				 */
+				int Compare(int index, const string &text, const char *text2);
+
+				/**
+				* Compile the given regular expression.
+				* @param pattern The regular expression to compile.
+				* @param options Option bit for pcre_compile.
+				* @return True if the regular expression is compiled or false otherwise.
+				*/
+				bool Compile(const char *pattern, unsigned int options = 0);
+
+				/**
+				* Match a compiled regular expression against a given subject
+				* string, using a matching algorithm that is similar to Perl's.
+				* @param subject The subject string.
+				* @return Number of captured substrings.
+				*/
+				int Exec(const string &subject);
+
+				void Extract( int index, const string &src, string &dst);
+
+				/**
+				 * Finds the number of a named substring capturing parenthesis
+				 * in a compiled pattern.
+				 * @param name Named substring.
+				 * @return The number of named substirng.
+				 */
+				int GeStringNumber(const string &substring);
+
+				bool PartFound(int index);
+
+				int StartOf(int index)
+				{
+					if(index < 0 || index >= mResult)
+						return -1;
+					return mOffsetResults[index << 1];
+				}
+
+				void Replace(int index, string &subject, const string &replace);
+
+
+			private:
+				/// Compiled regular expression.
+				pcre *mPattern;
+
+				/// Number of captured substring of
+				/// last call of Exec().
+				/// @see Exec()
+				int mResult;
+
+				/// Pointer to an array of ints for result offsets.
+				int *mOffsetResults;
+
+				/// Number of elements in the array
+				int mOffsetResultSize;
+			private:
+				void Clear();
+		};
+		/// @}
 	}; // namespace nUtils
 }; // namespace nVerliHub
 #endif

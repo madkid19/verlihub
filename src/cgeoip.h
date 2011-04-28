@@ -27,36 +27,39 @@
 using std::string;
 namespace nVerliHub {
 	namespace nUtils {
-  /**
-  * Class to convert IP address or hostname to country code.
-  *
-  * @author Daniel Muller
-  * @version 1.0
-  */
-class cGeoIP
-{
-public:
-	/**
-	* Class constructor.
-	*/
-	cGeoIP();
+		/// @addtogroup Core
+		/// @{
+		/**
+		 * Wrapper class for geoip library.
+		 * This class is used to get the country code of an
+		 * IP address.
+		 * @author Daniel Muller
+		 */
+		class cGeoIP
+		{
+			public:
+				/**
+				* Class constructor.
+				*/
+				cGeoIP();
 
-	/**
-	* Class destructor.
-	*/
-	~cGeoIP();
+				/**
+				* Class destructor.
+				*/
+				~cGeoIP();
 
-	/**
-	* Return the country code for the given hostname.
-	* @param hostname The hostname.
-	* @param CC String where to store country code.
-	* @return True if it is possible to get country code, false otherwise.
-	*/
-	bool GetCC(const string &hostname, string &CC);
- private:
-	// GeoIP instance
-	GeoIP * mGI;
-};
+				/**
+				* Return the country code for the given hostname.
+				* @param hostname The hostname.
+				* @param CC String where to store country code.
+				* @return True if it is possible to get country code, false otherwise.
+				*/
+				bool GetCC(const string &hostname, string &cc);
+			private:
+				/// Pointer to GeoIP instance.
+				GeoIP * mGI;
+		};
+		/// @}
 	}; // namespace nUtils
 }; // namespace nVerliHub
 

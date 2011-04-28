@@ -27,18 +27,17 @@ namespace nVerliHub {
 cGeoIP::cGeoIP()
 : mGI(GeoIP_new(GEOIP_STANDARD))
 {
-
 }
 
-bool cGeoIP::GetCC(const string &hostname, string &CC)
+bool cGeoIP::GetCC(const string &hostname, string &cc)
 {
 	const char * country_code;
 	country_code = GeoIP_country_code_by_name(mGI, hostname.c_str());
 	if (country_code == NULL) {
-		CC = "--";
+		cc = "--";
 		return false;
 	} else {
-		CC = country_code;
+		cc = country_code;
 		return true;
 	}
 }

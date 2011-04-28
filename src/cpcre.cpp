@@ -29,105 +29,99 @@ using namespace std;
 namespace nVerliHub {
 	namespace nUtils {
 
-cPCRE::cPCRE(int coord) :
-	mCoords(NULL),
-	mCoordsCount(coord)
+		cPCRE::cPCRE(int offsetResultSize) :
+	mOffsetResults(NULL),
+	mOffsetResultSize(offsetResultSize)
 {
 	Clear();
 }
 
 cPCRE::~cPCRE(){
-	if(mCoords) delete [] mCoords;
-	mCoords = NULL;
+	if(mOffsetResults) delete [] mOffsetResults;
+	mOffsetResults = NULL;
 }
 
-cPCRE::cPCRE(const char *pat, unsigned int options, int coord) :
-	mCoords(NULL),
-	mCoordsCount(coord)
+cPCRE::cPCRE(const char *pattern, unsigned int options, int offsetResultSize) :
+	mOffsetResults(NULL),
+	mOffsetResultSize(offsetResultSize)
 {
 	Clear();
-	Compile(pat, options);
+	Compile(pattern, options);
 }
 
-cPCRE::cPCRE(const string &str, unsigned int options, int coord):
-	mCoords(NULL),
-	mCoordsCount(coord)
+cPCRE::cPCRE(const string &pattern, unsigned int options, int coord):
+	mOffsetResults(NULL),
+	mOffsetResultSize(coord)
 {
 	Clear();
-	Compile(str.c_str(), options);
+	Compile(pattern.c_str(), options);
 }
 
-bool cPCRE::Compile(const char *pat, unsigned int options)
+bool cPCRE::Compile(const char *pattern, unsigned int options)
 {
 	char *errptr;
 	int erroffset;
-	mPattern = pcre_compile(pat,options,(const char **)&errptr,&erroffset,NULL);
-	if(!mPattern) return false;
-	//mPatternE = pcre_study(mPattern, 0, (const char **)&errptr);
-	//if(!mPatternE) return false;
-	return true;
+	mPattern = pcre_compile(pattern, options, (const char **)&errptr, &erroffset, NULL);
+	return mPattern != NULL;
 }
 
 void cPCRE::Clear()
 {
 	mPattern = NULL;
-	mPatternE = NULL;
-	mResult=0;
-	if (!mCoords) mCoords = new int[3*mCoordsCount];
-	//memset(mCoords,0, 3* mCoordsCount * sizeof(int) );
+	mResult = 0;
+	if(!mOffsetResults)
+		mOffsetResults = new int[3*mOffsetResultSize];
 }
 
-int nUtils::cPCRE::Exec(const string &text)
+int cPCRE::Exec(const string &subject)
 {
-	mResult = pcre_exec(mPattern, mPatternE, text.c_str(), text.size(), 0, 0, mCoords, mCoordsCount);
+	mResult = pcre_exec(mPattern, NULL, subject.c_str(), subject.size(), 0, 0, mOffsetResults, mOffsetResultSize);
 	return mResult;
 }
 
-int cPCRE::Compare(int rank, const string &text, const char *text2)
+int cPCRE::Compare(int index, const string &text, const char *text2)
 {
-	if(!this->PartFound(rank)) return -1;
-	int start = mCoords[rank<<1];
-	return StrCompare(text, start, mCoords[(rank<<1)+1]-start,text2);
+	if(!this->PartFound(index))
+		return -1;
+	int start = mOffsetResults[index<<1];
+	return StrCompare(text, start, mOffsetResults[(index<<1)+1]-start,text2);
 }
 
-int cPCRE::Compare(int rank, const string &text, const string &text2)
+int cPCRE::Compare(int index, const string &text, const string &text2)
 {
-	return Compare(rank, text, text2.c_str());
+	return Compare(index, text, text2.c_str());
 }
 
 int cPCRE::Compare(const string &name, const string &text, const string &text2)
 {
-	return Compare(this->GetStringRank(name), text, text2.c_str());
+	return Compare(this->GeStringNumber(name), text, text2.c_str());
 }
 
-void cPCRE::Extract(int rank, const string &src, string &dst)
+void cPCRE::Extract(int index, const string &src, string &dst)
 {
-	if(!this->PartFound(rank)) return;
-	int start = mCoords[rank<<1];
-	dst.assign(src, start, mCoords[(rank<<1)+1]-start);
+	if(!this->PartFound(index))
+		return;
+	int start = mOffsetResults[index<<1];
+	dst.assign(src, start, mOffsetResults[(index<<1)+1]-start);
 }
 
-bool cPCRE::PartFound(int rank)
+bool cPCRE::PartFound(int index)
 {
-	if((rank < 0)|| (rank >= mResult)) return false;
+	if((index < 0)|| (index >= mResult)) return false;
 
-	return mCoords[rank<<1] >= 0;
+	return mOffsetResults[index<<1] >= 0;
 }
 
-void cPCRE::Replace(int rank, string &InString, const string &ByThis)
+void cPCRE::Replace(int index, string &subject, const string &replace)
 {
-	if(!this->PartFound(rank)) return;
-	int start = mCoords[rank<<1];
-	InString.replace(start, mCoords[(rank<<1)+1]-start, ByThis);
+	if(!this->PartFound(index)) return;
+	int start = mOffsetResults[index<<1];
+	subject.replace(start, mOffsetResults[(index<<1)+1]-start, replace);
 }
 
-int cPCRE::GetStringRank(const string &name)
+int cPCRE::GeStringNumber(const string &substring)
 {
-#if HAVE_PCRE_GET_STRINGNUMBER
-	return pcre_get_stringnumber(this->mPattern, name.c_str());
-#else
-	return -1;
-#endif
+	return pcre_get_stringnumber(this->mPattern, substring.c_str());
 }
 	}; // namespace nUtils
 }; // namespace nVerliHub
