@@ -26,11 +26,11 @@ using namespace std;
 namespace nVerliHub {
 	namespace nCmdr {
 
-cCommand::cCommand(int ID, const char *IdRegex, const char *ParRegex, sCmdFunc *CmdFunc) :
-mID(ID), mIdentificator(IdRegex, PCRE_ANCHORED),
-mParamsParser(ParRegex, PCRE_DOTALL, 64 ), mCmdFunc(CmdFunc),
-mIdRegexStr(IdRegex),
-mParRegexStr(ParRegex)
+cCommand::cCommand(int ID, const char *regexId, const char *paramRegex, sCmdFunc *CmdFunc) :
+mID(ID), mIdentificator(regexId, PCRE_ANCHORED),
+mParamsParser(paramRegex, PCRE_DOTALL, 64), mCmdFunc(CmdFunc),
+mIdRegexStr(regexId),
+mParStr(paramRegex)
 {
 	mCmdr = NULL;
 	if(CmdFunc != NULL) {
@@ -48,14 +48,14 @@ mCmdFunc(NULL)
 {
 }
 
-void cCommand::Init(int ID, const char *IdRegex, const char *ParRegex, sCmdFunc *CmdFunc)
+void cCommand::Init(int ID, const char *regexId, const char *paramRegex, sCmdFunc *CmdFunc)
 {
 	mID = ID;
-	mIdentificator.Compile(IdRegex, PCRE_ANCHORED);
-	mParamsParser.Compile(ParRegex, PCRE_DOTALL);
+	mIdentificator.Compile(regexId, PCRE_ANCHORED);
+	mParamsParser.Compile(paramRegex, PCRE_DOTALL);
 	mCmdFunc = CmdFunc;
-	mIdRegexStr = IdRegex;
-	mParRegexStr = ParRegex;
+	mIdRegexStr = regexId;
+	mParRegexStr = paramRegex;
 
 	mCmdr = NULL;
 	if(CmdFunc != NULL) {
@@ -68,7 +68,7 @@ void cCommand::Init(int ID, const char *IdRegex, const char *ParRegex, sCmdFunc 
 cCommand::~cCommand()
 {}
 
-bool cCommand::TestID(const string &str)
+bool cCommand::ParseCommandLine(const string &str)
 {
 	int ret = mIdentificator.Exec(str);
 	if(ret > 0) {
@@ -115,12 +115,12 @@ int cCommand::sCmdFunc::StringToIntFromList(const string &str, const char *strin
 	return theInt;
 }
 
-void cCommand::ListCommands(ostream &os)
+void cCommand::Describe(ostream &os)
 {
-	os << mIdRegexStr << mParRegexStr;
+	os << "Id regex: " << mIdRegexStr << "\tParams regex: " << mParRegexStr;
 }
 
-void cCommand::GetParamSyntax(ostream &os)
+void cCommand::GetSyntaxHelp(ostream &os)
 {
 	mCmdFunc->GetSyntaxHelp(os, this);
 }

@@ -23,7 +23,6 @@
 #define CDCCOMMAND_H
 #include "ccommand.h"
 #include "cobj.h"
-//using namespace ::nCmdr;
 
 namespace nVerliHub {
 	class cUser;

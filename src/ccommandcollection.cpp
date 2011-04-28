@@ -20,78 +20,77 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "ccommandcollection.h"
+#include <iostream>
 
 namespace nVerliHub {
 	namespace nCmdr {
 
-cCommandCollection::cCommandCollection(void *owner):cObj("cCmdr"), mOwner(owner)
+cCommandCollection::cCommandCollection(void *owner) :
+cObj("cCmdr"),
+mOwner(owner)
 {}
 
 cCommandCollection::~cCommandCollection()
 {}
 
-int cCommandCollection::ParseAll(const string &CmdLine, ostream &os, void *extrapar)
+void cCommandCollection::Add(cCommand *command)
 {
-	cCommand *Cmd = this->FindCommand(CmdLine);
+	if(command) {
+		mCmdList.push_back(command);
+		command->mCmdr = this;
+	}
+}
+
+int cCommandCollection::ParseAll(const string &commandLine, ostream &os, void *options)
+{
+	cCommand *Cmd = this->FindCommand(commandLine);
 	if(Cmd != NULL)
-		return (int)this->ExecuteCommand(Cmd, os, extrapar);
+		return (int)this->ExecuteCommand(Cmd, os, options);
 	else
 		return -1;
 }
 
-cCommand *cCommandCollection::FindCommand(const string &CmdLine)
+cCommand *cCommandCollection::FindCommand(const string &commandLine)
 {
 	tCmdList::iterator it;
 	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) {
 		cCommand *Cmd = *it;
-		if( Cmd && Cmd->TestID(CmdLine))
+		if( Cmd && Cmd->ParseCommandLine(commandLine))
 			return Cmd;
 	}
 	return NULL;
 }
 
-bool cCommandCollection::ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar)
+bool cCommandCollection::ExecuteCommand(cCommand *command, ostream &os, void *options)
 {
-	if(Cmd->TestParams()) {
-		if(Cmd->Execute(os, extrapar))
+	if(command->TestParams()) {
+		if(command->Execute(os, options))
 			os << " OK";
 		else
 			os << "Error";
 		return true;
 	} else {
 		os << "Params error.." << "\r\n";
-		Cmd->GetParamSyntax(os);
+		command->GetSyntaxHelp(os);
 		return false;
 	}
 }
 
-void cCommandCollection::List(ostream *pOS)
+void cCommandCollection::List(ostream *os)
 {
-	tCmdList::iterator it;
-	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) {
+	 for(tCmdList::iterator it = mCmdList.begin(); it != mCmdList.end(); ++it) {
 		if(*it) {
-			(*it)->ListCommands(*pOS);
-			(*pOS) << "\r\n";
+			(*it)->Describe(*os);
+			(*os) << "\r\n";
 		}
 	}
 }
 
-void cCommandCollection::Add(cCommand *cmd)
+void cCommandCollection::InitAll(void *data)
 {
-	if(cmd) {
-		//mCmdList.reserve(cmd->mID+1);
-		mCmdList.push_back(cmd);
-		cmd->mCmdr = this;
-	}
-}
-
-void cCommandCollection::InitAll(void *par)
-{
-	tCmdList::iterator it;
-	for(it = mCmdList.begin(); it != mCmdList.end(); ++it)
+	for(tCmdList::iterator it = mCmdList.begin(); it != mCmdList.end(); ++it)
 		if(*it)
-			(*it)->Init(par);
+			(*it)->Init(data);
 }
-
 	}; //namespace nCmdr
 }; // namespace nVerliHub
