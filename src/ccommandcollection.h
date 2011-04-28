@@ -19,79 +19,54 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#include "ccmdr.h"
+#ifndef NCMDRCCMDR_H
+#define NCMDRCCMDR_H
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#include "cobj.h"
+#include "ccommand.h"
+#include <vector>
+#include <ostream>
+
+using std::vector;
+using std::ostream;
 
 namespace nVerliHub {
 	namespace nCmdr {
+	/// @addtogroup Plugin
+	/// @{
+	/**
+	* A command interpreter collection.
+	* This class provides basic functionality to run commands
+	* with their options.
+	* @author Daniel Muller
+	*/
+	class cCommandCollection: public cObj
+	{
+		public:
+			cCommandCollection(void *owner = NULL);
 
-cCmdr::cCmdr(void *owner):cObj("cCmdr"), mOwner(owner)
-{}
+			/**
+			 * Class destructor
+			 */
+			~cCommandCollection();
 
-cCmdr::~cCmdr()
-{}
-
-int cCmdr::ParseAll(const string &CmdLine, ostream &os, void *extrapar)
-{
-	cCommand *Cmd = this->FindCommand(CmdLine);
-	if(Cmd != NULL)
-		return (int)this->ExecuteCommand(Cmd, os, extrapar);
-	else
-		return -1;
-}
-
-cCommand *cCmdr::FindCommand(const string &CmdLine)
-{
-	tCmdList::iterator it;
-	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) {
-		cCommand *Cmd = *it;
-		if( Cmd && Cmd->TestID(CmdLine))
-			return Cmd;
-	}
-	return NULL;
-}
-
-bool cCmdr::ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar)
-{
-	if(Cmd->TestParams()) {
-		if(Cmd->Execute(os, extrapar))
-			os << " OK";
-		else
-			os << "Error";
-		return true;
-	} else {
-		os << "Params error.." << "\r\n";
-		Cmd->GetParamSyntax(os);
-		return false;
-	}
-}
-
-void cCmdr::List(ostream *pOS)
-{
-	tCmdList::iterator it;
-	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) {
-		if(*it) {
-			(*it)->ListCommands(*pOS);
-			(*pOS) << "\r\n";
-		}
-	}
-}
-
-void cCmdr::Add(cCommand *cmd)
-{
-	if(cmd) {
-		//mCmdList.reserve(cmd->mID+1);
-		mCmdList.push_back(cmd);
-		cmd->mCmdr = this;
-	}
-}
-
-void cCmdr::InitAll(void *par)
-{
-	tCmdList::iterator it;
-	for(it = mCmdList.begin(); it != mCmdList.end(); ++it)
-		if(*it)
-			(*it)->Init(par);
-}
-
-	}; //namespace nCmdr
+			cCommand *FindCommand(const string &CmdLine);
+			int ParseAll(const string &CmdLine, ostream &os, void *extrapar);
+			bool ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar);
+			void Add(cCommand *);
+			void InitAll(void *);
+			void List(ostream *pOS);
+			void *mOwner;
+		private:
+			/// Define a list of commands.
+			typedef vector<cCommand *> tCmdList;
+			/// The list of commands
+			tCmdList mCmdList;
+	};
+	/// @}
+	}; // namespace nCmdr
 }; // namespace nVerliHub
+
+#endif

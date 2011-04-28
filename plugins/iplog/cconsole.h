@@ -23,7 +23,7 @@
 #ifndef NFORBIDCCONSOLE_H
 #define NFORBIDCCONSOLE_H
 
-#include "src/ccmdr.h"
+#include "src/ccommandcollection.h"
 #include "src/cdccommand.h"
 
 namespace nVerliHub {
@@ -62,7 +62,7 @@ protected:
 	class cfHistoryOf : public cfBase { virtual bool operator()();} mcfHistoryOf;
 	nCmdr::cCommand mCmdLastIp;
 	nCmdr::cCommand mCmdHistoryOf;
-	nCmdr::cCmdr mCmdr;
+	nCmdr::cCommandCollection mCmdr;
 };
 	}; // namespace nIPLogPlugin
 }; // namespace nVerliHub

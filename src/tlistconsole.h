@@ -22,7 +22,7 @@
 #ifndef NCONFIGLISTCONSOLE_H
 #define NCONFIGLISTCONSOLE_H
 #include "cdccommand.h"
-#include "ccmdr.h"
+#include "ccommandcollection.h"
 
 namespace nVerliHub {
 	namespace nSocket {
@@ -273,7 +273,7 @@ protected:
 	cDCCommand mCmdHelp;
 
 	//OWNER_TYPE *mOwner;
-	cCmdr mCmdr;
+	cCommandCollection mCmdr;
 };
 
 	}; // namespace nConfig

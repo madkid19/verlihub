@@ -27,7 +27,7 @@
 #include "cdcclients.h"
 #include "cobj.h"
 #include "cban.h"
-#include "ccmdr.h"
+#include "ccommandcollection.h"
 #include "cdccommand.h"
 #include "cinfoserver.h"
 #include "tlistconsole.h"
@@ -322,8 +322,8 @@ public:
 	// Pointer to Client console to handle custom client TAG
 	cDCClients *mDCClients;
 private:
-	cCmdr mCmdr;
-	cCmdr mUserCmdr;
+	cCommandCollection mCmdr;
+	cCommandCollection mUserCmdr;
 	struct cfBan : cfDCCmdBase { virtual bool operator()(); } mFunBan;
 	cDCCmdBase mCmdBan;
 	struct cfGag : cfDCCmdBase { virtual bool operator()(); } mFunGag;

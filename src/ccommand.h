@@ -32,7 +32,7 @@ using std::ostream;
 namespace nVerliHub {
 	namespace nCmdr {
 
-	class cCmdr;
+	class cCommandCollection;
 /**
 describes how commmand should be recognized an then how it should be treated
 
@@ -40,7 +40,7 @@ describes how commmand should be recognized an then how it should be treated
 */
 class cCommand
 {
-	friend class cCmdr;
+	friend class cCommandCollection;
 public:
 	/**
 		A function calling structure for the commander
@@ -137,7 +137,7 @@ public:
 	virtual void Init(void *){};
 	virtual void ListCommands(ostream &os);
 	void GetParamSyntax(ostream &os);
-	cCmdr *mCmdr;
+	cCommandCollection *mCmdr;
 protected:
 	int mID;
 	nUtils::cPCRE mIdentificator;

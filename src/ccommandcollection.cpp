@@ -19,50 +19,79 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#ifndef NCMDRCCMDR_H
-#define NCMDRCCMDR_H
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include "cobj.h"
-#include "ccommand.h"
-#include <vector>
-#include <ostream>
+#include "ccommandcollection.h"
 
-
-using std::vector;
-using std::ostream;
-
-/**
-\brief Command and their parameter parsing and Interpreting tools
-Contains a notion of a Command and a Command list
-*/
 namespace nVerliHub {
 	namespace nCmdr {
 
-/**
-a command collection, interprets commands
+cCommandCollection::cCommandCollection(void *owner):cObj("cCmdr"), mOwner(owner)
+{}
 
-@author Daniel Muller
-*/
-class cCmdr: public cObj
+cCommandCollection::~cCommandCollection()
+{}
+
+int cCommandCollection::ParseAll(const string &CmdLine, ostream &os, void *extrapar)
 {
-public:
-	cCmdr(void *owner = NULL);
-	~cCmdr();
-	cCommand *FindCommand(const string &CmdLine);
-	int ParseAll(const string &CmdLine, ostream &os, void *extrapar);
-	bool ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar);
-	void Add(cCommand *);
-	void InitAll(void *);
-	void List(ostream *pOS);
-	void *mOwner;
-private:
-	typedef vector<cCommand *> tCmdList;
-	tCmdList mCmdList;
-};
+	cCommand *Cmd = this->FindCommand(CmdLine);
+	if(Cmd != NULL)
+		return (int)this->ExecuteCommand(Cmd, os, extrapar);
+	else
+		return -1;
+}
 
-	}; // namespace nCmdr
+cCommand *cCommandCollection::FindCommand(const string &CmdLine)
+{
+	tCmdList::iterator it;
+	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) {
+		cCommand *Cmd = *it;
+		if( Cmd && Cmd->TestID(CmdLine))
+			return Cmd;
+	}
+	return NULL;
+}
+
+bool cCommandCollection::ExecuteCommand(cCommand *Cmd, ostream &os, void *extrapar)
+{
+	if(Cmd->TestParams()) {
+		if(Cmd->Execute(os, extrapar))
+			os << " OK";
+		else
+			os << "Error";
+		return true;
+	} else {
+		os << "Params error.." << "\r\n";
+		Cmd->GetParamSyntax(os);
+		return false;
+	}
+}
+
+void cCommandCollection::List(ostream *pOS)
+{
+	tCmdList::iterator it;
+	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) {
+		if(*it) {
+			(*it)->ListCommands(*pOS);
+			(*pOS) << "\r\n";
+		}
+	}
+}
+
+void cCommandCollection::Add(cCommand *cmd)
+{
+	if(cmd) {
+		//mCmdList.reserve(cmd->mID+1);
+		mCmdList.push_back(cmd);
+		cmd->mCmdr = this;
+	}
+}
+
+void cCommandCollection::InitAll(void *par)
+{
+	tCmdList::iterator it;
+	for(it = mCmdList.begin(); it != mCmdList.end(); ++it)
+		if(*it)
+			(*it)->Init(par);
+}
+
+	}; //namespace nCmdr
 }; // namespace nVerliHub
-
-#endif

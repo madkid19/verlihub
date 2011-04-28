@@ -22,7 +22,7 @@
 #ifndef NDIRECTCONNECTCCHATCONSOLE_H
 #define NDIRECTCONNECTCCHATCONSOLE_H
 #include "cdccommand.h"
-#include "ccmdr.h"
+#include "ccommandcollection.h"
 
 namespace nVerliHub {
 	using namespace nCmdr;
@@ -82,7 +82,7 @@ protected:
 	cDCCommand mCmdOut;
 	cDCCommand mCmdMembers;
 
-	cCmdr mCmdr;
+	cCommandCollection mCmdr;
 	cChatRoom *mChatRoom;
 };
 

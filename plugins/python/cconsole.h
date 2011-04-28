@@ -22,7 +22,7 @@
 #ifndef CCONSOLE_H
 #define CCONSOLE_H
 
-#include "src/ccmdr.h"
+#include "src/ccommandcollection.h"
 #include <string>
 #include <sstream>
 
@@ -56,7 +56,7 @@ protected:
 	nCmdr::cCommand mCmdPythonScriptDel;
 	nCmdr::cCommand mCmdPythonScriptRe;
 	nCmdr::cCommand mCmdPythonScriptLog;
-	nCmdr::cCmdr mCmdr;
+	nCmdr::cCommandCollection mCmdr;
 };
 
 	}; // namespace nPythonPlugin

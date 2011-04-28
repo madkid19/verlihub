@@ -8,8 +8,7 @@ SET(VERLIHUB_HDRS
 	ccallbacklist.h
 	ccallbacklist.h
 	cchatconsole.h
-	ccmdr.h
-	ccmdr.h
+	ccommandcollection.h
 	ccommand.h
 	ccommand.h
 	cconfigbase.h
@@ -102,7 +101,7 @@ SET(VERLIHUB_SRCS
 	cbanlist.cpp
 	ccallbacklist.cpp
 	cchatconsole.cpp
-	ccmdr.cpp
+	ccommandcollection.cpp
 	ccommand.cpp
 	cconfigbase.cpp
 	cconfigfile.cpp

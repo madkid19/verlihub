@@ -23,7 +23,7 @@
 #ifndef NREPLACECCONSOLE_H
 #define NREPLACECCONSOLE_H
 
-#include "src/ccmdr.h"
+#include "src/ccommandcollection.h"
 #include "src/cconndc.h"
 
 namespace nVerliHub {
@@ -53,7 +53,7 @@ protected:
 	nCmdr::cCommand mCmdReplaceAdd;
 	nCmdr::cCommand mCmdReplaceGet;
 	nCmdr::cCommand mCmdReplaceDel;
-	nCmdr::cCmdr mCmdr;
+	nCmdr::cCommandCollection mCmdr;
 };
 	}; // namespace nReplacePlugin
 }; // namespace nReplacePlugin

@@ -23,7 +23,7 @@
 #ifndef CCONSOLE_H
 #define CCONSOLE_H
 
-#include "src/ccmdr.h"
+#include "src/ccommandcollection.h"
 
 namespace nVerliHub {
 	namespace nSocket {
@@ -60,7 +60,7 @@ protected:
 	nCmdr::cCommand mCmdLuaScriptLog;
 	nCmdr::cCommand mCmdLuaScriptInfo;
 	nCmdr::cCommand mCmdLuaScriptVersion;
-	nCmdr::cCmdr mCmdr;
+	nCmdr::cCommandCollection mCmdr;
 };
 
 	}; // namespace nLuaPlugin

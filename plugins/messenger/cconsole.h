@@ -23,7 +23,7 @@
 #ifndef NMESSANGERCCONSOLE_H
 #define NMESSANGERCCONSOLE_H
 
-#include "src/ccmdr.h"
+#include "src/ccommandcollection.h"
 
 namespace nVerliHub {
 	namespace nSocket {
@@ -56,7 +56,7 @@ protected:
 	class cfMessageRead : public cfBase { virtual bool operator()();} mcfMsgRead;
 	nCmdr::cCommand mCmdMsgSend;
 	nCmdr::cCommand mCmdMsgRead;
-	nCmdr::cCmdr mCmdr;
+	nCmdr::cCommandCollection mCmdr;
 };
 
 	}; // namespace nMessangerPlugin
