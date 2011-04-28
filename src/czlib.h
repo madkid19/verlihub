@@ -32,64 +32,62 @@
 using namespace std;
 namespace nVerliHub {
 	namespace nUtils {
-
-  /**
-  * ZLib compression class.
-  * This class is used to compress data by using ZLib compression method and it is also possible to cache data
-  * and then compress it.
-  *
-  * @author Simoncelli Davide
-  * @version 1.0
-  */
-
-class cZLib
-{
-	public:
+		/// @addtogroup Core
+		/// @{
 		/**
-		* Class constructor
-		*/
-		cZLib();
+		 * Wrapper class for zlib compression library.
+		 * @author Davide Simoncelli
+		 */
+		class cZLib
+		{
+			public:
+				/**
+				* Class constructor.
+				*/
+				cZLib();
 
-		/**
-		* Class destructor
-		*/
-		~cZLib();
+				/**
+				* Class destructor.
+				*/
+				~cZLib();
 
-		/**
-		 * Append new data to internal buffer and do not compresse them.
-		 *
-		 * @param buffer Pointer to buffer data.
-		 * @param len Data length.
-		*/
-		void AppendData(const char *buffer, size_t len);
+				/**
+				* Append data to the internal buffer but do not compresse them.
+				*
+				* @param buffer Pointer to buffer data.
+				* @param len Data length.
+				*/
+				void AppendData(const char *buffer, size_t len);
 
-		/**
-		* Compress data.
-		*
-		* @param buffer Pointer to buffer data.
-		* @param len Data length.
-		* @param outLen Length of compressed data.
-		* @return Pointer to compressed data.
-		*/
-		char *Compress(const char *buffer, size_t len, size_t &outLen);
+				/**
+				* Compress the given data.
+				* If there are available data in the internal buffer,
+				* the given data is appended after the data and then
+				* compression is performed.
+				*
+				* @param buffer Pointer to buffer data.
+				* @param len Data length.
+				* @param outLen Length of compressed data.
+				* @return Pointer to compressed data.
+				*/
+				char *Compress(const char *buffer, size_t len, size_t &outLen);
 
-	private:
-		// Internal buffer to store uncompressed data
-		char * zBuffer;
+			private:
+				/// Internal buffer to store uncompressed data
+				char * zBuffer;
 
-		// Current position in the buffer
-		size_t zBufferPos;
+				/// Current position in the buffer
+				size_t zBufferPos;
 
-		// Internal buffer length
-		size_t zBufferLen;
+				/// Internal buffer length
+				size_t zBufferLen;
 
-		// Compressed data buffer
-		char *outBuffer;
+				/// Compressed data buffer
+				char *outBuffer;
 
-		// Compressed data buffer length
-		size_t outBufferLen;
-};
-
+				/// Compressed data buffer length
+				size_t outBufferLen;
+		};
 	}; // namespace nUtils
 }; // namespace nVerliHub
 #endif
