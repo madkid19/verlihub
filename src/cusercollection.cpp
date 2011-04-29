@@ -215,7 +215,7 @@ int cUserCollection::StrLog(ostream & ostr, int level)
 {
 	if(cObj::StrLog(ostr,level)) {
 		LogStream() << "(" << mNickListMaker.mStart ;
-		LogStream() << ") "<< "[ " << size() /* << "/" << mUserList.size()*/ << " ] ";
+		LogStream() << ") "<< "[ " << Size() /* << "/" << mUserList.size()*/ << " ] ";
 		return 1;
 	}
 	return 0;

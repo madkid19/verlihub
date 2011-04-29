@@ -460,7 +460,7 @@ void cBanList::Num2Ip(unsigned long mask, string &ip)
 
 long cBanList::IsNickTempBanned(const string &nick)
 {
-	unsigned long hash= mTempNickBanlist.HashStringLower(nick);
+	unsigned long hash= mTempNickBanlist.HashLowerString(nick);
 	sTempBan *tban = this->mTempNickBanlist.GetByHash(hash);
 	if(tban != NULL) {
 		return tban->mUntil;
@@ -480,7 +480,7 @@ long cBanList::IsIPTempBanned(unsigned long ip)
 
 void cBanList::AddNickTempBan(const string &nick, long until, const string &reason)
 {
-	unsigned long hash = mTempNickBanlist.HashStringLower(nick);
+	unsigned long hash = mTempNickBanlist.HashLowerString(nick);
 	sTempBan *tban = this->mTempNickBanlist.GetByHash(hash);
 	if(tban != NULL) {
 		tban->mUntil = time_t(until);
@@ -506,7 +506,7 @@ void cBanList::AddIPTempBan(unsigned long ip, long until, const string &reason)
 
 void cBanList::DelNickTempBan(const string &nick)
 {
-	unsigned long hash= mTempNickBanlist.HashStringLower(nick);
+	unsigned long hash= mTempNickBanlist.HashLowerString(nick);
 	sTempBan *tban = this->mTempNickBanlist.GetByHash(hash);
 	if(tban != NULL) {
 		this->mTempNickBanlist.RemoveByHash(hash);
