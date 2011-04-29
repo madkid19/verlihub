@@ -6,7 +6,6 @@ SET(VERLIHUB_HDRS
 	cban.h
 	cbanlist.h
 	ccallbacklist.h
-	ccallbacklist.h
 	cchatconsole.h
 	ccommandcollection.h
 	ccommand.h
@@ -46,11 +45,8 @@ SET(VERLIHUB_HDRS
 	coperator.h
 	cpcre.h
 	cpenaltylist.h
-	cpenaltylist.h
 	cpluginbase.h
 	cpluginloader.h
-	cpluginloader.h
-	cpluginmanager.h
 	cpluginmanager.h
 	cprotocol.h
 	cprotocommand.h
@@ -58,7 +54,6 @@ SET(VERLIHUB_HDRS
 	creglist.h
 	creguserinfo.h
 	cserverdc.h
-	csetuplist.h
 	csetuplist.h
 	ctempfunctionbase.h
 	cthread.h
@@ -69,19 +64,14 @@ SET(VERLIHUB_HDRS
 	ctriggers.h
 	curr_date_time.h
 	cusercollection.h
-	cusercollection.h
 	cuser.h
 	cvhplugin.h
-	cvhplugin.h
-	cvhpluginmgr.h
 	cvhpluginmgr.h
 	cworkerthread.h
 	script_api.h
 	stringutils.h
 	tcache.h
 	tchashlistmap.h
-	tchashlistmap.h
-	thasharray.h
 	thasharray.h
 	tlistconsole.h
 	tlistplugin.h
