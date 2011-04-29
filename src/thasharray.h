@@ -189,8 +189,8 @@ namespace nVerliHub {
 					iterator &operator=(const iterator &it)
 					{
 						mData = it.mData;
-						currentElement = it.i;
-						lastElement = it.end;
+						currentElement = it.currentElement;
+						lastElement = it.lastElement;
 						return *this;
 					}
 
@@ -201,7 +201,7 @@ namespace nVerliHub {
 					*/
 					bool operator==(const iterator &it)
 					{
-						return currentElement == it.i;
+						return currentElement == it.currentElement;
 					}
 
 					/**
@@ -211,7 +211,7 @@ namespace nVerliHub {
 					 */
 					bool operator!=(const iterator &it)
 					{
-						return currentElement != it.i;
+						return currentElement != it.currentElement;
 					}
 
 					/**
