@@ -77,7 +77,7 @@ bool cISP::CheckNick(const string &Nick, const string &cc)
 	if (mNickPattern.length() > 0 && mOK)
 	{
 		if (mpNickRegex->Exec(Nick) < 0) return false;
-		if (mpNickRegex->GetStringRank("CC") >=0)
+		if (mpNickRegex->GeStringNumber("CC") >=0)
 			return mpNickRegex->Compare("CC",Nick,cc) == 0;
 		else return true;
 	}

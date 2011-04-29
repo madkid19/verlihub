@@ -184,13 +184,13 @@ namespace nVerliHub {
 				* @param ban An instance of cBan class.
 				* @param server Pointer to a cServerDC instance.
 				*/
-				cUnBan(cBan &, nSocket::cServerDC *);
+				cUnBan(cBan &ban, nSocket::cServerDC *server);
 
 				/**
 				* Class constructor.
 				* @param server Pointer to a cServerDC instance.
 				*/
-				cUnBan(nSocket::cServerDC *);
+				cUnBan(nSocket::cServerDC *server);
 
 				/**
 				* Class destructor.

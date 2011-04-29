@@ -175,7 +175,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		mS->ConnCloseMsg(conn,os.str(),1000, eCR_USERLIMIT);
 		return -1;
 	} else {
-		conn->SetLSFlag(eLS_ALOWED);
+		conn->SetLSFlag(eLS_ALLOWED);
 		mS->mUserCountTot ++;
 		mS->mUserCount[conn->mGeoZone] ++;
 	}
