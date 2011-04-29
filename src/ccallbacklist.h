@@ -71,7 +71,6 @@ namespace nVerliHub {
 
 				/**
 				 * Call the callback for each registerd plugin.
-				 * @param plugin The plugin.
 				 * @return The result of the calls.
 				 */
 				virtual bool CallAll();
@@ -140,6 +139,7 @@ namespace nVerliHub {
 				/// Identifier of the list.
 				string mName;
 		};
+		/// @}
 	}; // namespace nPlugin
 }; // namespace nVerliHub
 
