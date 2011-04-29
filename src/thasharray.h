@@ -101,21 +101,21 @@ namespace nVerliHub {
 				 * @return The hash.
 				 * @todo ShortHashString does the same thing!
 				 */
-				unsigned Key2ShortHash(const string &Key)
+				unsigned Key2ShortHash(const string &key)
 				{
-					return ShortHashString(Key);
+					return ShortHashString(key);
 				}
 
 				/**
 				 * Remove data with the given hash.
-				 * @param data The hash.
+				 * @param hash The hash.
 				 * @return The data removed.
 				 */
 				virtual DataType Remove(unsigned hash);
 
 				/**
 				 * Calculate the hash for the given pointer.
-				 * @param string The pointer.
+				 * @param pointer The pointer.
 				 * @return The hash of the pointer.
 				 */
 				unsigned ShortHashPointer(const void *pointer);
@@ -157,17 +157,98 @@ namespace nVerliHub {
 				/// Iterator to iterate throught the items of the container.
 				struct iterator
 				{
-					iterator() : i(0),end(0),mData(NULL){}
-					iterator(DataType *Data,unsigned _i, unsigned _end) : i(_i),end(_end),mData(Data){}
-					iterator & operator = (const iterator &it){ mData = it.mData; i = it.i; end=it.end; return *this;}
-					iterator(const iterator &it){ (*this) = it;}
-					bool operator == (const iterator &it){ return i == it.i;}
-					bool operator != (const iterator &it){ return i != it.i;}
-					iterator & operator ++(){ while((++i != end) && (mData[i] == (DataType)NULL)){}; return *this;}
-					DataType operator *(){ return mData[i]; }
-					bool IsEnd(){ return i >= end; }
-					unsigned i;
-					unsigned end;
+					/**
+					 * Class constructor.
+					 */
+					iterator() : currentElement(0), lastElement(0), mData(NULL)
+					{}
+
+					/**
+					 * Class constructor.
+					 * @param data Pointer to array data to iterate.
+					 * @param _currentElement Current element of the data.
+					 * @param _lastElement Last element of the data.
+					 */
+					iterator(DataType *data, unsigned _currentElement, unsigned _lastElement) : currentElement(_currentElement), lastElement(_lastElement), mData(data)
+					{}
+
+					/**
+					 * Copy constructor.
+					 * @param it Iterator instance.
+					 */
+					iterator(const iterator &it)
+					{
+						(*this) = it;
+					}
+
+					/**
+					* Overload operator =.
+					* @param it The value to assign.
+					* @return A reference to the current instance.
+					*/
+					iterator &operator=(const iterator &it)
+					{
+						mData = it.mData;
+						currentElement = it.i;
+						lastElement = it.end;
+						return *this;
+					}
+
+					/**
+					* Overload operator ==.
+					* @param it The value to check.
+					* @return Return true if the two instance are equal or false otherwise.
+					*/
+					bool operator==(const iterator &it)
+					{
+						return currentElement == it.i;
+					}
+
+					/**
+					 * Overload operator !=.
+					 * @param it The value to check.
+					 * @return Return true if the two instance are different or false otherwise.
+					 */
+					bool operator!=(const iterator &it)
+					{
+						return currentElement != it.i;
+					}
+
+					/**
+					 * Overload operator ++.
+					 * @return Iterator to the next element.
+					 */
+					iterator &operator++()
+					{
+						while((++currentElement != lastElement) && (mData[currentElement] == (DataType)NULL));
+						return *this;
+					}
+
+					/**
+					 * Overload operator *.
+					 * @return Return the element pointed by the iterator.
+					 */
+					DataType operator*()
+					{
+						return mData[currentElement];
+					}
+
+					/**
+					 * Test if it is at the end of array data.
+					 * @return True if it is at the end or false otherwise.
+					 */
+					bool IsEnd()
+					{
+						return currentElement >= lastElement;
+					}
+
+					/// Current element pointed by the iterator.
+					unsigned currentElement;
+
+					/// Last element in the array data.
+					unsigned lastElement;
+
+					/// Array data to iterate.
 					DataType *mData;
 				};
 
@@ -512,27 +593,27 @@ namespace nVerliHub {
 				 * @param string The string.
 				 * @return The hash of the string.
 				 */
-				static tHashType HashLowerString(const string &);
+				static tHashType HashLowerString(const string &string);
 
 				/**
 				* Calculate the hash for the given string.
 				* @param string The string.
 				* @return The hash of the string.
 				*/
-				static tHashType HashString(const string &);
+				static tHashType HashString(const string &string);
 
 				/**
 				 * Event handler function called when an element is added.
 				 * @param element The added element.
 				 */
-				virtual void OnAdd(DataType)
+				virtual void OnAdd(DataType element)
 				{};
 
 				/**
 				 * Event handler function called when an element is removed.
 				 * @param element The removed element.
 				 */
-				virtual void OnRemove(DataType)
+				virtual void OnRemove(DataType element)
 				{};
 
 				/**
@@ -650,9 +731,9 @@ namespace nVerliHub {
 						}
 
 						/**
-						 * Class constructor.
-						 * @param it Iterate starting from the given element.
-						 */
+						* Copy constructor.
+						* @param it Iterator instance.
+						*/
 						iterator(const iterator &it)
 						{
 							 (*this) = it;
@@ -726,6 +807,7 @@ namespace nVerliHub {
 							return mItem->mData;
 						}
 
+						/// Iterator element.
 						typename tData::iterator i;
 
 						/// Element pointed by the iterator.

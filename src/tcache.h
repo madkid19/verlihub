@@ -49,8 +49,8 @@ namespace nVerliHub {
 				 * Class constructor.
 				 * @param mysql cMySQL instance.
 				 * @param tableName The name of the table.
-				 * @param indexName
-				 * @param dataName
+				 * @param indexName The index of the table.
+				 * @param dataName The column name used to update data.
 				 */
 				tCache(nMySQL::cMySQL &mysql, const char* tableName, const char* indexName, const char* dataName = NULL) :
 					cConfMySQL(mysql), mDateName(dataName)
@@ -206,8 +206,12 @@ namespace nVerliHub {
 				/// @see Sync()
 				cTime mLastSync;
 
+				/// The column name that contains
+				/// a time value used to update data
+				/// and keep them sync with cache.
 				const char *mDateName;
 			private:
+				/// The index of the table.
 				IndexType mCurIdx;
 		};
 		/// @}
