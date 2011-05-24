@@ -127,18 +127,18 @@ void cInfoServer::Output(ostream &os, int Class)
 
 	// Print zone from 1->6
  	for(int i =1; i < 4; i++) {
-		if(!mServer->mC.cc_zone[i-1].empty()) {
-			string zone = mServer->mC.cc_zone[i-1];
+		if(!mServer->mC.cc_zone[i].empty()) {
+			string zone = mServer->mC.cc_zone[i];
 			replace(zone.begin(), zone.end(), ':', ',');
 			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << mServer->mUserCount[i] << "/" << mServer->mC.max_users[i];
-			curr = mServer->mUploadZone[i-1].GetMean(mServer->mTime);
+			curr = mServer->mUploadZone[i].GetMean(mServer->mTime);
 			total += curr;
 			os << " (" << convertByte(curr,true).c_str() << ")" << " [" << zone.c_str() << "]" << endl;
 		} else
 			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << _("not set") << endl;
 	}
 	for (int i=4; i <= USER_ZONES; i++) {
-		curr = mServer->mUploadZone[i-1].GetMean(mServer->mTime);
+		curr = mServer->mUploadZone[i].GetMean(mServer->mTime);
 		total += curr;
 		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << mServer->mUserCount[i] << "/" << mServer->mC.max_users[i];
 		os << " (" << convertByte(curr,true).c_str() << ")" << " [IP-range]" << endl;
