@@ -115,13 +115,13 @@ void cInfoServer::Output(ostream &os, int Class)
 	os << "    " << string(30,'=') << endl;
 	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Current online users") << mServer->mUserCountTot << "/" << mServer->mC.max_users_total << endl;
 	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Current share total") << convertByte(mServer->mTotalShare, false).c_str() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("User list count") << mServer->mUserList.size() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hello user count") << mServer->mHelloUsers.size() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("In Progress users") << mServer->mInProgresUsers.size() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Active user count") << mServer->mActiveUsers.size() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Passive user count") << mServer->mPassiveUsers.size() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("OP user count") << mServer->mOpchatList.size() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) <<_("Bot user count") << mServer->mRobotList.size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("User list count") << mServer->mUserList.Size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hello user count") << mServer->mHelloUsers.Size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("In Progress users") << mServer->mInProgresUsers.Size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Active user count") << mServer->mActiveUsers.Size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Passive user count") << mServer->mPassiveUsers.Size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("OP user count") << mServer->mOpchatList.Size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) <<_("Bot user count") << mServer->mRobotList.Size() << endl;
 	os << "    " << string(30,'=') << endl;
 	double total = 0, curr;
 

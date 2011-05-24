@@ -537,7 +537,7 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	os << "\r\n[::] " << autosprintf(_("Hub Owner: %s"), hubOwner.c_str()) <<endl;
 	os << "[::] " << autosprintf(_("Address: %s"), mOwner->mC.hub_host.c_str()) <<endl;
 	os << "[::] " << autosprintf(_("Total users: %d"), mServer->mUserCountTot) <<endl;
-	os << "[::] " << autosprintf(_("Total bots: %d"), mServer->mRobotList.size()) <<endl;
+	os << "[::] " << autosprintf(_("Total bots: %d"), mServer->mRobotList.Size()) <<endl;
 	os << "[::] " << autosprintf(_("Total share: %s"),convertByte(mServer->mTotalShare, false).c_str()) << endl;
 	os << "[::] " << autosprintf(_("Hub health: %s"), mServer->mStatus.c_str()) <<endl;
 	os << "[::] " << autosprintf(_("Your status: %s"), uType.c_str()) << endl;

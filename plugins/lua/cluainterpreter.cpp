@@ -117,7 +117,7 @@ bool cLuaInterpreter::Init()
 		return false;
 	}
 
-	lua_pushstring(mL,VERSION); lua_setglobal(mL,"_PLUGINVERSION");
+	lua_pushstring(mL, LUA_PI_VERSION); lua_setglobal(mL,"_PLUGINVERSION");
 	return true;
 }
 

@@ -125,7 +125,7 @@ ostream& operator << (ostream &os, const cRoom &room)
 		os << setw(10) << setiosflags(ios::left) <<  room.mAutoCC.c_str();
 		os << setw(10) << setiosflags(ios::left) << room.mMinClass;
 		if(room.mUsers)
-			os << room.mUsers->size();
+			os << room.mUsers->Size();
 
 	return os;
 }

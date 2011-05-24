@@ -219,7 +219,7 @@ int cMsgList::DeliverModelToUser(cUser *dest)
 
 void cMsgList::UpdateCache()
 {
-	unsigned LastSync = mCache.GetSync();
+	unsigned LastSync = mCache.GetLastSync();
 	mCache.Update();
 	DeliverMessagesSinceSync(LastSync);
 	mCache.Sync();

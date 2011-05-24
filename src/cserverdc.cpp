@@ -670,8 +670,8 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 		DCPublicHS(os.str(),conn);
 	}
 
-	if(mUserList.size() > mUsersPeak)
-		mUsersPeak = mUserList.size();
+	if(mUserList.Size() > mUsersPeak)
+		mUsersPeak = mUserList.Size();
 	#ifndef WITHOUT_PLUGINS
 	mCallBacks.mOnUserLogin.CallAll(conn->mpUser);
 	#endif
@@ -1188,7 +1188,7 @@ int cServerDC::DoRegisterInHublist(string host, int port, string NickForReply)
 		if (mC.hublist_send_minshare)
 			os << "[MINSHARE:" << StringFrom(hl_minshare) << "MB] ";
 		os << mC.hub_desc
-			<< pipe << mUserList.size()
+			<< pipe << mUserList.Size()
 			<< pipe << buf
 			<< pipe;
 

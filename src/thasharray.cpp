@@ -21,6 +21,8 @@
 ***************************************************************************/
 #include "thasharray.h"
 
-namespace nUtils {
+namespace nVerliHub {
+	namespace nUtils {
 
-};
+	}; // namesapce nUtils
+}; // namespace nVerliHub

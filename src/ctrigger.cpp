@@ -130,7 +130,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 		ReplaceVarInString(buf, "SHARE", buf, convertByte(conn->mpUser->mShare, false));
 	  }
 
-	  ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.size());
+	  ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.Size());
 	  ReplaceVarInString(buf, "USERSPEAK", buf, (int)server.mUsersPeak);
 	  ReplaceVarInString(buf, "UPTIME", buf, theTime.AsPeriod().AsString());
 	  ReplaceVarInString(buf, "VERSION", buf, VERSION);

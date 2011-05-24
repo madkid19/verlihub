@@ -28,104 +28,193 @@
 namespace nVerliHub {
 	namespace nConfig {
 		using namespace nUtils;
-/**
-allows to find faster whether user is NOT registered
-
-@author Daniel Muller
-*/
-
-template <class IndexType>
-class tCache : public cConfMySQL
-{
-public:
-	tCache(nMySQL::cMySQL &mysql, const char* TableName, const char* IndexName, const char* DateName = NULL) :
-		cConfMySQL(mysql), mDateName(DateName)
-	{
-		SetClassName("tCache");
-		mMySQLTable.mName = TableName;
-		cConfMySQL::Add(IndexName,mCurIdx);
-		SetBaseTo(this);
-		mIsLoaded = false;
-	}
-
-	~tCache(){ Clear(); }
-	typedef tHashArray<void*> tHashTab;
-	typedef tHashTab::tHashType tCacheHash;
-
-	// remove all entrys from the cache
-	void Clear()
- 	{
-		mHashTab.Clear();
-		mIsLoaded = false;
-	}
-
-	// LoadAll has been called already?
-	bool IsLoaded(){ return mIsLoaded; }
-
-	// performs the db querya nd stored results
-	int LoadAll()
-	{
-		SelectFields(mQuery.OStream());
-		db_iterator it;
-		for(it = db_begin(); it != db_end(); ++it) Add(mCurIdx);
-		mQuery.Clear();
-
-		if(Log(0)) LogStream() << mHashTab.size() << " items preloaded." << endl;
-		mIsLoaded = (mHashTab.size() > 0);
-		mLastUpdate.Get();
-		return mHashTab.size();
-	}
-
-	// queries db with the time condition and adds the difference results
-	int Update()
-	{
-		int n = 0;
-
-		SelectFields(mQuery.OStream());
-		if (mDateName) mQuery.OStream() << " WHERE " << mDateName << " > " << mLastUpdate.Sec();
-		db_iterator it;
-		for(it = db_begin(); it != db_end(); ++it)
+		/// @addtogroup Core
+		/// @{
+		/**
+		 * Provide cache support for MySQL table content.
+		 * Data of the table are loaded in memory and kept syncronized
+		 * to improve performance.
+		 * @author Daniel Muller
+		 */
+		template <class IndexType> class tCache : public cConfMySQL
 		{
-			if(!Find(mCurIdx)) Add(mCurIdx);
-			n++;
-		}
-		if(n && Log(0)) LogStream() << mHashTab.size() << " items in cache," << n << " of it are just loaded" << endl;
-		mQuery.Clear();
-		mLastUpdate.Get();
-		return n;
-	}
+			public:
+				/// Define an hash container of void pointers.
+				typedef tHashArray<void*> tHashTab;
 
- 	tCacheHash CalcHash(string const &index)
- 	{
- 		return mHashTab.HashStringLower(index);
- 	}
+				/// Define the hash type.
+				typedef tHashTab::tHashType tCacheHash;
 
-	void Add(IndexType const &index)
-	{
-		tCacheHash Hash = CalcHash(index);
-		mHashTab.AddWithHash(this,Hash);
-	}
+				/**
+				 * Class constructor.
+				 * @param mysql cMySQL instance.
+				 * @param tableName The name of the table.
+				 * @param indexName The index of the table.
+				 * @param dataName The column name used to update data.
+				 */
+				tCache(nMySQL::cMySQL &mysql, const char* tableName, const char* indexName, const char* dataName = NULL) :
+					cConfMySQL(mysql), mDateName(dataName)
+				{
+					SetClassName("tCache");
+					mMySQLTable.mName = tableName;
+					cConfMySQL::Add(indexName,mCurIdx);
+					SetBaseTo(this);
+					mIsLoaded = false;
+				}
 
-	bool Find(IndexType const &index)
-	{
-		tCacheHash Hash = CalcHash(index);
-		return mHashTab.ContainsHash(Hash);
-	}
+				/**
+				 * Class destructor.
+				 */
+				~tCache()
+				{
+					Clear();
+				}
 
-	void Sync(){ mLastSync.Get();}
-	unsigned GetSync(){return mLastSync.Sec();}
+				/**
+				 * Add new data to the cache.
+				 * @param key The key.
+				 */
+				void Add(IndexType const &key)
+				{
+					tCacheHash hash = CalcHash(key);
+					mHashTab.AddWithHash(this,hash);
+				}
 
-protected:
+				/**
+				* Calculate the hash for the given key.
+				* @param key They key.
+				* @return The hash of the key.
+				*/
+				tCacheHash CalcHash(string const &key)
+				{
+					return mHashTab.HashLowerString(key);
+				}
 
-	tHashTab mHashTab;
-	bool mIsLoaded;
-	cTime mLastUpdate;
-	cTime mLastSync;
-	const char *mDateName;
-private:
-	IndexType mCurIdx;
-};
+				/**
+				 * Clear the cache by removing all items.
+				 */
+				void Clear()
+				{
+					mHashTab.Clear();
+					mIsLoaded = false;
+				}
 
+				/**
+				 * Find the data in the cache with the given
+				 * key.
+				 * @param key The key.
+				 * @return True if the data exists or false otherwise.
+				 */
+				bool Find(IndexType const &key)
+				{
+					tCacheHash hash = CalcHash(key);
+					return mHashTab.ContainsHash(hash);
+				}
+
+				/**
+				 * Return the time in seconds of last update operation.
+				 * @return The last update.
+				 */
+				unsigned GetLastUpdate() const
+				{
+					return mLastUpdate.Sec();
+				}
+
+				/**
+				* Return the time in seconds of last sync operation.
+				* @return The last sync.
+				*/
+				unsigned GetLastSync()
+				{
+					return mLastSync.Sec();
+				}
+
+				/**
+				 * Check if data has been loaded from the table.
+				 * @return True if data are loaded or false otherwise.
+				 */
+				bool IsLoaded()
+				{
+					return mIsLoaded;
+				}
+
+				/**
+				 * Load data from table to cache.
+				 * @return The number of loaded items.
+				 */
+				int LoadAll()
+				{
+					SelectFields(mQuery.OStream());
+					db_iterator it;
+					for(it = db_begin(); it != db_end(); ++it)
+						Add(mCurIdx);
+					mQuery.Clear();
+
+					if(Log(0))
+						LogStream() << mHashTab.Size() << " items preloaded." << endl;
+					mIsLoaded = (mHashTab.Size() > 0);
+					mLastUpdate.Get();
+					return mHashTab.Size();
+				}
+
+				/**
+				 * Update the syn time.
+				 */
+				void Sync()
+				{
+					mLastSync.Get();
+				}
+
+				/**
+				 * Update the cache.
+				 *
+				 * Please note that just new data since last
+				 * update opeartion are fetched from database.
+				 * The old one are not updated.
+				 * @return The number of new items.
+				 */
+				int Update()
+				{
+					int n = 0;
+
+					SelectFields(mQuery.OStream());
+					if(mDateName)
+						mQuery.OStream() << " WHERE " << mDateName << " > " << mLastUpdate.Sec();
+					for(db_iterator it = db_begin(); it != db_end(); ++it) {
+						if(!Find(mCurIdx))
+							Add(mCurIdx);
+						n++;
+					}
+					if(n && Log(0))
+						LogStream() << "Updated cache for table " << mMySQLTable.mName << " [Total items: " << mHashTab.Size() << " | New items: " << n << "]" << endl;
+					mQuery.Clear();
+					mLastUpdate.Get();
+					return n;
+				}
+			protected:
+				/// Cache container.
+				tHashTab mHashTab;
+
+				/// True if data are loaded.
+				bool mIsLoaded;
+
+				/// Time of last update operation.
+				/// @see Update()
+				cTime mLastUpdate;
+
+				/// Time of last sync operation.
+				/// @see Sync()
+				cTime mLastSync;
+
+				/// The column name that contains
+				/// a time value used to update data
+				/// and keep them sync with cache.
+				const char *mDateName;
+			private:
+				/// The index of the table.
+				IndexType mCurIdx;
+		};
+		/// @}
 	}; // namespace nConfig
 }; // namespace nVerliHub
 
