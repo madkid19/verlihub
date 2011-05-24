@@ -4,3 +4,4 @@ Doxyfile
 *.kdev4
 build/
 /Makefile
+.tx
