@@ -30,6 +30,13 @@
 # Include library
 source $(dirname $0)/vh_lib
 
+if [ $(uname) == "FreeBSD" ]; then
+	echo_s "-- "
+	echo_s "ERROR" $BOLD
+	echo_s ": This script does not work with BSD, please use cli scripts instead (vh_manage_cli).\n"
+    exit
+fi
+
 # Exit from dialog
 function quit() {
 	rm -f $_TEMP

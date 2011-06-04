@@ -159,7 +159,7 @@ function _get_pid() # path_to_dbconfig
 function _is_hub_running() # path_to_dbconfig
 {
 	if _get_pid $1 ; then
-		ps -p $PID_RESULT | grep "$DAEMON_NAME" > /dev/null && return 0;
+		ps $PID_RESULT | grep "$DAEMON_NAME" > /dev/null && return 0;
 	fi
 	return 1;
 }
@@ -279,11 +279,13 @@ function echo_s() # (message,color)
 	local DEFAULT_MSG="No message passed."
 	MESSAGE=${1:-$DEFAULT_MSG}
 	COLOR=$2
-	echo -en "${COLOR}${MESSAGE}"
-
-	# Reset text attributes to normal
-	tput sgr0
-	return
+	echo -en "${COLOR}${MESSAGE}\033[0m"
+	# FreeBSD does not support tput sgr0
+	if [ $(uname) != "FreeBSD" ]; then
+		# Reset text attributes to normal
+		tput sgr0
+	fi
+	return 0
 } 
 
 # Make question to user

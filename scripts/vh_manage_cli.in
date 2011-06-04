@@ -289,6 +289,12 @@ function ask_admin_access_cli()
 # Update GeoIP
 function update_geoip()
 {
+	if [ $(uname) != "FreeBSD" ]; then
+		GEOIP_PATH="/usr/share/GeoIP/";
+	else
+		GEOIP_PATH="/usr/local/share/GeoIP"
+	fi
+
 	if [ $UID -ne 0 ]; then
 		echo_s "-- You can only run this option with root account\n" $RED
 		exit 0;
@@ -300,12 +306,9 @@ function update_geoip()
 		echo_s "-- This command requires gzip to work, please consider installing it\n"
 		exit 1;
 	fi
-	# Check config directory
-	if ! set_path $1 ; then
-		exit 1;
-	fi
+
 	# Check if directory exists
-	if [ ! -d /usr/share/GeoIP/ ]; then
+	if [ ! -d $GEOIP_PATH ]; then
 		echo_s "-- Can't find '/usr/share/GeoIP/'. If you installed GeoIP in another prefix you should update it manually\n" $RED
 		exit 1;
 	fi;
@@ -317,19 +320,21 @@ function update_geoip()
 	echo "-- Download GeoIP from Maxmind server"
 	wget $ADDRESS > /dev/null 2>&1
 	if [ $? -ne 0 ]; then
-		echo_s "-- A error happens while trying to download GeoIP tarball\n" $RED
+		echo_s "-- A error happens while trying to download GeoIP tarball using 'wget'\n" $RED
 		exit 1;
 	fi
 	# Decompress the file
 	gzip -d GeoIP.dat.gz
 	if [ $? -ne 0 ]; then
-		echo_s "-- A error happens while trying to decompress GeoIP tarball\n" $RED
+		echo_s "-- A error happens while trying to decompress GeoIP tarball using 'gzip'\n" $RED
+		rm -f GeoIP.dat.gz
 		exit 1;
 	fi
 	# Move the file
-	mv -f GeoIP.dat /usr/share/GeoIP/GeoIP.dat
+	mv -f GeoIP.dat "$GEOIP_PATH/GeoIP.dat"
 	if [ $? -ne 0 ]; then
 		echo_s "-- A error happens while trying to copy GeoIP DAT file\n" $RED
+		rm -f GeoIP.dat
 		exit 1;
 	fi
 	echo "-- Done"
