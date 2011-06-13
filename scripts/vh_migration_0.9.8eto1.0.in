@@ -22,7 +22,7 @@ function help_me()
 	echo_s "$SCRIPT\n" $BOLD
 	echo "This is a migration script for Verlihub 1.0, usage:"
 	echo_s "   --clean" $RED && echo -e "\t\t\t\tClean directory from old binary/script files"
-	echo_s "   --hub" $RED && echo -e "\t<path_to_dbconfig> \tUpdate hu database with the given dbconfig path"
+	echo_s "   --hub" $RED && echo -e "\t<path_to_dbconfig> \tUpdate hub database with the given dbconfig path"
 	echo_s "   --help" $RED && echo -e "\t\t\t\tShow this help"
 	echo ""
 }
@@ -40,7 +40,7 @@ function migrate_hub() #path_to_dbconfig
 		exit 1;
 	fi
 
-	echo_s "-- Welcome to VerliHub migration script to version 0.9.9a for your hub\n" $RED_BOLD
+	echo_s "-- Welcome to VerliHub migration script to version 1.0 for your hub\n" $RED_BOLD
 	echo "-- You verlihub config folder is '$CONFIG_DIR'"
 
 	if $(yes_or_no "Do you want to continue with hub migration?") ; then
@@ -100,7 +100,7 @@ function migrate_clean()
 		echo_s "-- You can run this migration with root account only\n" $RED
 		exit 0;
 	fi
-	echo_s "-- Welcome to VerliHub migration script to version 0.9.9a to clean up old files\n" $RED_BOLD
+	echo_s "-- Welcome to VerliHub migration script to version 1.0 to clean up old files\n" $RED_BOLD
 	if $(yes_or_no "Do you want to continue with hub migration?") ; then
 		OLD_SCRIPTS=(vh_getcfg vh_getdb vh_install vh_regnick vh_restart vh_runhub vh_setup vh_trigger verlihub_config)
 
