@@ -366,6 +366,8 @@ function clean() #path_to_config
 			else
 				echo "-- Truncated '$TABLE'"			
 			fi
+		else
+			echo "-- Skipped"
 		fi
 	done
 	exit 0;
