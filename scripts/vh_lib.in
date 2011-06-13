@@ -110,7 +110,7 @@ function get_path_from_defaults()
 	CONFIG_DIR="/etc/verlihub"
 	[ -d $PREFIX/etc/verlihub ] && CONFIG_DIR="$PREFIX/etc/verlihub"
 	[ -d ./.verlihub ] && CONFIG_DIR="./.verlihub"
-	[ -d ~/.verlihub ] && CONFIG_DIR="${HOME}.verlihub"
+	[ -d ~/.verlihub ] && CONFIG_DIR="${HOME}/.verlihub"
 }
 
 # Check if path is correct or not and set it as config directory; 
