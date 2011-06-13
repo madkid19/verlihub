@@ -63,7 +63,7 @@ function version()
 function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 {
 	# Check config directory
-	if [ "_$2" == "_" ]; then
+	if [ "_$2" = "_" ]; then
 		if ! set_path $1 ; then
 			exit 1;
 		fi
@@ -92,8 +92,8 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	# Check if MySQL socket exists
 	MYSQL_HOST=$(get_db_host)
 	IS_MYSQL_HOST_LOCAL=false
-	[ $MYSQL_HOST == "localhost" ] && IS_MYSQL_HOST_LOCAL=true
-	[ $MYSQL_HOST == "127.0.0.1" ] && IS_MYSQL_HOST_LOCAL=true
+	[ $MYSQL_HOST = "localhost" ] && IS_MYSQL_HOST_LOCAL=true
+	[ $MYSQL_HOST = "127.0.0.1" ] && IS_MYSQL_HOST_LOCAL=true
 	if $IS_MYSQL_HOST_LOCAL ; then
 		_mysql_get_socket
 		if [ ! -z $SOCKET ]; then
@@ -106,7 +106,7 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	PID=$!
 	disown $PID
 	# Check if pid is returned
-	if [ "_$PID" == "_" ]; then
+	if [ "_$PID" = "_" ]; then
 		echo_s "-- A error occured while tring to get PID of verlihub\n" $RED
 		return 1;
 	fi;
@@ -155,7 +155,7 @@ function restore() # sql_file, path_to_dbconfig
 {
 	# Check SQL file
 	FILE_EXTENSION=${1##*.}
-	if [ "_$1" == "_" ] || [ ! -f "$1" ] || [ $FILE_EXTENSION != "sql" ]; then
+	if [ "_$1" = "_" ] || [ ! -f "$1" ] || [ $FILE_EXTENSION != "sql" ]; then
 		echo_s "-- Please provide a valid SQL file\n" $RED
 		exit;
 	fi
@@ -179,7 +179,7 @@ function backup() # destination folder, path_to_dbconfig
 		exit;
 	fi
 	# Check destination folder
-	if [ ! -d $1 ] || [ "_$1" == "_" ]; then
+	if [ ! -d $1 ] || [ "_$1" = "_" ]; then
 		echo_s "-- Please provide a valid destination folder\n"
 		exit;
 	fi
@@ -235,12 +235,12 @@ function add_user()
 		exit 1;
 	fi
 	# Check if class is valid
-	if [ "_$USER_CLASS" == "_" ] || check_class $USER_CLASS ; then
+	if [ "_$USER_CLASS" = "_" ] || check_class $USER_CLASS ; then
 		echo_s "-- Specify a valid class (-1, 0, 1, 2, 3, 4, 5, 10)\n" $RED
 		exit 1;
 	fi
 	# Check if nickname is empty
-	if [ "_$USER_NICKNAME" == "_" ]; then
+	if [ "_$USER_NICKNAME" = "_" ]; then
 		echo_s "-- Specify nickname with --nickname option\n" $RED
 		exit 1;
 	fi;
@@ -374,7 +374,7 @@ function clean() #path_to_config
 # Manage of autoload plugins
 function autoload() # params
 {
-	if  [ "_$1" == "_" ]; then
+	if  [ "_$1" = "_" ]; then
 		ACTION="list";
 	fi
 	# Read options
@@ -399,7 +399,7 @@ function autoload() # params
 	local PLUGINS_PATH="$PREFIX/lib"	
 
 	
-	if [ "_$ACTION" == "_list" ]; then
+	if [ "_$ACTION" = "_list" ]; then
 		echo "-- This is a list of available  plugins"
 	fi;
 
@@ -425,7 +425,7 @@ function autoload() # params
 		INDEX=$(($INDEX+1))
 	done
 
-	if [ "_$ACTION" == "_list" ]; then
+	if [ "_$ACTION" = "_list" ]; then
 		echo ""
 		echo -n "Status: "
 		echo_s "Start automatically" $GREEN_BOLD
@@ -451,7 +451,7 @@ function autoload() # params
 		local PLUGIN_NAME=$(_get_plugin_name ${PLUGIN_MAP[$CHOOSEN_PLUGIN]});
 		local PLUGIN_IN_CONFIG="$VERLIHUB_CFG/plugins/$PLUGIN_NAME"
 		if [ -L "$PLUGIN_IN_CONFIG" > /dev/null 2>&1 ]; then
-			if [ "_$ACTION" == "_on" ]; then
+			if [ "_$ACTION" = "_on" ]; then
 				echo_s "-- Plugin already starts automatically\n" $RED
 			else
 				if rm -f "$PLUGIN_IN_CONFIG" > /dev/null 2>&1 ; then
@@ -461,7 +461,7 @@ function autoload() # params
 				fi
 			fi
 		else
-			if [ "_$ACTION" == "_on" ]; then
+			if [ "_$ACTION" = "_on" ]; then
 				if ln -s "$PREFIX/lib/$PLUGIN_NAME" "$VERLIHUB_CFG/plugins/" > /dev/null 2>&1 ; then 
 					echo "-- Done"
 				else
@@ -526,8 +526,8 @@ function install_cli()
 
 	# Ask user the IP addrress of current server to allow access for MySQL server
 	IS_MYSQL_HOST_LOCAL=false
-	[ $MYSQL_HOST == "localhost" ] && IS_MYSQL_HOST_LOCAL=true
-	[ $MYSQL_HOST == "127.0.0.1" ] && IS_MYSQL_HOST_LOCAL=true
+	[ $MYSQL_HOST = "localhost" ] && IS_MYSQL_HOST_LOCAL=true
+	[ $MYSQL_HOST = "127.0.0.1" ] && IS_MYSQL_HOST_LOCAL=true
 	if ! $IS_MYSQL_HOST_LOCAL ; then
 		echo_s "-- You are going to use a database on an external server. Please provide the IP address of this current server \n"
 		IS_MYSQL_HOST_OK=false
@@ -535,7 +535,7 @@ function install_cli()
 		do
 			CURRENT_ADDRESS=$(ask "Address" )
 	
-			if [ "_$CURRENT_ADDRESS" == "_" ]; then
+			if [ "_$CURRENT_ADDRESS" = "_" ]; then
 				echo_s "You enter a empty value please retry with configuration\n"
 			else
 				IS_MYSQL_HOST_OK=true				
@@ -568,7 +568,7 @@ function install_cli()
 	# Create database
 	if ! $DB_EXISTS ; then 
 		echo_s "-- The MySQL database '$MYSQL_DB_NAME' does not exist, it will be created now\n"
-		if [ "_$MYSQL_ADMIN_USER"  == "_" -o "_$MYSQL_ADMIN_PASSWORD"  == "_" ]; then
+		if [ "_$MYSQL_ADMIN_USER"  = "_" -o "_$MYSQL_ADMIN_PASSWORD"  = "_" ]; then
 			ask_admin_access_cli
 		fi
 	else
@@ -576,7 +576,7 @@ function install_cli()
 	fi
 
 	# Create/grant permissions (check if admin account has been specify)
-	if [ "_$MYSQL_ADMIN_USER"  == "_" -o "_$MYSQL_ADMIN_PASSWORD"  == "_" ]; then
+	if [ "_$MYSQL_ADMIN_USER"  = "_" -o "_$MYSQL_ADMIN_PASSWORD"  = "_" ]; then
 		ask_admin_access_cli
 	fi
 	$MYSQL -h "$MYSQL_HOST" -u "$MYSQL_ADMIN_USER" -p"$MYSQL_ADMIN_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DB_NAME\`; GRANT ALL ON \`$MYSQL_DB_NAME\`.* to 	'$MYSQL_USER'@'$CURRENT_ADDRESS' identified by '$MYSQL_PASSWORD'" &> /dev/null
@@ -601,7 +601,7 @@ function install_cli()
 		until $VALIDATE
 		do	
 			local CHOOSEN_FOLDER=$(ask "Select number")
-			if [ "$CHOOSEN_FOLDER" == 1 ] || [ "$CHOOSEN_FOLDER" == 2 ] || [ "$CHOOSEN_FOLDER" == 3 ] || [ "$CHOOSEN_FOLDER" == 4 ]; then
+			if [ "$CHOOSEN_FOLDER" = 1 ] || [ "$CHOOSEN_FOLDER" = 2 ] || [ "$CHOOSEN_FOLDER" = 3 ] || [ "$CHOOSEN_FOLDER" = 4 ]; then
 				VALIDATE=true
 			else
 				echo_s "-- Insert a valid number from the list\n" $RED
@@ -620,14 +620,14 @@ function install_cli()
 		if [ -d $CHOOSEN_FOLDER ]; then
 			echo -n "-- The folder '$CHOOSEN_FOLDER' already exists (existing configuration will be backup). "
 			ANSWER=$(ask "Do you want to continue? Otherwise choose 'N' to select another folder [y/N]") 
-			if [ $ANSWER == 'y' ]; then
+			if [ $ANSWER = 'y' ]; then
 				IS_CHOOSEN_FOLDER_OK=true
 			else	
 				echo -e "Ok, let's try again.\n\n"
 			fi
 		else
 			ANSWER=$(ask "-- The config folder '$CHOOSEN_FOLDER' does not exist and will be created. Do you want to continue? [y/N]");
-			if [ $ANSWER == 'y' ]; then
+			if [ $ANSWER = 'y' ]; then
 				IS_CHOOSEN_FOLDER_OK=true
 				CHOOSEN_FOLDER_NOT_EXISTS=true
 			else	
@@ -700,7 +700,7 @@ SETUP_INFO_OK=false
 until $SETUP_INFO_OK; do
 
 	HOSTNAME=`hostname`
-	if [ $REALUSER == "root" ]; then
+	if [ $REALUSER = "root" ]; then
 		PORT=411
 	else
 		PORT=4111
