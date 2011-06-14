@@ -98,6 +98,7 @@ ADD_SUBDIRECTORY(plugins)
 ADD_SUBDIRECTORY(share)
 ADD_SUBDIRECTORY(scripts)
 ADD_SUBDIRECTORY(po)
+ADD_SUBDIRECTORY(man)
 
 # ----------------------------------------------------------------------------------------------------
 # Build a CPack driven installer package

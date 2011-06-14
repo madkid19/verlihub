@@ -1,6 +1,7 @@
 NEW FEATURES:
  * Updated GPL license
  * Updated current date
+ * Added man pages
  * Sort config variables alphabetically when displaying them with !gc or !getconfig command
  * Added 'plugins' alias to show just plugin variables (use !gc plugins or !getconfig plugins)
  * Append ban_extra_message content variable when showing ban
