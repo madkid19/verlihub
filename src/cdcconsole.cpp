@@ -42,6 +42,8 @@
 #include <algorithm>
 #include <sys/resource.h>
 
+#define PADDING 25
+
 namespace nVerliHub {
 	using namespace nUtils;
 	using namespace nSocket;
@@ -309,7 +311,10 @@ int cDCConsole::CmdGetinfo(istringstream &cmd_line , cConnDC *conn )
 		if(user && user->mxConn) {
 			if(!mOwner->mUseDNS)
 				user->mxConn->DNSLookup();
-			os << autosprintf(_("User: %s IP: %s Host: %s CC: %s"), s.c_str(), user->mxConn->AddrIP().c_str(), user->mxConn->AddrHost().c_str(), user->mxConn->mCC.c_str()) << endl;
+			os << "\r\n";
+			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("User") << s.c_str() << endl;
+			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("IP") << user->mxConn->AddrIP().c_str() << endl;
+			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Country Code") << user->mxConn->mCC.c_str() << endl;
 		} else {
 			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
 		}
@@ -323,7 +328,7 @@ int cDCConsole::CmdQuit(istringstream &, cConnDC * conn, int code)
 {
 	ostringstream os;
 	if(conn->Log(1)) conn->LogStream() << "Stopping hub with code " << code << " .";
-	os << "[::] " << _("Stopping Hub...");
+	os << toUpper(_("Stopping Hub..."));
 	mOwner->DCPublicHS(os.str(),conn);
 	if (code >= 0) {
 		mOwner->stop(code);
@@ -405,7 +410,7 @@ int cDCConsole::CmdMyInfo(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg;
-	os << _("Your info") << ": \r\n";
+	os << "\r\n[::] " << _("Your info") << ": \r\n";
 	conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
@@ -442,7 +447,7 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text,conn))
 		return 0;
 
-	os << "** " <<  conn->mpUser->mNick<< text;
+	os << "** " <<  conn->mpUser->mNick << text;
 	string msg = os.str();
 	mOwner->mUserList.SendToAll(msg, true);
 	os.str(mOwner->mEmpty);
@@ -534,16 +539,17 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	}
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] " << autosprintf(_("Hub Owner: %s"), hubOwner.c_str()) <<endl;
-	os << "[::] " << autosprintf(_("Address: %s"), mOwner->mC.hub_host.c_str()) <<endl;
-	os << "[::] " << autosprintf(_("Total users: %d"), mServer->mUserCountTot) <<endl;
-	os << "[::] " << autosprintf(_("Total bots: %d"), mServer->mRobotList.Size()) <<endl;
-	os << "[::] " << autosprintf(_("Total share: %s"),convertByte(mServer->mTotalShare, false).c_str()) << endl;
-	os << "[::] " << autosprintf(_("Hub health: %s"), mServer->mStatus.c_str()) <<endl;
-	os << "[::] " << autosprintf(_("Your status: %s"), uType.c_str()) << endl;
-	os << "[::] " << autosprintf(_("Your can search every %d seconds"), sInt) << endl;
-	os << "[::] " << autosprintf(_("Your connection type is: %s"), cType.c_str()) <<endl;
-	os << "[::] " << autosprintf(_("You are sharing: %s"), convertByte(conn->mpUser->mShare, false).c_str()) << endl;
+	os << "\r\n";
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub owner") << hubOwner.c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Address") << mOwner->mC.hub_host.c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Total users") << mServer->mUserCountTot << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Total bots") <<  mServer->mRobotList.Size() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Total share") << convertByte(mServer->mTotalShare, false).c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub health") << mServer->mStatus.c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Your status") << uType.c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Your can search every") << autosprintf(ngettext("%d second", "%d seconds", sInt), sInt) << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Connection type") << cType.c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("You are sharing") << convertByte(conn->mpUser->mShare, false).c_str() << endl;
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;
