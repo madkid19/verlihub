@@ -26,6 +26,8 @@
 #include "stringutils.h"
 #include "i18n.h"
 
+#define PADDING 25
+
 namespace nVerliHub {
 	using namespace nEnums;
 	using namespace nUtils;
@@ -76,7 +78,7 @@ ostream & operator << (ostream &os, cBan &ban)
 			ban.DisplayKick(os);
 			break;
 		default:
-			os << _("Unknown ban") << "\r\n";
+			os << _("Unknown ban") << endl;
 	}
 	return os;
 }
@@ -85,29 +87,29 @@ void cBan::DisplayUser(ostream &os)
 {
 	os << "\r\n";
 	if(mNick.size())
-		os << setw(20) << setiosflags(ios::left) << toUpper(_("Nickname")) << mNick.c_str() << "\r\n";
+		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << mNick.c_str() << endl;
 	if(mIP.size() && mIP[0] != '_')
-		os << setw(20) << setiosflags(ios::left) << toUpper(_("IP")) << mIP.c_str() << "\r\n";
-	os << setw(20) << setiosflags(ios::left) << toUpper(_("Reason")) << mReason.c_str() << "\r\n";
-	os << setw(20) << setiosflags(ios::left) << toUpper(_("Left")) ;
+		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("IP") << mIP.c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Reason") << mReason.c_str();
 	// Append extra ban message
 	if(!mS->mC.ban_extra_message.empty())
-		os << " " << mS->mC.ban_extra_message.empty();
-	os << "\r\n";
+		os << " " << mS->mC.ban_extra_message;
+	os << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Left");
 	if(mDateEnd) {
 		cTime HowLong(mDateEnd - cTime().Sec());
 		os << toLower(_("Remaining")) << " " << HowLong.AsPeriod().AsString().c_str();
 	} else
-		os << toLower(_("Permanently."));
-	os  << "\r\n";
+		os << toLower(_("Permanently"));
+	os  << endl;
 	string initialRange, endRange;
 	if(mRangeMin) {
 		cBanList::Num2Ip(mRangeMin, initialRange);
 		cBanList::Num2Ip(mRangeMax, endRange);
-		os << setw(20) << setiosflags(ios::left) << toUpper(_("IP range")) << initialRange.c_str() << "-" << endRange.c_str() << "\r\n";
+		os << setw(PADDING) << setiosflags(ios::left) << _("IP range") << initialRange.c_str() << " - " << endRange.c_str() << endl;
 	}
 	if(mShare)
-		os << setw(20) << setiosflags(ios::left) << toUpper(_("Share")) << convertByte(mShare, false).c_str() << "\r\n";
+		os << setw(PADDING) << setiosflags(ios::left) << _("Share") << convertByte(mShare, false).c_str() << endl;
 }
 
 void cUnBan::DisplayUser(ostream &os)
@@ -119,8 +121,8 @@ void cUnBan::DisplayUser(ostream &os)
 void cBan::DisplayComplete(ostream &os)
 {
 	DisplayUser(os);
-	os << setw(20) << setiosflags(ios::left) << toUpper(_("OP")) << mNickOp.c_str() << "\r\n";
-	os << setw(20) << setiosflags(ios::left) << toUpper(_("Ban type")) << this->GetBanType();
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("OP") << mNickOp.c_str() << endl;
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Ban type") << this->GetBanType() << endl;
 }
 
 const char *cBan::GetBanType()
@@ -137,6 +139,7 @@ void cUnBan::DisplayComplete(ostream &os)
 
 void cBan::DisplayKick(ostream &os)
 {
+	os << setw(20) << setiosflags(ios::left);
 	if(mDateEnd) {
 		cTime HowLong(mDateEnd-cTime().Sec(),0);
 		if(HowLong.Sec() < 0) {
@@ -151,7 +154,8 @@ void cBan::DisplayKick(ostream &os)
 
 void cBan::DisplayInline(ostream &os)
 {
-	static const char *sep = " \t ";
+	os << " ";
+	os << setw(30) << setiosflags(ios::left);
 	switch(1 << mType) {
 		case eBF_NICK:
 			os << mNick;
@@ -173,9 +177,9 @@ void cBan::DisplayInline(ostream &os)
 			os << mNick; // TODO: fix me
 		break;
 	}
-	os << sep << mNickOp << sep;
+	os << setw(25) << setiosflags(ios::left) << mNickOp;
 	DisplayKick(os);
-	os << sep << GetBanType();
+	os << GetBanType();
 }
 	}; // namespace nTables
 }; // Namespace nVerliHub

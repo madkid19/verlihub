@@ -425,7 +425,7 @@ void cBanList::List(ostream &os, int count)
 	os << setw(25) << setiosflags(ios::left) << toUpper(_("OP"));
 	os << setw(20) << setiosflags(ios::left) << toUpper(_("Time"));
 	os << toUpper(_("Ban on")) << "\n";
-	os << " " << string(30+25+8+25,'=') << endl;
+	os << " " << string(30+25+20+20,'=') << endl;
 
 	for(it = db_begin() ; it != db_end(); ++it) {
 		mModel.DisplayInline(os);

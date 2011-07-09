@@ -1277,9 +1277,13 @@ bool cDCConsole::cfBan::operator()()
 		Ban.DisplayComplete(*mOS);
 		break;
 	case BAN_LIST:
+	{
 		GetParInt(BAN_WHO,BanCount);
-		mS->mBanList->List(*mOS,BanCount);
-	break;
+		ostringstream os;
+		mS->mBanList->List(os,BanCount);
+		mS->DCPrivateHS(os.str(), mConn);
+	}
+		break;
 	default:(*mOS) << _("This command is not implemented.") << "\r\n" << _("Available command are: ") << endl;
 		return false;
 		break;
