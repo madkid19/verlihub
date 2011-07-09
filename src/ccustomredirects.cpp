@@ -215,7 +215,7 @@ namespace nVerliHub {
 	void cRedirectConsole::ListHead(ostream *os)
 	{
 		(*os) << "\n ";
-		(*os) << setw(30) << setiosflags(ios::left) << toUpper(_("Address"));
+		(*os) << setw(35) << setiosflags(ios::left) << toUpper(_("Address"));
 		(*os) << setw(35) << setiosflags(ios::left) << toUpper(_("Type"));
 		(*os) << toUpper(_("Status")) << "\n";
 		(*os) << " " << string(30+25+25,'=') << endl;

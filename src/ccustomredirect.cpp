@@ -40,8 +40,8 @@ namespace nVerliHub {
 		{
 			string buff;
 			os << " ";
-			os << setw(30) << setiosflags(ios::left) << tr.mAddress;
-			os << setw(35) << setiosflags(ios::left);
+			os << setw(35) << setiosflags(ios::left) << tr.mAddress;
+			os << setw(30) << setiosflags(ios::left);
 			int flag = tr.mFlag;
 			if(flag & eKick) buff += "ban and kick,";
 			if(flag & eUserLimit) buff += "hub full,";

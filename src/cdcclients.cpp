@@ -330,7 +330,13 @@ namespace nVerliHub {
 
 	void cDCClientConsole::ListHead(ostream *os)
 	{
-		*os << _("Existing clients are:") << "\r\n";
+		*os << "\r\n ";
+		(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Name"));
+		(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Client ID"));
+		(*os) << setw(30) << setiosflags(ios::left) << toUpper(_("Version"));
+		(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Banned?"));
+		(*os) << toUpper(_("Status")) << endl;
+		(*os) << " " << string(15+15+35+15+15,'=') << endl;
 	}
 
 	bool cDCClientConsole::IsConnAllowed(cConnDC *conn,int cmd)

@@ -20,6 +20,7 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "cdcclient.h"
+#include <iomanip>
 #include "i18n.h"
 
 namespace nVerliHub {
@@ -38,17 +39,20 @@ namespace nVerliHub {
 
 		ostream &operator << (ostream &os, cDCClient &tr)
 		{
-			os << "\r" << tr.mName << " ID: " << tr.mTagID;
+			os << " ";
+			os << setw(15) << setiosflags(ios::left) << tr.mName;
+			os << setw(15) << setiosflags(ios::left) << tr.mTagID;
+			os << setw(30) << setiosflags(ios::left);
  			if(tr.mMinVersion < 0 && tr.mMaxVersion < 0)
- 				os << " " << _("All version");
+ 				os << _("All version");
  			else if(tr.mMinVersion >= 0 && tr.mMaxVersion < 0)
- 				os << " " << autosprintf(_("Min version: %.2f"), tr.mMinVersion);
+ 				os << autosprintf(_("Min version: %.2f"), tr.mMinVersion);
  			else if(tr.mMinVersion < 0 && tr.mMaxVersion >= 0)
-				os << " " << autosprintf(_("Max version: %.2f"), tr.mMaxVersion);
+				os << autosprintf(_("Max version: %.2f"), tr.mMaxVersion);
  			else
- 				os << " " << tr.mMinVersion << "-" << tr.mMaxVersion;
-			os << " " << autosprintf(_("Banned: %s") , tr.mBan ? _("Yes") : _("No"));
- 			os << " (" << (tr.mEnable ? _("Enable") : _("Disable")) << ")";
+ 				os << tr.mMinVersion << "-" << tr.mMaxVersion;
+			os << setw(15) << setiosflags(ios::left) << (tr.mBan ? _("Yes") : _("No"));
+ 			os << (tr.mEnable ? _("Enable") : _("Disable"));
 			return os;
 		}
 	}; // namespace nTables
