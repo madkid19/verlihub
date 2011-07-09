@@ -126,9 +126,9 @@ void cInfoServer::Output(ostream &os, int Class)
 	double total = 0, curr;
 
 	// Print zone from 1->6
- 	for(int i =1; i < 4; i++) {
-		if(!mServer->mC.cc_zone[i].empty()) {
-			string zone = mServer->mC.cc_zone[i];
+	for(int i=1; i < 4; i++) {
+		if(!mServer->mC.cc_zone[i-1].empty()) {
+			string zone = mServer->mC.cc_zone[i-1];
 			replace(zone.begin(), zone.end(), ':', ',');
 			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << mServer->mUserCount[i] << "/" << mServer->mC.max_users[i];
 			curr = mServer->mUploadZone[i].GetMean(mServer->mTime);
