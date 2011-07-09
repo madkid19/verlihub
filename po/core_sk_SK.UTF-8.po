@@ -1,0 +1,1695 @@
+# 
+# uNix <unix.sk@azet.sk>, 2011.
+msgid ""
+msgstr ""
+"Project-Id-Version: Verlihub\n"
+"Report-Msgid-Bugs-To: http://bugs.verlihub-project.org/\n"
+"POT-Creation-Date: 2011-04-18 16:54-0000\n"
+"PO-Revision-Date: 2011-04-18 14:57+0000\n"
+"Last-Translator: netcelli <netcelli@gmail.com>\n"
+"Language-Team: VerliHub team\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: sk_SK\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Country: UNITED KINGDOM\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-SearchPath-0: /home/netcelli/Git/verlihub/src\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: /home/netcelli/Git/verlihub/src/ccustomredirects.cpp:217
+msgid "Address"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ccustomredirects.cpp:218
+msgid "Type"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ccustomredirects.cpp:219
+msgid "Status"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcclients.cpp:333
+msgid "Existing clients are:"
+msgstr "Existujúci klienti sú:"
+
+#: /home/netcelli/Git/verlihub/src/cdcclient.cpp:43
+msgid "All version"
+msgstr "Všetky verzie"
+
+#: /home/netcelli/Git/verlihub/src/cdcclient.cpp:45
+#, c-format
+msgid "Min version: %.2f"
+msgstr "Min verzia: %.2f"
+
+#: /home/netcelli/Git/verlihub/src/cdcclient.cpp:47
+#, c-format
+msgid "Max version: %.2f"
+msgstr "Max verzia: %.2f"
+
+#: /home/netcelli/Git/verlihub/src/cdcclient.cpp:50
+#, c-format
+msgid "Banned: %s"
+msgstr "Ban: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcclient.cpp:50
+msgid "Yes"
+msgstr "Áno"
+
+#: /home/netcelli/Git/verlihub/src/cdcclient.cpp:50
+msgid "No"
+msgstr "Nie"
+
+#: /home/netcelli/Git/verlihub/src/cdcclient.cpp:51
+msgid "Enable"
+msgstr "Povoliť"
+
+#: /home/netcelli/Git/verlihub/src/cdcclient.cpp:51
+msgid "Disable"
+msgstr "Zakázať"
+
+#: /home/netcelli/Git/verlihub/src/cchatconsole.cpp:119
+#, c-format
+msgid "User '%s' is not in this room."
+msgstr "Užívateľ '%s' nie je v tejto miestnosti."
+
+#: /home/netcelli/Git/verlihub/src/cchatconsole.cpp:123
+#, c-format
+msgid "You cannot send %s out of the room because he has higher privilegies."
+msgstr ""
+"Nemôžete poslať užívateľa %s von z miestnosti, pretože má vyššie privilégia."
+
+#: /home/netcelli/Git/verlihub/src/cchatconsole.cpp:146
+#, c-format
+msgid ""
+"Members: \n"
+"%s"
+msgstr ""
+"Členovia:\n"
+"%s"
+
+#: /home/netcelli/Git/verlihub/src/cchatconsole.cpp:159
+#, c-format
+msgid "User '%s' is not online, so you cannot invite him."
+msgstr "Užívateľ '%s' nie je online, takže nie je možné ho pozvať."
+
+#: /home/netcelli/Git/verlihub/src/cconndc.cpp:167
+msgid "Key"
+msgstr "Kľúč"
+
+#: /home/netcelli/Git/verlihub/src/cconndc.cpp:167
+msgid "ValidateNick"
+msgstr "Overiť prezývku"
+
+#: /home/netcelli/Git/verlihub/src/cconndc.cpp:167
+msgid "Login"
+msgstr "Prihlásiť sa"
+
+#: /home/netcelli/Git/verlihub/src/cconndc.cpp:167
+msgid "MyINFO"
+msgstr "MyINFO"
+
+#: /home/netcelli/Git/verlihub/src/cconndc.cpp:167
+msgid "Flush"
+msgstr "Vyprázdniť"
+
+#: /home/netcelli/Git/verlihub/src/cconndc.cpp:167
+msgid "Set Password"
+msgstr "Nastaviť heslo"
+
+#: /home/netcelli/Git/verlihub/src/cconndc.cpp:179
+msgid "Operation timeout"
+msgstr "Prevádzka timeout"
+
+#: /home/netcelli/Git/verlihub/src/cconndc.cpp:187
+msgid "General timeout"
+msgstr "Všeobecné timeout"
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:273
+msgid ""
+"The definition is empty or not specified. Please define it with -d option."
+msgstr ""
+"Táto definícia je prázdna alebo nie je špecifikovaná. Prosím, definvujte to "
+"s voľbou -d."
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:278
+msgid "It's not allowed to define dbconfig file as trigger."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:281
+#, c-format
+msgid "User '%s' tried to define dbconfig as trigger"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:292
+#, c-format
+msgid ""
+"The file %s for the trigger %s must be locate in VerliHub config folder (use"
+" %%[CFG] variable; for ex %%[CFG]/%s)"
+msgstr ""
+"Súbor %s pre trigger %s, musi byť umiestnení v VerliHub konfiguračnej zložke"
+" (použite %%[CFG] variabilné, napr %%[CFG]/%s)"
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:385
+msgid "Name"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:386
+msgid "Definition"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:387
+msgid "Flag"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:388
+msgid "Send as"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:389
+msgid "Min class"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctriggers.cpp:390
+msgid "Max class"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:373
+msgid "<< To turn your chat on use command +chat; turn it off with +nochat >>"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:539
+msgid "Recovery mode"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:541
+msgid "Near capacity"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:543
+msgid "Progressive mode"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:545
+msgid "Normal mode"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:547
+msgid "Not available"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:554
+msgid "RunTime"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:555
+msgid "User Count"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:556
+msgid "System Status"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:560
+#, c-format
+msgid ""
+"This hub is running version %s%s %s of %s (RunTime: %s / User count: %d)"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:569
+msgid ""
+"The hub is currently unable to service your request. Please try again in a "
+"few minutes."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:618
+msgid "Another user is already logged in from this IP address. Disconnecting."
+msgstr "Iný používateľ je už prihlásený z tejto IP adresy. Odpojenie."
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:636
+msgid "You are already in the hub."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:655
+msgid ""
+"<< Please change your password NOW using command +passwd <new_passwd>! See "
+"+help >>"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:669
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:408
+msgid "Your info"
+msgstr "Vaše info"
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:918
+msgid "Do not reconnect too fast."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:922
+msgid "Bad nickname"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:930
+msgid "unallowed characters in your nick."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:932
+#, c-format
+msgid "use these: %s"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:935
+msgid "your nick is too short"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:938
+msgid "your nick is too long"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:941
+msgid "your nick is already in use"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:944
+#, c-format
+msgid "Invalid nick prefix. Use: %s"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:947
+msgid "operator not registered"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:950
+#, c-format
+msgid "Wait %s before reconnecting!!"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:953
+msgid "unknown error"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:978
+msgid "<<You are banned>>"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:992
+#, c-format
+msgid "Please add %s in front of your nick"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1127
+msgid ""
+"Error. Available units are: s(econd), m(inute), h(our), d(ay), w(eek), M(onth), Y(ear).\n"
+"Default is 'd'."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1136
+msgid "Please provide a positive number."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1157
+msgid "Hublist registration results:"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1159
+#, c-format
+msgid "Sending to %s:%d..."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1163
+msgid "connection failed"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1202
+msgid "error sending info"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1206
+msgid ".. OK"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1209
+msgid "Done"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1222
+msgid "Registering the hub in hublists. This may take a while, please wait..."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1292
+#, c-format
+msgid "IP='%s'"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1294
+#, c-format
+msgid "Host='%s'"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1296
+msgid "User"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1362
+#, c-format
+msgid "You have been kicked because %s"
+msgstr "Bol ste vyhodený, pretože %s"
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1372
+#, c-format
+msgid "Kicked user %s"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1374
+#, c-format
+msgid "Dropped user %s"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1401
+msgid "dropped"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1405
+msgid "User cannot be kicked."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1416
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1420
+msgid "and banned"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cserverdc.cpp:1432
+#, c-format
+msgid ""
+"Error kicking user %s because he is protected against all classes below %d"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:96
+msgid "Last login"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:97
+msgid "Registered since"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:99
+#, c-format
+msgid "by %s"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:101
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:107
+msgid "No information"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:103
+msgid "Last error"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:109
+msgid "Login (errors/total)"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:110
+msgid "Password set"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:111
+msgid "Protected"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:112
+msgid "Hidden kicks"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:113
+msgid "Hidden key"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:114
+msgid "Hidden share"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/creguserinfo.cpp:120
+msgid "Alternate IP"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cconntypes.cpp:188
+msgid "Min slot"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cconntypes.cpp:189
+msgid "Max slot"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cconntypes.cpp:190
+msgid "Min upload"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cconntypes.cpp:191
+msgid "Min upload/slot"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cconntypes.cpp:192
+msgid "Description"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:208
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:433
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:468
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:499
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:557
+msgid "This functionality is currently disabled."
+msgstr "Táto funkcia je momentálne vypnutá."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:257
+#, c-format
+msgid "IP of user %s: %s"
+msgstr "IP užívateľa %s: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:259
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:291
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:314
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:836
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:861
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:887
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:925
+#, c-format
+msgid "User %s not found."
+msgstr "Užívateľ %s nebol nájdený."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:270
+msgid "Full list of commands:"
+msgstr "Plný zoznam príkazov:"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:289
+#, c-format
+msgid "Host of user %s: %s"
+msgstr "Hostiteľ užívateľa %s: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:312
+#, c-format
+msgid "User: %s IP: %s Host: %s CC: %s"
+msgstr "Užívateľ: %s IP: %s Host: %s CC: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:326
+msgid "Stopping Hub..."
+msgstr "Zastavenie Hubu ..."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:341
+msgid "No rights"
+msgstr "Žiadne práva"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:350
+msgid "Variable"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:351
+msgid "Value"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:387
+msgid "Usage example: !ccbc :US:GB: <message>."
+msgstr "Príklad použitia: !ccbc :US:GB: <message> ."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:387
+msgid "Please type !help for more info"
+msgstr "Prosím napíšte !help pre viac informácií"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:399
+#, c-format
+msgid "Message delivered to %d users in zone %s in %s"
+msgstr "Doručenie správy %d užívateľom v pásme %s v %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:419
+#, c-format
+msgid "Your IP is %s"
+msgstr "Vaša IP adresa je %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:478
+msgid "Authors"
+msgstr "Autori"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:480
+msgid "Translators"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:481
+msgid "Contributors"
+msgstr "Prispievatelia"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:482
+msgid "Website/Forums design"
+msgstr "Webové stránky / Fórum design"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:483
+msgid "Credits"
+msgstr "Credits"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:484
+msgid "Website"
+msgstr "Internetové stránky"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:510
+msgid "Unregistered"
+msgstr "Neregistrovaný [NOREG]"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:513
+msgid "Registered"
+msgstr "Registrovaný [REG]"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:516
+msgid "VIP"
+msgstr "VIP [VIP]"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:519
+msgid "Operator"
+msgstr "Operátor [OP]"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:522
+msgid "Super OP"
+msgstr "Super Operátor [SOP]"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:525
+msgid "Admin"
+msgstr "Admin [A]"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:528
+msgid "Master"
+msgstr "Master [M]"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:531
+msgid "Active"
+msgstr "Aktívni"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:533
+msgid "Passive"
+msgstr "Pasívni"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:537
+#, c-format
+msgid "Hub Owner: %s"
+msgstr "Vlastník Hubu: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:538
+#, c-format
+msgid "Address: %s"
+msgstr "Adresa: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:539
+#, c-format
+msgid "Total users: %d"
+msgstr "Celkom užívateľov: %d"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:540
+#, c-format
+msgid "Total bots: %d"
+msgstr "Celkom BOTov: %d"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:541
+#, c-format
+msgid "Total share: %s"
+msgstr "Celkové zdielanie: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:542
+#, c-format
+msgid "Hub health: %s"
+msgstr "Stav hubu: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:543
+#, c-format
+msgid "Your status: %s"
+msgstr "Tvoj stav: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:544
+#, c-format
+msgid "Your can search every %d seconds"
+msgstr "Vyhľadávať môžete každých %d sekúnd"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:545
+#, c-format
+msgid "Your connection type is: %s"
+msgstr "Váš typ pripojenia je: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:546
+#, c-format
+msgid "You are sharing: %s"
+msgstr "Vaše zdieľanie je: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:561
+msgid "Registration failed; please contact an operator for more help."
+msgstr "Registrácia zlyhala, prosím, kontaktujte operátora pre ďalšiu pomoc."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:577
+#, c-format
+msgid "Your nick must start with %s"
+msgstr "Vaša prezývka sa musí začínať s %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:590
+#, c-format
+msgid "You need to share at least %s"
+msgstr "Musíte zdieľať aspoň %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:600
+msgid "You are already registered"
+msgstr "Ste už zaregistrovaný"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:610
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:731
+#, c-format
+msgid "Minimum password length is %d characters, please retry."
+msgstr "Minimálna dĺžka hesla je %d znakov, skúste to prosím znova."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:619
+#, c-format
+msgid "A new user has been registered with class %d"
+msgstr "Nový používateľ je registrovaný s class %d"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:623
+#, c-format
+msgid ""
+"You are now registered with nick '%s'! Please reconnect and login with your "
+"password. Don't forget your password! It is '%s'."
+msgstr ""
+"Ste teraz registrovaný s prezývkov '%s'! Prosím, prihláste sa znova a "
+"použite vaše heslo. Nezabudnite svoje heslo! Ktoré je '%s'."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:625
+msgid "An error occured while registering."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:646
+msgid "Thank you, your request has been sent to operators."
+msgstr "Ďakujeme, Vaša požiadavka bol odoslana operátorom."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:658
+msgid "You do not have permissions to change the topic."
+msgstr "Nemáte oprávnenie k zmene topicu."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:664
+#, c-format
+msgid ""
+"Topic must be max 255 characters long. Your topic was %d characters long."
+msgstr ""
+"Topic môže mať max 255 znakov. Vaš topic obsahuje %d znakov, je príliš dlhy."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:680
+#, c-format
+msgid "%s has set the topic to : %s"
+msgstr "%s nastavil topic : %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:682
+#, c-format
+msgid "%s resetted the topic"
+msgstr "%s resetovaný topic"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:723
+msgid "You are not allowed to change your password now. Ask an OP."
+msgstr "Nie je vám dovolené zmeniť svoje heslo. Opýtajte sa OP."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:737
+msgid "Error updating password."
+msgstr "Chyba pri aktualizácii hesla."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:743
+msgid "Password updated successfully."
+msgstr "Heslo úspešne aktualizované."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:756
+msgid ""
+"Please use: !hideme <class> where <class> is the maximum class of users that"
+" may not see your actions."
+msgstr ""
+"Prosím, použite: !hideme <class> kde <class> je maximálna trieda užívateľov,"
+" ktoré nemusia vidieť vaše akcie."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:762
+#, c-format
+msgid "Your command actions are now hidden from users with class below %d."
+msgstr ""
+"Váš príkaz akcie je teraz skrytý od užívateľov s triedou nižšou než %d."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:776
+msgid ""
+"Type !help for more information (usage !userlimit <max_users> "
+"[<minutes>=60])"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:807
+msgid "Use !class <nick> [<class>=3]."
+msgstr "Použi !class <nick> [<class>=3]."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:807
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:908
+msgid "Please type !help for more info."
+msgstr "Prosím, napíšte! Pomoc pre viac informácií."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:808
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:909
+#, c-format
+msgid "Max class is %d"
+msgstr "Max trieda je %d"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:819
+#, c-format
+msgid "Temporarily changed class to %d for user %s"
+msgstr "Dočasne zmenená trieda %d pre užívateľa %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:833
+#, c-format
+msgid "You have no rights to change class of %s."
+msgstr "Nemáte žiadne právo na zmenu triedy %s."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:855
+#, c-format
+msgid "Kicks of user %s are now hidden."
+msgstr "Kick užívateľov %s sú teraz skryté."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:858
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:884
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:923
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1239
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1629
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1755
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1793
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:2005
+msgid "You have no rights to do this."
+msgstr "Nemáte žiadne právo to urobiť."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:881
+#, c-format
+msgid "Kicks of user %s are now visible."
+msgstr "Kick užívateľov %s sú teraz viditeľné."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:908
+msgid "Use !protect <nick> [<againstclass>=your_class-1]."
+msgstr "Použite !protect <nick> [<againstclass>=your_class-1]."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:920
+#, c-format
+msgid "User %s is temporarily protected from class %d"
+msgstr "Užívateľ %s je dočasne chránený pred triedou %d"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:935
+msgid ""
+"Reloading triggers, custom redirects, configuration and reglist cache..."
+msgstr ""
+"Preloženie spúšťa, vlastné presmerovanie, konfigurácia a reglist cache ..."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:948
+msgid "Report command is currently disabled."
+msgstr "Správa príkaz je v súčasnosti zakázané."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:961
+#, c-format
+msgid "REPORT: user '%s' IP='%s' Host='%s'"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:963
+#, c-format
+msgid "REPORT: user '%s' which is offline"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:964
+#, c-format
+msgid "Reason='%s'."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:967
+msgid "Thank you, your report has been accepted."
+msgstr "Ďakujem vám, Vaša správa bola prijatá."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1070
+msgid "All bans have been deleted."
+msgstr "Všetky zákazy boli odstránené."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1074
+msgid "All unbans have been deleted."
+msgstr "Všetky unbans boli odstránené."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1078
+msgid "All kicks have been deleted."
+msgstr "Všetky kopy boli odstránené."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1082
+msgid "All temporary rights have been deleted."
+msgstr "Všetky dočasné práva boli odstránené."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1085
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1284
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1310
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1373
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1615
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1909
+msgid "This command is not implemented."
+msgstr "Tento príkaz nie je implementovaná."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1085
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1284
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1310
+msgid "Available command are: "
+msgstr "K dispozícii sú príkaz:"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1147
+msgid "Please provide a valid ban time."
+msgstr "Uveďte prosím platné zákaz čas."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1163
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1605
+msgid "Please provide a valid reason."
+msgstr "Uveďte, prosím, k tomu pádny dôvod."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1168
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1267
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1810
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1834
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1873
+msgid "Action has been discarded by plugin"
+msgstr "Akcia bola odstraňujú plugin"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1172
+#, c-format
+msgid "User %s unbanned."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1194
+#, c-format
+msgid "%d ban found."
+msgid_plural "%d bans found."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1200
+msgid "No reason specified"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1247
+#, c-format
+msgid "Unknown range format '%s'."
+msgstr "Neznámy rozsah formáte '%s'."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1277
+msgid "Added ban."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1404
+#, c-format
+msgid "Undefined variable %s"
+msgstr "Undefined variable %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1419
+#, c-format
+msgid "Updated %s.%s from '%s' to '%s'"
+msgstr "Aktualizované %s.%s z '%s' na '%s'"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1429
+#, c-format
+msgid ""
+"WARNING: VerliHub allows maximum %d users, but current resource limit is %d."
+" Consider to run ulimit -n <max_users>"
+msgstr ""
+"UPOZORNENIE: VerliHub umožňuje maximálne %d užívateľov, ale súčasný zdroj "
+"limit je %d. Zvážte spustiť ulimit-n <max_users>"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1500
+#, c-format
+msgid " %s saved"
+msgstr "%s uloží"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1502
+#, c-format
+msgid "Error saving %s"
+msgstr "Chyba pri ukladaní %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1554
+#, c-format
+msgid "Found %d user with IP %s:"
+msgid_plural "Found %d users with IP %s:"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1560
+#, c-format
+msgid "Found %d user with range %s:"
+msgid_plural "Found %d users with range %s:"
+msgstr[0] "Nájdený %d užívateľ z rozsahom %s:"
+msgstr[1] "Nájdených %d užívateľov z rozsahom %s:"
+msgstr[2] "Nájdených %d užívateľov z rozsahom %s:"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1564
+msgid "Country code must be 2 characters long (for ex. US)"
+msgstr "Kód krajiny musí byť 2 znakov (na ex. US)"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1571
+#, c-format
+msgid "Found %d user with country code %s:"
+msgid_plural "Found %d users with country code %s:"
+msgstr[0] "Nájdený %d užívateľ s kódom krajiny %s:"
+msgstr[1] "Nájdených %d užívateľov s kódom krajiny %s:"
+msgstr[2] "Nájdených %d užívatelia s kódom krajiny %s:"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1579
+msgid "No user found."
+msgstr "Žiadny užívateľ nájdený."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1641
+msgid "Loaded plugins:"
+msgstr "Nabité pluginy:"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1645
+msgid "Available callbacks:"
+msgstr "K dispozícii spätné volania:"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1695
+msgid "Found nicks:"
+msgstr "Nájdené škrabance:"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1728
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1798
+msgid "Missing parameters."
+msgstr "Chýbajúce parametre."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1743
+msgid ""
+"Invalid classdif_reg value. Must be between 1 and 5. Please correct this "
+"first!"
+msgstr ""
+"Neplatná classdif_reg hodnotu. Musí byť medzi 1 a 5. Opravte prosím tento "
+"prvý!"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1789
+#, c-format
+msgid "No registered user found with nick '%s'"
+msgstr "Žiadny registrovaný užívateľ nenašli nick '%s'"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1791
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1805
+#, c-format
+msgid "User '%s' already exists"
+msgstr "Užívateľ '%s' už existuje"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1818
+msgid ""
+"You have been registered, please set up your password NOW \n"
+"using command +passwd <your_new_passwd>\n"
+"replace <your_new_passwd> with your new password."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1823
+msgid "User has been added; please tell him to change his password"
+msgstr "Užívateľ bol pridaný, prosím, povedzte ho, aby zmenil svoje heslo"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1827
+msgid "Error adding the new user"
+msgstr "Chyba pri pridaní nového užívateľa"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1841
+#, c-format
+msgid "Deleted user '%s' from database"
+msgstr "Vypúšťa užívateľa '%s' z databázy"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1842
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1847
+#, c-format
+msgid "User information: %s"
+msgstr "Informácie pre užívateľov:%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1846
+#, c-format
+msgid "Error deleting user '%s'"
+msgstr "Chyba pri odstraňovaní používateľa '%s'"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1858
+msgid "Password updated"
+msgstr "Heslo aktualizované"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1861
+msgid "Error updating password"
+msgstr "Chyba pri aktualizácii heslo"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1867
+msgid ""
+"You can change your password now, use command +passwd followed by your new "
+"password"
+msgstr ""
+"Môžete si zmeniť heslo, použite príkaz + passwd nasledovať svoje nové heslo"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1878
+#, c-format
+msgid ""
+"Your class has been changed to %s. Changes will take effect on next login."
+msgstr ""
+"Vaša trieda bola zmenená na%s. Zmeny sa prejavia pri ďalšom prihlásení."
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1884
+msgid "Your registration has been enabled"
+msgstr "Vaša registrácia bola povolená"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1890
+msgid "Your registration has been disabled"
+msgstr "Vaša registrácia bola zakázaná"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1894
+#, c-format
+msgid "You are protected by classes greater than %s"
+msgstr "Ste chránení triedy vyššie ako%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1900
+#, c-format
+msgid "You kicks are hidden by classes greater than %s"
+msgstr "Ste kopy sú skryté triedy vyššie ako%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1917
+#, c-format
+msgid "Updated variable '%s' to value %s for user %s"
+msgstr "Aktualizované premenná '%s' na hodnotu%s pre užívateľa%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:1921
+#, c-format
+msgid "Error setting variable '%s' to value %s for user %s"
+msgstr "Chyba pri nastavovaní premennej '%s' na hodnotu%s pre užívateľa%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcconsole.cpp:2016
+#, c-format
+msgid "Message delivered to %d users in %s"
+msgstr "Doručenie správy%d užívateľov v%s"
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:59
+msgid "<<Your client is banned>>"
+msgstr "<Your client is banned>"
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:66
+msgid "Connections through proxy server are not allowed in this hub."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:72
+msgid "Passive connections are restricted. Consider changing to active."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:78
+msgid "Error: your client tag is reporting less then 0 hubs or slots!"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:87
+msgid "Unknown clients are not allowed in this hub"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:93
+#, c-format
+msgid "Too many open hubs, max is %d"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:99
+#, c-format
+msgid "Too little open slots for your connection type (%s), min is %d"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:105
+#, c-format
+msgid "Too many open slots for your connection type (%s), max is %d"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:111
+#, c-format
+msgid "Your hubs/slots ratio %.2f is too high (max is %.2f)."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:114
+#, c-format
+msgid "Open %d slots for %d hubs."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:123
+#, c-format
+msgid ""
+"Too low upload limit for your connection type (%s), minimum upload rate is "
+"%.2f"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:128
+#, c-format
+msgid ""
+"Too low upload limit per slot for your connection type (%s), minimum upload "
+"limit is %.2f per slot"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:142
+msgid "Your client version is too old, please upgrade it."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:144
+#, c-format
+msgid "Allowed minimum version number for %s client is: %.2f"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:146
+#, c-format
+msgid "Allowed minimum version number for your client is: %.2f"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:151
+msgid "Your client version is too recent."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:153
+#, c-format
+msgid "Allowed maximum version number for %s client is %.2f"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdctag.cpp:155
+#, c-format
+msgid "Allowed maximum version number for your client is %.2f"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cvhplugin.cpp:87
+#, c-format
+msgid "Plugin %s %s cannot load extra script."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cvhplugin.cpp:93
+#, c-format
+msgid "Plugin %s %s cannot load script '%s'."
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:51
+msgid "Cannot retrive system information"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:59
+msgid "System uptime"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:60
+msgid "Load averages"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:61
+msgid "Used RAM"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:62
+msgid "Free RAM"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:63
+msgid "Shared RAM"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:64
+msgid "Memory in buffers"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:65
+msgid "Frew swap"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:66
+msgid "Number of processes"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:73
+msgid "No info available"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:87
+msgid "Version date"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:90
+msgid "Uptime"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:100
+msgid "Server frequency"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:101
+msgid "Hub name"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:108
+msgid "Hub owner"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:115
+msgid "Hub category"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:117
+msgid "Current online users"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:118
+msgid "Current share total"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:119
+msgid "User list count"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:120
+msgid "Hello user count"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:121
+msgid "In Progress users"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:122
+msgid "Active user count"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:123
+msgid "Passive user count"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:124
+msgid "OP user count"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:125
+msgid "Bot user count"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:134
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:139
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:144
+#, c-format
+msgid "Users in zone #%d"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:139
+msgid "not set"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cinfoserver.cpp:148
+msgid "All other users"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cpluginmanager.cpp:196
+msgid "Version"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:74
+msgid "Unknown ban"
+msgstr "Neznámy ban"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:83
+msgid "Nickname"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:85
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "IP"
+msgstr "IP adresa"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:86
+msgid "Reason"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:87
+msgid "Left"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:94
+msgid "Remaining"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:96
+msgid "Permanently."
+msgstr "Trvalo."
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:102
+msgid "IP range"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:105
+msgid "Share"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:111
+#: /home/netcelli/Git/verlihub/src/cban.cpp:130
+#, c-format
+msgid "Removed: %s by %s because %s"
+msgstr "Odstránené: %s by %s pretože %s"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:117
+msgid "OP"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:118
+msgid "Ban type"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "Nick+IP"
+msgstr "Prezývka+IP adresa"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "Nick"
+msgstr "Prezývka"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "IP Range"
+msgstr "IP Rozsah"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "Host Level 1"
+msgstr "Host úroveň 1"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "Host Level 2"
+msgstr "Host úroveň 2"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "Host Level 3"
+msgstr "Host úroveň 3"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "Share Size"
+msgstr "Veľkosť zdieľania"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "E-mail"
+msgstr "E-mail"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "Nick Prefix"
+msgstr "Prezývka Prefix"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:123
+msgid "Reverse Host"
+msgstr "Reverse Host"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:138
+#, c-format
+msgid "expired on: %s"
+msgstr "uplynie/uplynol dňa: %s"
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:140
+#, c-format
+msgid "for: %s"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cban.cpp:143
+msgid "permanently"
+msgstr "trvalo/trvaly"
+
+#: /home/netcelli/Git/verlihub/src/cuser.cpp:219
+#, c-format
+msgid "Default class %d"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cuser.cpp:222
+msgid "In list"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cuser.cpp:224
+msgid "Special user"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cuser.cpp:229
+msgid "Host"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cuser.cpp:231
+msgid "Country Code"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctime.cpp:75
+#, c-format
+msgid "%ld weeks"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctime.cpp:79
+#, c-format
+msgid "%ld days"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctime.cpp:84
+#, c-format
+msgid "%ld hours"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctime.cpp:89
+#, c-format
+msgid "%ld mins"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctime.cpp:94
+#, c-format
+msgid "%ld secs"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/ctime.cpp:97
+#, c-format
+msgid "%d ms"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cbanlist.cpp:484
+msgid "Entry"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cbanlist.cpp:486
+msgid "Time"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cbanlist.cpp:487
+msgid "Ban on"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:165
+msgid "<<User limit exceeded, hub is full.>>"
+msgstr "&lt; <User limit exceeded, hub is full.>"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:165
+#, c-format
+msgid "Online users: %d"
+msgstr "Online užívatelia:%d"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:239
+msgid "Invalid login sequence. Key already sent"
+msgstr "Neplatné prihlasovacie sekvencie. Kľúčové už odoslané"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:249
+msgid "Your client provided an invalid key"
+msgstr "Váš klient podľa neplatného kľúča"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:268
+msgid "Bad login sequence; you must provide a valid nick first."
+msgstr "Bad prihlasovacie sekvencie, musíte zadať platný nick ako prvý."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:293
+msgid "Wrong password"
+msgstr "Zlé heslo"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:294
+msgid "You provided an incorrect password and have been temporarily banned."
+msgstr "Ste zadali nesprávne heslo a bolo dočasne zakázané."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:363
+msgid "Bad login sequence"
+msgstr "Bad prihlasovacie sekvencie"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:376
+msgid "Wrong MyINFO"
+msgstr "Zle MyINFO"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:392
+msgid "Turn on your tag"
+msgstr "Zapnite tag"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:469
+#, c-format
+msgid "You share %s, but the min share is %s. (active:%s / passive:%s)"
+msgstr "Zdieľate%s, ale min podiel%s. (Aktívne:%s / pasívny:%s)"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:471
+#, c-format
+msgid "You share %s, but the max share is %s."
+msgstr "Zdieľate%s, ale max podiel%s."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:526
+msgid "Banned."
+msgstr "Zakázané."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:695
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:709
+msgid "Flooding PM"
+msgstr "Záplavy PM"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:697
+#, c-format
+msgid "*** PM Flood: %s"
+msgstr "*** PM povodní: %s"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:711
+#, c-format
+msgid "*** PM Same Message Flood detected: %s"
+msgstr "*** PM rovnakú správu povodní zistené:%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:728
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:729
+msgid "You cannot talk to this user."
+msgstr "Nemôžete hovoriť tohto užívateľa"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:763
+#, c-format
+msgid "Too long chat message (%d/%d) : %s"
+msgstr "Príliš dlhý chatu (%d /%d):%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:766
+#, c-format
+msgid "Too many chat lines (>%d): %s"
+msgstr "Príliš veľa chat linke (&gt;%d):%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:790
+msgid "Mainchat is currently disabled for non registered users."
+msgstr "Mainchat je v súčasnosti vypnutá pre neregistrovaných užívateľov."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:821
+#, c-format
+msgid "Not sent: %s"
+msgstr "Neposlal:%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:822
+#, c-format
+msgid "Minimum delay for chat is %lu ms but you made %s"
+msgstr "Minimálne oneskorenie pre chat je ms%lu, ale ste%s "
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:923
+#, c-format
+msgid "You cannot download on this hub unless you share %s."
+msgstr "Nemôžete stiahnuť na tomto hubu, ak zdieľate%s."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:926
+msgid "You are not allowed to download filelists"
+msgstr "Nie je vám dovolené sťahovať zoznamov súborov"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:954
+msgid "You cannot connect to an external IP because you are in a LAN"
+msgstr "Môžete sa pripojiť k externej IP, pretože ste v LAN"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:995
+#, c-format
+msgid "Your nick is not %s but %s."
+msgstr "Váš nick nie%s, ale%s."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1019
+msgid "Robots do not share."
+msgstr "Roboti nezdieľajú."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1049
+#, c-format
+msgid "You can't search on this hub unless you share %s."
+msgstr "Nie je možné vyhľadávať na tomto hubu, ak zdieľate%s."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1060
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1068
+#, c-format
+msgid "Minimum search characters is %d"
+msgstr "Minimálna vyhľadávanie postavy je%d"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1080
+msgid "Sorry hub is busy now, no search, try later.."
+msgstr "Prepáč húb je zaneprázdnený teraz, nie hľadať, skúste neskôr .."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1101
+#, c-format
+msgid "Active Search: your IP is not %s but %s. Disconnecting"
+msgstr ""
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1112
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1168
+#, c-format
+msgid "Your nick is not %s but %s. Disconnecting."
+msgstr "Váš nick nie%s, ale%s. Odpojenie."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1125
+#, c-format
+msgid "You can do %d searches in %d seconds."
+msgstr "Môžete to urobiť%d hľadanie za%d sekúnd."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1218
+msgid "You have not rights to use redirects."
+msgstr "Nemáte práva na užívanie presmerovanie."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1234
+#, c-format
+msgid "User %s is protected or you have no rights on him"
+msgstr "Užívateľ%s je chránený ani vy nemáte právo na neho"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1246
+#, c-format
+msgid "You are being redirected to %s because: %s"
+msgstr "Ste presmerovaní na%s, pretože:%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1257
+msgid "User is not online or you tried to redirect a robot."
+msgstr "Užívateľ nie je on-line alebo ste sa presmerovať robot."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1334
+msgid "You cannot ban a protected user or with higher privilegies."
+msgstr "Nemôžete zakázať chránené užívateľa alebo s vyššou privilégiá."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1340
+msgid "You cannot ban a robot."
+msgstr "Nemôžete zakázať robot."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1346
+#, c-format
+msgid "You are being temporarily banned for %s because %s"
+msgstr "Nachádzate sa dočasne zakázaný pre%s, pretože%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1348
+#, c-format
+msgid "You are banned because %s"
+msgstr "Ste zakázaný, pretože%s"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1418
+#, c-format
+msgid "Unknown command '%s'. Try !help"
+msgstr "Neznámy príkaz '%s'. Skúste! Pomoc"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1433
+#, c-format
+msgid "Unknown command '%s'. Try +help"
+msgstr "Neznámy príkaz '%s'. Skúste + pomoc"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1458
+#, c-format
+msgid "No banned user found with ip %s."
+msgstr "Žiadne zo zakázaných užívateľov nenašli ip%s."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1462
+#, c-format
+msgid "Removed %d bans."
+msgstr "Odstránené%d zákazov."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1486
+msgid ""
+"You cannot send $BotINFO because BotINFO extension is not set in $Supports"
+msgstr ""
+"Nemôžete odosielať $ BotINFO pretože BotINFO rozšírenie nie je nastavený na "
+"$ podporuje"
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1494
+#, c-format
+msgid "Bot %s has just entered the hub."
+msgstr "Topánok%s práve vstúpil húb."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1558
+msgid "You do not have permissions to change the hub topic."
+msgstr "Nemáte oprávnenie k zmene náboja tému."
+
+#: /home/netcelli/Git/verlihub/src/cdcproto.cpp:1565
+#, c-format
+msgid "Topis is set to: %s"
+msgstr "Topis je nastavený na:%s"
+
+
