@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Verlihub\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-09 17:21+0100\n"
-"PO-Revision-Date: 2011-07-09 17:21+0100\n"
+"POT-Creation-Date: 2011-07-10 08:46+0100\n"
+"PO-Revision-Date: 2011-07-10 08:47+0100\n"
 "Last-Translator: netcelli <netcelli@dchublist.com>\n"
 "Language-Team: VerliHub team\n"
 "Language: \n"
@@ -170,205 +170,203 @@ msgstr ""
 msgid "Max class"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:372
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:373
 msgid "<< To turn your chat on use command +chat; turn it off with +nochat >>"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:538
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:539
 msgid "Recovery mode"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:540
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:541
 msgid "Near capacity"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:542
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:543
 msgid "Progressive mode"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:544
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:545
 msgid "Normal mode"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:546
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:547
 msgid "Not available"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:553
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:554
 msgid "RunTime"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:554
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:555
 msgid "User Count"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:555
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:556
 msgid "System Status"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:559
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:560
 #, c-format
 msgid "This hub is running version %s%s %s of %s (RunTime: %s / User count: %d)"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:568
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:569
 msgid "The hub is currently unable to service your request. Please try again in a few minutes."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:617
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:618
 msgid "Another user is already logged in from this IP address. Disconnecting."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:635
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:636
 msgid "You are already in the hub."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:654
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:655
 msgid "<< Please change your password NOW using command +passwd <new_passwd>! See +help >>"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:668
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:669
 msgid "Your info"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:917
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:918
 msgid "Do not reconnect too fast."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:921
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:922
 msgid "Bad nickname"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:929
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:930
 msgid "unallowed characters in your nick."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:931
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:932
 #, c-format
 msgid "use these: %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:934
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:935
 msgid "your nick is too short"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:937
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:938
 msgid "your nick is too long"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:940
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:941
 msgid "your nick is already in use"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:943
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:944
 #, c-format
 msgid "Invalid nick prefix. Use: %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:946
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:947
 msgid "operator not registered"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:949
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:950
 #, c-format
 msgid "Wait %s before reconnecting!!"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:952
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:953
 msgid "unknown error"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:977
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:978
 msgid "<<You are banned>>"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:991
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:992
 #, c-format
 msgid "Please add %s in front of your nick"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1126
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1127
 msgid ""
 "Error. Available units are: s(econd), m(inute), h(our), d(ay), w(eek), M(onth), Y(ear).\n"
 "Default is 'd'."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1135
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1136
 msgid "Please provide a positive number."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1156
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1157
 msgid "Hublist registration results:"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1158
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1159
 #, c-format
 msgid "Sending to %s:%d..."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1162
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1163
 msgid "connection failed"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1201
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1202
 msgid "error sending info"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1205
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1206
 msgid ".. OK"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1208
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1209
 msgid "Done"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1221
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1222
 msgid "Registering the hub in hublists. This may take a while, please wait..."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1291
-#, c-format
-msgid "IP='%s'"
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1289
+msgid "Nickname"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1293
-#, c-format
-msgid "Host='%s'"
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1292
+msgid "IP"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1295
-msgid "User"
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1294
+msgid "Host"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1359
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1358
 #, c-format
 msgid "You have been kicked because %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1369
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1368
 #, c-format
 msgid "Kicked user %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1371
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1370
 #, c-format
 msgid "Dropped user %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1398
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1397
 msgid "dropped"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1402
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1401
 msgid "User cannot be kicked."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1413
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1417
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1412
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1416
 msgid "and banned"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1429
+#: /home/stefano/Git/verlihub/src/cserverdc.cpp:1428
 #, c-format
 msgid "Error kicking user %s because he is protected against all classes below %d"
 msgstr ""
@@ -443,592 +441,597 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:208
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:433
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:468
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:499
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:557
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:210
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:438
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:473
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:504
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:563
 msgid "This functionality is currently disabled."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:257
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:259
 #, c-format
 msgid "IP of user %s: %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:259
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:291
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:314
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:835
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:860
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:886
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:924
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:261
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:293
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:319
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:843
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:868
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:894
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:929
 #, c-format
 msgid "User %s not found."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:270
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:272
 msgid "Full list of commands:"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:289
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:291
 #, c-format
 msgid "Host of user %s: %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:312
-#, c-format
-msgid "User: %s IP: %s Host: %s CC: %s"
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:315
+msgid "User"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:326
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:317
+msgid "Country Code"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:331
 msgid "Stopping Hub..."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:341
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:346
 msgid "No rights"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:350
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:355
 msgid "Variable"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:351
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:356
 msgid "Value"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:387
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:392
 msgid "Usage example: !ccbc :US:GB: <message>."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:387
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:392
 msgid "Please type !help for more info"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:399
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:404
 #, c-format
 msgid "Message delivered to %d users in zone %s in %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:419
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:424
 #, c-format
 msgid "Your IP is %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:478
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:483
 msgid "Authors"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:480
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:485
 msgid "Translators"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:481
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:486
 msgid "Contributors"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:482
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:487
 msgid "Website/Forums design"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:483
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:488
 msgid "Credits"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:484
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:489
 msgid "Website"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:510
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:515
 msgid "Unregistered"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:513
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:518
 msgid "Registered"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:516
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:521
 msgid "VIP"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:519
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:524
 msgid "Operator"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:522
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:527
 msgid "Super OP"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:525
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:530
 msgid "Admin"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:528
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:533
 msgid "Master"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:531
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:536
 msgid "Active"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:533
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:538
 msgid "Passive"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:537
-#, c-format
-msgid "Hub Owner: %s"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:538
-#, c-format
-msgid "Address: %s"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:539
-#, c-format
-msgid "Total users: %d"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:540
-#, c-format
-msgid "Total bots: %d"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:541
-#, c-format
-msgid "Total share: %s"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:542
-#, c-format
-msgid "Hub health: %s"
-msgstr ""
-
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:543
-#, c-format
-msgid "Your status: %s"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:544
-#, c-format
-msgid "Your can search every %d seconds"
+msgid "Hub owner"
 msgstr ""
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:545
-#, c-format
-msgid "Your connection type is: %s"
+msgid "Total users"
 msgstr ""
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:546
-#, c-format
-msgid "You are sharing: %s"
+msgid "Total bots"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:561
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:547
+msgid "Total share"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:548
+msgid "Hub health"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:549
+msgid "Your status"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:550
+msgid "Your can search every"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:550
+#, c-format
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:551
+msgid "Connection type"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:552
+msgid "You are sharing"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:567
 msgid "Registration failed; please contact an operator for more help."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:577
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:583
 #, c-format
 msgid "Your nick must start with %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:590
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:596
 #, c-format
 msgid "You need to share at least %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:600
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:606
 msgid "You are already registered"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:610
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:730
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:616
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:738
 #, c-format
 msgid "Minimum password length is %d characters, please retry."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:619
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:625
 #, c-format
 msgid "A new user has been registered with class %d"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:623
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:629
 #, c-format
 msgid "You are now registered with nick '%s'! Please reconnect and login with your password. Don't forget your password! It is '%s'."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:625
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:631
 msgid "An error occured while registering."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:646
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:650
+msgid "Registration request"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:651
+msgid "Password"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:654
 msgid "Thank you, your request has been sent to operators."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:658
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:666
 msgid "You do not have permissions to change the topic."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:664
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:672
 #, c-format
 msgid "Topic must be max 255 characters long. Your topic was %d characters long."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:680
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:688
 #, c-format
 msgid "%s has set the topic to : %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:682
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:690
 #, c-format
 msgid "%s resetted the topic"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:722
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:730
 msgid "You are not allowed to change your password now. Ask an OP."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:736
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:744
 msgid "Error updating password."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:742
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:750
 msgid "Password updated successfully."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:755
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:763
 msgid "Please use: !hideme <class> where <class> is the maximum class of users that may not see your actions."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:761
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:769
 #, c-format
 msgid "Your command actions are now hidden from users with class below %d."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:775
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:783
 msgid "Type !help for more information (usage !userlimit <max_users> [<minutes>=60])"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:806
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:814
 msgid "Use !class <nick> [<class>=3]."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:806
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:907
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:814
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:912
 msgid "Please type !help for more info."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:807
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:908
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:815
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:913
 #, c-format
 msgid "Max class is %d"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:818
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:826
 #, c-format
 msgid "Temporarily changed class to %d for user %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:832
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:840
 #, c-format
 msgid "You have no rights to change class of %s."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:854
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:862
 #, c-format
 msgid "Kicks of user %s are now hidden."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:857
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:883
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:922
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1238
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1632
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1758
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1796
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:2007
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:865
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:891
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:927
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1248
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1642
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1768
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1806
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:2017
 msgid "You have no rights to do this."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:880
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:888
 #, c-format
 msgid "Kicks of user %s are now visible."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:907
-msgid "Use !protect <nick> [<againstclass>=your_class-1]."
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:912
+msgid "Use !protect <nickname> <class>."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:919
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:924
 #, c-format
 msgid "User %s is temporarily protected from class %d"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:934
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:939
 msgid "Reloading triggers, custom redirects, configuration and reglist cache..."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:947
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:952
 msgid "Report command is currently disabled."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:960
-#, c-format
-msgid "REPORT: user '%s' IP='%s' Host='%s'"
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:965
+msgid "Reported user "
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:962
-#, c-format
-msgid "REPORT: user '%s' which is offline"
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:971
+msgid "Offline"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:963
-#, c-format
-msgid "Reason='%s'."
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:972
+msgid "Reason"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:966
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:973
+msgid "from"
+msgstr ""
+
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:976
 msgid "Thank you, your report has been accepted."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1069
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1079
 msgid "All bans have been deleted."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1073
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1083
 msgid "All unbans have been deleted."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1077
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1087
 msgid "All kicks have been deleted."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1081
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1091
 msgid "All temporary rights have been deleted."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1084
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1287
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1313
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1376
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1618
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1912
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1094
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1297
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1323
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1386
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1628
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1922
 msgid "This command is not implemented."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1084
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1287
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1313
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1094
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1297
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1323
 msgid "Available command are: "
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1146
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1156
 msgid "Please provide a valid ban time."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1162
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1608
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1172
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1618
 msgid "Please provide a valid reason."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1167
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1266
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1813
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1837
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1876
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1177
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1276
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1823
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1847
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1886
 msgid "Action has been discarded by plugin"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1171
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1181
 #, c-format
 msgid "User %s unbanned."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1193
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1203
 #, c-format
 msgid "%d ban found."
 msgid_plural "%d bans found."
 msgstr[0] ""
 msgstr[1] ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1199
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1209
 msgid "No reason specified"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1246
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1256
 #, c-format
 msgid "Unknown range format '%s'."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1276
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1286
 msgid "Added ban."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1407
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1417
 #, c-format
 msgid "Undefined variable %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1422
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1432
 #, c-format
 msgid "Updated %s.%s from '%s' to '%s'"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1432
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1442
 #, c-format
 msgid "WARNING: VerliHub allows maximum %d users, but current resource limit is %d. Consider to run ulimit -n <max_users>"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1503
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1513
 #, c-format
 msgid " %s saved"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1505
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1515
 #, c-format
 msgid "Error saving %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1557
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1567
 #, c-format
 msgid "Found %d user with IP %s:"
 msgid_plural "Found %d users with IP %s:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1563
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1573
 #, c-format
 msgid "Found %d user with range %s:"
 msgid_plural "Found %d users with range %s:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1567
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1577
 msgid "Country code must be 2 characters long (for ex. US)"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1574
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1584
 #, c-format
 msgid "Found %d user with country code %s:"
 msgid_plural "Found %d users with country code %s:"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1582
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1592
 msgid "No user found."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1644
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1654
 msgid "Loaded plugins:"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1648
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1658
 msgid "Available callbacks:"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1698
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1708
 msgid "Found nicks:"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1731
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1801
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1741
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1811
 msgid "Missing parameters."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1746
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1756
 msgid "Invalid classdif_reg value. Must be between 1 and 5. Please correct this first!"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1792
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1802
 #, c-format
 msgid "No registered user found with nick '%s'"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1794
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1808
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1804
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1818
 #, c-format
 msgid "User '%s' already exists"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1821
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1831
 msgid ""
 "You have been registered, please set up your password NOW \n"
 "using command +passwd <your_new_passwd>\n"
 "replace <your_new_passwd> with your new password."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1826
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1836
 msgid "User has been added; please tell him to change his password"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1830
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1840
 msgid "Error adding the new user"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1844
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1854
 #, c-format
 msgid "Deleted user '%s' from database"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1845
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1850
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1855
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1860
 #, c-format
 msgid "User information: %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1849
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1859
 #, c-format
 msgid "Error deleting user '%s'"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1861
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1871
 msgid "Password updated"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1864
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1874
 msgid "Error updating password"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1870
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1880
 msgid "You can change your password now, use command +passwd followed by your new password"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1881
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1891
 #, c-format
 msgid "Your class has been changed to %s. Changes will take effect on next login."
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1887
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1897
 msgid "Your registration has been enabled"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1893
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1903
 msgid "Your registration has been disabled"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1897
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1907
 #, c-format
 msgid "You are protected by classes greater than %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1903
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1913
 #, c-format
 msgid "You kicks are hidden by classes greater than %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1920
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1930
 #, c-format
 msgid "Updated variable '%s' to value %s for user %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1924
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1934
 #, c-format
 msgid "Error setting variable '%s' to value %s for user %s"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:2018
+#: /home/stefano/Git/verlihub/src/cdcconsole.cpp:2028
 #, c-format
 msgid "Message delivered to %d users in %s"
 msgstr ""
@@ -1182,10 +1185,6 @@ msgstr ""
 msgid "Hub name"
 msgstr ""
 
-#: /home/stefano/Git/verlihub/src/cinfoserver.cpp:107
-msgid "Hub owner"
-msgstr ""
-
 #: /home/stefano/Git/verlihub/src/cinfoserver.cpp:114
 msgid "Hub category"
 msgstr ""
@@ -1243,20 +1242,6 @@ msgstr ""
 
 #: /home/stefano/Git/verlihub/src/cban.cpp:81
 msgid "Unknown ban"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cban.cpp:90
-#: /home/stefano/Git/verlihub/src/cuser.cpp:207
-msgid "Nickname"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cban.cpp:92
-#: /home/stefano/Git/verlihub/src/cban.cpp:130
-msgid "IP"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cban.cpp:93
-msgid "Reason"
 msgstr ""
 
 #: /home/stefano/Git/verlihub/src/cban.cpp:98
@@ -1358,14 +1343,6 @@ msgstr ""
 
 #: /home/stefano/Git/verlihub/src/cuser.cpp:214
 msgid "Special user"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cuser.cpp:219
-msgid "Host"
-msgstr ""
-
-#: /home/stefano/Git/verlihub/src/cuser.cpp:221
-msgid "Country Code"
 msgstr ""
 
 #: /home/stefano/Git/verlihub/src/ctime.cpp:76
