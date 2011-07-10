@@ -646,7 +646,9 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			text += "\r\n" + tmpline;
 		}
 		// Send message to opchat
-		os << "REGME: '" << text <<"'.";
+		os << "\r\n";
+		os << toUpper(_("Registration request")) << endl;
+		os << setw(PADDING) << setiosflags(ios::left) << _("Password") << text << endl;
 		mOwner->ReportUserToOpchat(conn, os.str(), mOwner->mC.dest_regme_chat);
 		// Send message to user
 		mOwner->DCPublicHS(_("Thank you, your request has been sent to operators."),conn);

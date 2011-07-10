@@ -48,6 +48,7 @@
 #define HUB_VERSION_CLASS "(" __CURR_DATE_TIME__ ")"
 #define LOCK_VERSION PACKAGE
 #define HUB_VERSION_NAME "VerliHub"
+#define PADDING 25
 
 namespace nVerliHub {
 	using namespace nUtils;
@@ -1285,14 +1286,13 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 
 	os << Msg;
 	if (conn) {
+		if (conn->mpUser)
+			os << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << conn->mpUser->mNick << endl;
 		if(!mUseDNS && mC.report_dns_lookup)
 			conn->DNSLookup();
-		os << " -- ";
-		os << autosprintf(_("IP='%s'"), conn->AddrIP().c_str());
+		os << setw(PADDING) << setiosflags(ios::left) << _("IP") << conn->AddrIP().c_str() << endl;
 		if(!conn->AddrHost().empty())
-			os << autosprintf(_("Host='%s'"), conn->AddrHost().c_str());
-		if (conn->mpUser)
-			os << " " << _("User") << "='" << conn->mpUser->mNick << "' ";
+			os << setw(PADDING) << setiosflags(ios::left) << _("Host") << conn->AddrHost().c_str() << endl;
 		if (!ToMain && this->mOpChat) {
 			this->mOpChat->SendPMToAll(os.str(), NULL);
 		} else {
