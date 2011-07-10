@@ -647,7 +647,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		}
 		// Send message to opchat
 		os << "\r\n";
-		os << toUpper(_("Registration request")) << endl;
+		os << "[*] " << _("Registration request") << endl;
 		os << setw(PADDING) << setiosflags(ios::left) << _("Password") << text << endl;
 		mOwner->ReportUserToOpchat(conn, os.str(), mOwner->mC.dest_regme_chat);
 		// Send message to user
@@ -897,9 +897,6 @@ int cDCConsole::CmdUnHideKick(istringstream &cmd_line, cConnDC *conn)
 	return 1;
 }
 
-/** protect user against kicks
-	!protect <nick> [<against_class>=your_class-1]
-*/
 int cDCConsole::CmdProtect(istringstream &cmd_line, cConnDC *conn)
 {
 	ostringstream os;
@@ -912,7 +909,7 @@ int cDCConsole::CmdProtect(istringstream &cmd_line, cConnDC *conn)
 	cmd_line >> s >> nclass;
 
 	if(!s.size() || nclass < 0 || nclass > 5 || nclass >= mclass) {
-		os << _("Use !protect <nick> [<againstclass>=your_class-1].") << " " << _("Please type !help for more info.") << endl
+		os << _("Use !protect <nickname> <class>.") << " " << _("Please type !help for more info.") << endl
 			<< autosprintf(_("Max class is %d"), mclass-1) << endl;
 		mOwner->DCPublicHS(os.str().c_str(),conn);
 		return 1;
@@ -964,11 +961,16 @@ bool cDCConsole::cfReport::operator()()
 	GetParStr(eREP_REASON, reason);
 
 	//-- to opchat
-	if (user && user->mxConn)
-		os << autosprintf(_("REPORT: user '%s' IP='%s' Host='%s'"), nick.c_str(), user->mxConn->AddrIP().c_str(), user->mxConn->AddrHost().c_str());
-	else
-		os << autosprintf(_("REPORT: user '%s' which is offline"), nick.c_str());
-	os << " " << autosprintf(_("Reason='%s'."), reason.c_str());
+	os << "\r\n";
+	os << "[*] " << _("Reported user ") << endl;
+	if (user && user->mxConn) {
+		os << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << nick.c_str() << endl;
+		os << setw(PADDING) << setiosflags(ios::left) << _("IP") << user->mxConn->AddrIP().c_str() << endl;
+		os << setw(PADDING) << setiosflags(ios::left) << _("Host") << user->mxConn->AddrHost().c_str() << endl;
+	} else
+		os << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << nick.c_str() << " [" << toUpper(_("Offline")) << "]" << endl;
+	os << setw(PADDING) << setiosflags(ios::left) << _("Reason") << reason.c_str() << endl;
+	os << "[*] " << _("from") << endl;
 	mS->ReportUserToOpchat(mConn, os.str(), mS->mC.dest_report_chat);
 	//-- to sender
 	*mOS << _("Thank you, your report has been accepted.");

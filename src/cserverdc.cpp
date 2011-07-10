@@ -1283,7 +1283,6 @@ int cServerDC::WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, c
 void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain)
 {
 	ostringstream os;
-
 	os << Msg;
 	if (conn) {
 		if (conn->mpUser)
