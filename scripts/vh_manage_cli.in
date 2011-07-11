@@ -81,7 +81,7 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	echo "-- Starting hub with config folder '$CONFIG_DIR'. This could take some times";
 
 	LOG_FILE=$CONFIG_DIR/log
-	ERROR_FILE=$CONFIG_DIR/error
+	ERROR_FILE=$CONFIG_DIR/err
 	PID_FILE="$CONFIG_DIR/pid"
 
 	# Check permission on files
