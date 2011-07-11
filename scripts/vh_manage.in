@@ -205,7 +205,7 @@ setup_hub() {
 			--cancel-label "Quit" \
 			--radiolist "You need to choose a place for the configuration files. Move using [UP] [DOWN], [Space] to select a item" 14 80 17\
 			"1" "/etc/verlihub" "on"\
-			"2" "$HOME.verlihub" "off"\
+			"2" "$HOME/.verlihub" "off"\
 			"3" "$PREFIX/etc/verlihub" "off"\
 			"Other" "Choose path where put config file" "off" 2>$_TEMP
 
@@ -218,7 +218,7 @@ setup_hub() {
 		# Get selected folder
 		case $CHOOSEN_FOLDER in
 			"1") CHOOSEN_FOLDER="/etc/verlihub";;
-			"2") CHOOSEN_FOLDER="$HOME.verlihub";;
+			"2") CHOOSEN_FOLDER="$HOME/.verlihub";;
 			"3") CHOOSEN_FOLDER="$PREFIX/etc/verlihub";;
 			"Other") $DIALOG --title "Verlihub's config folder" --dselect "$HOME" 25 60 2>$_TEMP && CHOOSEN_FOLDER=`cat $_TEMP` || quit;;
 		esac
@@ -365,7 +365,7 @@ function run_hub() # restart
 				--cancel-label "Quit" \
 				--radiolist "You need to specify hub that should be started with configuration folder. Move using [UP] [DOWN], [Space] to select a item" 14 80 17\
 				"1" "/etc/verlihub" "on"\
-				"2" "$HOME.verlihub" "off"\
+				"2" "$HOME/.verlihub" "off"\
 				"3" "$PREFIX/etc/verlihub" "off"\
 				"Other" "Choose path where put config file" "off" 2>$_TEMP
 
@@ -378,7 +378,7 @@ function run_hub() # restart
 			# Get selected folder
 			case $CHOOSEN_FOLDER in
 				"1") CHOOSEN_FOLDER="/etc/verlihub";;
-				"2") CHOOSEN_FOLDER="$HOME.verlihub";;
+				"2") CHOOSEN_FOLDER="$HOME/.verlihub";;
 				"3") CHOOSEN_FOLDER="$PREFIX/etc/verlihub";;
 				"Other") $DIALOG --title "$TITLE" --dselect "$HOME" 25 60 2>$_TEMP && CHOOSEN_FOLDER=`cat $_TEMP` || quit;;
 			esac
@@ -461,7 +461,7 @@ function kill_hub() # restart
 			--cancel-label "Quit" \
 			--radiolist "You need to specify hub that should be started with configuration folder. Move using [UP] [DOWN], [Space] to select a item" 14 80 17\
 			"1" "/etc/verlihub" "on"\
-			"2" "$HOME.verlihub" "off"\
+			"2" "$HOME/.verlihub" "off"\
 			"3" "$PREFIX/etc/verlihub" "off"\
 			"Other" "Choose path where put config file" "off" 2>$_TEMP
 
@@ -474,7 +474,7 @@ function kill_hub() # restart
 		# Get selected folder
 		case $CHOOSEN_FOLDER in
 			"1") CHOOSEN_FOLDER="/etc/verlihub";;
-			"2") CHOOSEN_FOLDER="$HOME.verlihub";;
+			"2") CHOOSEN_FOLDER="$HOME/.verlihub";;
 			"3") CHOOSEN_FOLDER="$PREFIX/etc/verlihub";;
 			"Other") $DIALOG --title "$TITLE" --dselect "$HOME" 25 60 2>$_TEMP && CHOOSEN_FOLDER=`cat $_TEMP` || quit;;
 		esac
@@ -495,7 +495,10 @@ function kill_hub() # restart
 	_get_pid $CONFIG_DIR
 	$DIALOG --infobox "Killing verlihub (PID: $PID_RESULT)..." 4 45
 	if ! kill $PID_RESULT > /dev/null 2>&1 ; then
-		$DIALOG --title "$TITLE" --msgbox "Error" 6 30
+echo_s " \n" $RED
+		echo_s "-- \n" $RED
+
+		$DIALOG --title "$TITLE" --msgbox "Error: USER HAS NO RIGHT TO STOP THE PROCESS. Please use 'kill -9 $PID_RESULT' as root" 7 50 
 		quit;
 	fi
         rm -f "$CONFIG_DIR/pid"
@@ -505,31 +508,6 @@ function kill_hub() # restart
 	fi
 }
 
-add_user()
-{
-	#########################
-	# Remove sh => DEFAULT_DIR=$($BINDIR/vh_manage_cli --config --get)
-	# $($BINDIR_DIR/vh_manage_cli --config --set $CHOOSEN_FOLDER)
-	#set -x
-	DEFAULT_DIR=$(sh $CURRENT_DIR/vh_manage_cli --config --get)
-	$DIALOG --title "Register new user" --yesno "In order to register new user you need to specify the verlihub config folder. Setup has find '$DEFAULT_DIR' directory, do you want to continue with this path? Otherwise choose 'No' to select a new folder." 8 70  && CHOOSE_FOLDER=false || CHOOSE_FOLDER=true
-	if $CHOOSE_FOLDER ; then
-		$DIALOG --title "Choose verlihub's config folder" --dselect "$DEFAULT_DIR" 25 60 2>$_TEMP && CHOOSEN_FOLDER=`cat $_TEMP` || quit
-	else
-		CHOOSEN_FOLDER=$DEFAULT_DIR
-	fi
-
-	# Export config directory
-	if ! $(sh $CURRENT_DIR/vh_manage_cli --config --set $CHOOSEN_FOLDER) ; then
-		$DIALOG --title "Hub settings" --msgbox "All fields are required to configure the hub" 7 40
-	else
-		echo ""
-	fi
-	
-	
-}
-
-
 main_menu() {
 	$DIALOG --backtitle "Welcome to Verlihub's installation script" --title " vh_manage - Version $VER "\
 		--cancel-label "Quit" \
@@ -538,7 +516,6 @@ main_menu() {
 		"Start-a-hub" "Start a hub based on config directory"\
 		"Stop-a-hub" "Kill verlihub based on config directory"\
 		"Restart-a-hub" "Restart a hub based on config directory"\
-		"Register-new-user" "Register new user in the DB"\
 		"Quit" "Exit installation script" 2>$_TEMP
 
 	OPT=${?}
@@ -549,7 +526,6 @@ main_menu() {
 
 	case $MENUITEM in
 		"Configure-new-hub") setup_hub;;
-		"Register-new-user") add_user;;
 		"Start-a-hub") run_hub;;
 		"Stop-a-hub") kill_hub;;
 		"Restart-a-hub") kill_hub "restart" && run_hub "restart";;
@@ -560,4 +536,3 @@ main_menu() {
 
 # Run default function
 main_menu
-#add_user

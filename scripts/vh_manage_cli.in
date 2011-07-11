@@ -615,7 +615,7 @@ function install_cli()
 	do
 		echo_s "\n-- You need to choose a place for the configuration files\n" $RED_BOLD;
 		echo_s "\t[1] " $BOLD && echo "/etc/verlihub"
-		echo_s "\t[2] " $BOLD && echo "$HOME.verlihub"
+		echo_s "\t[2] " $BOLD && echo "$HOME/.verlihub"
 		echo_s "\t[3] " $BOLD && echo "$PREFIX/etc/verlihub"
 		echo_s "\t[4] " $BOLD && echo "Other, choose path where put config file"
 
@@ -633,7 +633,7 @@ function install_cli()
 		# Get selected folder
 		case $CHOOSEN_FOLDER in
 			"1") CHOOSEN_FOLDER="/etc/verlihub/";;
-			"2") CHOOSEN_FOLDER="$HOME.verlihub/";;
+			"2") CHOOSEN_FOLDER="$HOME/.verlihub/";;
 			"3") CHOOSEN_FOLDER="$PREFIX/etc/verlihub/";;
 			"4") CHOOSEN_FOLDER=$(ask "Type complete path");
 		esac
