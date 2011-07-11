@@ -497,17 +497,13 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 
 int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 {
-	string uType, cType, hubOwner;
+	string uType, cType, hubOwner, hubHealth;
 	int sInt = 0;
 
 	if (mOwner->mC.disable_usr_cmds) {
 		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
 		return 1;
 	}
-	if(mOwner->mC.hub_owner == "")
-		hubOwner = mOwner->mC.hub_owner;
-	else
-		hubOwner = "--";
 	if(!conn->mpUser) {
 		return 0;
 	}
@@ -540,7 +536,12 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	ostringstream os;
 	string omsg;
 	os << "\r\n";
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub owner") << hubOwner.c_str() << endl;
+	if(!mOwner->mC.hub_owner.empty())
+		hubOwner = mOwner->mC.hub_owner;
+	else
+		hubOwner = "--";
+// 	hubHealth
+	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub owner") << hubOwner << endl;
 	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Address") << mOwner->mC.hub_host.c_str() << endl;
 	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Total users") << mServer->mUserCountTot << endl;
 	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Total bots") <<  mServer->mRobotList.Size() << endl;
