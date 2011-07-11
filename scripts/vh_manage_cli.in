@@ -79,9 +79,30 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 		exit 1;
 	fi
 	echo "-- Starting hub with config folder '$CONFIG_DIR'. This could take some times";
-	
+
 	LOG_FILE=$CONFIG_DIR/log
-	ERROR_FILE=$CONFIG_DIR/err
+	ERROR_FILE=$CONFIG_DIR/error
+	PID_FILE="$CONFIG_DIR/pid"
+
+	# Check permission on files
+	if [ -e $LOG_FILE ]; then
+		if  [ ! -w $LOG_FILE ]; then
+			echo_s "-- You haven't permissions to write log file '$LOG_FILE'\n" $RED
+			exit 1;
+		fi
+	fi
+	if [ -e $ERROR_FILE ]; then
+		if [ ! -w $ERROR_FILE ]; then
+			echo_s "-- You haven't permissions to write error file '$ERROR_FILE'\n" $RED
+			exit 1;
+		fi
+	fi
+	if [ -e $PID_FILE ]; then
+		if [ ! -w $PID_FILE ]; then
+			echo_s "-- You haven't permissions to write PID file '$PID_FILE'\n" $RED
+			exit 1;
+		fi
+	fi
 
 	# Backup logs
 	[ -e $ERROR_FILE ] && mv -f $ERROR_FILE $ERROR_FILE.old
@@ -112,7 +133,6 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	fi;
 	sleep 2
 	# Save pid
-	PID_FILE="$CONFIG_DIR/pid"
 	echo $PID > $PID_FILE
 	if ! _is_hub_running $CONFIG_DIR ; then
 		echo_s "-- Hub is not running. Please check '$LOG_FILE' and '$ERROR_FILE' for more information\n" $RED
