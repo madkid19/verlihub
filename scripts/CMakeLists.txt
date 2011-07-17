@@ -1,8 +1,8 @@
 SET(SCRIPT_FILES
 	vh_daemon
 	vh_lib
-	vh_manage
-	vh_manage_cli
+	vh_gui_functions
+	vh
 	vh_multihub
 	vh_regimporter
 	vh_migration_0.9.8eto1.0
