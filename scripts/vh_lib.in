@@ -114,12 +114,14 @@ function get_path_from_defaults()
 }
 
 # Check if path is correct or not and set it as config directory; 
-function set_path() #path_to_be_checked
+function set_path() #path_to_be_checked, #print_searching
 {
 	if [ "_$1" != "_" ]; then
 		CONFIG_DIR=$1
 	else
-		echo "-- Searching config directory in default path"
+		if ($2); then
+			echo "-- Searching config directory in default path"
+		fi
 		get_path_from_defaults
 	fi
 
@@ -246,6 +248,20 @@ function _mysql_get_socket()
 		SOCKET=$(cat $FILE | grep "^socket" | head -n 1 | cut -d"=" -f2| tr -d " ")
 		fi
 	done
+}
+
+function _mysql_export_socket()
+{
+	MYSQL_HOST=$(get_db_host)
+	IS_MYSQL_HOST_LOCAL=false
+	[ $MYSQL_HOST = "localhost" ] && IS_MYSQL_HOST_LOCAL=true
+	[ $MYSQL_HOST = "127.0.0.1" ] && IS_MYSQL_HOST_LOCAL=true
+	if $IS_MYSQL_HOST_LOCAL ; then
+		_mysql_get_socket
+		if [ ! -z $SOCKET ]; then
+			export "MYSQL_UNIX_PORT=$SOCKET"
+		fi
+	fi
 }
 
 function _create_mysql_tables() # get_socket

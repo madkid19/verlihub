@@ -24,34 +24,60 @@
 
 SCRIPT=$0
 # Include library
-source $(dirname $0)/vh_lib
+source $(dirname $SCRIPT)/vh_lib
+
+# Get mysql admin access
+function _ask_admin_access()
+{
+	ARE_ADMIN_DB_INFO_OK=false
+	until $ARE_ADMIN_DB_INFO_OK;
+	do
+		echo_s "-- Please insert MySQL administrator information to create DB or account or grant permissions.\n"
+		MYSQL_ADMIN_USER=$(ask "Username" "root")
+		MYSQL_ADMIN_PASSWORD=$(ask "Password" "")
+
+		echo_s "This is information about MySQL administrator:\n"
+		echo_s "\tUsername" $BOLD
+		echo_s ": $MYSQL_ADMIN_USER \n"
+		echo_s "\tPassword" $BOLD
+		echo_s ": $MYSQL_ADMIN_PASSWORD \n"
+		yes_or_no "Do you want to continue with this information?" && ARE_ADMIN_DB_INFO_OK=true || echo -e "Let's do it again\n\n"
+	done
+}
 
 help_me()
 {
 	echo_s "$SCRIPT\n" $BOLD
 	echo "This is a utility script for Verlihub, usage:"
+
+	echo && echo " HUB"
 	echo_s "  -i, --install" $RED && echo -e "\t\t\t\tConfigure Verlihub for a new hub"
-		echo_s "\t-g, --gui" $BLUE && echo -e "\t\t\t\tUse GUI instaled of command line"
 	echo_s "  -r, --run" $RED && echo -e "\t[path_to_dbconfig] \tRun the hub from the given dbconfig path"
 	echo_s "  -q, --restart" $RED && echo -e "\t[path_to_dbconfig] \tRestart the hub from the given dbconfig path"
 	echo_s "  -s, --stop" $RED && echo -e "\t[path_to_dbconfig] \tStop the hub from the given dbconfig path"
 	echo_s "  -t, --status" $RED && echo -e "\t[path_to_dbconfig] \tCheck if hub is running or not"
-	echo_s "  -g, --geoip" $RED && echo -e "\t[path_to_dbconfig] \tUpdate GeoIP"
-	echo_s "  -u, --adduser" $RED && echo -e "\t\t\t\tRegister a new user in the database"
-		echo_s "\t-n, --nickname" $BLUE && echo -e " \t<nickname> \t\tNickname of the user"
-		echo_s "\t-p, --password" $BLUE && echo -e " \t<password> \t\tThe password of the user (optional)"
-		echo_s "\t-c, --class" $BLUE && echo -e " \t<class> \t\tClass of the user (-1, 0, 1, 2, 3, 4, 5, 10)"
-		echo_s "\t-d, --configdir" $BLUE && echo -e " \t<path_to_dbconfig> \tSpecify the hub with location of dbconfig file. Optional"
-	echo_s "  -a, --autoload" $RED && echo -e "\t\t\t\tLoad plugin automatically when start the hub"
-		echo_s "\t-l, --list" $BLUE && echo -e "\t\t\t\t\tShow list of available plugins"
-		echo_s "\t-n, --on" $BLUE && echo -e "\t\t\t\t\tRun plugin automatically with hub"
-		echo_s "\t-f, --off" $BLUE && echo -e "\t\t\t\t\tDisable auto load of plugin"
-		echo_s "\t-d, --configdir" $BLUE && echo -e " \t<path_to_dbconfig> \tSpecify the hub with location of dbconfig file. Optional"
+	echo_s "  -g, --geoip" $RED && echo -e "\t\t\t\tUpdate GeoIP"
+	echo_s "  -a, --autoload" $RED && echo -e "\t\t\tLoad plugin automatically when start the hub"
+		echo_s "\t-l, --list" $BLUE && echo -e "\t\t\t\tShow list of available plugins"
+		echo_s "\t-n, --on" $BLUE && echo -e "\t\t\t\tRun plugin automatically with hub"
+		echo_s "\t-f, --off" $BLUE && echo -e "\t\t\t\tDisable auto load of plugin"
+		echo_s "\t-d, --configdir" $BLUE && echo -e "  [path_to_dbconfig] \tSpecify the hub with location of dbconfig file. Optional"	
+
+	echo && echo " USERS MANAGEMENT"
+	echo_s "  -u, --adduser" $RED && echo -e "\t<nick> <password> <class> [path_to_dbconfig]\tRegister a new user in the database"
+	echo_s "  -m, --regimport" $RED && echo -e "\t\t\tConvert registered users to VerliHub fro other hubsoft"
+		echo_s "\t--ptokax" $BLUE && echo -e "\t<RegisteredUsers.xml> <Profiles.xml> <path_to_dbconfig>\tConvert registrations from PtokaX"
+		echo_s "\t--ynhub" $BLUE && echo -e "\t\t<accounts.xml> <profiles.xml> <path_to_dbconfig>\tConvert registrations from YnHub"
+		echo_s "\t--aquila" $BLUE && echo -e "\t<Aquila.xml> <path_to_dbconfig>\t\t\t\tConvert registrations from Aquila"
+	
+	echo && echo " DB MANAGEMENT"
+	echo_s "  -c, --clean" $RED && echo -e "\t[path_to_dbconfig] \t\t\tClean kicklist, banlist, unbanlist, iplog, stats and messages tables"	
 	echo_s "  -w, --backup" $RED && echo -e "\t<destination_path> [path_to_dbconfig] \tMake backup of database from the given dbconfig path"
 	echo_s "  -t, --restore" $RED && echo -e "\t<path_to_sql>      [path_to_dbconfig] \tImport the given SQL file in the database for given dbconfig path"
-	echo_s "  -c, --clean" $RED && echo -e "\t[path_to_dbconfig] \t\t\tClean kicklist, banlist, unbanlist, iplog, stats and messages tables"
-	echo_s "  -v, --version" $RED && echo -e "\t\t\tPrint version information"
-	echo_s "  -h, --help" $RED && echo -e "\t\t\tShow this help"
+	
+	echo && echo " SCRIPT"
+	echo_s "  -v, --version" $RED && echo -e "\t\t\t\tPrint version information"
+	echo_s "  -h, --help" $RED && echo -e "\t\t\t\tShow this help"
 	echo ""
 }
 
@@ -81,10 +107,15 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	fi
 	echo "-- Starting hub with config folder '$CONFIG_DIR'. This could take some times";
 
-	LOG_FILE=$CONFIG_DIR/log
-	ERROR_FILE=$CONFIG_DIR/err
+	LOG_FILE="$CONFIG_DIR/log"
+	ERROR_FILE="$CONFIG_DIR/err"
 	PID_FILE="$CONFIG_DIR/pid"
 
+	# Check permission on folder
+	if  [ ! -w $CONFIG_DIR ]; then
+		echo_s "-- You haven't permissions to write on '$CONFIG_DIR'\n" $RED
+		exit 1;
+	fi
 	# Check permission on files
 	if [ -e $LOG_FILE ]; then
 		if  [ ! -w $LOG_FILE ]; then
@@ -108,20 +139,12 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	# Backup logs
 	[ -e $ERROR_FILE ] && mv -f $ERROR_FILE $ERROR_FILE.old
 	[ -e $LOG_FILE ] && mv -f $LOG_FILE $LOG_FILE.old
+
 	# Create log files
 	touch $LOG_FILE && touch $ERROR_FILE
 
 	# Check if MySQL socket exists
-	MYSQL_HOST=$(get_db_host)
-	IS_MYSQL_HOST_LOCAL=false
-	[ $MYSQL_HOST = "localhost" ] && IS_MYSQL_HOST_LOCAL=true
-	[ $MYSQL_HOST = "127.0.0.1" ] && IS_MYSQL_HOST_LOCAL=true
-	if $IS_MYSQL_HOST_LOCAL ; then
-		_mysql_get_socket
-		if [ ! -z $SOCKET ]; then
-			export "MYSQL_UNIX_PORT=$SOCKET"
-		fi
-	fi
+	_mysql_export_socket
 	
 	# Run it
 	$BINDIR/$DAEMON_NAME $BINDIR/verlihub >"$LOG_FILE" 2>"$ERROR_FILE" &
@@ -129,10 +152,11 @@ function run_hub() # path_to_dbconfig, do_not_print_deafult_path_msg
 	disown $PID
 	# Check if pid is returned
 	if [ "_$PID" = "_" ]; then
-		echo_s "-- A error occured while tring to get PID of verlihub\n" $RED
+		echo_s "-- A error occured while tring to get PID of VerliHub\n" $RED
 		return 1;
 	fi;
 	sleep 2
+
 	# Save pid
 	echo $PID > $PID_FILE
 	if ! _is_hub_running $CONFIG_DIR ; then
@@ -156,17 +180,23 @@ function kill_hub() # path_to_dbconfig
 	# Check if hub is already running
 	if ! _is_hub_running $CONFIG_DIR ; then
 		echo_s "-- Hub with config path '$CONFIG_DIR' is not running\n" $RED
-		rm -f $PID_FILE
+		if [ -f $PID_FILE ]; then
+			if [ -w $PID_FILE ]; then
+				rm -f $PID_FILE
+			else
+				echo_s "-- PID file $PID_FILE already exists. Can't remove it, please do it manually\n" $RED
+			fi
+		fi
 		return 1;
 	fi
 	_get_pid $CONFIG_DIR
-		echo -n "-- Killing verlihub (PID: $PID_RESULT)..."
-		if ! kill $PID_RESULT > /dev/null 2>&1 ; then
+	echo -n "-- Killing verlihub (PID: $PID_RESULT)..."
+	if ! kill $PID_RESULT > /dev/null 2>&1 ; then
 		echo_s " USER HAS NO RIGHT TO STOP THE PROCESS\n" $RED
 		echo_s "-- Please use 'kill -9 $PID_RESULT' as root\n" $RED
 		exit 1;
 	fi
-		rm -f "$CONFIG_DIR/pid"
+	rm -f "$CONFIG_DIR/pid"
 	sleep 2
 	echo " Done"
 }
@@ -178,7 +208,7 @@ function hub_status() # path_to_dbconfig
 	if ! set_path $1 ; then
 		exit 1;
 	fi
-
+	
 	echo -n "-- Hub with config path '$CONFIG_DIR' is "
 	if ! _is_hub_running $CONFIG_DIR ; then
 		echo_s "not running\n" $RED
@@ -243,26 +273,10 @@ function backup() # destination folder, path_to_dbconfig
 	fi
 }
 
-function add_user()
+function add_user() # nicknam, # password, # class, # path_to_dbconfig
 {
-	# Read options
-	while [ "$1" != "" ]; do
-		case "$1" in
-			-n|--nickname)	shift
-					USER_NICKNAME=$1;;
-			-p|--password)	shift
-					USER_PASSWORD=$1;;	
-			-c|--class)	shift
-					USER_CLASS=$1;;
-			-d|--configdir)	shift
-					CONF_DIR=$1;;
-			*)
-					echo_s "Unknown parameter $1\n" $RED;;
-		esac;
-		shift;
-	done;
 	# Check and set path
-	if ! set_path $CONF_DIR ; then
+	if ! set_path $4 ; then
 		exit 1;
 	fi
 
@@ -271,31 +285,37 @@ function add_user()
 		echo_s "-- Reglist table does not exist. Fix the error and try again\n" $RED
 		exit 1;
 	fi
+
+	# Check if nickname is empty
+	if [ "_$1" = "_" ]; then
+		echo_s "-- Specify a valid nickname\n" $RED
+		exit 1;
+	fi;
+
+	# Check if password is empty
+	if [ "_$2" = "_" ]; then
+		echo_s "-- Specify a valid password\n" $RED
+		exit 1;
+	fi;
+
 	# Check if class is valid
-	if [ "_$USER_CLASS" = "_" ] || check_class $USER_CLASS ; then
+	if [ "_$3" = "_" ] || check_class $3 ; then
 		echo_s "-- Specify a valid class (-1, 0, 1, 2, 3, 4, 5, 10)\n" $RED
 		exit 1;
 	fi
-	# Check if nickname is empty
-	if [ "_$USER_NICKNAME" = "_" ]; then
-		echo_s "-- Specify nickname with --nickname option\n" $RED
-		exit 1;
-	fi;
 	
 	# Print summary
 	echo_s "User information\n"
 	echo_s "\tNickname" $BOLD
-	echo_s ": $USER_NICKNAME\n"
-	if [ "$USER_PASSWORD" != "" ]; then
-		echo_s "\tPassword" $BOLD
-		echo_s ": $USER_PASSWORD\n"
-	fi
+	echo_s ": $1\n"
+	echo_s "\tPassword" $BOLD
+	echo_s ": $2\n"
 	echo_s "\tClass" $BOLD
-	echo_s ": $USER_CLASS\n"
-	if [ "$CONFIG_DIR" != "" ]; then
+	echo_s ": $3\n"
+# 	if [ "$CONFIG_DIR" != "" ]; then
 		echo_s "\tConfig directory" $BOLD
 		echo_s ": $CONFIG_DIR\n"
-	fi
+# 	fi
 	
 	yes_or_no "Do you want to continue?" && REGISTER=true || REGISTER=false
 	
@@ -308,25 +328,6 @@ function add_user()
 	else
 		echo "-- Skipped"
 	fi
-}
-
-# Get mysql admin access
-function ask_admin_access_cli()
-{
-	ARE_ADMIN_DB_INFO_OK=false
-	until $ARE_ADMIN_DB_INFO_OK;
-	do
-		echo_s "-- Please insert MySQL administrator information to create DB or account or grant permissions.\n"
-		MYSQL_ADMIN_USER=$(ask "Username" "root")
-		MYSQL_ADMIN_PASSWORD=$(ask "Password" "")
-
-		echo_s "This is information about MySQL administrator:\n"
-		echo_s "\tUsername" $BOLD
-		echo_s ": $MYSQL_ADMIN_USER \n"
-		echo_s "\tPassword" $BOLD
-		echo_s ": $MYSQL_ADMIN_PASSWORD \n"
-		yes_or_no "Do you want to continue with this information?" && ARE_ADMIN_DB_INFO_OK=true || echo -e "Let's do it again\n\n"
-	done
 }
 
 # Update GeoIP
@@ -385,7 +386,7 @@ function update_geoip()
 }
 
 # Clean up tables
-function clean() #path_to_config
+function clean() #path_to_dbconfig
 {
 	# Check config path
 	if ! set_path "$1" ; then
@@ -518,17 +519,8 @@ function autoload() # params
 	exit 0;
 }
 
-function install() 
-{
-	if [ "_$2" = "_--gui" ] || [ "_$2" = "_--g" ]; then
-		$(dirname $0)/vh_gui_functions install
-	else
-		install_cli
-	fi
-}
-
 # Install verlihub with CLI
-function install_cli() 
+function install() 
 {
 	# Clear shell
 	clear
@@ -603,7 +595,7 @@ function install_cli()
 
 	if ! $ACCOUNT_EXISTS ; then 
 		echo_s "-- The MySQL account '$MYSQL_USER' can not be accessed, it will be created now\n"
-		ask_admin_access_cli
+		_ask_admin_access
 		$MYSQL -h "$MYSQL_HOST" -u "$MYSQL_ADMIN_USER" -p"$MYSQL_ADMIN_PASSWORD" -e "CREATE USER '$MYSQL_USER'@'$CURRENT_ADDRESS' IDENTIFIED BY '$MYSQL_PASSWORD'" &> /dev/null
 		if ! _does_mysql_account_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" ;
 		then
@@ -621,7 +613,7 @@ function install_cli()
 	if ! $DB_EXISTS ; then 
 		echo_s "-- The MySQL database '$MYSQL_DB_NAME' does not exist, it will be created now\n"
 		if [ "_$MYSQL_ADMIN_USER"  = "_" -o "_$MYSQL_ADMIN_PASSWORD"  = "_" ]; then
-			ask_admin_access_cli
+			_ask_admin_access
 		fi
 	else
 		echo_s "-- The MySQL database '$MYSQL_DB_NAME' has been found\n"
@@ -629,7 +621,7 @@ function install_cli()
 
 	# Create/grant permissions (check if admin account has been specify)
 	if [ "_$MYSQL_ADMIN_USER"  = "_" -o "_$MYSQL_ADMIN_PASSWORD"  = "_" ]; then
-		ask_admin_access_cli
+		_ask_admin_access
 	fi
 	$MYSQL -h "$MYSQL_HOST" -u "$MYSQL_ADMIN_USER" -p"$MYSQL_ADMIN_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DB_NAME\`; GRANT ALL ON \`$MYSQL_DB_NAME\`.* to 	'$MYSQL_USER'@'$CURRENT_ADDRESS' identified by '$MYSQL_PASSWORD'" &> /dev/null
 	if ! _does_mysql_db_exists "$MYSQL_HOST" "$MYSQL_USER" "$MYSQL_PASSWORD" "$MYSQL_DB_NAME" ; 
@@ -797,11 +789,11 @@ function install_cli()
 	exit 0;
 }
 
+# Check selected option
 case "_$1" in
-	"_") 	help_me ;;
-	"_-i"|"_--install")	install $@;;
-	"_-r"|"_--run")		shift; run_hub $1;;
-	"_-s"|"_--stop")	shift; kill_hub $1;;
+	"_-i"|"_--install")	install;;
+	"_-r"|"_--run")		shift; run_hub $@;;
+	"_-s"|"_--stop")	shift; kill_hub $@;;
 	"_-q"|"_--restart")	shift; kill_hub $1; run_hub "$1" "restart";;
 	"_-t"|"_--status")	shift; hub_status $1;;
 	"_-g"|"_--geoip")	shift; update_geoip $1;;
@@ -810,7 +802,7 @@ case "_$1" in
 	"_-b"|"_--backup")	shift; backup $1 $2;;
 	"_-w"|"_--restore")	shift; restore $1 $2;;
 	"_-c"|"_--clean")	shift; clean $1;;
-	"_-h"|"_--help") 	help_me;;
+	"_"|"_-h"|"_--help") help_me;;
 	"_-v"|"_--version")	version;;
 	*)
 		echo_s "Unknown option $1, try $SCRIPT --help\n" $RED

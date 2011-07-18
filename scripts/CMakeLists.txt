@@ -1,7 +1,7 @@
 SET(SCRIPT_FILES
 	vh_daemon
 	vh_lib
-	vh_gui_functions
+	vh_gui
 	vh
 	vh_multihub
 	vh_regimporter
