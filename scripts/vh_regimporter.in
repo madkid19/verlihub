@@ -22,22 +22,14 @@
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 ###########################################################################
 
-SCRIPT=$0
-
-# Include library
-source $(dirname $0)/vh_lib
-
-help_me()
+# Check libxml2
+function _check_xml()
 {
-	echo_s "$SCRIPT\n" $BOLD
-	echo "This is an utility script to convert registered users to VerliHub."
-	echo "Usage:"
-	echo_s "   --ptokax" $RED && echo -e "\t<RegisteredUsers.xml> <Profiles.xml> <path_to_dbconfig>\tConvert registrations from PtokaX to VerliHub"
-	echo_s "   --ynhub" $RED && echo -e "\t<accounts.xml> <profiles.xml> <path_to_dbconfig>\tConvert registrations from YnHub to VerliHub"
-	echo_s "   --aquila" $RED && echo -e "\t<Aquila.xml> <path_to_dbconfig>\t\t\t\tConvert registrations from Aquila to VerliHub"
-	echo_s "   --version" $RED && echo -e "\t\t\t\t\t\t\t\tPrint version information"
-	echo_s "   --help" $RED && echo -e "\t\t\t\t\t\t\t\tShow this help"
-	echo ""
+	XMLLINT=`whereis xmllint | awk '{ print $2 }'`
+	if [ -z "$XMLLINT" ]; then
+		echo_s "-- You need to install libxml2 to read XML files. Please install it\n" $RED
+		exit 1;
+	fi
 }
 
 # Check if given file exists and match with default name
@@ -149,15 +141,10 @@ function _print_vh_class_summury() #hubsoft_name
 	echo
 }
 
-function version()
-{
-	echo_s "Script version: " $BOLD && echo "$VER";
-	echo_s "Verlihub version: " $BOLD && echo @VERLIHUB_VERSION@;
-}
-
-
 function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 {
+	_check_xml
+
 	USER_FILE="RegisteredUsers.xml"
 	PROFILE_FILE="Profiles.xml"
 	USER_NODE="RegisteredUsers/RegisteredUser"
@@ -260,6 +247,8 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 
 function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 {
+	_check_xml
+
 	USER_FILE="accounts.xml"
 	PROFILE_FILE="profiles.xml"
 	USER_NODE="Accounts/Account"
@@ -370,6 +359,8 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 
 function convert_aquila #Aquila.xml, path_to_dbconfig
 {
+	_check_xml
+
 	FILE="Aquila.xml"
 	USER_NODE="Aquila/Accounts/Account"
 	PROFILE_NODE="Aquila/Groups/Group"
@@ -472,25 +463,3 @@ function convert_aquila #Aquila.xml, path_to_dbconfig
 	fi
 	exit 0;
 }
-
-# Check libxml2
-XMLLINT=`whereis xmllint | awk '{ print $2 }'`
-if [ -z "$XMLLINT" ]; then
-	echo_s "-- You need to install libxml2 to read XML files. Please install it\n" $RED
-	exit 1;
-fi
-
-case "_$1" in
-	"_") 		help_me ;;
-	"_--help") 	help_me;;
-	"_--version")	version;;
-	"_--ptokax")	shift
-					convert_ptokax $*;;
-	"_--ynhub")		shift
-					convert_ynhub $*;;
-	"_--aquila")	shift
-					convert_aquila $*;;
-	*)
-		echo_s "Unknown option $1, try $SCRIPT --help\n" $RED
-		exit;;
-esac;

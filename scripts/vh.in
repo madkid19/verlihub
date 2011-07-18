@@ -25,6 +25,7 @@
 SCRIPT=$0
 # Include library
 source $(dirname $SCRIPT)/vh_lib
+source $(dirname $SCRIPT)/vh_regimporter
 
 # Get mysql admin access
 function _ask_admin_access()
@@ -312,10 +313,8 @@ function add_user() # nicknam, # password, # class, # path_to_dbconfig
 	echo_s ": $2\n"
 	echo_s "\tClass" $BOLD
 	echo_s ": $3\n"
-# 	if [ "$CONFIG_DIR" != "" ]; then
-		echo_s "\tConfig directory" $BOLD
-		echo_s ": $CONFIG_DIR\n"
-# 	fi
+	echo_s "\tConfig directory" $BOLD
+	echo_s ": $CONFIG_DIR\n"
 	
 	yes_or_no "Do you want to continue?" && REGISTER=true || REGISTER=false
 	
@@ -328,6 +327,16 @@ function add_user() # nicknam, # password, # class, # path_to_dbconfig
 	else
 		echo "-- Skipped"
 	fi
+}
+
+function reg_importer() # options
+{
+	case "_$1" in
+	"_--ptokax")	shift; convert_ptokax $@;;
+	"_--ynhub")		shift; convert_ynhub $@;;
+	"_--aquila")	shift; convert_aquila $@;;
+	*) 				help_me; exit;;
+	esac;
 }
 
 # Update GeoIP
@@ -784,7 +793,7 @@ function install()
 		exit 1;
 	fi
 
-	echo "-- The hub is configured successfully. Now you can start the hub using vh_manage command."
+	echo "-- The hub is configured successfully. Now you can start the hub using vh --run command."
 
 	exit 0;
 }
@@ -799,6 +808,7 @@ case "_$1" in
 	"_-g"|"_--geoip")	shift; update_geoip $1;;
 	"_-a"|"_--autoload")shift; autoload $@;;
 	"_-u"|"_--adduser") shift; add_user $@;;
+	"_-m"|"_--regimporter")	shift; reg_importer $@;;
 	"_-b"|"_--backup")	shift; backup $1 $2;;
 	"_-w"|"_--restore")	shift; restore $1 $2;;
 	"_-c"|"_--clean")	shift; clean $1;;

@@ -166,7 +166,7 @@ function _get_hubs_list() # print_legend
 		exit 0;
 	fi
 
-	echo_s "ID  " $BOLD
+	echo_s " ID  " $BOLD
 	_format_row "Owner" 20 $BOLD
 	_format_row "Path to dbconfig" 35 $BOLD
 	_format_row "Process owner" 20 $BOLD
@@ -186,7 +186,7 @@ function _get_hubs_list() # print_legend
 			COLOR=$RED_BOLD
 		fi
 		
-		echo_s "[$INDEX] " $COLOR
+		echo_s " [$INDEX] " $COLOR
 		
 		_format_row "$NICKNAME" 20
 		_format_row "$PATH_TO_CONFIG" 35
@@ -265,7 +265,7 @@ function action() # action type [1 = start, 2= stop, 3= restart], number [option
 			local VERLIHUB_PATH="$(echo $LINE | cut -d: -f1)"
 			local PROCESS_OWNER="$(echo $LINE | cut -d: -f3)"
 			echo_s "-- Performing action for '$VERLIHUB_PATH'\n" $BOLD
-			su -c "$DIRECTORY/vh_manage_cli --$ACTION $VERLIHUB_PATH" $PROCESS_OWNER
+			su -c "$DIRECTORY/vh --$ACTION $VERLIHUB_PATH" $PROCESS_OWNER
 		done < $DEFAULT_NAME
 		exit 0
 	fi
@@ -284,9 +284,9 @@ function action() # action type [1 = start, 2= stop, 3= restart], number [option
 
 	echo_s "-- Performing action for '$VERLIHUB_PATH'\n" $BOLD
 	if [ $(uname) != "FreeBSD" ]; then
-		su -c "$DIRECTORY/vh_manage_cli --$ACTION $VERLIHUB_PATH" $PROCESS_OWNER
+		su -c "$DIRECTORY/vh --$ACTION $VERLIHUB_PATH" $PROCESS_OWNER
 	else
-		su -c "$DIRECTORY/vh_manage_cli --$ACTION $VERLIHUB_PATH" -m $PROCESS_OWNER
+		su -c "$DIRECTORY/vh --$ACTION $VERLIHUB_PATH" -m $PROCESS_OWNER
 	fi
 	exit 0
 }

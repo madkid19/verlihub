@@ -37,7 +37,7 @@ DIALOG=`whereis dialog | awk '{ print $2 }'`
 if [ -z "$DIALOG" ]; then
 	echo_s "-- "
 	echo_s "ERROR" $BOLD
-	echo_s ": This script requires dialog to function, please consider installing it or use cli scripts instead (vh_manage_cli).\n"
+	echo_s ": This script requires dialog to function, please consider installing it or use cli scripts instead (vh).\n"
     exit
 fi
 
@@ -529,7 +529,7 @@ install() {
 		_quit;
 	fi
 	
-	$DIALOG --title "Hub settings" --msgbox "The hub is configured successfully. Now you can start the hub using vh_manage command." 8 40
+	$DIALOG --title "Hub settings" --msgbox "The hub is configured successfully. Now you can start the hub using vh_gui --run command." 8 40
 
 	_quit;
 }
