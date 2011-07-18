@@ -1,15 +1,15 @@
-.TH vh_manage_cli "1" "June 2011" verlihub-1.0 "June 2011"
+.TH vh "1" "June 2011" verlihub-1.0 "June 2011"
 .SH NAME
-vh_manage_cli \- This is a utility script for VerliHub
+vh \- This is a utility script for VerliHub
 .SH OPTIONS
 .TP
 .BR --help
 displays this help message
 .TP
-.BR --install
+.BR -i, --install
 The option allows you to install a new hub. For detailed explanation please read <http://www.verlihub-project.org/wiki/page/installation>
 .TP
-.BR "--run <path_to_dbconfig>"
+.BR "-r, --run [path_to_dbconfig]"
 This option allows you to start the hub and run VerliHub as a daemon. VerliHub config folder can be omitted. If folder is omitted then the script will automatically try to guess them; the following folders will be searched in this order:
 .RS
 .TP
@@ -27,37 +27,37 @@ If no directory will be found, the script will return an error.
 .br
 .I Example:
 .nf
-vh_manage_cli --run /etc/verlihub
+vh --run /etc/verlihub
 .fi
 .RE
 .TP
-.BR "--restart <path_to_dbconfig>"
+.BR "-q, --restart [path_to_dbconfig]"
 This option allows you to restart a running hub. You can also provide a VerliHub config folder; please refer to option --run for more information.
 .TP
-.BR "--stop <path_to_dbconfig>"
+.BR "-s, --stop [path_to_dbconfig]"
 This option allows you to stop a running hub. You can also provide a VerliHub config folder; please refer to option --run for more information
 .TP
-.BR "--geoip [path_to_dbconfig]"
+.BR "-g, --geoip"
 This option allows you to update GeoIP DAT file in /usr/share/GeoIP folder. Script will download tarball from Maxmind server and it will unpack in that folder. You can also use this command in crontab.
 .TP
-.BR "--adduser"
+.BR "-u, --adduser <nickname> <password> <class> [path_to_dbconfig]"
 This option allows you to add a new user to the hub. You have to specify the following extra options to create a new user:
 .RS
 .TP
-.BR "--nickname <nickname>"
+.BR "<nickname>"
 the nickname of the user
 .TP
-.BR "--password <password>"
+.BR "<password>"
 the password of the user. This is optional and it can be provided by the user.
 .TP
-.BR "--class <class>"
+.BR "<class>"
 the class of the user. Allowed values are -1, 0, 1, 2, 3, 4, 5, 10. Please refer to manager the hub manual for more information about those classes.
 .TP
-.BR "--configdir <path_to_dbconfig>"
+.BR "[path_to_dbconfig]"
 verliHub config folder. This is optional; please refer to option --run for more information.
 .RE
 .TP
-.BR "--autoload [path_to_dbconfig]"
+.BR "-a, --autoload [path_to_dbconfig]"
 This option allow you to create symbolic link in the hub config folder to load plugins automatically with VerliHub. You have to specify one the following options:
 .RS
 .TP
@@ -73,13 +73,53 @@ disabled autoload feature of plugin
 You can specify the config directory using --configdir option; this is optional, please refer to option --run for more information.
 .RE
 .TP
+.BR "-m, --regimport [path_to_dbconfig]"
+This script will import registered users from PtokaX, YnHub and Aquila to VerliHub reglist table. These are all available options that you can use with this script:
+.br
+.I "To use converter you need libxml2 installed"
+.RS
+.TP
+.BR "--ptokax <RegisteredUsers.xml> <Profiles.xml> <path_to_dbconfig>"
+To convert registered users you will need two XML files:
+.RS
+.TP
+.BR RegisteredUsers.xml
+contains registered users with nickname, password and profile ID
+.TP
+.BR Profiles.xml
+contains information about profiles
+.P
+First script will ask you to map PtokaX profiles with VerliHub classes. Then program will automatically add all users in reglist tables. If a MySQL query will failed you will see a error about no-added user.
+.RE
+.TP
+.BR "--ynhub <accounts.xml> <profiles.xml> <path_to_dbconfig>"
+To convert registered users you will need two XML files
+.RS
+.TP
+.BR accounts.xml
+contains registered users with nickname, password and other information
+.TP
+.BR profiles.xml
+contains information about profiles
+.P
+This option will also import: Registration date, OP creator, Last login
+.br
+First script will ask you to map YnHub profiles with VerliHub classes. Then program will automatically add all users in reglist tables. If a MySQL query will failed you will see a error about no-added user.
+.RE
+.TP
+.BR "--aquila <Aquila.xml> <path_to_dbconfig>"
+To convert registered users you will need only Aquila.xml file that is generated in configuration directory of the hub. This option will also import: Registration date, OP creator, Last login, Last IP.
+.br
+First script will ask you to map Aquila profiles with VerliHub classes. Then program will automatically add all users in reglist tables. If a MySQL query will failed you will see a error about no-added user.
+.RE
+.TP
 .BR "--backup <destination_path> [path_to_dbconfig]  "
 This option allows you to make a backup of database that VerliHub uses to store registered users, triggers, configuration, etc. You have to specify a folder where you want to store the backup.
 For 
 .I example
 if you want to save it to /home/foobar type:
 .nf
-vh_manage_cli --backup /home/foobar
+vh --backup /home/foobar
 .fi
 You can also provide a VerliHub config folder; please refer to option --run for more information.
 .TP
@@ -89,7 +129,7 @@ For
 .I example
 if you want to restore verlihub_backup.sql that is located at /home/foobar type:
 .nf
-vh_manage_cli --restore /home/foobar/verlihub_backup.sql
+vh --restore /home/foobar/verlihub_backup.sql
 .fi
 You can also provide a VerliHub config folder; please refer to option --run for more information.
 .TP
