@@ -23,22 +23,21 @@
 ###########################################################################
 
 SCRIPT=$0
-DIRECTORY=$(dirname $SCRIPT)
-if [ $(uname) != "FreeBSD" ]; then
-	DEFAULT_PATH="/etc"
-else
-	DEFAULT_PATH="/usr/local/etc"
-fi
-DEFAULT_NAME="$DEFAULT_PATH/verlihub.conf"
-
 # Include library
-source $(dirname $0)/vh_lib
+source $(dirname $SCRIPT)/vh_lib
 
 if [ $UID -ne 0 ]; then
 	echo_s "-- You can only run μ-Verlihub with root account\n" $RED
 	exit 0;
 fi
 
+# Set config file
+if [ $(uname) != "FreeBSD" ]; then
+	DEFAULT_PATH="/etc"
+else
+	DEFAULT_PATH="$PREFIX/etc"
+fi
+DEFAULT_NAME="$DEFAULT_PATH/verlihub.conf"
 
 # Check if path is correct
 function _check_path() # path_to_dbconfig
@@ -162,11 +161,11 @@ function _get_hubs_list() # print_legend
 
 	# Check if config file exists or is empty
 	if [ ! -s $DEFAULT_NAME ] || [ ! -f $DEFAULT_NAME ] ; then
-		echo_s "-- Config file is empty. Add new hub using $0 --add\n" $RED
+		echo_s "-- Config file is empty. Add new hub using $SCRIPT --add\n" $RED
 		exit 0;
 	fi
 
-	echo_s " ID  " $BOLD
+	echo_s " ID   " $BOLD
 	_format_row "Owner" 20 $BOLD
 	_format_row "Path to dbconfig" 35 $BOLD
 	_format_row "Process owner" 20 $BOLD
@@ -186,7 +185,7 @@ function _get_hubs_list() # print_legend
 			COLOR=$RED_BOLD
 		fi
 		
-		echo_s " [$INDEX] " $COLOR
+		echo_s " [$INDEX]  " $COLOR
 		
 		_format_row "$NICKNAME" 20
 		_format_row "$PATH_TO_CONFIG" 35
@@ -209,20 +208,19 @@ function help_me()
 {
 	echo_s "μ-Verlihub (multi-Verlihub)\n" $BOLD
 	echo "This is a utility to run, restart and stop hubs with Verlihub, usage:"
-	echo_s "   --list" $RED && echo -e "\t\t\tShow a list"
-	echo_s "   --add" $RED && echo -e "\t\t\tAdd a new hub"
-	echo_s "   --del" $RED && echo -e "\t[ID]\t\tDelete an hub"
-	echo_s "   --run" $RED && echo -e "\t[ID]\t\tRun a single hub or all hubs togheter"
-	echo_s "   --stop" $RED && echo -e "\t[ID]\t\tStop a single hub or all hubs togheter"
-	echo_s "   --restart" $RED && echo -e "\t[ID]\t\tRestart a single hub or all hubs togheter"
-	echo_s "   --version" $RED && echo -e "\t\t\tPrint version information"
-	echo_s "   --help" $RED && echo -e "\t\t\tShow this help"
+	echo_s "  -l, --list" $RED && echo -e "\t\t\tShow a list"
+	echo_s "  -a, --add" $RED && echo -e "\t\t\tAdd a new hub"
+	echo_s "  -d, --del" $RED && echo -e "\t[ID]\t\tDelete an hub"
+	echo_s "  -r, --run" $RED && echo -e "\t[ID]\t\tRun a single hub or all hubs togheter"
+	echo_s "  -s, --stop" $RED && echo -e "\t[ID]\t\tStop a single hub or all hubs togheter"
+	echo_s "  -q, --restart" $RED && echo -e "\t[ID]\t\tRestart a single hub or all hubs togheter"
+	echo_s "  -v, --version" $RED && echo -e "\t\t\tPrint version information"
+	echo_s "  -h, --help" $RED && echo -e "\t\t\tShow this help"
 }
 
 function version()
-{ 
-	echo_s "μ-Verlihub version: " $BOLD && echo "$VER"; 
-	echo_s "Verlihub version: " $BOLD && echo @VERLIHUB_VERSION@;
+{
+	$BINDIR/vh --version
 }
 
 function list()
@@ -265,7 +263,7 @@ function action() # action type [1 = start, 2= stop, 3= restart], number [option
 			local VERLIHUB_PATH="$(echo $LINE | cut -d: -f1)"
 			local PROCESS_OWNER="$(echo $LINE | cut -d: -f3)"
 			echo_s "-- Performing action for '$VERLIHUB_PATH'\n" $BOLD
-			su -c "$DIRECTORY/vh --$ACTION $VERLIHUB_PATH" $PROCESS_OWNER
+			su -c "$BINDIR/vh --$ACTION $VERLIHUB_PATH" $PROCESS_OWNER
 		done < $DEFAULT_NAME
 		exit 0
 	fi
@@ -284,9 +282,9 @@ function action() # action type [1 = start, 2= stop, 3= restart], number [option
 
 	echo_s "-- Performing action for '$VERLIHUB_PATH'\n" $BOLD
 	if [ $(uname) != "FreeBSD" ]; then
-		su -c "$DIRECTORY/vh --$ACTION $VERLIHUB_PATH" $PROCESS_OWNER
+		su -c "$BINDIR/vh --$ACTION $VERLIHUB_PATH" $PROCESS_OWNER
 	else
-		su -c "$DIRECTORY/vh --$ACTION $VERLIHUB_PATH" -m $PROCESS_OWNER
+		su -c "$BINDIR/vh --$ACTION $VERLIHUB_PATH" -m $PROCESS_OWNER
 	fi
 	exit 0
 }
@@ -375,21 +373,13 @@ function del() # number [optional]
 }
 
 case "_$1" in
-	"_") 			help_me ;;
-	"_--help") 		help_me;;
-	"_--version")	version;;
-	"_--list")		list;;
-	"_--run")		shift
-					action 1 $*;;
-	"_--stop")		shift
-					action 2 $*;;
-	"_--restart")	shift
-					action 3 $*;;
-	"_--add")		shift
-					add $*;;
-	"_--del")		shift
-					del $*;;
-	*)
-		echo_s "Unknown option $1, try $SCRIPT --help\n" $RED
-		exit;;
+	"_"|"_--help") 		help_me;;
+	"_-v"|"_--version")	version;;
+	"_-l"|"_--list")	list;;
+	"_-r"|"_--run")		shift; action 1 $*;;
+	"_-s"|"_--stop")	shift; action 2 $*;;
+	"_-q"|"_--restart")	shift; action 3 $*;;
+	"_-a"|"_--add")		shift; add $*;;
+	"_-d"|"_--del")		shift; del $*;;
+	*)					echo_s "Unknown option $1, try $SCRIPT --help\n" $RED; exit;;
 esac;

@@ -25,7 +25,6 @@
 SCRIPT=$0
 # Include library
 source $(dirname $SCRIPT)/vh_lib
-source $(dirname $SCRIPT)/vh_regimporter
 
 # Get mysql admin access
 function _ask_admin_access()
@@ -49,9 +48,8 @@ function _ask_admin_access()
 help_me()
 {
 	echo_s "$SCRIPT\n" $BOLD
-	echo "This is a utility script for Verlihub, usage:"
-
-	echo && echo " HUB"
+	echo "This is a utility script for VerliHub, usage:"
+	echo
 	echo_s "  -i, --install" $RED && echo -e "\t\t\t\tConfigure Verlihub for a new hub"
 	echo_s "  -r, --run" $RED && echo -e "\t[path_to_dbconfig] \tRun the hub from the given dbconfig path"
 	echo_s "  -q, --restart" $RED && echo -e "\t[path_to_dbconfig] \tRestart the hub from the given dbconfig path"
@@ -63,20 +61,10 @@ help_me()
 		echo_s "\t-n, --on" $BLUE && echo -e "\t\t\t\tRun plugin automatically with hub"
 		echo_s "\t-f, --off" $BLUE && echo -e "\t\t\t\tDisable auto load of plugin"
 		echo_s "\t-d, --configdir" $BLUE && echo -e "  [path_to_dbconfig] \tSpecify the hub with location of dbconfig file. Optional"	
-
-	echo && echo " USERS MANAGEMENT"
 	echo_s "  -u, --adduser" $RED && echo -e "\t<nick> <password> <class> [path_to_dbconfig]\tRegister a new user in the database"
-	echo_s "  -m, --regimport" $RED && echo -e "\t\t\tConvert registered users to VerliHub fro other hubsoft"
-		echo_s "\t--ptokax" $BLUE && echo -e "\t<RegisteredUsers.xml> <Profiles.xml> <path_to_dbconfig>\tConvert registrations from PtokaX"
-		echo_s "\t--ynhub" $BLUE && echo -e "\t\t<accounts.xml> <profiles.xml> <path_to_dbconfig>\tConvert registrations from YnHub"
-		echo_s "\t--aquila" $BLUE && echo -e "\t<Aquila.xml> <path_to_dbconfig>\t\t\t\tConvert registrations from Aquila"
-	
-	echo && echo " DB MANAGEMENT"
 	echo_s "  -c, --clean" $RED && echo -e "\t[path_to_dbconfig] \t\t\tClean kicklist, banlist, unbanlist, iplog, stats and messages tables"	
 	echo_s "  -w, --backup" $RED && echo -e "\t<destination_path> [path_to_dbconfig] \tMake backup of database from the given dbconfig path"
 	echo_s "  -t, --restore" $RED && echo -e "\t<path_to_sql>      [path_to_dbconfig] \tImport the given SQL file in the database for given dbconfig path"
-	
-	echo && echo " SCRIPT"
 	echo_s "  -v, --version" $RED && echo -e "\t\t\t\tPrint version information"
 	echo_s "  -h, --help" $RED && echo -e "\t\t\t\tShow this help"
 	echo ""
@@ -808,7 +796,7 @@ case "_$1" in
 	"_-g"|"_--geoip")	shift; update_geoip $1;;
 	"_-a"|"_--autoload")shift; autoload $@;;
 	"_-u"|"_--adduser") shift; add_user $@;;
-	"_-m"|"_--regimporter")	shift; reg_importer $@;;
+	#"_-m"|"_--regimporter")	shift; reg_importer $@;;
 	"_-b"|"_--backup")	shift; backup $1 $2;;
 	"_-w"|"_--restore")	shift; restore $1 $2;;
 	"_-c"|"_--clean")	shift; clean $1;;

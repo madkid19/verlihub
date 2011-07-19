@@ -1,0 +1,63 @@
+.TH vh_regimporter "1" "June 2011" verlihub-1.0 "June 2011"
+.SH NAME
+vh_regimporter \- This is an utility script to convert registered users to VerliHub
+.SH DESCRIPTION
+This script will import registered users from PtokaX, YnHub and Aquila to VerliHub reglist table. These are all available options that you can use with this script:
+.br
+.I "To use converter you need libxml2 installed"
+.SH OPTIONS
+.TP
+.BR "-p, --ptokax <RegisteredUsers.xml> <Profiles.xml> <path_to_dbconfig>"
+To convert registered users you will need two XML files:
+.RS
+.TP
+.BR RegisteredUsers.xml
+contains registered users with nickname, password and profile ID
+.TP
+.BR Profiles.xml
+contains information about profiles
+.P
+First script will ask you to map PtokaX profiles with VerliHub classes. Then program will automatically add all users in reglist tables. If a MySQL query will failed you will see a error about no-added user.
+.RE
+.TP
+.BR "-y --ynhub <accounts.xml> <profiles.xml> <path_to_dbconfig>"
+To convert registered users you will need two XML files
+.RS
+.TP
+.BR accounts.xml
+contains registered users with nickname, password and other information
+.TP
+.BR profiles.xml
+contains information about profiles
+.P
+This option will also import: Registration date, OP creator, Last login
+.br
+First script will ask you to map YnHub profiles with VerliHub classes. Then program will automatically add all users in reglist tables. If a MySQL query will failed you will see a error about no-added user.
+.RE
+.TP
+.BR "-a, --aquila <Aquila.xml> <path_to_dbconfig>"
+To convert registered users you will need only Aquila.xml file that is generated in configuration directory of the hub. This option will also import: Registration date, OP creator, Last login, Last IP.
+.br
+First script will ask you to map Aquila profiles with VerliHub classes. Then program will automatically add all users in reglist tables. If a MySQL query will failed you will see a error about no-added user.
+.TP
+.BR "-v, --version"
+This option prints version information about this script and VerliHub.
+.TP
+.BR --help
+displays this help message
+.SH AUTHOR
+Stefano <stefano@verlihub-project.org>
+.SH REPORTING BUGS
+Report bugs to <http://www.verlihub-project.org>
+.br
+Support forums: <http://www.verlihub-project.org/discussions>
+.br
+Wiki pages: <http://www.verlihub-project.org/page>
+.br
+Translate VerliHub using Transifex.net on <https://www.transifex.net/projects/p/verlihub/>
+.SH COPYRIGHT
+Copyright \(co 2011 Free Software Foundation, Inc.
+License GPLv2: GNU GPL version 2 <http://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.

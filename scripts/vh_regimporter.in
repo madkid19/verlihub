@@ -22,15 +22,15 @@
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             #
 ###########################################################################
 
-# Check libxml2
-function _check_xml()
-{
-	XMLLINT=`whereis xmllint | awk '{ print $2 }'`
-	if [ -z "$XMLLINT" ]; then
-		echo_s "-- You need to install libxml2 to read XML files. Please install it\n" $RED
-		exit 1;
-	fi
-}
+SCRIPT=$0
+# Include library
+source $(dirname $SCRIPT)/vh_lib
+
+XMLLINT=`whereis xmllint | awk '{ print $2 }'`
+if [ -z "$XMLLINT" ]; then
+	echo_s "-- You need to install libxml2 to read XML files. Please install it\n" $RED
+	exit 1;
+fi
 
 # Check if given file exists and match with default name
 function _check_file() #file, default_file_name
@@ -141,10 +141,26 @@ function _print_vh_class_summury() #hubsoft_name
 	echo
 }
 
+function help_me()
+{
+	echo_s "$SCRIPT\n" $BOLD
+	echo "This is an utility script to convert registered users to VerliHub."
+	echo "Usage:"
+	echo_s "  -p, --ptokax" $RED && echo -e "\t<RegisteredUsers.xml> <Profiles.xml> <path_to_dbconfig>\tConvert registrations from PtokaX"
+	echo_s "  -y, --ynhub" $RED && echo -e "\t<accounts.xml> <profiles.xml> <path_to_dbconfig>\tConvert registrations from YnHub"
+	echo_s "  -a, --aquila" $RED && echo -e "\t<Aquila.xml> <path_to_dbconfig>\t\t\t\tConvert registrations from Aquila"
+	echo_s "  -v, --version" $RED && echo -e "\t\t\t\t\t\t\t\tPrint version information"
+	echo_s "  -h, --help" $RED && echo -e "\t\t\t\t\t\t\t\tShow this help"
+	echo ""
+}
+
+function version()
+{
+	$BINDIR/vh --version
+}
+
 function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 {
-	_check_xml
-
 	USER_FILE="RegisteredUsers.xml"
 	PROFILE_FILE="Profiles.xml"
 	USER_NODE="RegisteredUsers/RegisteredUser"
@@ -247,8 +263,6 @@ function convert_ptokax() # RegisteredUsers.xml, Profiles.xml, path_to_dbconfig
 
 function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 {
-	_check_xml
-
 	USER_FILE="accounts.xml"
 	PROFILE_FILE="profiles.xml"
 	USER_NODE="Accounts/Account"
@@ -359,8 +373,6 @@ function convert_ynhub() # accounts.xml, profiles.xml, path_to_dbconfig
 
 function convert_aquila #Aquila.xml, path_to_dbconfig
 {
-	_check_xml
-
 	FILE="Aquila.xml"
 	USER_NODE="Aquila/Accounts/Account"
 	PROFILE_NODE="Aquila/Groups/Group"
@@ -463,3 +475,13 @@ function convert_aquila #Aquila.xml, path_to_dbconfig
 	fi
 	exit 0;
 }
+
+# Check options
+case "_$1" in
+	"_"|"_--help")			help_me;;
+	"_-v"|"_--version")		version;;
+	"_-p"|"_--ptokax")		shift; convert_ptokax $*;;
+	"_-y"|"_--ynhub")		shift; convert_ynhub $*;;
+	"_-a"|"_--aquila")		shift; convert_aquila $*;;
+	*)						echo_s "Unknown option $1, try $SCRIPT --help\n" $RED; exit;;
+esac;
