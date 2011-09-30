@@ -307,8 +307,8 @@ function add_user() # nicknam, # password, # class, # path_to_dbconfig
 	yes_or_no "Do you want to continue?" && REGISTER=true || REGISTER=false
 	
 	if ( $REGISTER ); then
-		if ! _register $USER_NICKNAME $USER_CLASS $USER_PASSWORD "plain" ; then
-			echo_s "-- A error occured while trying to execute MySQL query. Is user '$USER_NICKNAME' already exists?\n" $RED
+		if ! _register $1 $3 $2 "plain" ; then
+			echo_s "-- A error occured while trying to execute MySQL query. Is user '$1' already exists?\n" $RED
 			exit;
 		fi
 		echo "-- Done"
