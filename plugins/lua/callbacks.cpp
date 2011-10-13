@@ -1028,15 +1028,47 @@ int _GetVHCfgDir(lua_State *L)
 int _GetUpTime(lua_State *L)
 {
 	cServerDC *server = GetCurrentVerlihub();
-	if(server == NULL) {
+
+	if (server == NULL) {
 		luaerror(L, "Error getting server");
 		return 2;
 	}
+
+	/*
+		res,int = VH:GetUpTime() -- return seconds, no arguments, backward compatibility
+		res,int = VH:GetUpTime(1) -- return seconds, argument = 1, new style
+		res,int = VH:GetUpTime(2) -- return milliseconds, argument = 2, new style
+	*/
+
+	int sf = 1;
+
+	if (lua_gettop(L) > 2) {
+		luaL_error(L, "Error calling VH:GetUpTime, expected 0 or 1 argument but got %d", lua_gettop(L) - 1); // is this even needed?
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+
+	if (lua_gettop(L) == 2) {
+		if (!lua_isnumber(L, 2)) {
+			luaerror(L, ERR_PARAM);
+			return 2;
+		}
+
+		int r = (int)lua_tonumber(L, 2);
+		if (r == 2) sf = 2;
+	}
+
 	cTime upTime;
 	upTime = server->mTime;
 	upTime -= server->mStartTime;
 	lua_pushboolean(L, 1);
-	lua_pushnumber(L, upTime.Sec());
+
+	if (sf == 1)
+		lua_pushnumber(L, upTime.Sec());
+	else
+		lua_pushnumber(L, upTime.MiliSec());
+
 	return 2;
 }
 
