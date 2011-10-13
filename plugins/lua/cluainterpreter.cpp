@@ -67,6 +67,7 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("Disconnect",   &_Disconnect);
 	RegisterFunction("DisconnectByName",   &_Disconnect); /* back compatibility */
 	RegisterFunction("GetUserCC",   &_GetUserCC);
+	RegisterFunction("GetIPCC", &_GetIPCC);
 	RegisterFunction("GetMyINFO",         &_GetMyINFO);
 	RegisterFunction("GetUpTime",         &_GetUpTime);
 	RegisterFunction("RegBot",          &_RegBot);

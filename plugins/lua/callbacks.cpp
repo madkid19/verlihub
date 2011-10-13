@@ -268,6 +268,35 @@ int _GetUserCC(lua_State *L)
 	}
 }
 
+int _GetIPCC(lua_State *L)
+{
+	if (lua_gettop(L) == 2) {
+		if (!lua_isstring(L, 2)) {
+			luaerror(L, ERR_PARAM);
+			return 2;
+		}
+
+		string ip, cc;
+		ip = (char *) lua_tostring(L, 2);
+		cc = GetIPCC((char *) ip.c_str());
+
+		if (cc.empty()) {
+			lua_pushboolean(L, 0);
+			luaerror(L, "Unable to get CC from IP");
+		} else {
+			lua_pushboolean(L, 1);
+			lua_pushstring(L, (char *) cc.c_str());
+		}
+
+		return 2;
+	} else {
+		luaL_error(L, "Error calling VH:GetIPCC; expected 1 argument but got %d", lua_gettop(L) - 1);
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+}
+
 int _GetNickList(lua_State *L)
 {
 	char *nicklist;

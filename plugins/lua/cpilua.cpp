@@ -92,6 +92,7 @@ bool cpiLua::RegisterAll()
 	RegisterCallBack("VH_OnParsedMsgMyINFO");
 	RegisterCallBack("VH_OnParsedMsgValidateNick");
 	RegisterCallBack("VH_OnParsedMsgAny");
+	RegisterCallBack("VH_OnParsedMsgAnyEx");
 	RegisterCallBack("VH_OnParsedMsgSupport");
 	RegisterCallBack("VH_OnParsedMsgMyPass");
 	RegisterCallBack("VH_OnUnknownMsg");
@@ -329,6 +330,21 @@ bool cpiLua::OnParsedMsgAny(cConnDC *conn, cMessageDC *msg)
 		};
 		return CallAll("VH_OnParsedMsgAny", args);
 	}
+	return true;
+}
+
+bool cpiLua::OnParsedMsgAnyEx(cConnDC *conn, cMessageDC *msg) {
+	if((conn != NULL) && (conn->mpUser == NULL) && (msg != NULL)) {
+		char * args[] = {
+			(char *) conn->AddrIP().c_str(), // ip
+			//(char *) toString(mServer->cAsyncSocketServer::getPort()), // port
+			(char *) msg->mStr.c_str(),
+			NULL
+		};
+
+		return CallAll("VH_OnParsedMsgAnyEx", args);
+	}
+
 	return true;
 }
 
