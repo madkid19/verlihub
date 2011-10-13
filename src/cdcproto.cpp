@@ -79,6 +79,11 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	#ifndef WITHOUT_PLUGINS
 	if (msg->mType != eMSG_UNPARSED)  {
 		if (!mS->mCallBacks.mOnParsedMsgAny.CallAll(conn, msg)) return 1;
+
+		if (!mS->mCallBacks.mOnParsedMsgAnyEx.CallAll(conn, msg)) {
+			conn->CloseNow();
+			return -1;
+		}
 	}
 	#endif
 

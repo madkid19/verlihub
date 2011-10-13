@@ -22,6 +22,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#if HAVE_LIBGEOIP
+#include "cgeoip.h"
+#endif
 #include <iostream>
 #include <cserverdc.h>
 #include <cban.h>
@@ -156,6 +159,23 @@ char * GetUserCC(char * nick)
 		return (char *) usr->mxConn->mCC.c_str();
 	}
 
+}
+
+string GetIPCC(const string ip)
+{
+	cServerDC *server = GetCurrentVerlihub();
+
+	if (!server) {
+		cerr << "Verlihub server is unfortunately not running or not found." << endl;
+		return "";
+	}
+
+	string cc;
+
+	if (server->sGeoIP.GetCC(ip, cc))
+		return cc;
+	else
+		return "";
 }
 
 char *GetMyINFO(char *nick)

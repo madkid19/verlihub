@@ -132,6 +132,15 @@ public:
 	 */
 	virtual bool OnParsedMsgAny(nSocket::cConnDC* conn, nProtocol::cMessageDC *msg){ return true; }
 
+	/*
+	* Event handler function that is called when a parsed message is received, but before mpUser is created.
+	* Use RegisterCallBack("VH_OnParsedMsgAnyEx") to register it. This event can be discarded.
+	* return = Return false to ignore the parsed message and drop user connection, otherwise return true.
+	* conn = The pointer to the connection that sent the message.
+	* msg = The pointer to cMessageDC object.
+	*/
+	virtual bool OnParsedMsgAnyEx(nSocket::cConnDC *conn, nProtocol::cMessageDC *msg) { return true; }
+
 	//! Event handler function that is called when $Support message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgSupport") to register it. This event cannot be discardable.
