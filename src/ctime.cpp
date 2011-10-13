@@ -63,7 +63,7 @@ std::ostream & operator<< (std::ostream &os, const cTime &t)
 			#else
 				strftime (buf,CTIME_BUFFSIZE+1,"%m/%d/%Y %H:%M:%S",localtime((const time_t*)&(t.tv_sec)));
 			#endif
-			buf[strlen(buf)-1]=0;
+			buf[strlen(buf)]=0;
 			os << buf;
 		break;
 		case 2:
