@@ -224,8 +224,8 @@ int _GetMyINFO(lua_State *L)
 		}
 		nick = (char *) lua_tostring(L, 2);
 		myinfo = GetMyINFO( (char*) nick.c_str());
-		if(strlen(myinfo) > 0) result = 1;
-		else {
+		if(strlen(myinfo) < 1)
+		{
 			result = 0;
 			myinfo = "User not found";
 		}
@@ -303,15 +303,12 @@ int _GetNickList(lua_State *L)
 	int result = 1;
 	if(lua_gettop(L) == 1) {
 		nicklist = GetNickList();
-		if(strlen(nicklist) < 1)
-			result = 0;
-		else
-			result = 1;
+		if(strlen(nicklist) < 1) result = 0;
 		lua_pushboolean(L, result);
 		lua_pushstring(L, nicklist);
 		return 2;
 	} else {
-		luaL_error(L, "Error calling VH:GetNickList; expected  0 argument but got %d", lua_gettop(L) - 1);
+		luaL_error(L, "Error calling VH:GetNickList; expected 0 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
@@ -326,8 +323,7 @@ int _GetOPList(lua_State *L)
 		cServerDC *server = GetCurrentVerlihub();
 		if(server) {
 			oplist = (char*) server->mOpList.GetNickList().c_str();
-			if(strlen(oplist) < 1)
-				result = 0;
+			if(strlen(oplist) < 1) result = 0;
 			lua_pushboolean(L, result);
 			lua_pushstring(L, oplist);
 			return 2;
@@ -336,7 +332,7 @@ int _GetOPList(lua_State *L)
 				return 2;
 		}
 	} else {
-		luaL_error(L, "Error calling VH:GetOPList; expected  0 argument but got %d", lua_gettop(L) - 1);
+		luaL_error(L, "Error calling VH:GetOPList; expected 0 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
@@ -352,8 +348,7 @@ int _GetBotList(lua_State *L)
 		if(server) {
 			botlist = (char*) server->mRobotList.GetNickList().c_str();
 			cout << "BotList is " << server->mRobotList.GetInfoList() << endl;
-			if(strlen(botlist) < 1)
-				result = 0;
+			if(strlen(botlist) < 1) result = 0;
 			lua_pushboolean(L, result);
 			lua_pushstring(L, botlist);
 			return 2;
@@ -362,7 +357,7 @@ int _GetBotList(lua_State *L)
 			return 2;
 		}
 	} else {
-		luaL_error(L, "Error calling VH:GetBotList; expected  0 argument but got %d", lua_gettop(L) - 1);
+		luaL_error(L, "Error calling VH:GetBotList; expected 0 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
@@ -494,6 +489,7 @@ int _Ban(lua_State *L)
 		}
 		bantype = (int) lua_tonumber(L, 6);
 		if(!Ban((char *) nick.c_str(), op, reason, howlong, bantype)) {
+			lua_pushboolean(L, 0); // let the script know that ban was not successful
 			luaerror(L, "User not found");
 			return 2;
 		}
@@ -533,6 +529,7 @@ int _KickUser(lua_State *L)
 		data = (char *)lua_tostring(L, 4);
 		if(!KickUser((char *)op.c_str(), (char *)nick.c_str(), (char *)data.c_str()))
 		{
+			lua_pushboolean(L, 0); // let the script know that kick was not successful
 			luaerror(L, ERR_CALL);
 			return 2;
 		}
@@ -596,6 +593,7 @@ int _SetConfig(lua_State *L)
 		}
 		val = (char *)lua_tostring(L, 4);
 		if(!SetConfig((char *)config_name.c_str(), (char *)var.c_str(), (char *)val.c_str())) {
+			lua_pushboolean(L, 0); // let the script know that config change was not successful
 			luaerror(L, ERR_CALL);
 			return 2;
 		}
@@ -642,7 +640,7 @@ int _GetConfig(lua_State *L)
 		val = 0;
 		return 2;
 	} else {
-		luaL_error(L, "Error calling VH:GetConfig; expected 1 argument but got %d", lua_gettop(L) - 1);
+		luaL_error(L, "Error calling VH:GetConfig; expected 2 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
@@ -724,6 +722,7 @@ int _RegBot(lua_State *L)
 			if(uclass >= 3)
 				server->mUserList.SendToAll(server->mOpList.GetNickList(), true);
 		} else {
+			lua_pushboolean(L, 0); // let the script know that registering bot was not successful
 		    luaerror(L, "Error adding bot; it may already exist");
 		    return 2;
 		}
@@ -792,6 +791,7 @@ int _EditBot(lua_State *L)
 		share = (char *)lua_tostring(L, 7);
 
 		if(!server->mRobotList.ContainsNick(nick)) {
+			lua_pushboolean(L, 0); // let the script know that editing bot was not successful
 			luaerror(L, "Bot not found");
 			return 2;
 		}
@@ -812,7 +812,8 @@ int _EditBot(lua_State *L)
 			server->mUserList.SendToAll(omsg, false, true);
 			if(uclass >= 3)
 				server->mUserList.SendToAll(server->mOpList.GetNickList(), true);
-		}
+		} else
+			lua_pushboolean(L, 0); // let the script know that editing bot was not successful
 	} else {
 		luaL_error(L, "Error calling VH:EditBot; expected 6 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
@@ -855,6 +856,7 @@ int _UnRegBot(lua_State *L)
 			li->delBot((char *) nick.c_str() );
 			pi->DelRobot(robot);
 		} else {
+			lua_pushboolean(L, 0); // let the script know that unregistering bot was not successful
 		    luaerror(L, "Bot doesn't exist");
 		    return 2;
 		}
@@ -883,10 +885,10 @@ int _IsBot(lua_State *L)
 		string nick = (char *)lua_tostring(L, 2);
 		cPluginRobot *robot = (cPluginRobot *)server->mUserList.GetUserByNick(nick);
 		lua_pushboolean(L, (robot == NULL) ? 0 : 1);
-		lua_pushnil(L);
+		//lua_pushnil(L); // dont need this
 		return 2;
 	} else {
-		luaL_error(L, "Error calling VH:isBot; expected 1 argument but got %d", lua_gettop(L) - 1);
+		luaL_error(L, "Error calling VH:IsBot; expected 1 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
@@ -954,6 +956,7 @@ int _SQLFetch(lua_State *L)
 		int r = (int)lua_tonumber(L, 2);
 
 		if(!pi->mQuery->GetResult()) {
+			lua_pushboolean(L, 0); // let the script know that fetching row returned no results
 			luaerror(L, "No result");
 			return 2;
 		}
@@ -964,6 +967,7 @@ int _SQLFetch(lua_State *L)
 
 		if(!(row = pi->mQuery->Row()))
 		{
+			lua_pushboolean(L, 0); // let the script know that fetching row failed
 			luaerror(L, "Error fetching row");
 			return 2;
 		}
@@ -1015,7 +1019,7 @@ int _GetVHCfgDir(lua_State *L)
 {
 	if(lua_gettop(L) == 1) {
 		lua_pushboolean(L, 1);
-		lua_pushstring(L,  GetVHCfgDir());
+		lua_pushstring(L, GetVHCfgDir());
 		return 2;
 	} else {
 		luaL_error(L, "Error calling VH:GetVHCfgDir; expected 0 argument but got %d", lua_gettop(L) -1);

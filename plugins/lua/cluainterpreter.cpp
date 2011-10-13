@@ -124,8 +124,13 @@ bool cLuaInterpreter::Init()
 
 void cLuaInterpreter::Load()
 {
-	//Call Main first if exists
-	char * args[] = { NULL };
+	// call Main() first if exists
+
+	char * args[] = {
+		(char *)mScriptName.c_str(), // set first argument to script name, could be useful for path detection
+		NULL
+	};
+
 	CallFunction("Main", args);
 }
 
