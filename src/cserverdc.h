@@ -700,6 +700,7 @@ private:
 			mOnCloseConn(mgr, "VH_OnCloseConn", &cVHPlugin::OnCloseConn),
 			mOnUnknownMsg(mgr, "VH_OnUnknownMsg", &cVHPlugin::OnUnknownMsg),
 			mOnParsedMsgSupport(mgr, "VH_OnParsedMsgSupport", &cVHPlugin::OnParsedMsgSupport),
+			mOnParsedMsgMyPass(mgr, "VH_OnParsedMsgMyPass", &cVHPlugin::OnParsedMsgMyPass),
 			mOnParsedMsgAny(mgr, "VH_OnParsedMsgAny", &cVHPlugin::OnParsedMsgAny),
 			mOnParsedMsgAnyEx(mgr, "VH_OnParsedMsgAnyEx", &cVHPlugin::OnParsedMsgAnyEx),
 			mOnParsedMsgPM(mgr, "VH_OnParsedMsgPM", &cVHPlugin::OnParsedMsgPM),
@@ -714,7 +715,7 @@ private:
 			mOnOperatorKicks( mgr, "VH_OnOperatorKicks", &cVHPlugin::OnOperatorKicks),
 			mOnOperatorDrops( mgr, "VH_OnOperatorDrops", &cVHPlugin::OnOperatorDrops),
 			mOnUserCommand(mgr, "VH_OnUserCommand", &cVHPlugin::OnUserCommand),
-			mOnUserLogin  (mgr, "VH_OnUserLogin",   &cVHPlugin::OnUserLogin ),
+			mOnUserLogin(mgr, "VH_OnUserLogin", &cVHPlugin::OnUserLogin),
 			mOnUserLogout  (mgr, "VH_OnUserLogout",   &cVHPlugin::OnUserLogout ),
 			mOnValidateTag(mgr, "VH_OnValidateTag", &cVHPlugin::OnValidateTag),
 			mOnTimer( mgr, "VH_OnTimer", &cVHPlugin::OnTimer ),
@@ -733,6 +734,7 @@ private:
 		cVHCBL_Connection	mOnCloseConn;
 		cVHCBL_Message		mOnUnknownMsg;
 		cVHCBL_Message		mOnParsedMsgSupport;
+		cVHCBL_Message		mOnParsedMsgMyPass;
 		cVHCBL_Message		mOnParsedMsgAny;
 		cVHCBL_Message		mOnParsedMsgAnyEx;
 		cVHCBL_Message		mOnParsedMsgPM;
@@ -747,8 +749,8 @@ private:
 		cVHCBL_UsrUsrStr	mOnOperatorKicks;
 		cVHCBL_UsrUsr		mOnOperatorDrops;
 		cVHCBL_ConnText		mOnUserCommand;
-		cVHCBL_User		mOnUserLogin;
-		cVHCBL_User		mOnUserLogout;
+		cVHCBL_User			mOnUserLogin;
+		cVHCBL_User			mOnUserLogout;
 		cVHCBL_ConnTag		mOnValidateTag;
 		cVHCBL_Simple 		mOnTimer;
 		cVHCBL_String		mNickListNicks;
@@ -758,7 +760,7 @@ private:
 		cVHCBL_StringInt	mOnDelReg;
 		cVHCBL_StrIntInt	mOnUpdateClass;
 		cVHCBL_Strings		mOnHubName;
-		cVHCBL_Ban		mOnNewBan;
+		cVHCBL_Ban			mOnNewBan;
 		cVHCBL_StrStrStr	mOnUnBan;
 	};
 	// Structure that holds all callbacks.

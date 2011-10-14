@@ -483,12 +483,13 @@ int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
 	os << toUpper(_("Authors")) << "\n\tDavide Simoncelli (netcelli@verlihub-project.org)" << endl;
 	os << "\tchaosuk (chaos@dchublist.com)" << endl;
 	os << toUpper(_("Translators")) << "\n\tCzech (Uhlik), Italian (netcelli), Russian (plugman)" << endl;
-	os << toUpper(_("Contributors")) << "\n\tStefano, Intruder, Rolex, Frog" << endl;
+	os << toUpper(_("Contributors")) << "\n\tStefano, Intruder, RoLex, Frog" << endl;
 	os << toUpper(_("Website/Forums design")) << "\n\tStefano Simoncelli (netcelli@verlihub-project.org)" << endl;
 	os << toUpper(_("Credits")) << "\n\tWe would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << endl;
-	os << toUpper(_("Website")) << "\n\thttp://www.verlihub-project.org" << endl;
+	os << toUpper(_("Information")) << "\n\thttp://www.verlihub-project.org" << endl;
 	os << "\tForums: http://www.verlihub-project.org/discussions" << endl;
 	os << "\tManual: http://www.verlihub-project.org/page/index" << endl;
+	os << "\tSupport hub: dchub://hub.verlihub-project.org:7777" << endl;
 
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
@@ -596,7 +597,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		if(user_share < min_share) {
 			os << autosprintf(_("You need to share at least %s"), convertByte(min_share*1024, false).c_str());
 			mOwner->DCPublicHS(os.str(),conn);
-			return 0;
+			return 1;
 		}
 
 		cUser *user = mServer->mUserList.GetUserByNick(regnick);
@@ -606,7 +607,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		if (RegFound) {
 			os << _("You are already registered");
 			mOwner->DCPublicHS(os.str(),conn);
-			return 0;
+			return 1;
 		}
 
 		if(user && user->mxConn) {
@@ -616,7 +617,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			if(text.size() < (unsigned int) mOwner->mC.password_min_len) {
 				os << autosprintf(_("Minimum password length is %d characters, please retry."), mOwner->mC.password_min_len);
 				mOwner->DCPublicHS(os.str(),conn);
-				return 0;
+				return 1;
 			}
 
 			// Strip space

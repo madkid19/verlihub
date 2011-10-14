@@ -267,7 +267,6 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
 	string &pwd=msg->ChunkString(eCH_1_PARAM);
-
 	string omsg;
 
 	if(!conn->mpUser) {
@@ -277,6 +276,14 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 		mS->ConnCloseMsg(conn,omsg,1000, eCR_LOGIN_ERR);
 		return -1;
 	}
+
+	#ifndef WITHOUT_PLUGINS
+	if(!mS->mCallBacks.mOnParsedMsgMyPass.CallAll(conn, msg)) {
+		conn->CloseNice(1000, eCR_LOGIN_ERR);
+		return -1;
+	}
+	#endif
+
 	// Check user password
 	if(conn->mpUser->CheckPwd(pwd)) {
 		conn->SetLSFlag( eLS_PASSWD );
@@ -310,8 +317,6 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 				conn->LogStream() << "User sent password but he isn't regged" << endl;
 			return -1;
 		}
-
-
 	}
 	return 0;
 }

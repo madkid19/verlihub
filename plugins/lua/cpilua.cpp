@@ -219,7 +219,7 @@ bool cpiLua::OnParsedMsgSupport(cConnDC *conn, cMessageDC *msg)
 {
 	if((conn != NULL) && (msg != NULL)) {
 	    	char * args[] = {
-		    			(char *)conn->AddrIP().c_str(),
+		    		(char *)conn->AddrIP().c_str(),
 					(char *)msg->mStr.c_str(),
 					NULL
 		};
@@ -232,9 +232,9 @@ bool cpiLua::OnParsedMsgMyPass(cConnDC *conn, cMessageDC *msg)
 {
 	if((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL)) {
 		char * args[] = {
-					(char *)conn->mpUser->mNick.c_str(),
-					(char *)msg->ChunkString(eCH_1_ALL).c_str(),
-					NULL
+			(char *)conn->mpUser->mNick.c_str(),
+			//(char *)msg->ChunkString(eCH_1_ALL).c_str(), // dont show pass itself
+			NULL
 		}; // eCH_1_ALL, eCH_1_PARAM
 		return CallAll("VH_OnParsedMsgMyPass", args);
 	}
@@ -312,8 +312,8 @@ bool cpiLua::OnParsedMsgValidateNick(cConnDC *conn, cMessageDC *msg)
 {
 	if((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL)) {
 		char * args[] = {
-					(char *)msg->ChunkString(eCH_1_ALL).c_str(),
-					NULL
+			(char *)msg->ChunkString(eCH_1_ALL).c_str(),
+			NULL
 		}; // eCH_1_ALL, eCH_1_PARAM
 		return CallAll("VH_OnParsedMsgValidateNick", args);
 	}
@@ -324,7 +324,7 @@ bool cpiLua::OnParsedMsgAny(cConnDC *conn, cMessageDC *msg)
 {
 	if((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL)) {
 		char * args[] = {
-		    			(char *)conn->mpUser->mNick.c_str(), // send nick instead of IP
+		    		(char *)conn->mpUser->mNick.c_str(),
 					(char *)msg->mStr.c_str(),
 					NULL
 		};
@@ -336,8 +336,7 @@ bool cpiLua::OnParsedMsgAny(cConnDC *conn, cMessageDC *msg)
 bool cpiLua::OnParsedMsgAnyEx(cConnDC *conn, cMessageDC *msg) {
 	if((conn != NULL) && (conn->mpUser == NULL) && (msg != NULL)) {
 		char * args[] = {
-			(char *) conn->AddrIP().c_str(), // ip
-			//(char *) toString(mServer->cAsyncSocketServer::getPort()), // port
+			(char *) conn->AddrIP().c_str(), // ip, todo: add hub port
 			(char *) msg->mStr.c_str(),
 			NULL
 		};
@@ -421,9 +420,9 @@ bool cpiLua::OnValidateTag(cConnDC *conn, cDCTag *tag)
 {
 	if((conn != NULL) && (conn->mpUser != NULL) && (tag != NULL)) {
 		char * args[] = {
-					(char *)conn->mpUser->mNick.c_str(),
-					(char *)tag->mTag.c_str(),
-					NULL
+			(char *)conn->mpUser->mNick.c_str(),
+			(char *)tag->mTag.c_str(),
+			NULL
 		};
 		return CallAll("VH_OnValidateTag", args);
 	}
@@ -432,13 +431,16 @@ bool cpiLua::OnValidateTag(cConnDC *conn, cDCTag *tag)
 
 bool cpiLua::OnUserLogin(cUser *user)
 {
-	if(user != NULL) {
+	if (user != NULL) {
 		char * args[] = {
-					(char *)user->mNick.c_str(),
-					NULL
+			(char *)user->mNick.c_str(),
+			(char *)user->mxConn->AddrIP().c_str(),
+			NULL
 		};
+
 		return CallAll("VH_OnUserLogin", args);
 	}
+
 	return true;
 }
 
@@ -446,8 +448,8 @@ bool cpiLua::OnUserLogout(cUser *user)
 {
 	if(user != NULL) {
 		char * args[] = {
-					(char *)user->mNick.c_str(),
-					NULL
+			(char *)user->mNick.c_str(),
+			NULL
 		};
 		return CallAll("VH_OnUserLogout", args);
 	}
@@ -463,21 +465,19 @@ bool cpiLua::OnTimer()
 bool cpiLua::OnNewReg(string mNick, int mClass)
 {
 	char * args[] = {
-				(char *) mNick.c_str(),
-				 (char *) toString(mClass),
-				NULL
+		(char *) mNick.c_str(),
+		(char *) toString(mClass), // fixme: broken
+		NULL
 	};
 	return CallAll("VH_OnNewReg", args);
 }
 
 bool cpiLua::OnDelReg(string mNick, int mClass)
 {
-	ostringstream os;
-	os << mClass;
 	char * args[] = {
-				(char *) mNick.c_str(),
-				(char *) toString(mClass),
-		 		NULL
+		(char *) mNick.c_str(),
+		(char *) toString(mClass), // fixme: broken
+		NULL
 	};
 	return CallAll("VH_OnDelReg", args);
 }
@@ -487,7 +487,7 @@ bool cpiLua::OnUpdateClass(string mNick, int oldClass, int newClass)
 	char * args[] = {
 				(char *) mNick.c_str(),
 				(char *) toString(oldClass),
-				(char *) toString(newClass),
+				(char *) toString(newClass), // fixme: broken
 		  		NULL
 	};
 	return CallAll("VH_OnUpdateClass", args);
