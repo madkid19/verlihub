@@ -20,6 +20,7 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
+
 #include "src/cserverdc.h"
 #include "src/script_api.h"
 #include "callbacks.h"
@@ -37,7 +38,7 @@ namespace nVerliHub {
 
 cLuaInterpreter::cLuaInterpreter(string scriptname) : mScriptName(scriptname)
 {
-	mL = lua_open();
+	mL = luaL_newstate(); // lua_open() could be used in <=5.1
 }
 
 cLuaInterpreter::~cLuaInterpreter()
@@ -159,9 +160,14 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[])
 	lua_settop(mL, 0);
 	int base = lua_gettop(mL);
 	lua_pushliteral(mL, "_TRACEBACK");
-	lua_rawget(mL, LUA_GLOBALSINDEX);
-	lua_insert(mL, base);
 
+#if defined LUA_GLOBALSINDEX
+	lua_rawget(mL, LUA_GLOBALSINDEX); // <=5.1
+#else
+	lua_pushglobaltable(mL); // >=5.2
+#endif
+
+	lua_insert(mL, base);
 	lua_getglobal(mL, func);
 
 	if(lua_isnil(mL, -1))
