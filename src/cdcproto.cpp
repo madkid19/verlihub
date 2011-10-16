@@ -540,8 +540,12 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 			conn->CloseNice(1000, eCR_KICKED);
 			return -1;
 		}
-	}
 
+		#ifndef WITHOUT_PLUGINS
+		if (!mS->mCallBacks.mOnFirstMyINFO.CallAll(conn, msg))
+			return -2;
+		#endif
+	}
 
  	#ifndef WITHOUT_PLUGINS
 	if (!mS->mCallBacks.mOnParsedMsgMyINFO.CallAll(conn, msg))

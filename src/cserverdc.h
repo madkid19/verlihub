@@ -707,6 +707,7 @@ private:
 			mOnParsedMsgChat(mgr, "VH_OnParsedMsgChat", &cVHPlugin::OnParsedMsgChat),
 			mOnParsedMsgSearch(mgr, "VH_OnParsedMsgSearch", &cVHPlugin::OnParsedMsgSearch),
 			mOnParsedMsgMyINFO(mgr, "VH_OnParsedMsgMyINFO", &cVHPlugin::OnParsedMsgMyINFO),
+			mOnFirstMyINFO(mgr, "VH_OnFirstMyINFO", &cVHPlugin::OnFirstMyINFO),
 			mOnParsedMsgValidateNick(mgr, "VH_OnParsedMsgValidateNick", &cVHPlugin::OnParsedMsgValidateNick),
 			mOnParsedMsgConnectToMe(mgr, "VH_OnParsedMsgConnectToMe", &cVHPlugin::OnParsedMsgConnectToMe),
 			mOnParsedMsgRevConnectToMe(mgr, "VH_OnParsedMsgRevConnectToMe", &cVHPlugin::OnParsedMsgRevConnectToMe),
@@ -741,6 +742,7 @@ private:
 		cVHCBL_Message		mOnParsedMsgChat;
 		cVHCBL_Message		mOnParsedMsgSearch;
 		cVHCBL_Message		mOnParsedMsgMyINFO;
+		cVHCBL_Message		mOnFirstMyINFO;
 		cVHCBL_Message		mOnParsedMsgValidateNick;
 		cVHCBL_Message		mOnParsedMsgConnectToMe;
 		cVHCBL_Message		mOnParsedMsgRevConnectToMe;

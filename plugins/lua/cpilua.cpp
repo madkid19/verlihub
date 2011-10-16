@@ -90,6 +90,7 @@ bool cpiLua::RegisterAll()
 	RegisterCallBack("VH_OnParsedMsgRevConnectToMe");
 	RegisterCallBack("VH_OnParsedMsgSR");
 	RegisterCallBack("VH_OnParsedMsgMyINFO");
+	RegisterCallBack("VH_OnFirstMyINFO");
 	RegisterCallBack("VH_OnParsedMsgValidateNick");
 	RegisterCallBack("VH_OnParsedMsgAny");
 	RegisterCallBack("VH_OnParsedMsgAnyEx");
@@ -305,6 +306,24 @@ bool cpiLua::OnParsedMsgMyINFO(cConnDC *conn, cMessageDC *msg)
 		}; // eCH_MI_ALL, eCH_MI_DEST, eCH_MI_NICK, eCH_MI_INFO, eCH_MI_DESC, eCH_MI_SPEED, eCH_MI_MAIL, eCH_MI_SIZE
 		return CallAll("VH_OnParsedMsgMyINFO", args);
 	}
+	return true;
+}
+
+bool cpiLua::OnFirstMyINFO(cConnDC *conn, cMessageDC *msg)
+{
+	if((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL)) {
+		char * args[] = {
+			(char *)msg->ChunkString(eCH_MI_NICK).c_str(),
+			(char *)msg->ChunkString(eCH_MI_DESC).c_str(),
+			(char *)msg->ChunkString(eCH_MI_SPEED).c_str(),
+			(char *)msg->ChunkString(eCH_MI_MAIL).c_str(),
+			(char *)msg->ChunkString(eCH_MI_SIZE).c_str(),
+			NULL
+		}; // eCH_MI_ALL, eCH_MI_DEST, eCH_MI_NICK, eCH_MI_INFO, eCH_MI_DESC, eCH_MI_SPEED, eCH_MI_MAIL, eCH_MI_SIZE
+
+		return CallAll("VH_OnFirstMyINFO", args);
+	}
+
 	return true;
 }
 
