@@ -1723,7 +1723,7 @@ bool cDCConsole::cfRegUsr::operator()()
 	}
 
 //	"!r(eg)?(\S+) ", "(\\S+)( (((\\S+) )?(.*)))?"
-	string nick, par, field;
+	string nick, par, field, pass;
 
 	int ParClass = 1;
 	int MyClass = this->mConn->mpUser->mClass;
@@ -1736,6 +1736,17 @@ bool cDCConsole::cfRegUsr::operator()()
 	WithPar=mParRex->PartFound(3);
 	if(Action != eAC_SET && WithPar)
 		mParRex->Extract(3,mParStr,par);
+
+	bool WithPass = false;
+
+	if (Action == eAC_NEW) {
+		WithPass = mParRex->PartFound(5);
+
+		if (WithPass) {
+			mParRex->Extract(5, mParStr, par); // class
+			mParRex->Extract(6, mParStr, pass); // password
+		}
+	}
 
 	if(Action == eAC_SET) {
 		WithPar = WithPar && mParRex->PartFound(5);
@@ -1816,33 +1827,40 @@ bool cDCConsole::cfRegUsr::operator()()
 
 	switch (Action) {
 		case eAC_NEW: // new
-			if(RegFound) {
-				*mOS << autosprintf(_("User '%s' already exists"), nick.c_str());
+			if (RegFound) {
+				*mOS << autosprintf(_("User %s already exists."), nick.c_str());
 				return false;
 			}
+
 			#ifndef WITHOUT_PLUGINS
-			if(!mS->mCallBacks.mOnNewReg.CallAll(nick,ParClass)) {
-				(*mOS) << _("Action has been discarded by plugin");
+			if (!mS->mCallBacks.mOnNewReg.CallAll(nick, ParClass)) {
+				(*mOS) << _("Action has been discarded by plugin.");
 				return false;
 			}
 			#endif
 
-			if (mS->mR->AddRegUser(nick, mConn, ParClass)) {
-				if(user && user->mxConn) {
+			if (mS->mR->AddRegUser(nick, mConn, ParClass, (WithPass ? pass.c_str() : NULL))) {
+				if (user && user->mxConn) {
 					ostr.str(mS->mEmpty);
-					ostr << _("You have been registered, please set up your password NOW \n"
-						"using command +passwd <your_new_passwd>\n"
-						"replace <your_new_passwd> with your new password.");
+
+					if (!WithPass)
+						ostr << _("You have been registered, please set up your password with +passwd <password> command.");
+					else
+						ostr << _("You have been registered with following password") << ": " << pass.c_str();
+
 					mS->DCPrivateHS(ostr.str(), user->mxConn);
 				}
-				(*mOS) << _("User has been added; please tell him to change his password");
-			}
-			else
-			{
-				(*mOS) << _("Error adding the new user");
+
+				if (!WithPass)
+					(*mOS) << _("User has been added, please tell him to set his password.");
+				else
+					(*mOS) << _("User has been added with password.");
+			} else {
+				(*mOS) << _("Error adding new user.");
 				return false;
 			}
 		break;
+
 		case eAC_DEL: // delete
 			#ifndef WITHOUT_PLUGINS
 			if(!mS->mCallBacks.mOnDelReg.CallAll(nick,ui.mClass)) {
