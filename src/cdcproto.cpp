@@ -577,13 +577,13 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	}
 
 	if(mS->mC.show_email == 0) {
-		email= " ";
+		email= "";
 	} else {
 		email = msg->ChunkString(eCH_MI_MAIL);
 	}
 
 	if(mS->mC.show_speed == 0) {
-		speed = " ";
+		speed = "";
 	} else {
 		speed = msg->ChunkString(eCH_MI_SPEED);
 	}
@@ -998,42 +998,41 @@ int cDCProto::DC_MultiConnectToMe(cMessageDC * , cConnDC * )
 }
 
 /** Treat the DC message in a appropriate way */
-int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn )
+int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn)
 {
-	if(msg->SplitChunks()) return -1;
-	if(!conn->mpUser) return -1;
-	if(!conn->mpUser->mInList) return -2;
-	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0))
-		return -4;
+	if (msg->SplitChunks()) return -1;
+	if (!conn->mpUser) return -1;
+	if (!conn->mpUser->mInList) return -2;
+	if (!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0)) return -4;
 	ostringstream ostr;
 
-	// check nick
-	if(msg->ChunkString(eCH_RC_NICK) != conn->mpUser->mNick) {
+	if (msg->ChunkString(eCH_RC_NICK) != conn->mpUser->mNick) { // check nick
 		ostr << autosprintf(_("Your nick is not %s but %s."), msg->ChunkString(eCH_RC_NICK).c_str(), conn->mpUser->mNick.c_str());
 		mS->ConnCloseMsg(conn, ostr.str(), 1500, eCR_SYNTAX);
 		return -1;
 	}
 
-	// Find and check the other nickname
+	// find and check the other nickname
 	string &str = msg->ChunkString(eCH_RC_OTHER);
 	cUser *other = mS->mUserList.GetUserByNick(str);
-	if(!other) {
+
+	if (!other) {
 		ostr << autosprintf(_("User %s not found."), str.c_str());
+		mS->DCPublicHS(ostr.str(), conn);
 		return -2;
 	}
 
-	if(conn->mpUser->mClass + mS->mC.classdif_download < other->mClass)
-		return -4;
+	if (conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) return -4;
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgRevConnectToMe.CallAll(conn, msg))
-		return -2;
+	if (!mS->mCallBacks.mOnParsedMsgRevConnectToMe.CallAll(conn, msg)) return -2;
 	#endif
 
-	if(other->mxConn)
-		other->mxConn->Send( msg->mStr );
+	if (other->mxConn)
+		other->mxConn->Send(msg->mStr);
 	else
-		mS->DCPrivateHS(_("Robots do not share."),conn);
+		mS->DCPublicHS(_("Robots do not share."), conn);
+
 	return 0;
 }
 
