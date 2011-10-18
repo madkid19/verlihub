@@ -1180,7 +1180,7 @@ bool cDCConsole::cfBan::operator()()
 					return false;
 				}
 				#endif
-				(*mOS) << autosprintf(_("User %s unbanned."), mConn->mpUser->mNick.c_str()) << "\r\n";
+				(*mOS) << autosprintf(_("User %s unbanned"), mConn->mpUser->mNick.c_str()) << ":\r\n";
 			}
 
 			if(BanType == eBF_NICKIP) {

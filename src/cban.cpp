@@ -106,10 +106,10 @@ void cBan::DisplayUser(ostream &os)
 	if(mRangeMin) {
 		cBanList::Num2Ip(mRangeMin, initialRange);
 		cBanList::Num2Ip(mRangeMax, endRange);
-		os << setw(PADDING) << setiosflags(ios::left) << _("IP range") << initialRange.c_str() << " - " << endRange.c_str() << endl;
+		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("IP range") << initialRange.c_str() << " - " << endRange.c_str() << endl;
 	}
 	if(mShare)
-		os << setw(PADDING) << setiosflags(ios::left) << _("Share") << convertByte(mShare, false).c_str() << endl;
+		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Share") << mShare << " (" << convertByte(mShare, false).c_str() << ")" << endl;
 }
 
 void cUnBan::DisplayUser(ostream &os)

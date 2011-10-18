@@ -895,8 +895,8 @@ msgstr "Действие было отвергнуто плагином"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1181
 #, c-format
-msgid "User %s unbanned."
-msgstr "Пользователь %s разбанен."
+msgid "User %s unbanned"
+msgstr "Пользователь %s разбанил"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1203
 #, c-format
