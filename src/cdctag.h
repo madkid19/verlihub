@@ -57,6 +57,14 @@ namespace nVerliHub {
 			eTC_PARSE,
 			/// User has too many open hubs
 			eTC_MAX_HUB,
+			// user has too few open hubs
+			eTC_MIN_HUB,
+			// user has too few open hubs as user
+			eTC_MIN_HUB_USR,
+			// user has too few open hubs as registered user
+			eTC_MIN_HUB_REG,
+			// user has too few open hubs as operator
+			eTC_MIN_HUB_OP,
 			/// User has too many open slots
 			eTC_MAX_SLOTS,
 			/// User has too few open slots
@@ -155,6 +163,15 @@ namespace nVerliHub {
 
 			/// The number of open hubs.
 			int mTotHubs;
+
+			// the number of open hubs as user
+			int mHubsUsr;
+
+			// the number of open hubs as registered user
+			int mHubsReg;
+
+			// the number of open hubs as operator
+			int mHubsOp;
 
 			/// The number of open slots.
 			int mSlots;

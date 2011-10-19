@@ -246,6 +246,10 @@ void cDCConf::AddVars()
 	Add("show_speed",show_speed,1);
 	Add("tag_max_hs_ratio",tag_max_hs_ratio,100.0);
 	Add("tag_max_hubs",tag_max_hubs,100);
+	Add("tag_min_hubs", tag_min_hubs, 0);
+	Add("tag_min_hubs_usr", tag_min_hubs_usr, 0);
+	Add("tag_min_hubs_reg", tag_min_hubs_reg, 0);
+	Add("tag_min_hubs_op", tag_min_hubs_op, 0);
 	Add("tag_min_version",tag_min_version,-1);
 	Add("tag_max_version",tag_max_version,-1);
 	// End tag configuration

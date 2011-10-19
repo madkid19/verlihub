@@ -36,6 +36,9 @@ namespace nVerliHub {
 cDCTag::cDCTag(cServerDC *mS, cDCClient *c) : mServer(mS), client(c)
 {
 	mTotHubs = -1;
+	mHubsUsr = -1;
+	mHubsReg = -1;
+	mHubsOp = -1;
 	mSlots = -1;
 	mLimit = -1;
 }
@@ -43,6 +46,9 @@ cDCTag::cDCTag(cServerDC *mS, cDCClient *c) : mServer(mS), client(c)
 cDCTag::cDCTag(cServerDC *mS) : mServer(mS)
 {
 	mTotHubs = -1;
+	mHubsUsr = -1;
+	mHubsReg = -1;
+	mHubsOp = -1;
 	mSlots = -1;
 	mLimit = -1;
 }
@@ -86,9 +92,33 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 
-	if(mTotHubs > mServer->mC.tag_max_hubs) {
-		os << autosprintf(_("Too many open hubs, max is %d"), mServer->mC.tag_max_hubs);
+	if (mTotHubs > mServer->mC.tag_max_hubs) {
+		os << autosprintf(_("Too many open hubs, maximum is %d and you have %d"), mServer->mC.tag_max_hubs, mTotHubs);
 		code = eTC_MAX_HUB;
+		return false;
+	}
+
+	if (mTotHubs < mServer->mC.tag_min_hubs) {
+		os << autosprintf(_("Too few open hubs, minimum is %d and you have %d"), mServer->mC.tag_min_hubs, mTotHubs);
+		code = eTC_MIN_HUB;
+		return false;
+	}
+
+	if (mHubsUsr != -1 && mHubsUsr < mServer->mC.tag_min_hubs_usr) {
+		os << autosprintf(_("Too few open hubs as user, minimum is %d and you have %d"), mServer->mC.tag_min_hubs_usr, mHubsUsr);
+		code = eTC_MIN_HUB_USR;
+		return false;
+	}
+
+	if (mHubsReg != -1 && mHubsReg < mServer->mC.tag_min_hubs_reg) {
+		os << autosprintf(_("Too few open hubs as registered user, minimum is %d and you have %d"), mServer->mC.tag_min_hubs_reg, mHubsReg);
+		code = eTC_MIN_HUB_REG;
+		return false;
+	}
+
+	if (mHubsOp != -1 && mHubsOp < mServer->mC.tag_min_hubs_op) {
+		os << autosprintf(_("Too few open hubs as operator, minimum is %d and you have %d"), mServer->mC.tag_min_hubs_op, mHubsOp);
+		code = eTC_MIN_HUB_OP;
 		return false;
 	}
 
