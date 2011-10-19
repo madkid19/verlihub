@@ -404,18 +404,15 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		return -1;
 	}
 
-
-	////////////////////// BEGIN TAG VERRIFICATION
+	/* begin tag verification */
 	// parse conention type
-	if(conn->mConnType == NULL)
-		conn->mConnType = ParseSpeed(msg->ChunkString(eCH_MI_SPEED));
-
-	// analyze check user's tag
+	if (conn->mConnType == NULL) conn->mConnType = ParseSpeed(msg->ChunkString(eCH_MI_SPEED));
+	// check users tag
 	cDCTag *tag = mS->mCo->mDCClients->ParseTag(msg->ChunkString(eCH_MI_DESC));
-	if (!mS->mC.tag_allow_none && mS->mCo->mDCClients->mPositionInDesc < 0 && conn->mpUser->mClass < eUC_OPERATOR && conn->mpUser->mClass != eUC_PINGER) {
-		cmsg = _("Turn on your tag");
-		if(conn->Log(2))
-			conn->LogStream() << "No tag " << endl;
+
+	if (!mS->mC.tag_allow_none && (mS->mCo->mDCClients->mPositionInDesc < 0) && (conn->mpUser->mClass < mS->mC.tag_min_class_ignore) && (conn->mpUser->mClass != eUC_PINGER)) {
+		cmsg = _("Turn on your tag.");
+		if (conn->Log(2)) conn->LogStream() << "No tag" << endl;
 		mS->ConnCloseMsg(conn, cmsg, 1000, eCR_TAG_NONE);
 		delete tag;
 		return -1;
@@ -423,24 +420,24 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 
 	bool TagValid = true;
 	int tag_result = 0;
-	if (conn->mpUser->mClass < mS->mC.tag_min_class_ignore && conn->mpUser->mClass != eUC_PINGER) {
+
+	if (((!mS->mC.tag_allow_none) || ((mS->mC.tag_allow_none) && (mS->mCo->mDCClients->mPositionInDesc >= 0))) && (conn->mpUser->mClass < mS->mC.tag_min_class_ignore) && (conn->mpUser->mClass != eUC_PINGER)) {
 		TagValid = tag->ValidateTag(os, conn->mConnType, tag_result);
 	}
+
 	#ifndef WITHOUT_PLUGINS
 		TagValid = TagValid && mS->mCallBacks.mOnValidateTag.CallAll(conn, tag);
 	#endif
 
-	if(!TagValid) {
-		if(conn->Log(2))
-			conn->LogStream() << "Invalid tag: (" << tag_result << ")\n Tag info " << tag << endl;
+	if (!TagValid) {
+		if(conn->Log(2)) conn->LogStream() << "Invalid tag: " << tag_result << "\nTag info: " << tag << endl;
 		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_TAG_INVALID);
 		return -1;
 	}
 
-	if( tag->mClientMode == eCM_PASSIVE ||  tag->mClientMode == eCM_SOCK5 )
-					conn->mpUser->IsPassive = true;
-	////////////////////// END TAG VERRIFICATION
+	if ((tag->mClientMode == eCM_PASSIVE) || (tag->mClientMode == eCM_SOCK5)) conn->mpUser->IsPassive = true;
 	delete tag;
+	/* end tag verification */
 
 	// passive user limit
 	if (conn->mpUser->IsPassive && (mS->mC.max_users_passive != -1) && (conn->GetTheoricalClass() < eUC_OPERATOR) && (mS->mPassiveUsers.Size() >= mS->mC.max_users_passive)) {
