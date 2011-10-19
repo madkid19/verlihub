@@ -71,7 +71,7 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	//@todo tMsgAct action = this->mS->Filter(tDCMsg(msg->mType),conn);
 	if(strlen(Msg->mStr.data()) < Msg->mStr.size())
 	{
-		//mS->ReportUserToOpchat(conn,"Sending null chars, probably attempt of an attack.");
+		mS->ReportUserToOpchat(conn, _("Sending null chars, probably attempt of an attack."));
 		conn->CloseNow();
 		return -1;
 	}
@@ -431,6 +431,17 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 					conn->mpUser->IsPassive = true;
 	////////////////////// END TAG VERRIFICATION
 	delete tag;
+
+	// passive user limit
+	if (conn->mpUser->IsPassive && (mS->mC.max_users_passive != -1) && (conn->GetTheoricalClass() < eUC_OPERATOR) && (mS->mPassiveUsers.Size() >= mS->mC.max_users_passive)) {
+		os << autosprintf(_("Passive user limit exceeded by %d users, please become active to enter the hub."), mS->mPassiveUsers.Size());
+
+		if (conn->Log(2))
+			conn->LogStream() << "Passive user limit exceeded: " << mS->mPassiveUsers.Size() << endl;
+
+		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
+		return -1;
+	}
 
 	// Check min and max share conditions
 	string &str_share=msg->ChunkString(eCH_MI_SIZE);

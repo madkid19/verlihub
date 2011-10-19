@@ -132,6 +132,8 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	  }
 
 	  ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.Size());
+	  ReplaceVarInString(buf, "USERS_ACTIVE", buf, (int)server.mActiveUsers.Size());
+	  ReplaceVarInString(buf, "USERS_PASSIVE", buf, (int)server.mPassiveUsers.Size());
 	  ReplaceVarInString(buf, "USERSPEAK", buf, (int)server.mUsersPeak);
 	  ReplaceVarInString(buf, "UPTIME", buf, theTime.AsPeriod().AsString());
 	  ReplaceVarInString(buf, "VERSION", buf, VERSION);

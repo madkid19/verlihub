@@ -88,6 +88,7 @@ void cDCConf::AddVars()
 
 	// Max users configuration
 	Add("max_users",max_users_total,6000);
+	Add("max_users_passive", max_users_passive, -1);
 	Add("max_extra_regs",max_extra_regs,25);
 	Add("max_extra_vips",max_extra_vips,50);
 	Add("max_extra_ops",max_extra_ops,100);

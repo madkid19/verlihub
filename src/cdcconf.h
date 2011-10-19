@@ -65,6 +65,7 @@ public:
 	friend class nVerliHub::nSocket::cConnDC;
 public:
 	unsigned int max_users_total;
+	int max_users_passive;
 	unsigned int max_users[7];
 	unsigned int max_extra_regs;
 	unsigned int max_extra_vips;
