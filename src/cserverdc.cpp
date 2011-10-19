@@ -45,9 +45,9 @@
 #include "ctriggers.h"
 #include "i18n.h"
 
-#define HUB_VERSION_CLASS "(" __CURR_DATE_TIME__ ")"
+#define HUB_VERSION_CLASS __CURR_DATE_TIME__
 #define LOCK_VERSION PACKAGE
-#define HUB_VERSION_NAME "VerliHub"
+#define HUB_VERSION_NAME "Verlihub"
 #define PADDING 25
 
 namespace nVerliHub {
@@ -550,12 +550,11 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" VERSION "|";
 	if (mC.host_header == 1) {
 		if(mC.extended_welcome_message) {
-			os << HUB_VERSION_NAME "-" << VERSION << " " << HUB_VERSION_CLASS << "|";
-			os << "<" << mC.hub_security << ">" << " " << _("RunTime") << ": " << runtime.AsPeriod()<<"|";
-			os << "<" << mC.hub_security << ">" << " " << _("User Count") << ": " << mUserCountTot <<"|";
-			os << "<" << mC.hub_security << ">" << " " << _("System Status") << ": " << mStatus << "|";
-			if(!mC.hub_version_special.empty())
-				os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
+			os << _("Running") << " " << HUB_VERSION_NAME << " " << VERSION << " " << _("build") << " " << HUB_VERSION_CLASS << "|";
+			os << "<" << mC.hub_security << "> " << _("Runtime") << ": " << runtime.AsPeriod() << "|";
+			os << "<" << mC.hub_security << "> " << _("User count") << ": " << mUserCountTot << "|";
+			os << "<" << mC.hub_security << "> " << _("System status") << ": " << mStatus << "|";
+			if(!mC.hub_version_special.empty()) os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
 		} else {
 			os << autosprintf(_("This hub is running version %s%s %s of %s (RunTime: %s / User count: %d)"),
 			VERSION, mC.hub_version_special.c_str(), HUB_VERSION_CLASS, HUB_VERSION_NAME, runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
@@ -633,8 +632,10 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 		}
 		else
 		{
-			omsg = _("You are already in the hub.");
+			omsg = _("Your nick is already in use.");
 			DCPublicHS(omsg, conn);
+			omsg = "$ValidateDenide"; conn->Send(omsg);
+			// todo: add redirect
 			conn->CloseNow();
 			return false;
 		}
@@ -893,9 +894,7 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick, int &closeReason)
 	stringstream errmsg,os;
 	// Default close reason
 	closeReason = eCR_INVALID_USER;
-	if(!conn)
-		return 0;
-	string omsg;
+	if (!conn) return 0;
 	//time_t n;
 	bool close=false;
 
@@ -927,38 +926,43 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick, int &closeReason)
 		case eVN_OK:
 		break;
 		case eVN_CHARS:
-			errmsg << _("unallowed characters in your nick.");
+			errmsg << _("Unallowed characters in your nick.");
 			if(mC.nick_chars.size())
 				 errmsg << autosprintf(_("use these: %s"), mC.nick_chars.c_str());
 		break;
 		case eVN_SHORT:
-			errmsg << _("your nick is too short");
+			errmsg << _("Your nick is too short.");
 		break;
 		case eVN_LONG:
-			errmsg << _("your nick is too long");
+			errmsg << _("Your nick is too long.");
 		break;
-		case eVN_USED:
-			errmsg << _("your nick is already in use");
+		case eVN_USED: // never happens
+			errmsg << _("Your nick is already in use.");
 		break;
 		case eVN_PREFIX:
 			errmsg << autosprintf(_("Invalid nick prefix. Use: %s"), mC.nick_prefix.c_str());
 		break;
 		case eVN_NOT_REGED_OP:
-			errmsg << _("operator not registered");
+			errmsg << _("Operator not registered.");
 		break;
 		case eVN_BANNED:
-			errmsg << autosprintf(_("Wait %s before reconnecting!!"), cTime(mBanList->IsNickTempBanned(nick) - cTime().Sec()).AsPeriod().AsString().c_str());
+			errmsg << autosprintf(_("Wait %s before reconnecting."), cTime(mBanList->IsNickTempBanned(nick) - cTime().Sec()).AsPeriod().AsString().c_str());
 		break;
 		default:
-			errmsg << _("unknown error");
+			errmsg << _("Unknown error.");
 		break;
 	}
 
+	if (close) {
+		if (vn == eVN_USED) {
+			static string omsg; omsg = "$ValidateDenide"; conn->Send(omsg);
+		}
 
-	if(close) {
-		DCPublicHS(errmsg.str(),conn);
+		DCPublicHS(errmsg.str(), conn);
+
 		if (conn->Log(3))
-			conn->LogStream() << "Bad Nick: " << errmsg.str() << endl;
+			conn->LogStream() << "Bad nick: " << errmsg.str() << endl;
+
 		return 0;
 	}
 
@@ -1277,6 +1281,24 @@ int cServerDC::WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, c
 			}
 		}
 	}
+	return cnt;
+}
+
+int cServerDC::CntConnIP(string ip)
+{
+	cUserCollection::iterator i;
+	int cnt = 0;
+	cConnDC *conn;
+
+	for (i = mUserList.begin(); i != mUserList.end(); ++i) {
+		conn = ((cUser*)(*i))->mxConn;
+
+		if (conn) {
+			if ((conn->GetTheoricalClass() <= eUC_REGUSER) && (conn->AddrIP() == ip))
+				cnt++;
+		}
+	}
+
 	return cnt;
 }
 

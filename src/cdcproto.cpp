@@ -166,23 +166,33 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	limit += limit_extra;
 	limit_cc += limit_extra;
 
-	// Check the max_users limit
-	if((conn->GetTheoricalClass() < eUC_OPERATOR) && ((mS->mUserCountTot >= limit) || (mS->mUserCount[conn->mGeoZone] >= limit_cc))) {
-		os << _("<<User limit exceeded, hub is full.>>") << "\r\n" << autosprintf(_("Online users: %d"),  mS->mUserCountTot);
-		if(conn->Log(2)) {
-			conn->LogStream()
-				<< "Hub is full (" << mS->mUserCountTot
-				<< "/" << limit << "::"
-				<< mS->mUserCount[conn->mGeoZone] << "/"
-				<< limit_cc << "), closing.(" << conn->mCC << ")" << endl;
-		}
+	// check the max_users limit
+	if ((conn->GetTheoricalClass() < eUC_OPERATOR) && ((mS->mUserCountTot >= limit) || (mS->mUserCount[conn->mGeoZone] >= limit_cc))) {
+		os << autosprintf(_("User limit exceeded at %d online users."), mS->mUserCountTot);
+		if (mS->mC.max_users_total == 0) os << " " << _("This is a registered users only hub.");
 
-		mS->ConnCloseMsg(conn,os.str(),1000, eCR_USERLIMIT);
+		if (conn->Log(2))
+			conn->LogStream() << "Hub is full: " << mS->mUserCountTot << "/" << limit << " :: " << mS->mUserCount[conn->mGeoZone] << "/" << limit_cc << " :: " << conn->mCC << endl;
+
+		omsg = "$HubIsFull"; conn->Send(omsg);
+		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
 		return -1;
 	} else {
 		conn->SetLSFlag(eLS_ALLOWED);
-		mS->mUserCountTot ++;
-		mS->mUserCount[conn->mGeoZone] ++;
+		mS->mUserCountTot++;
+		mS->mUserCount[conn->mGeoZone]++;
+	}
+
+	// user limit from single ip
+	if ((mS->mC.max_users_from_ip != 0) && (conn->GetTheoricalClass() < eUC_VIPUSER)) {
+		int cnt = mS->CntConnIP(conn->mAddrIP);
+
+		if (cnt >= mS->mC.max_users_from_ip) {
+			os << autosprintf(_("User limit from IP address %s exceeded at %d online users."), conn->mAddrIP.c_str(), cnt);
+			omsg = "$HubIsFull"; conn->Send(omsg);
+			mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
+			return -1;
+		}
 	}
 
 	// Send hub name
@@ -434,11 +444,12 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 
 	// passive user limit
 	if (conn->mpUser->IsPassive && (mS->mC.max_users_passive != -1) && (conn->GetTheoricalClass() < eUC_OPERATOR) && (mS->mPassiveUsers.Size() >= mS->mC.max_users_passive)) {
-		os << autosprintf(_("Passive user limit exceeded by %d users, please become active to enter the hub."), mS->mPassiveUsers.Size());
+		os << autosprintf(_("Passive user limit exceeded at %d online passive users, please become active to enter the hub."), mS->mPassiveUsers.Size());
 
 		if (conn->Log(2))
 			conn->LogStream() << "Passive user limit exceeded: " << mS->mPassiveUsers.Size() << endl;
 
+		static string omsg; omsg = "$HubIsFull"; conn->Send(omsg);
 		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
 		return -1;
 	}

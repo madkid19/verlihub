@@ -340,26 +340,30 @@ int cDCConsole::CmdQuit(istringstream &, cConnDC * conn, int code)
 
 bool cDCConsole::cfGetConfig::operator()()
 {
-	ostringstream os;
-
 	if (mConn->mpUser->mClass < eUC_ADMIN) {
-		*mOS << _("No rights");
+		*mOS << _("No rights.");
 		return false;
 	}
+
+	ostringstream os, lst;
 	string file;
 	cConfigBaseBase::tIVIt it;
-	const int width = 5;
 	GetParStr(1, file);
 
-	os << "\n ";
-	os << setw(34) << setiosflags(ios::left) << toUpper(_("Variable"));
-	os << toUpper(_("Value")) << "\n";
-	os << " " << string(34+35, '=') << endl;
-	if(file.empty())
+	if (file.empty()) {
 		file = mS->mDBConf.config_name;
 
-	mS->mSetupList.OutputFile(file.c_str(), os);
-	mS->DCPrivateHS(os.str(),mConn);
+		for (it = mS->mC.mvItems.begin(); it != mS->mC.mvItems.end(); it++)
+			lst << " [*] " << mS->mC.mhItems.GetByHash(*it)->mName << " = " << *(mS->mC.mhItems.GetByHash(*it)) << "\r\n";
+	} else
+		mS->mSetupList.OutputFile(file.c_str(), lst);
+
+	if (lst.str() == "")
+		os << autosprintf(_("Configuration file %s is empty."), file.c_str());
+	else
+		os << autosprintf(_("Configuration file %s"), file.c_str()) << ":\r\n\r\n" << lst.str();
+
+	mS->DCPrivateHS(os.str(), mConn);
 	return true;
 }
 
@@ -1849,6 +1853,7 @@ bool cDCConsole::cfRegUsr::operator()()
 						ostr << _("You have been registered with following password") << ": " << pass.c_str();
 
 					mS->DCPrivateHS(ostr.str(), user->mxConn);
+					// @todo: no reconnect required
 				}
 
 				if (!WithPass)

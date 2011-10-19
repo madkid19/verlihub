@@ -499,6 +499,12 @@ class cServerDC : public cAsyncSocketServer
 		*/
 		int WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, const string&separator, bool exact=true);
 
+		/*
+		* Returns number of users with class <= 1 that are connected from specific IP address.
+		* ip = The IP address.
+		* return = The number of found users.
+		*/
+		int CntConnIP(string ip);
 
 		// The buffer that holds data to send to all
 		string mSendAllBuf;

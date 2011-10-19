@@ -63,7 +63,8 @@ void cSetupList::OutputFile(const string &file, ostream &os)
 	const int width = 5;
 	db_iterator it;
 	SelectFields(mQuery.OStream());
-	if(file == "plugins")
+
+	if (file == "plugins")
 		mQuery.OStream() << " WHERE file LIKE 'pi_%'";
 	else
 		mQuery.OStream() << " WHERE file='" << file << "'";
@@ -71,14 +72,13 @@ void cSetupList::OutputFile(const string &file, ostream &os)
 	mQuery.OStream() << " ORDER BY `var` ASC";
 	string val;
 
-	for(it = db_begin(); it != db_end(); ++it) {
+	for (it = db_begin(); it != db_end(); ++it) {
 		cDCProto::EscapeChars(mModel.mVarValue, val);
 		string varName = mModel.mVarName;
-		if(file == "plugins")
-			varName = mModel.mFile + "." + varName;
-
-		os << " " << setw(35) << setiosflags(ios::left) << varName << val << "\n";
+		if (file == "plugins") varName = mModel.mFile + "." + varName;
+		os << " [*] " << varName << " = " << val << "\r\n";
 	}
+
 	mQuery.Clear();
 }
 
