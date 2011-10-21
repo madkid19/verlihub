@@ -710,6 +710,7 @@ private:
 			mOnParsedMsgAny(mgr, "VH_OnParsedMsgAny", &cVHPlugin::OnParsedMsgAny),
 			mOnParsedMsgAnyEx(mgr, "VH_OnParsedMsgAnyEx", &cVHPlugin::OnParsedMsgAnyEx),
 			mOnParsedMsgPM(mgr, "VH_OnParsedMsgPM", &cVHPlugin::OnParsedMsgPM),
+			mOnParsedMsgMCTo(mgr, "VH_OnParsedMsgMCTo", &cVHPlugin::OnParsedMsgMCTo),
 			mOnParsedMsgChat(mgr, "VH_OnParsedMsgChat", &cVHPlugin::OnParsedMsgChat),
 			mOnParsedMsgSearch(mgr, "VH_OnParsedMsgSearch", &cVHPlugin::OnParsedMsgSearch),
 			mOnParsedMsgMyINFO(mgr, "VH_OnParsedMsgMyINFO", &cVHPlugin::OnParsedMsgMyINFO),
@@ -745,6 +746,7 @@ private:
 		cVHCBL_Message		mOnParsedMsgAny;
 		cVHCBL_Message		mOnParsedMsgAnyEx;
 		cVHCBL_Message		mOnParsedMsgPM;
+		cVHCBL_Message		mOnParsedMsgMCTo;
 		cVHCBL_Message		mOnParsedMsgChat;
 		cVHCBL_Message		mOnParsedMsgSearch;
 		cVHCBL_Message		mOnParsedMsgMyINFO;

@@ -44,6 +44,7 @@ cProtoCommand /*cMessageDC::*/sDC_Commands[]=
 	cProtoCommand(string("$MultiConnectToMe ")),  // not implemented
 	cProtoCommand(string("$RevConnectToMe ")), // check: nick, other_nick
 	cProtoCommand(string("$To: ")), // check: nick, other_nick
+	cProtoCommand(string("$MCTo: ")), // check nick and othernick
 	cProtoCommand(string("<")), // check: nick, delay, size, line_count
 	cProtoCommand(string("$Quit ")), // no chech necessary
 	cProtoCommand(string("$OpForceMove $Who:")), // check: op, nick
@@ -51,13 +52,11 @@ cProtoCommand /*cMessageDC::*/sDC_Commands[]=
 	cProtoCommand(string("$MultiSearch Hub:")), // check: nick, delay
 	cProtoCommand(string("$MultiSearch ")),  // check: ip, delay
 	cProtoCommand(string("$Supports ")),
-	cProtoCommand(string("$NetInfo ")),
 	cProtoCommand(string("$Ban ")),
 	cProtoCommand(string("$TempBan ")),
 	cProtoCommand(string("$UnBan ")),
 	cProtoCommand(string("$GetBanList")),
 	cProtoCommand(string("$WhoIP ")),
-	cProtoCommand(string("$Banned ")),
 	cProtoCommand(string("$SetTopic ")),
 	cProtoCommand(string("$GetTopic ")),
 	cProtoCommand(string("$BotINFO "))
@@ -104,7 +103,6 @@ bool cMessageDC::SplitChunks()
 		case eDC_QUIT:
 		case eDCO_UNBAN:
 		case eDCO_WHOIP:
-		case eDCO_BANNED:
 		case eDCO_SETTOPIC:
 		case eDCB_BOTINFO:
 			if (mLen < mKWSize) mError = 1;
@@ -141,6 +139,13 @@ bool cMessageDC::SplitChunks()
 			if(!SplitOnTwo( " $<", eCH_PM_FROM, eCH_PM_FROM, eCH_PM_CHMSG)) mError =1;
 			if(!SplitOnTwo( '>', eCH_PM_CHMSG, eCH_PM_NICK, eCH_PM_MSG)) mError =1;
 			if(!ChunkRedLeft( eCH_PM_MSG, 1)) mError = 1;  // skip the " " part (after nick)
+		case eDC_MCTO:
+			// $MCTo: <othernick> From: <mynick> $<<mynick>> <message>
+			// eCH_MCTO_ALL, eCH_MCTO_TO, eCH_MCTO_FROM, eCH_MCTO_CHMSG, eCH_MCTO_NICK, eCH_MCTO_MSG
+			if (!SplitOnTwo(mKWSize, " From: ", eCH_MCTO_TO, eCH_MCTO_FROM)) mError = 1;
+			if (!SplitOnTwo(" $<", eCH_MCTO_FROM, eCH_MCTO_FROM, eCH_MCTO_CHMSG)) mError = 1;
+			if (!SplitOnTwo(">", eCH_MCTO_CHMSG, eCH_MCTO_NICK, eCH_MCTO_MSG)) mError = 1;
+			if (!ChunkRedLeft(eCH_MCTO_MSG, 1)) mError = 1;
 		break;
 		case eDC_MYNIFO:
 			// $MyINFO $ALL <nick> <interest>$ $<speed>$<e-mail>$<sharesize>$
@@ -195,10 +200,6 @@ bool cMessageDC::SplitChunks()
 				if(!SplitOnTwo( '/', eCH_SR_SLOTS, eCH_SR_SL_FR, eCH_SR_SL_TO )) mError =1;
 			}else
 				SetChunk(eCH_SR_SIZE,0,0);
-			break;
-		case eDCM_NETINFO:
-			if(!SplitOnTwo( mKWSize,'$', eCH_NI_HUBS, eCH_NI_SLOTS)) mError =1;
-			if(!SplitOnTwo( '$', eCH_NI_SLOTS, eCH_NI_SLOTS,  eCH_NI_ACTIVE)) mError =1;
 			break;
 		case eDCO_BAN:
 			if(!SplitOnTwo( mKWSize,'$', eCH_NB_NICK, eCH_NB_REASON)) mError =1;

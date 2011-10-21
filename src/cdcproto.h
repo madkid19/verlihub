@@ -146,14 +146,6 @@ protected:
 	int DCB_BotINFO(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
-	* Treat protocol message. NOT IMPLEMENTED.
-	* @param msg The parsed message.
-	* @param conn User connection.
-	* @return A negative number if an error occurs or zero otherwise.
-	*/
-	int DCO_Banned(cMessageDC * msg, nSocket::cConnDC * conn);
-
-	/**
 	* Treat $WhoIP protocol message and send requested users' IP.
 	* @param msg The parsed message.
 	* @param conn User connection.
@@ -175,8 +167,6 @@ protected:
 	int DC_RevConnectToMe(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_MultiConnectToMe(cMessageDC * msg, nSocket::cConnDC * conn);
-	/** Network info (neo Modus) */
-	int DCM_NetInfo(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** operator ban */
 	int DCO_TempBan(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** operator unban */
@@ -277,6 +267,14 @@ protected:
 	*/
 	int DC_To(cMessageDC * msg, nSocket::cConnDC * conn);
 
+	/*
+	* Treat $MCTo: protocol message.
+	* Check also private message flood.
+	* msg = The parsed message.
+	* conn = User connection.
+	* return = A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_MCTo(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat $ValidateNick protocol message.

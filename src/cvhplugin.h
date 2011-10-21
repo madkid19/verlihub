@@ -223,6 +223,14 @@ public:
 	 */
 	virtual bool OnParsedMsgPM(nSocket::cConnDC* , cMessageDC *){ return true; }
 
+	/* Event handler function that is called when private mainchat message is received.
+	* Use RegisterCallBack("VH_OnParsedMsgMCTo") to register it. This event can be discarded.
+	* return = Return false to ignore the parsed message, otherwise return true.
+	* conn = The pointer to the connection that sent the message.
+	* msg = The pointer to cMessageDC object.
+	*/
+	virtual bool OnParsedMsgMCTo(nSocket::cConnDC*, cMessageDC *){ return true; }
+
 	//! Event handler function that is called when $ConnectToMe message is received
 	/*!
 	 * 	Use RegisterCallBack("VH_OnParsedMsgConnectToMe") to register it. This event can be discardable.

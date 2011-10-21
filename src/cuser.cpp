@@ -62,7 +62,8 @@ void cUserBase::Send(string &data, bool, bool)
 cUser::cUser() :
 	mShare(0),
 	mSearchNumber(0),
-	mFloodPM(0.00,30.,10,user_global_time.Get())
+	mFloodPM(0.00,30.,10,user_global_time.Get()),
+	mFloodMCTo(0.00, 30., 10, user_global_time.Get())
 {
 	mxConn = NULL;
 	mxServer = NULL;
@@ -93,7 +94,8 @@ cUser::cUser(const string &nick) :
 	mShare(0),
 	mSearchNumber(0),
 	mHideKicksForClass(eUC_NORMUSER),
-	mFloodPM(0.00,30.,30,user_global_time.Get())
+	mFloodPM(0.00,30.,30,user_global_time.Get()),
+	mFloodMCTo(0.00, 30., 30, user_global_time.Get())
 {
 	SetClassName("cUser");
 	IsPassive = false;

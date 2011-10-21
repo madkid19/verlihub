@@ -85,6 +85,7 @@ bool cpiLua::RegisterAll()
 	RegisterCallBack("VH_OnCloseConn");
 	RegisterCallBack("VH_OnParsedMsgChat");
 	RegisterCallBack("VH_OnParsedMsgPM");
+	RegisterCallBack("VH_OnParsedMsgMCTo");
 	RegisterCallBack("VH_OnParsedMsgSearch");
 	RegisterCallBack("VH_OnParsedMsgConnectToMe");
 	RegisterCallBack("VH_OnParsedMsgRevConnectToMe");
@@ -213,6 +214,22 @@ bool cpiLua::OnParsedMsgPM(cConnDC *conn, cMessageDC *msg)
 		}; // eCH_PM_ALL, eCH_PM_TO, eCH_PM_FROM, eCH_PM_CHMSG, eCH_PM_NICK, eCH_PM_MSG
 		return CallAll("VH_OnParsedMsgPM", args);
 	}
+	return true;
+}
+
+bool cpiLua::OnParsedMsgMCTo(cConnDC *conn, cMessageDC *msg)
+{
+	if ((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL)) {
+		char * args[] = {
+			(char *)conn->mpUser->mNick.c_str(),
+			(char *)msg->ChunkString(eCH_MCTO_MSG).c_str(),
+			(char *)msg->ChunkString(eCH_MCTO_TO).c_str(),
+			NULL
+		}; // eCH_MCTO_ALL, eCH_MCTO_TO, eCH_MCTO_FROM, eCH_MCTO_CHMSG, eCH_MCTO_NICK, eCH_MCTO_MSG
+
+		return CallAll("VH_OnParsedMsgMCTo", args);
+	}
+
 	return true;
 }
 
@@ -355,8 +372,8 @@ bool cpiLua::OnParsedMsgAny(cConnDC *conn, cMessageDC *msg)
 bool cpiLua::OnParsedMsgAnyEx(cConnDC *conn, cMessageDC *msg) {
 	if((conn != NULL) && (conn->mpUser == NULL) && (msg != NULL)) {
 		char * args[] = {
-			(char *) conn->AddrIP().c_str(), // ip, todo: add hub port
-			(char *) msg->mStr.c_str(),
+			(char *)conn->AddrIP().c_str(), // ip, todo: add hub port
+			(char *)msg->mStr.c_str(),
 			NULL
 		};
 

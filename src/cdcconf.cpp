@@ -40,6 +40,7 @@ cDCConf::cDCConf( cServerDC &serv ): mS(serv)
 	max_length[eDC_MCONNECTTOME]=64;
 	max_length[eDC_RCONNECTTOME]=64;
 	max_length[eDC_TO]=2048;
+	max_length[eDC_MCTO] = 2048;
 	max_length[eDC_CHAT]=1024;
 	max_length[eDC_QUIT]=64;
 	max_length[eDC_OPFORCEMOVE]=512;
@@ -161,10 +162,16 @@ void cDCConf::AddVars()
 	Add("int_flood_pm_limit", int_flood_pm_limit, 5);
 	// End private message configuration
 
+	// private mainchat message configuration
+	Add("max_flood_counter_mcto", max_flood_counter_mcto, 5);
+	Add("int_flood_mcto_period", int_flood_mcto_period, 5);
+	Add("int_flood_mcto_limit", int_flood_mcto_limit, 5);
+
 	// User control configuration
 	Add("classdif_reg", classdif_reg, 2);
 	Add("classdif_kick", classdif_kick, 0);
 	Add("classdif_pm",classdif_pm,10);
+	Add("classdif_mcto", classdif_mcto, 10);
 	//Add("classdif_search",classdif_search,10);
 	Add("classdif_download",classdif_download,10);
 	Add("min_class_use_hub",min_class_use_hub,0);

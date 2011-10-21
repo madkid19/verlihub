@@ -98,6 +98,7 @@ public:
 	unsigned max_chat_msg;
 	int max_chat_lines;
 	int max_flood_counter_pm;
+	int max_flood_counter_mcto;
 	int nicklist_on_login;
 	bool delayed_login;
 	int delayed_search;
@@ -138,6 +139,7 @@ public:
 	unsigned classdif_search;
 	unsigned classdif_download;
 	unsigned classdif_pm;
+	unsigned classdif_mcto;
 	unsigned classdif_kick;
 	int min_class_register;
 	int min_class_bc;
@@ -158,6 +160,8 @@ public:
 	int int_login;
 	int int_flood_pm_period;
 	int int_flood_pm_limit;
+	int int_flood_mcto_period;
+	int int_flood_mcto_limit;
 	int int_chat_ms;
 	int int_nicklist;
 	int int_myinfo;

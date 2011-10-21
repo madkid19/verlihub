@@ -1306,22 +1306,21 @@ int cServerDC::CntConnIP(string ip)
 
 void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain)
 {
-	ostringstream os;
-	os << Msg;
 	if (conn) {
-		if (conn->mpUser)
-			os << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << conn->mpUser->mNick << endl;
-		if(!mUseDNS && mC.report_dns_lookup)
-			conn->DNSLookup();
-		os << setw(PADDING) << setiosflags(ios::left) << _("IP") << conn->AddrIP().c_str() << endl;
-		if(!conn->AddrHost().empty())
-			os << setw(PADDING) << setiosflags(ios::left) << _("Host") << conn->AddrHost().c_str() << endl;
-		if (!ToMain && this->mOpChat) {
+		ostringstream os;
+		os << Msg;
+
+		if (conn->mpUser) os << " ][ " << _("Nickname") << ": " << conn->mpUser->mNick;
+		os << " ][ " << _("IP") << ": " << conn->AddrIP().c_str();
+		if (!mUseDNS && mC.report_dns_lookup) conn->DNSLookup();
+		if (!conn->AddrHost().empty()) os << " ][ " << _("Host") << ": " << conn->AddrHost().c_str();
+
+		if (!ToMain && this->mOpChat)
 			this->mOpChat->SendPMToAll(os.str(), NULL);
-		} else {
+		else {
 			static string ChatMsg;
 			ChatMsg.erase();
-			cDCProto::Create_Chat(ChatMsg, mC.opchat_name,os.str());
+			cDCProto::Create_Chat(ChatMsg, mC.opchat_name, os.str());
 			this->mOpchatList.SendToAll(ChatMsg, false, true);
 		}
 	}

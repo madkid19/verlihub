@@ -87,43 +87,43 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	}
 	#endif
 
-	switch ( msg->mType )
+	switch (msg->mType)
 	{
-		case eDC_UNKNOWN: mS->mCallBacks.mOnUnknownMsg.CallAll(conn, msg); return 1;
-			break;
+		case eDC_UNKNOWN: mS->mCallBacks.mOnUnknownMsg.CallAll(conn, msg); return 1; break;
 		case eMSG_UNPARSED: msg->Parse(); return TreatMsg(msg, conn); break;
 		case eDC_KEY: this->DC_Key(msg, conn); break;
 		case eDC_VALIDATENICK: this->DC_ValidateNick(msg, conn); break;
-		case eDC_MYPASS: this->DC_MyPass( msg, conn); break;
-		case eDC_VERSION: this->DC_Version( msg, conn); break;
-		case eDC_GETNICKLIST: this->DC_GetNickList( msg, conn ); break;
-		case eDC_MYNIFO: this->DC_MyINFO( msg, conn ); break;
-		case eDC_GETINFO: this->DC_GetINFO( msg, conn ); break;
-		case eDC_CONNECTTOME: this->DC_ConnectToMe( msg, conn); break;
-		case eDC_MCONNECTTOME: this->DC_MultiConnectToMe( msg, conn);break;
-		case eDC_RCONNECTTOME: this->DC_RevConnectToMe (msg, conn); break;
-		case eDC_TO: this->DC_To ( msg, conn ); break;
-		case eDC_CHAT: this->DC_Chat (msg, conn ); break;
-		case eDC_OPFORCEMOVE: this->DC_OpForceMove( msg, conn); break;
-		case eDC_KICK: this->DC_Kick( msg, conn); break;
+		case eDC_MYPASS: this->DC_MyPass(msg, conn); break;
+		case eDC_VERSION: this->DC_Version(msg, conn); break;
+		case eDC_GETNICKLIST: this->DC_GetNickList(msg, conn); break;
+		case eDC_MYNIFO: this->DC_MyINFO(msg, conn); break;
+		case eDC_GETINFO: this->DC_GetINFO(msg, conn); break;
+		case eDC_CONNECTTOME: this->DC_ConnectToMe(msg, conn); break;
+		case eDC_MCONNECTTOME: this->DC_MultiConnectToMe(msg, conn);break;
+		case eDC_RCONNECTTOME: this->DC_RevConnectToMe(msg, conn); break;
+		case eDC_TO: this->DC_To(msg, conn); break;
+		case eDC_MCTO: this->DC_MCTo(msg, conn); break;
+		case eDC_CHAT: this->DC_Chat(msg, conn); break;
+		case eDC_OPFORCEMOVE: this->DC_OpForceMove(msg, conn); break;
+		case eDC_KICK: this->DC_Kick(msg, conn); break;
 		case eDC_SEARCH:
 		case eDC_SEARCH_PAS:
 		case eDC_MSEARCH:
-		case eDC_MSEARCH_PAS:this->DC_Search( msg, conn); break;
-		case eDC_SR: this->DC_SR ( msg, conn ); break;
-		case eDC_QUIT: mS->DCPublicHS("Bye!",conn); conn->CloseNice(2000,eCR_QUIT); break;
-		case eDCE_SUPPORTS: this->DCE_Supports( msg, conn); break;
+		case eDC_MSEARCH_PAS: this->DC_Search(msg, conn); break;
+		case eDC_SR: this->DC_SR(msg, conn); break;
+		case eDC_QUIT: mS->DCPublicHS(_("Goodbye."), conn); conn->CloseNice(2000, eCR_QUIT); break;
+		case eDCE_SUPPORTS: this->DCE_Supports(msg, conn); break;
 		case eDCO_BAN:
 		//case eDCO_TBAN: mP.DCO_TempBan(msg, conn); break;
 		case eDCO_UNBAN: this->DCO_UnBan(msg, conn); break;
 		case eDCO_GETBANLIST: this->DCO_GetBanList(msg, conn); break;
 		case eDCO_WHOIP: this->DCO_WhoIP(msg, conn); break;
-		case eDCO_BANNED: this->DCO_Banned(msg, conn); break;
 		case eDCO_GETTOPIC: this->DCO_GetTopic(msg, conn); break;
 		case eDCO_SETTOPIC: this->DCO_SetTopic(msg, conn); break;
 		case eDCB_BOTINFO: this->DCB_BotINFO(msg, conn); break;
 		default: if(Log(1)) LogStream() << "Incoming untreated event" << endl; break;
 	}
+
 	return 0;
 }
 
@@ -242,6 +242,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	try {
 		cUser *NewUser = new cUser(nick);
 		NewUser->mFloodPM.SetParams(0.0, 1. * mS->mC.int_flood_pm_period, mS->mC.int_flood_pm_limit);
+		NewUser->mFloodMCTo.SetParams(0.0, 1. * mS->mC.int_flood_mcto_period, mS->mC.int_flood_mcto_limit);
 		if(!conn->SetUser(NewUser)) {
 			conn->CloseNow();
 			return -1;
@@ -373,7 +374,6 @@ int cDCProto::DC_Version(cMessageDC * msg, cConnDC * conn)
 	return 1;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_GetNickList(cMessageDC * , cConnDC * conn)
 {
 	if(!conn) return -1;
@@ -396,7 +396,6 @@ int cDCProto::DC_GetNickList(cMessageDC * , cConnDC * conn)
 	return NickList(conn);
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 {
 	string cmsg;
@@ -672,7 +671,6 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_GetINFO(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -787,6 +785,80 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 	} else if (mS->mRobotList.ContainsNick(str)) {
 		((cUserRobot*)mS->mRobotList.GetUserBaseByNick(str))->ReceiveMsg(conn, msg);
 	}
+	return 0;
+}
+
+int cDCProto::DC_MCTo(cMessageDC * msg, cConnDC * conn)
+{
+	if (msg->SplitChunks()) return -1;
+	if (!conn->mpUser) return -1;
+	if (!conn->mpUser->mInList) return -2;
+	if (!conn->mpUser->Can(eUR_PM, mS->mTime.Sec(), 0)) return -4;
+
+	// verify senders nick
+	if ((msg->ChunkString(eCH_MCTO_FROM) != conn->mpUser->mNick) || (msg->ChunkString(eCH_MCTO_NICK) != conn->mpUser->mNick)) {
+		if (conn->Log(2)) conn->LogStream() << "User pretend to be someone else in MCTo: " << msg->ChunkString(eCH_MCTO_FROM) << endl;
+		conn->CloseNow();
+		return -1;
+	}
+
+	cTime now;
+	now.Get();
+	int fl = 0;
+	fl =- conn->mpUser->mFloodMCTo.Check(now);
+
+	if ((conn->mpUser->mClass < eUC_OPERATOR) && fl) {
+		if (conn->Log(1)) conn->LogStream() << "MCTo flood: " << msg->ChunkString(eCH_MCTO_FROM) << endl;
+
+		if (fl >= 3) {
+			mS->DCPrivateHS(_("MCTo flood."), conn);
+			ostringstream reportMessage;
+			reportMessage << autosprintf(_("*** MCTo flood: %s"), msg->ChunkString(eCH_MCTO_MSG).c_str());
+			mS->ReportUserToOpchat(conn, reportMessage.str());
+			conn->CloseNow();
+		}
+
+		return -1;
+	}
+
+	cUser::tFloodHashType Hash = 0;
+	Hash = tHashArray<void*>::HashString(msg->ChunkString(eCH_MCTO_MSG));
+
+	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR)) {
+		if (Hash == conn->mpUser->mFloodHashes[eFH_MCTO]) {
+			if (conn->mpUser->mFloodCounters[eFC_MCTO]++ > mS->mC.max_flood_counter_mcto) {
+				mS->DCPrivateHS(_("MCTo flood."), conn);
+				ostringstream reportMessage;
+				reportMessage << autosprintf(_("*** MCTo same message flood detected: %s"), msg->ChunkString(eCH_MCTO_MSG).c_str());
+				mS->ReportUserToOpchat(conn, reportMessage.str());
+				conn->CloseNow();
+				return -5;
+			}
+		} else
+			conn->mpUser->mFloodCounters[eFC_MCTO] = 0;
+	}
+
+	conn->mpUser->mFloodHashes[eFH_MCTO] = Hash;
+	// find other user
+	string &str=msg->ChunkString(eCH_MCTO_TO);
+	cUser *other = mS->mUserList.GetUserByNick(str);
+	if (!other) return -2;
+
+	if (conn->mpUser->mClass + mS->mC.classdif_mcto < other->mClass) {
+		mS->DCPrivateHS(_("You can't talk to this user."), conn);
+		mS->DCPublicHS(_("You can't talk to this user."), conn);
+		return -4;
+	}
+
+	// log
+	if (mS->Log(5)) mS->LogStream() << "MCTo from: " << conn->mpUser->mNick << " to: " << msg->ChunkString(eCH_MCTO_TO) << endl;
+
+	#ifndef WITHOUT_PLUGINS
+		if (!mS->mCallBacks.mOnParsedMsgMCTo.CallAll(conn, msg)) return 0;
+	#endif
+
+	// send
+	if (other->mxConn) other->mxConn->Send(msg->mStr);
 	return 0;
 }
 
@@ -905,7 +977,6 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Kick an user */
 int cDCProto::DC_Kick(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -1017,13 +1088,11 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_MultiConnectToMe(cMessageDC * , cConnDC * )
 {
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn)
 {
 	if (msg->SplitChunks()) return -1;
@@ -1232,15 +1301,6 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/**
-  Redirect an user to another hub.
-  If the user is found, send him a message and then he is redirected. The user may not be redirected because he is a protetect user
-
-  @param[in,out] msg The NMDC message
-  @param[in,out] tr The user who sent the message
-  @return The result
-*/
-
 int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 //$ForceMove <newIp>
 //$To: <victimNick> From: <senderNick> $<<senderNick>> You are being re-directed to <newHub> because: <reasonMsg>
@@ -1302,10 +1362,9 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 }
 
 
-/** Extended support features */
 int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 {
-	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO ZPipe");
+	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO ZPipe MCTo"); // @rolex: i think it should be ZPipe0
 	istringstream is(msg->mStr);
 
 	string feature;
@@ -1321,6 +1380,7 @@ int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 		else if(feature == "QuickList") conn->mFeatures |= eSF_QUICKLIST;
 		else if(feature == "BotINFO") conn->mFeatures |= eSF_BOTINFO;
 		else if(feature == "ZPipe" || feature == "ZPipe0") conn->mFeatures |= eSF_ZLIB;
+		// ChatOnly, UserCommand
 	}
 	#ifndef WITHOUT_PLUGINS
 	if(!mS->mCallBacks.mOnParsedMsgSupport.CallAll(conn, msg)) {
@@ -1332,15 +1392,6 @@ int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** Network info (neo Modus) */
-int cDCProto::DCM_NetInfo(cMessageDC * msg, cConnDC * )
-{
-	if(msg->SplitChunks()) return -1;
-
-	return 0;
-}
-
-/** operator ban */
 int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 {
 	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
@@ -1404,8 +1455,6 @@ int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-
-/** Send Userlist and Oplist */
 int cDCProto::NickList(cConnDC *conn)
 {
 	try {
@@ -1481,7 +1530,6 @@ int cDCProto::ParseForCommands(const string &text, cConnDC *conn)
 	return 0;
 }
 
-/** operator unban */
 int cDCProto::DCO_UnBan(cMessageDC * msg, cConnDC * conn)
 {
 	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
@@ -1508,7 +1556,6 @@ int cDCProto::DCO_UnBan(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** operator getbanlist */
 int cDCProto::DCO_GetBanList(cMessageDC * msg, cConnDC * conn)
 {
 	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
@@ -1573,13 +1620,6 @@ int cDCProto::DCO_WhoIP(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-int cDCProto::DCO_Banned(cMessageDC * msg, cConnDC * conn)
-{
-	if(msg->SplitChunks()) return -1;
-
-	return 0;
-}
-
 int cDCProto::DCO_GetTopic(cMessageDC *, cConnDC * conn)
 {
 	string topic("$HubTopic ");
@@ -1609,10 +1649,6 @@ int cDCProto::DCO_SetTopic(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-
-/*!
-    \fn cDCProto::Create_MyINFO(string &dest, const string&nick, const string &desc, const string&speed, const string &mail, const string &share)
- */
 void cDCProto::Create_MyINFO(string &dest, const string&nick, const string &desc, const string&speed, const string &mail, const string &share)
 {
 	dest.reserve(dest.size()+nick.size()+desc.size()+speed.size()+mail.size()+share.size()+ 20);
@@ -1638,9 +1674,6 @@ void cDCProto::Create_Chat(string &dest, const string&nick,const string &text)
 	dest.append(text);
 }
 
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::Append_MyInfoList(string &dest, cUser *, bool DoBasic)
- */
 void cDCProto::Append_MyInfoList(string &dest, const string &MyINFO, const string &MyINFO_basic, bool DoBasic)
 {
 	if(dest[dest.size()-1]=='|')
@@ -1651,9 +1684,6 @@ void cDCProto::Append_MyInfoList(string &dest, const string &MyINFO, const strin
 		dest.append(MyINFO);
 }
 
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::Create_PM(string &dest,const string &from, const string &to, const string &sign, const string &text)
- */
 void cDCProto::Create_PM(string &dest,const string &from, const string &to, const string &sign, const string &text)
 {
 	dest.append("$To: ");
@@ -1667,9 +1697,6 @@ void cDCProto::Create_PM(string &dest,const string &from, const string &to, cons
 }
 
 
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::Create_PMForBroadcast(string &start,string &end, const string &from, const string &sign, const string &text)
- */
 void cDCProto::Create_PMForBroadcast(string &start,string &end, const string &from, const string &sign, const string &text)
 {
 	start.append("$To: ");
@@ -1681,9 +1708,6 @@ void cDCProto::Create_PMForBroadcast(string &start,string &end, const string &fr
 	end.append(text);
 }
 
-/*!
- 	\fn ndirectconnect::nprotocol::cdcproto::Create_HubName(string &dest, const string &name, const string &topic)
- */
 void cDCProto::Create_HubName(string &dest, string &name, string &topic)
 {
 	dest ="$HubName " + name;
@@ -1699,9 +1723,6 @@ void cDCProto::Create_Quit(string &dest, const string &nick)
 	dest.append(nick);
 }
 
-/*!
-    \fn ndirectconnect::nprotocol::cdcproto::parsespeed(const string &speed)
- */
 cConnType *cDCProto::ParseSpeed(const string &uspeed)
 {
 	string speed(uspeed, 0, uspeed.size() -1);

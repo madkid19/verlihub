@@ -48,6 +48,7 @@ public:
 	virtual bool OnCloseConn(nSocket::cConnDC *);
 	virtual bool OnParsedMsgChat(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgPM(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgMCTo(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgSearch(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgSR(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgMyINFO(nSocket::cConnDC *, nProtocol::cMessageDC *);

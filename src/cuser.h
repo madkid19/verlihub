@@ -79,12 +79,14 @@ namespace nVerliHub {
 			eFH_SEARCH,
 			eFH_CHAT,
 			eFH_PM,
+			eFH_MCTO,
 			eFH_LAST_FH
 		} tFloodHashes;
 
 		typedef enum
 		{
 			eFC_PM,
+			eFC_MCTO,
 			eFC_LAST_FC
 		} tFloodCounters;
 	};
@@ -217,6 +219,8 @@ public:
 	int mHideKicksForClass;
 	/* PM flood detector */
 	cFreqLimiter mFloodPM;
+	// MCTo flood detector
+	cFreqLimiter mFloodMCTo;
 
 	protected: // Protected attributes
 
