@@ -548,19 +548,21 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	}
 
 	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" VERSION "|";
+
 	if (mC.host_header == 1) {
-		if(mC.extended_welcome_message) {
-			os << _("Running") << " " << HUB_VERSION_NAME << " " << VERSION << " " << _("build") << " " << HUB_VERSION_CLASS << "|";
+		if (mC.extended_welcome_message) {
+			os << autosprintf(_("Running %s %s build %s"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS) << "|";
 			os << "<" << mC.hub_security << "> " << _("Runtime") << ": " << runtime.AsPeriod() << "|";
 			os << "<" << mC.hub_security << "> " << _("User count") << ": " << mUserCountTot << "|";
 			os << "<" << mC.hub_security << "> " << _("System status") << ": " << mStatus << "|";
-			if(!mC.hub_version_special.empty()) os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
+			if (!mC.hub_version_special.empty()) os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
 		} else {
-			os << autosprintf(_("This hub is running version %s%s %s of %s (RunTime: %s / User count: %d)"),
-			VERSION, mC.hub_version_special.c_str(), HUB_VERSION_CLASS, HUB_VERSION_NAME, runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
+			os << autosprintf(_("Running %s %s build %s%s ][ Runtime: %s ][ User count: %d"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS, mC.hub_version_special.c_str(), runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
 		}
+
 		cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
 	}
+
 	conn->Send(omsg, false);
 	os.str(mEmpty);
 

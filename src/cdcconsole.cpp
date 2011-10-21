@@ -1175,12 +1175,13 @@ bool cDCConsole::cfBan::operator()()
 		case BAN_INFO:
 			if (unban) {
 				if(!GetParStr(BAN_REASON,tmp)) {
-					(*mOS) << _("Please provide a valid reason.");
-					return false;
+					//(*mOS) << _("Please provide a valid reason.");
+					//return false;
+					tmp = _("No reason specified"); // default reason
 				}
 				#ifndef WITHOUT_PLUGINS
 				if(!mS->mCallBacks.mOnUnBan.CallAll(Who, mConn->mpUser->mNick, tmp)) {
-					(*mOS) << _("Action has been discarded by plugin");
+					(*mOS) << _("Action has been discarded by plugin.");
 					return false;
 				}
 				#endif

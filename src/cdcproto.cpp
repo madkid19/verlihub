@@ -168,12 +168,39 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 
 	// check the max_users limit
 	if ((conn->GetTheoricalClass() < eUC_OPERATOR) && ((mS->mUserCountTot >= limit) || (mS->mUserCount[conn->mGeoZone] >= limit_cc))) {
-		os << autosprintf(_("User limit exceeded at %d online users."), mS->mUserCountTot);
+		if (mS->mUserCount[conn->mGeoZone] >= limit_cc) {
+			string zonestr, zonedat;
+
+			if (conn->mGeoZone >= 1 && conn->mGeoZone <= 3) { // country zones
+				zonestr = _("User limit in country zone %s exceeded at %d/%d online users.");
+				zonedat = mS->mC.cc_zone[conn->mGeoZone - 1];
+			} else if (conn->mGeoZone >= 4 && conn->mGeoZone <= 6) { // ip range zones
+				zonestr = _("User limit in IP zone %s exceeded at %d/%d online users.");
+
+				switch (conn->mGeoZone) {
+					case 4:
+						zonedat = mS->mC.ip_zone4_min + "-" + mS->mC.ip_zone4_max;
+					break;
+					case 5:
+						zonedat = mS->mC.ip_zone5_min + "-" + mS->mC.ip_zone5_max;
+					break;
+					case 6:
+						zonedat = mS->mC.ip_zone6_min + "-" + mS->mC.ip_zone6_max;
+					break;
+				}
+			} else { // main zone
+				zonestr = _("User limit in main zone exceeded at %d/%d online users.");
+			}
+
+			if (conn->mGeoZone == 0)
+				os << autosprintf(zonestr.c_str(), mS->mUserCount[conn->mGeoZone], mS->mUserCountTot);
+			else
+				os << autosprintf(zonestr.c_str(), zonedat.c_str(), mS->mUserCount[conn->mGeoZone], mS->mUserCountTot);
+		} else
+			os << autosprintf(_("User limit exceeded at %d online users."), mS->mUserCountTot);
+
 		if (mS->mC.max_users_total == 0) os << " " << _("This is a registered users only hub.");
-
-		if (conn->Log(2))
-			conn->LogStream() << "Hub is full: " << mS->mUserCountTot << "/" << limit << " :: " << mS->mUserCount[conn->mGeoZone] << "/" << limit_cc << " :: " << conn->mCC << endl;
-
+		if (conn->Log(2)) conn->LogStream() << "Hub is full: " << mS->mUserCountTot << "/" << limit << " :: " << mS->mUserCount[conn->mGeoZone] << "/" << limit_cc << " :: " << conn->mCC << endl;
 		omsg = "$HubIsFull"; conn->Send(omsg);
 		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
 		return -1;
@@ -548,119 +575,99 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	mS->mTotalShare += conn->mpUser->mShare;
 	conn->mpUser->mEmail = msg->ChunkString(eCH_MI_MAIL);
 
-	// User sent MyINFO for the frist time
-	if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) {
+	// user sent $MyINFO for the first time
+	if (conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) {
 		cBan Ban(mS);
 		bool banned = false;
 		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, eBF_SHARE | eBF_EMAIL);
-		if(banned && conn->GetTheoricalClass() <= eUC_REGUSER) {
+
+		if (banned && conn->GetTheoricalClass() <= eUC_REGUSER) {
 			stringstream msg;
-			msg << _("Banned.") << endl;
+			msg << _("You are banned.") << endl;
 			Ban.DisplayUser(msg);
-			mS->DCPublicHS(msg.str(),conn);
-			conn->LogStream() << "Kicked user for share" << endl;
+			mS->DCPublicHS(msg.str(), conn);
+			conn->LogStream() << "Kicked user due ban detection" << endl;
 			conn->CloseNice(1000, eCR_KICKED);
 			return -1;
 		}
 
 		#ifndef WITHOUT_PLUGINS
-		if (!mS->mCallBacks.mOnFirstMyINFO.CallAll(conn, msg))
-			return -2;
+			if (!mS->mCallBacks.mOnFirstMyINFO.CallAll(conn, msg)) return -2;
 		#endif
 	}
 
  	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgMyINFO.CallAll(conn, msg))
-		return -2;
+		if (!mS->mCallBacks.mOnParsedMsgMyINFO.CallAll(conn, msg)) return -2;
 	#endif
 
-	// if tag isn't valid, tell it the user
-	// check hubs / slots etc...
-	string myinfo_full, myinfo_basic,desc, email, speed, sShare;
+	string myinfo_full, myinfo_basic, desc, email, speed, sShare;
 
-
-	//$MyINFO $ALL <nick> <interest>$ $<speed>$<e-mail>$<sharesize>$
-	//@todo @fixme tag.mPositionInDesc may be incorrect after the description has been modified by a plugin
+	// $MyINFO $ALL <nick> <interest>$ $<speed>$<e-mail>$<sharesize>$
+	// @todo: tag.mPositionInDesc may be incorrect after the description has been modified by a plugin
 	mS->mCo->mDCClients->ParsePos(msg->ChunkString(eCH_MI_DESC));
-	desc.assign(msg->ChunkString(eCH_MI_DESC),0,mS->mCo->mDCClients->mPositionInDesc);
+	desc.assign(msg->ChunkString(eCH_MI_DESC), 0, mS->mCo->mDCClients->mPositionInDesc);
+
 	if (mS->mC.desc_insert_mode) {
 		switch (tag->mClientMode) {
-		case eCM_ACTIVE: desc = "A " + desc; break;
-		case eCM_PASSIVE: desc = "P " + desc; break;
-		case eCM_SOCK5: desc = "5 " + desc; break;
-		default: break;
+			case eCM_ACTIVE:
+				desc = (desc.empty() ? "[A]" : ("[A] " + desc));
+			break;
+			case eCM_PASSIVE:
+				desc = (desc.empty() ? "[P]" : ("[P] " + desc));
+			break;
+			case eCM_SOCK5:
+				desc = (desc.empty() ? "[5]" : ("[5] " + desc));
+			break;
 		}
 	}
-	if(mS->mC.show_desc_len >= 0) {
-		desc.assign(desc,0,mS->mC.show_desc_len);
-	}
 
-	if(mS->mC.show_email == 0) {
+	if (mS->mC.show_desc_len >= 0) desc.assign(desc, 0, mS->mC.show_desc_len);
+
+	if (mS->mC.show_email == 0)
 		email= "";
-	} else {
+	else
 		email = msg->ChunkString(eCH_MI_MAIL);
-	}
 
-	if(mS->mC.show_speed == 0) {
+	if (mS->mC.show_speed == 0)
 		speed = "";
-	} else {
+	else
 		speed = msg->ChunkString(eCH_MI_SPEED);
-	}
 
-	if(!conn->mpUser->mHideShare == false) {
+	if (conn->mpUser->mHideShare)
 		sShare = "0";
-	} else {
+	else
 		sShare = msg->ChunkString(eCH_MI_SIZE);
-	}
-	Create_MyINFO(
-		myinfo_basic,
-		msg->ChunkString(eCH_MI_NICK),
-		desc,
-		speed,
-		email,
-		sShare
-		);
-	// OPS have hidden myinfo
-	if ( (conn->mpUser->mClass >= eUC_OPERATOR) && (mS->mC.show_tags < 3)) {
-		myinfo_full = myinfo_basic;
-	} else {
+
+	Create_MyINFO(myinfo_basic, msg->ChunkString(eCH_MI_NICK), desc, speed, email, sShare);
+
+	// ops have hidden myinfo
+	//if ((conn->mpUser->mClass >= eUC_OPERATOR) && (mS->mC.show_tags < 3))
+		//myinfo_full = myinfo_basic;
+	//else
 		myinfo_full = msg->mStr;
-	}
 
 	// login or send to all
-	if(conn->mpUser->mInList) {
-		/** send it to all only if ...
-		* it's not too often
-		* it has changed against the last time
-		* and send only the version that has changed only to those who want it
-		*/
-		if(mS->MinDelay(conn->mpUser->mT.info,mS->mC.int_myinfo)) {
-			string send_myinfo;
-			if(myinfo_full != conn->mpUser->mMyINFO) {
-				conn->mpUser->mMyINFO = myinfo_full;
-				if(myinfo_basic != conn->mpUser->mMyINFO_basic) {
-					conn->mpUser->mMyINFO_basic = myinfo_basic;
+	if (conn->mpUser->mInList) {
+		// send it to all only if: its not too often, it has changed since last time, send only the version that has changed only to those who want it
+		if (mS->MinDelay(conn->mpUser->mT.info, mS->mC.int_myinfo) && (myinfo_full != conn->mpUser->mMyINFO)) {
+			conn->mpUser->mMyINFO = myinfo_full;
 
-					send_myinfo = GetMyInfo(conn->mpUser, eUC_NORMUSER);
-					mS->mUserList.SendToAll(send_myinfo, mS->mC.delayed_myinfo, true);
-
-				}
-				if( mS->mC.show_tags >=1 )
-					mS->mOpchatList.SendToAll(myinfo_full, mS->mC.delayed_myinfo, true);
+			if (myinfo_basic != conn->mpUser->mMyINFO_basic) {
+				conn->mpUser->mMyINFO_basic = myinfo_basic;
+				string send_info;
+				send_info = GetMyInfo(conn->mpUser, eUC_NORMUSER);
+				mS->mUserList.SendToAll(send_info, mS->mC.delayed_myinfo, true);
 			}
 
+			if (mS->mC.show_tags >= 1) mS->mOpchatList.SendToAll(myinfo_full, mS->mC.delayed_myinfo, true);
 		}
-	} else { // user logs in the first time
-		// keep it
-		conn->mpUser->mMyINFO = myinfo_full;
+	} else { // user logs in for the first time
+		conn->mpUser->mMyINFO = myinfo_full; // keep it
 		conn->mpUser->mMyINFO_basic = myinfo_basic;
-
-		// note, we got it
 		conn->SetLSFlag(eLS_MYINFO);
-		// if all right, add user to userlist, if not yet there
-		if(!mS->BeginUserLogin(conn))
-			return -1;
+		if (!mS->BeginUserLogin(conn)) return -1; // if all right, add user to userlist, if not yet there
 	}
+
 	conn->ClearTimeOut(eTO_MYINFO);
 	return 0;
 }

@@ -184,7 +184,7 @@ public:
 	* conn = The pointer to the connection that sent the message.
 	* msg = The pointer to cMessageDC object.
 	*/
-	virtual bool OnFirstMyINFO(nSocket::cConnDC* , cMessageDC*){ return true; }
+	virtual bool OnFirstMyINFO(nSocket::cConnDC*, cMessageDC*){ return true; }
 
 	//! Event handler function that is called when $Search message is received
 	/*!

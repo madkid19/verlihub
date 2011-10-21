@@ -198,7 +198,7 @@ void cDCConf::AddVars()
 	// End user control configuration
 
 	// Advanced hub configuration and tweaks
-	Add("extended_welcome_message", extended_welcome_message, 0);
+	Add("extended_welcome_message", extended_welcome_message, 1);
 	Add("host_header", host_header, 1);
 	Add("int_myinfo",int_myinfo,60);
 	Add("int_nicklist",int_nicklist,60);
