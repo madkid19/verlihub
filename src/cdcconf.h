@@ -114,6 +114,7 @@ public:
 	int host_header;
 	string hub_security;
 	string hub_category;
+	string hub_icon_url;
 	string hub_security_desc;
 	string opchat_name;
 	string opchat_desc;

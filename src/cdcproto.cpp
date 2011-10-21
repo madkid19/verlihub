@@ -1566,41 +1566,40 @@ int cDCProto::DCO_GetBanList(cMessageDC * msg, cConnDC * conn)
 
 int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 {
-	if(msg->SplitChunks())
-		return -1;
+	if (msg->SplitChunks()) return -1;
 	ostringstream os;
-	if(!(conn->mFeatures & eSF_BOTINFO)) {
-		if(conn->Log(2))
-			conn->LogStream() << "User " << conn->mpUser->mNick << " sent $BotINFO but BotINFO extension is not set in $Supports" << endl;
-		os << _("You cannot send $BotINFO because BotINFO extension is not set in $Supports");
+
+	if (!(conn->mFeatures & eSF_BOTINFO)) {
+		if (conn->Log(2)) conn->LogStream() << "User " << conn->mpUser->mNick << " sent $BotINFO but BotINFO extension is not set in $Supports" << endl;
+		os << _("You cannot send $BotINFO because BotINFO extension is not set in $Supports.");
 		mS->DCPublicHS(os.str(), conn);
 		return 0;
 	}
-	if(conn->Log(2))
-		conn->LogStream() << "Bot visit: " << msg->ChunkString(eCH_1_PARAM) << endl;
 
-	if(mS->mC.botinfo_report) {
+	if (conn->Log(2)) conn->LogStream() << "Bot visit: " << msg->ChunkString(eCH_1_PARAM) << endl;
+
+	if (mS->mC.botinfo_report) {
 		os << autosprintf(_("Bot %s has just entered the hub."), msg->ChunkString(eCH_1_PARAM).c_str());
 		mS->ReportUserToOpchat(conn, os.str());
 		os.str("");
 	}
-	char S='$';
+
+	char S = '$';
 	cConnType *ConnType = mS->mConnTypes->FindConnType("default");
 	__int64 hl_minshare = mS->mC.min_share;
-	if (mS->mC.min_share_use_hub > hl_minshare)
-		hl_minshare = mS->mC.min_share_use_hub;
+	if (mS->mC.min_share_use_hub > hl_minshare) hl_minshare = mS->mC.min_share_use_hub;
+	if (!mS->mC.hub_icon_url.empty()) os << "$SetIcon " << mS->mC.hub_icon_url.c_str() << "|";
 	os << "$HubINFO "
-		<< mS->mC.hub_name << S
-		<< mS->mC.hub_host << S
-		<< mS->mC.hub_desc << S
-		<< mS->mC.max_users_total << S
-		<< StringFrom((__int64)(1024*1024)*hl_minshare) << S
-		<< ConnType->mTagMinSlots << S
-		<< mS->mC.tag_max_hubs << S
-		<< "VerliHub" << S
-		<< mS->mC.hub_owner << S
-		<< mS->mC.hub_category;
-
+	<< mS->mC.hub_name << S
+	<< mS->mC.hub_host << S
+	<< mS->mC.hub_desc << S
+	<< mS->mC.max_users_total << S
+	<< StringFrom((__int64)(1024 * 1024) * hl_minshare) << S
+	<< ConnType->mTagMinSlots << S
+	<< mS->mC.tag_max_hubs << S
+	<< "Verlihub" << S
+	<< mS->mC.hub_owner << S
+	<< mS->mC.hub_category;
 	string str = os.str();
 	conn->Send(str);
 	return 0;
