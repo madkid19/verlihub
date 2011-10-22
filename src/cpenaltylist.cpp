@@ -21,6 +21,8 @@
 ***************************************************************************/
 #include "cpenaltylist.h"
 #include "cquery.h"
+#include "i18n.h"
+#include <sys/time.h>
 
 namespace nVerliHub {
 	using namespace nMySQL;
@@ -52,16 +54,32 @@ cPenaltyList::~cPenaltyList()
 
 ostream &operator << (ostream &os, const cPenaltyList::sPenalty &penalty)
 {
-	time_t Now = cTime().Sec();
-	os << penalty.mNick << " ";
-	if(penalty.mStartChat > Now) os << "chat: " << penalty.mStartChat - Now << " ";
-	if(penalty.mStartSearch > Now) os << "search: " << penalty.mStartSearch - Now << " ";
-	if(penalty.mStartCTM > Now) os << "download: " << penalty.mStartCTM - Now << " ";
-	if(penalty.mStartPM > Now) os << "PM: " << penalty.mStartPM - Now << " ";
-	if(penalty.mStopKick > Now) os << "Kick: " << penalty.mStopKick - Now << " ";
-	if(penalty.mStopShare0 > Now) os << "NoShare: " << penalty.mStopShare0 - Now << " ";
-	if(penalty.mStopReg > Now) os << "Reg: " << penalty.mStopReg - Now << " ";
-	if(penalty.mStopOpchat > Now) os << "Opchat: " << penalty.mStopOpchat - Now << " ";
+	cTime Now = cTime().Sec();
+
+	if (penalty.mStartChat > Now)
+		os << autosprintf(_("Setting main chat right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStartChat - Now).AsPeriod().AsString().c_str());
+
+	if (penalty.mStartSearch > Now)
+		os << autosprintf(_("Setting search right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStartSearch - Now).AsPeriod().AsString().c_str());
+
+	if (penalty.mStartCTM > Now)
+		os << autosprintf(_("Setting download right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStartCTM - Now).AsPeriod().AsString().c_str());
+
+	if (penalty.mStartPM > Now)
+		os << autosprintf(_("Setting private chat right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStartPM - Now).AsPeriod().AsString().c_str());
+
+	if (penalty.mStopKick > Now)
+		os << autosprintf(_("Setting kick right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStopKick - Now).AsPeriod().AsString().c_str());
+
+	if (penalty.mStopShare0 > Now)
+		os << autosprintf(_("Setting hidden share right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStopShare0 - Now).AsPeriod().AsString().c_str());
+
+	if (penalty.mStopReg > Now)
+		os << autosprintf(_("Setting registering right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStopReg - Now).AsPeriod().AsString().c_str());
+
+	if (penalty.mStopOpchat > Now)
+		os << autosprintf(_("Setting operator chat right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStopOpchat - Now).AsPeriod().AsString().c_str());
+
 	return os;
 }
 

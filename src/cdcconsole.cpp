@@ -1456,17 +1456,13 @@ bool cDCConsole::cfGag::operator()()
 	string cmd, nick, howlong;
 	time_t period = 24*3600*7;
 	time_t Now = 1;
-
 	bool isUn = false;
-
-	if(mConn->mpUser->mClass < eUC_OPERATOR)
-		return false;
-
+	if (mConn->mpUser->mClass < eUC_OPERATOR) return false;
 	isUn = mIdRex->PartFound(1);
 	mIdRex->Extract(2, mIdStr, cmd);
-
 	mParRex->Extract(1, mParStr, nick);
-	if(mParRex->PartFound(3)) {
+
+	if (mParRex->PartFound(3)) {
 		mParRex->Extract(3, mParStr, howlong);
 		period = mS->Str2Period(howlong, *mOS);
 		if (!period) return false;
@@ -1474,16 +1470,14 @@ bool cDCConsole::cfGag::operator()()
 
 	cPenaltyList::sPenalty penalty;
 	penalty.mNick = nick;
-
-	if(!isUn) Now = cTime().Sec() + period;
-
+	if (!isUn) Now = cTime().Sec() + period;
 	enum {eAC_GAG, eAC_NOPM, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
-	static const char *actionnames[]={"gag","nochat","nopm","noctm","nodl","nosearch","kvip", "maykick", "noshare", "mayreg", "mayopchat"};
-	static const int actionids[]={eAC_GAG, eAC_GAG,eAC_NOPM, eAC_NODL, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
-	int Action = this->StringToIntFromList(cmd, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
+	static const char *actionnames[] = {"gag", "nochat", "nopm", "noctm", "nodl", "nosearch", "kvip", "maykick", "noshare", "mayreg", "mayopchat"};
+	static const int actionids[] = {eAC_GAG, eAC_GAG,eAC_NOPM, eAC_NODL, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
+	int Action = this->StringToIntFromList(cmd, actionnames, actionids, sizeof(actionnames) / sizeof(char*));
 	if (Action < 0) return false;
 
-	switch(Action) {
+	switch (Action) {
 		case eAC_GAG: penalty.mStartChat = Now; break;
 		case eAC_NOPM: penalty.mStartPM = Now; break;
 		case eAC_NODL: penalty.mStartCTM = Now; break;
@@ -1496,12 +1490,16 @@ bool cDCConsole::cfGag::operator()()
 	};
 
 	bool ret = false;
-	if(!isUn) ret = mS->mPenList->AddPenalty(penalty);
-	else ret = mS->mPenList->RemPenalty(penalty);
+
+	if (!isUn)
+		ret = mS->mPenList->AddPenalty(penalty);
+	else
+		ret = mS->mPenList->RemPenalty(penalty);
 
 	cUser *usr = mS->mUserList.GetUserByNick(nick);
-	if(usr != NULL) {
-		switch(Action) {
+
+	if (usr != NULL) {
+		switch (Action) {
 			case eAC_GAG: usr->SetRight(eUR_CHAT, penalty.mStartChat, isUn); break;
 			case eAC_NOPM: usr->SetRight(eUR_PM, penalty.mStartPM, isUn); break;
 			case eAC_NODL: usr->SetRight(eUR_CTM, penalty.mStartCTM, isUn); break;
@@ -1510,16 +1508,31 @@ bool cDCConsole::cfGag::operator()()
 			case eAC_CANREG: usr->SetRight(eUR_REG, penalty.mStopReg, isUn); break;
 			case eAC_KVIP: usr->SetRight(eUR_KICK, penalty.mStopKick, isUn); break;
 			case eAC_OPCHAT: usr->SetRight(eUR_OPCHAT, penalty.mStopOpchat, isUn); break;
-			default: break;
+			default: return false;
 		};
 	}
 
 	ostringstream description;
 	description << penalty;
+
 	if (ret)
-		(*mOS) << autosprintf(_(" %s saved"), description.str().c_str());
+		if (description.str() == "") {
+			switch (Action) {
+				case eAC_GAG: (*mOS) << autosprintf(_("Resetting main chat right for: %s"), penalty.mNick.c_str()); break;
+				case eAC_NOPM: (*mOS) << autosprintf(_("Resetting private chat right for: %s"), penalty.mNick.c_str()); break;
+				case eAC_NODL: (*mOS) << autosprintf(_("Resetting download right for: %s"), penalty.mNick.c_str()); break;
+				case eAC_NOSEARCH: (*mOS) << autosprintf(_("Resetting search right for: %s"), penalty.mNick.c_str()); break;
+				case eAC_NOSHARE: (*mOS) << autosprintf(_("Resetting hidden share right for: %s"), penalty.mNick.c_str()); break;
+				case eAC_CANREG: (*mOS) << autosprintf(_("Resetting registering right for: %s"), penalty.mNick.c_str()); break;
+				case eAC_KVIP: (*mOS) << autosprintf(_("Resetting kick right for: %s"), penalty.mNick.c_str()); break;
+				case eAC_OPCHAT: (*mOS) << autosprintf(_("Resetting operator chat right for: %s"), penalty.mNick.c_str()); break;
+				default: return false;
+			};
+		} else
+			(*mOS) << description.str().c_str();
 	else
-		(*mOS) << autosprintf(_("Error saving %s"), description.str().c_str());
+		(*mOS) << autosprintf(_("Error setting right for: %s"), penalty.mNick.c_str());
+
 	return true;
 }
 

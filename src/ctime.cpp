@@ -35,7 +35,8 @@ using namespace std;
 namespace nVerliHub {
 	namespace nUtils {
 
-cTime::~cTime(){
+cTime::~cTime()
+{
 }
 
 string cTime::AsString() const
@@ -48,61 +49,57 @@ string cTime::AsString() const
 std::ostream & operator<< (std::ostream &os, const cTime &t)
 {
 	#ifdef WIN32
-	static char *buf;
+		static char *buf;
 	#else
-	#define CTIME_BUFFSIZE 26
-	static char buf[CTIME_BUFFSIZE+1];
+		#define CTIME_BUFFSIZE 26
+		static char buf[CTIME_BUFFSIZE + 1];
 	#endif
 
 	long n, rest, i;
+	ostringstream ostr;
 
 	switch (t.mPrintType) {
 		case 1:
 			#ifdef WIN32
-				buf = ctime( (const time_t*)&(t.tv_sec) );
+				buf = ctime((const time_t*) & (t.tv_sec));
 			#else
-				strftime (buf,CTIME_BUFFSIZE+1,"%m/%d/%Y %H:%M:%S",localtime((const time_t*)&(t.tv_sec)));
+				strftime(buf, CTIME_BUFFSIZE + 1, "%Y/%m/%d %H:%M:%S", localtime((const time_t*) & (t.tv_sec)));
 			#endif
-			buf[strlen(buf)]=0;
+
+			buf[strlen(buf)] = 0;
 			os << buf;
 		break;
 		case 2:
 			rest = t.tv_sec;
 			i = 0;
-
-			n = rest / (24*3600*7);
-			rest %= (24*3600*7);
-			if(n && ++i <= 2)
-				os << autosprintf(_("%ld weeks"), n) << " ";
-			n = rest / (24*3600);
-			rest %= (24*3600);
-			if(n && ++i <= 2)
-				os << autosprintf(_("%ld days"), n) << " ";
-
-			n = rest / (3600);
-			rest %= (3600);
-			if(n && ++i <= 2)
-				os << autosprintf(_("%ld hours"), n) << " ";
-
-			n = rest / (60);
-			rest %= (60);
-			if(n && ++i <= 2)
-				os << autosprintf(_("%ld mins"), n) << " ";
-
+			n = rest / (24 * 3600 * 7);
+			rest %= (24 * 3600 * 7);
+			if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(((n == 1) ? _("%ld week") : _("%ld weeks")), n);
+			n = rest / (24 * 3600);
+			rest %= (24 * 3600);
+			if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(((n == 1) ? _("%ld day") : _("%ld days")), n);
+			n = rest / 3600;
+			rest %= 3600;
+			if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(((n == 1) ? _("%ld hour") : _("%ld hours")), n);
+			n = rest / 60;
+			rest %= 60;
+			if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(((n == 1) ? _("%ld min") : _("%ld mins")), n);
 			n = rest;
 			rest = 0;
-			if(++i <= 2)
-				os << autosprintf(_("%ld secs"), n) << " ";
+			if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(((n == 1) ? _("%ld sec") : _("%ld secs")), n);
+			if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(_("%d ms"), (int)t.tv_usec / 1000);
+			//if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(_("%d 탎"), (int)t.tv_usec % 1000);
 
-			if(++i <= 2)
-				os << autosprintf(_("%d ms"), (int) t.tv_usec/1000) << " ";
-	// 		if(++i <= 2)
-	// 			os << autosprintf(_("%d 탎"), (int)  t.tv_usec%1000) << " ";
+			if (ostr.str().empty())
+				os << autosprintf(_("%d ms"), 0);
+			else
+				os << ostr.str().substr(1); // strip space
 		break;
-		default :
-			os << t.tv_sec << "s " << t.tv_usec << "탎";
+		default:
+			os << t.tv_sec << " " << ((t.tv_sec == 1) ? _("sec") : _("secs")) << t.tv_usec << " " << _("탎");
 		break;
 	}
+
 	return os;
 };
 
