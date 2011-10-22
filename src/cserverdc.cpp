@@ -524,60 +524,26 @@ int cServerDC::SendToAllWithNickCC(const string &start,const string &end, int cm
 int cServerDC::OnNewConn(cAsyncConn *nc)
 {
 	cConnDC *conn = (cConnDC *)nc;
+	if (!conn) return -1;
+
 	#ifndef WITHOUT_PLUGINS
-	if(!mCallBacks.mOnNewConn.CallAll(conn))
-		return -1;
+		if (!mCallBacks.mOnNewConn.CallAll(conn)) return -1;
 	#endif
 
-	stringstream errmsg,os;
-	if(!conn) return -1;
 	string omsg;
-	cTime runtime;
-	runtime -= mStartTime;
-	if(mFrequency.mNumFill > 0) {
-		if (mSysLoad == eSL_RECOVERY)
-			mStatus = _("Recovery mode");
-		else if (mSysLoad == eSL_CAPACITY)
-			mStatus = _("Near capacity");
-		else if (mSysLoad == eSL_PROGRESSIVE)
-			mStatus = _("Progressive mode");
-		else if (mSysLoad == eSL_NORMAL)
-			mStatus = _("Normal mode");
-		else
-			mStatus = _("Not available");
-	}
-
-	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" VERSION "|";
-
-	if (mC.host_header == 1) {
-		if (mC.extended_welcome_message) {
-			os << autosprintf(_("Running %s %s build %s"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS) << "|";
-			os << "<" << mC.hub_security << "> " << _("Runtime") << ": " << runtime.AsPeriod() << "|";
-			os << "<" << mC.hub_security << "> " << _("User count") << ": " << mUserCountTot << "|";
-			os << "<" << mC.hub_security << "> " << _("System status") << ": " << mStatus << "|";
-			if (!mC.hub_version_special.empty()) os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
-		} else {
-			os << autosprintf(_("Running %s %s build %s%s ][ Runtime: %s ][ User count: %d"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS, mC.hub_version_special.c_str(), runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
-		}
-
-		cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
-	}
-
-	conn->Send(omsg, false);
-	os.str(mEmpty);
+	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" VERSION;
+	conn->Send(omsg, true);
+	SendHeaders(conn, 2);
 
 	if (mSysLoad >= eSL_RECOVERY) {
+		stringstream os;
 		os << _("The hub is currently unable to service your request. Please try again in a few minutes.");
 		DCPublicHS(os.str(), conn);
 		conn->CloseNice(500, eCR_HUB_LOAD);
 		return -1;
 	}
 
-//FIXME: This make no sense
-#ifndef _WIN32
-	if(!this->mUseDNS)
-		conn->SetTimeOut(eTO_KEY, mC.timeout_length[eTO_KEY], mTime);
-#endif
+	conn->SetTimeOut(eTO_KEY, mC.timeout_length[eTO_KEY], mTime);
 	return 0;
 }
 
@@ -743,6 +709,7 @@ void cServerDC::DoUserLogin(cConnDC *conn)
 		}
 	}
 
+	SendHeaders(conn, 1);
 	AfterUserLogin(conn);
 
 	conn->ClearTimeOut(eTO_LOGIN);
@@ -1324,6 +1291,51 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 			this->mOpchatList.SendToAll(ChatMsg, false, true);
 		}
 	}
+}
+
+bool cServerDC::SendHeaders(cConnDC * conn, int where)
+{
+	/*
+	* 0 = dont send headers
+	* 1 = send headers on login
+	* 2 = send headers on connection
+	*/
+
+	int conf = mC.host_header;
+	if (conf > 2) conf = 2;
+	if (conf == 0) return true;
+	if (conf != where) return false;
+
+	ostringstream os;
+	cTime runtime;
+	runtime -= mStartTime;
+
+	if (mFrequency.mNumFill > 0) {
+		if (mSysLoad == eSL_RECOVERY)
+			mStatus = _("Recovery mode");
+		else if (mSysLoad == eSL_CAPACITY)
+			mStatus = _("Near capacity");
+		else if (mSysLoad == eSL_PROGRESSIVE)
+			mStatus = _("Progressive mode");
+		else if (mSysLoad == eSL_NORMAL)
+			mStatus = _("Normal mode");
+		else
+			mStatus = _("Not available");
+	} else
+		mStatus = _("Not available");
+
+	if (mC.extended_welcome_message) {
+		os << "<" << mC.hub_security << "> " << autosprintf(_("Running %s %s build %s"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS) << "|";
+		os << "<" << mC.hub_security << "> " << autosprintf(_("Runtime: %s"), runtime.AsPeriod().AsString().c_str()) << "|";
+		os << "<" << mC.hub_security << "> " << autosprintf(_("User count: %d"), mUserCountTot) << "|";
+		os << "<" << mC.hub_security << "> " << autosprintf(_("System status: %s"), mStatus.c_str()) << "|";
+		if (!mC.hub_version_special.empty()) os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
+	} else
+		os << autosprintf(_("Running %s %s build %s%s ][ Runtime: %s ][ User count: %d"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS, mC.hub_version_special.c_str(), runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
+
+	string res = os.str();
+	conn->Send(res, false);
+	return true;
 }
 
 void cServerDC::DCKickNick(ostream *use_os,cUser *OP, const string &Nick, const string &Reason, int flags)

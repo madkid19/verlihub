@@ -111,7 +111,7 @@ public:
 	string nick_prefix_autoreg;
 	bool nick_prefix_cc;
 	bool extended_welcome_message;
-	int host_header;
+	unsigned int host_header;
 	string hub_security;
 	string hub_category;
 	string hub_icon_url;

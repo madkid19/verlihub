@@ -71,7 +71,7 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	//@todo tMsgAct action = this->mS->Filter(tDCMsg(msg->mType),conn);
 	if(strlen(Msg->mStr.data()) < Msg->mStr.size())
 	{
-		mS->ReportUserToOpchat(conn, _("Sending null chars, probably attempt of an attack."));
+		mS->ReportUserToOpchat(conn, _("Sending null chars, probably attempt of an attack")); // Msg->mStr
 		conn->CloseNow();
 		return -1;
 	}
