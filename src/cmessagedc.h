@@ -34,6 +34,7 @@ namespace nVerliHub {
 		typedef enum
 		{
 			eDC_GETINFO,
+			eDC_USERIP,
 			eDC_SEARCH_PAS,
 			eDC_SEARCH,
 			eDC_SR,

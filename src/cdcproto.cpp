@@ -98,6 +98,7 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 		case eDC_GETNICKLIST: this->DC_GetNickList(msg, conn); break;
 		case eDC_MYNIFO: this->DC_MyINFO(msg, conn); break;
 		case eDC_GETINFO: this->DC_GetINFO(msg, conn); break;
+		case eDC_USERIP: this->DC_UserIP(msg, conn); break;
 		case eDC_CONNECTTOME: this->DC_ConnectToMe(msg, conn); break;
 		case eDC_MCONNECTTOME: this->DC_MultiConnectToMe(msg, conn);break;
 		case eDC_RCONNECTTOME: this->DC_RevConnectToMe(msg, conn); break;
@@ -708,6 +709,54 @@ int cDCProto::DC_GetINFO(cMessageDC * msg, cConnDC * conn)
 			conn->Send(buf, true, false);
 		}
 	}
+	return 0;
+}
+
+int cDCProto::DC_UserIP(cMessageDC * msg, cConnDC * conn)
+{
+	/*
+	* @rolex
+	* not sure about this,
+	* but if UserIP2 is present in client supports,
+	* and hub supports it aswell,
+	* then client should never send this command,
+	* and we should ignore it
+	*/
+
+	if (msg->SplitChunks()) return -1;
+	if (!conn->mpUser || !conn->mpUser->mInList) return -1;
+	if (conn->mpUser->mClass < eUC_OPERATOR) return -1;
+	string lst = msg->ChunkString(eCH_1_PARAM);
+	if (lst.empty()) return -1;
+	string sep("$$");
+	lst += sep;
+	int pos;
+	cUser *other;
+	string userip;
+
+	while (lst.find(sep) != string::npos) {
+		pos = lst.find(sep);
+		string nick = lst.substr(0, pos);
+
+		if (!nick.empty()) {
+			other = mS->mUserList.GetUserByNick(nick);
+
+			if (other) {
+				userip.append(nick);
+				userip.append(" ");
+				userip.append(other->mxConn->AddrIP());
+				userip.append(sep);
+			}
+		}
+
+		lst = lst.substr(pos + sep.length());
+	}
+
+	if (!userip.empty()) {
+		userip = "$UserIP " + userip;
+		conn->Send(userip, true);
+	}
+
 	return 0;
 }
 
@@ -1462,37 +1511,37 @@ int cDCProto::NickList(cConnDC *conn)
 	try {
 		bool complete_infolist = false;
 		// 2 = show to all
-		if(mS->mC.show_tags >= 2)
-			complete_infolist= true;
-		if(conn->mpUser && (conn->mpUser->mClass >= eUC_OPERATOR))
-			complete_infolist= true;
+		if (mS->mC.show_tags >= 2) complete_infolist = true;
+		if (conn->mpUser && (conn->mpUser->mClass >= eUC_OPERATOR)) complete_infolist = true;
 		// 0 = hide to all
-		if(mS->mC.show_tags == 0)
-			complete_infolist= false;
+		if (mS->mC.show_tags == 0) complete_infolist = false;
+		if (conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) conn->mNickListInProgress = true;
 
-		if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE)
-			conn->mNickListInProgress = true;
-		if(conn->mFeatures & eSF_NOHELLO) {
-			if(conn->Log(3))
-				conn->LogStream() << "Sending MyINFO list" << endl;
-			conn->Send(mS->mUserList.GetInfoList(complete_infolist),true);
-		} else if(conn->mFeatures & eSF_NOGETINFO) {
-			if(conn->Log(3))
-				conn->LogStream() << "Sending MyINFO list" << endl;
-			conn->Send(mS->mUserList.GetNickList(),true);
-			conn->Send(mS->mUserList.GetInfoList(complete_infolist),true);
+		if (conn->mFeatures & eSF_NOHELLO) {
+			if (conn->Log(3)) conn->LogStream() << "Sending MyINFO list" << endl;
+			conn->Send(mS->mUserList.GetInfoList(complete_infolist), true);
+		} else if (conn->mFeatures & eSF_NOGETINFO) {
+			if (conn->Log(3)) conn->LogStream() << "Sending MyINFO list" << endl;
+			conn->Send(mS->mUserList.GetNickList(), true);
+			conn->Send(mS->mUserList.GetInfoList(complete_infolist), true);
 		} else {
-			if(conn->Log(3))
-				conn->LogStream() << "Sending Nicklist" << endl;
-			conn->Send(mS->mUserList.GetNickList(),true);
+			if (conn->Log(3)) conn->LogStream() << "Sending Nicklist" << endl;
+			conn->Send(mS->mUserList.GetNickList(), true);
 		}
-		conn->Send(mS->mOpList.GetNickList(),true);
+
+		conn->Send(mS->mOpList.GetNickList(), true); // send $OpList
+
+		/*if (mS->mRobotList.Size() > 0) { // send $BotList, @fixme: mRobotList is empty
+			string botlist = mS->mRobotList.GetNickList();
+			botlist = "$BotList " + botlist;
+			conn->Send(botlist, true);
+		}*/
 	} catch(...) {
-		if(conn->ErrLog(2))
-			conn->LogStream() << "exception in DC_GetNickList" << endl;
+		if (conn->ErrLog(2)) conn->LogStream() << "Exception in cDCProto::NickList" << endl;
 		conn->CloseNow();
 		return -1;
 	}
+
 	return 0;
 }
 

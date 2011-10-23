@@ -87,11 +87,11 @@ std::ostream & operator<< (std::ostream &os, const cTime &t)
 			n = rest;
 			rest = 0;
 			if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(((n == 1) ? _("%ld sec") : _("%ld secs")), n);
-			if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(_("%d ms"), (int)t.tv_usec / 1000);
-			//if ((n > 0) && (++i <= 2)) ostr << " " << autosprintf(_("%d µs"), (int)t.tv_usec % 1000);
+			if ((((int)t.tv_usec / 1000) > 0) && (++i <= 2)) ostr << " " << autosprintf(_("%d ms"), (int)t.tv_usec / 1000);
+			//if ((((int)t.tv_usec % 1000) > 0) && (++i <= 2)) ostr << " " << autosprintf(_("%d µs"), (int)t.tv_usec % 1000);
 
 			if (ostr.str().empty())
-				os << autosprintf(_("%d ms"), 0);
+				os << autosprintf(_("%d ms"), 0); // _("%d µs")
 			else
 				os << ostr.str().substr(1); // strip space
 		break;

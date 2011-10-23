@@ -642,11 +642,11 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 	} else {
 		string text;
 		getline(cmd_line, text);
+		if (!text.empty()) text = text.substr(1); // strip space
 
-		if (!text.empty()) {
-			text = text.substr(1); // strip space
+		if (!text.empty())
 			os << autosprintf(_("Registration request with password %s"), text.c_str());
-		} else
+		else
 			os << _("Registration request without password");
 
 		mOwner->ReportUserToOpchat(conn, os.str(), mOwner->mC.dest_regme_chat);

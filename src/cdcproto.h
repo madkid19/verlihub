@@ -157,6 +157,7 @@ protected:
 	int DC_GetNickList(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_GetINFO(cMessageDC * msg, nSocket::cConnDC * conn);
+	int DC_UserIP(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_MyINFO(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */

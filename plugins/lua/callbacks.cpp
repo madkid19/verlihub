@@ -346,8 +346,7 @@ int _GetBotList(lua_State *L)
 	if(lua_gettop(L) == 1) {
 		cServerDC *server = GetCurrentVerlihub();
 		if(server) {
-			botlist = (char*) server->mRobotList.GetNickList().c_str();
-			cout << "BotList is " << server->mRobotList.GetInfoList() << endl;
+			botlist = (char*) server->mRobotList.GetNickList().c_str(); // @fixme: mRobotList is empty
 			if(strlen(botlist) < 1) result = 0;
 			lua_pushboolean(L, result);
 			lua_pushstring(L, botlist);

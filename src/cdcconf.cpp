@@ -29,13 +29,15 @@ namespace nVerliHub {
 
 cDCConf::cDCConf( cServerDC &serv ): mS(serv)
 {
+	// @rolex: is this even used? if no then make usable, if yes then lengths are completely wrong
 	max_length[eDC_KEY]=128;
-	max_length[eDC_VALIDATENICK]=64;
+	max_length[eDC_VALIDATENICK]=64; // for example: cmd len + max_nick
 	max_length[eDC_MYPASS]=64;
 	max_length[eDC_VERSION]=32;
 	max_length[eDC_GETNICKLIST]=16;
 	max_length[eDC_MYNIFO]=128;
-	max_length[eDC_GETINFO]=10+max_nick;
+	max_length[eDC_GETINFO] = 10+max_nick;
+	max_length[eDC_USERIP] = 11 + max_nick;
 	max_length[eDC_CONNECTTOME]=32*2*max_nick;
 	max_length[eDC_MCONNECTTOME]=64;
 	max_length[eDC_RCONNECTTOME]=64;

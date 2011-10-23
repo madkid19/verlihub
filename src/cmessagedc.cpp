@@ -31,6 +31,7 @@ namespace nVerliHub {
 cProtoCommand /*cMessageDC::*/sDC_Commands[]=
 {
 	cProtoCommand(string("$GetINFO ")),  // check: logged_in(FI), nick
+	cProtoCommand(string("$UserIP ")),
 	cProtoCommand(string("$Search Hub:")), // check: nick, delay //this must be first!! before the nex one
 	cProtoCommand(string("$Search ")), // check: ip, delay
 	cProtoCommand(string("$SR ")), // check: nick
@@ -101,6 +102,7 @@ bool cMessageDC::SplitChunks()
 		case eDC_VERSION:
 		case eDC_KICK:
 		case eDC_QUIT:
+		case eDC_USERIP:
 		case eDCO_UNBAN:
 		case eDCO_WHOIP:
 		case eDCO_SETTOPIC:
