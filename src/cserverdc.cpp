@@ -709,9 +709,20 @@ void cServerDC::DoUserLogin(cConnDC *conn)
 		}
 	}
 
+	if (!mC.hub_topic.empty()) { // send hub name with topic
+		static string omsg;
+		cDCProto::Create_HubName(omsg, mC.hub_name, mC.hub_topic);
+
+		#ifndef WITHOUT_PLUGINS
+		if (mCallBacks.mOnHubName.CallAll(conn->mpUser->mNick, omsg))
+		#endif
+		{
+			conn->Send(omsg);
+		}
+	}
+
 	SendHeaders(conn, 1);
 	AfterUserLogin(conn);
-
 	conn->ClearTimeOut(eTO_LOGIN);
 	conn->mpUser->mT.login.Get();
 }
@@ -1293,7 +1304,7 @@ void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain
 	}
 }
 
-bool cServerDC::SendHeaders(cConnDC * conn, int where)
+void cServerDC::SendHeaders(cConnDC * conn, int where)
 {
 	/*
 	* 0 = dont send headers
@@ -1301,41 +1312,31 @@ bool cServerDC::SendHeaders(cConnDC * conn, int where)
 	* 2 = send headers on connection
 	*/
 
-	int conf = mC.host_header;
-	if (conf > 2) conf = 2;
-	if (conf == 0) return true;
-	if (conf != where) return false;
-
-	ostringstream os;
-	cTime runtime;
-	runtime -= mStartTime;
-
-	if (mFrequency.mNumFill > 0) {
-		if (mSysLoad == eSL_RECOVERY)
-			mStatus = _("Recovery mode");
-		else if (mSysLoad == eSL_CAPACITY)
-			mStatus = _("Near capacity");
-		else if (mSysLoad == eSL_PROGRESSIVE)
-			mStatus = _("Progressive mode");
-		else if (mSysLoad == eSL_NORMAL)
-			mStatus = _("Normal mode");
-		else
-			mStatus = _("Not available");
-	} else
+	if (((mC.host_header > 2) ? 2 : mC.host_header) == where) {
+		ostringstream os;
+		cTime runtime;
+		runtime -= mStartTime;
 		mStatus = _("Not available");
 
-	if (mC.extended_welcome_message) {
-		os << "<" << mC.hub_security << "> " << autosprintf(_("Running %s %s build %s"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS) << "|";
-		os << "<" << mC.hub_security << "> " << autosprintf(_("Runtime: %s"), runtime.AsPeriod().AsString().c_str()) << "|";
-		os << "<" << mC.hub_security << "> " << autosprintf(_("User count: %d"), mUserCountTot) << "|";
-		os << "<" << mC.hub_security << "> " << autosprintf(_("System status: %s"), mStatus.c_str()) << "|";
-		if (!mC.hub_version_special.empty()) os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
-	} else
-		os << autosprintf(_("Running %s %s build %s%s ][ Runtime: %s ][ User count: %d"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS, mC.hub_version_special.c_str(), runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
+		if (mFrequency.mNumFill > 0) {
+			if (mSysLoad == eSL_RECOVERY) mStatus = _("Recovery mode");
+			else if (mSysLoad == eSL_CAPACITY) mStatus = _("Near capacity");
+			else if (mSysLoad == eSL_PROGRESSIVE) mStatus = _("Progressive mode");
+			else if (mSysLoad == eSL_NORMAL) mStatus = _("Normal mode");
+		}
 
-	string res = os.str();
-	conn->Send(res, false);
-	return true;
+		if (mC.extended_welcome_message) {
+			os << "<" << mC.hub_security << "> " << autosprintf(_("Running %s %s build %s"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS) << "|";
+			os << "<" << mC.hub_security << "> " << autosprintf(_("Runtime: %s"), runtime.AsPeriod().AsString().c_str()) << "|";
+			os << "<" << mC.hub_security << "> " << autosprintf(_("User count: %d"), mUserCountTot) << "|";
+			os << "<" << mC.hub_security << "> " << autosprintf(_("System status: %s"), mStatus.c_str()) << "|";
+			if (!mC.hub_version_special.empty()) os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
+		} else
+			os << autosprintf(_("Running %s %s build %s%s ][ Runtime: %s ][ User count: %d"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS, mC.hub_version_special.c_str(), runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
+
+		string res = os.str();
+		conn->Send(res, false);
+	}
 }
 
 void cServerDC::DCKickNick(ostream *use_os,cUser *OP, const string &Nick, const string &Reason, int flags)

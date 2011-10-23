@@ -222,10 +222,12 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		}
 	}
 
-	// Send hub name
-	cDCProto::Create_HubName(omsg,mS->mC.hub_name,mS->mC.hub_topic);
+	// send hub name without topic
+	string emp;
+	Create_HubName(omsg, mS->mC.hub_name, emp);
+
 	#ifndef WITHOUT_PLUGINS
-	if(cServerDC::sCurrentServer->mCallBacks.mOnHubName.CallAll(nick, omsg))
+	if (mS->mCallBacks.mOnHubName.CallAll(nick, omsg))
 	#endif
 	{
 		conn->Send(omsg);
@@ -1709,8 +1711,9 @@ void cDCProto::Create_PMForBroadcast(string &start,string &end, const string &fr
 
 void cDCProto::Create_HubName(string &dest, string &name, string &topic)
 {
-	dest ="$HubName " + name;
-	if(topic.length()) {
+	dest = "$HubName " + name;
+
+	if (topic.length()) {
 		dest += " - ";
 		dest += topic;
 	}

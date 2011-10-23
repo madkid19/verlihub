@@ -614,51 +614,45 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			return 1;
 		}
 
-		if(user && user->mxConn) {
+		if (user && user->mxConn) {
 			string text;
-			getline(cmd_line,text);
+			getline(cmd_line, text);
 			if (!text.empty()) text = text.substr(1); // strip space
 
-			if(text.size() < (unsigned int) mOwner->mC.password_min_len) {
+			if (text.size() < (unsigned int)mOwner->mC.password_min_len) {
 				os << autosprintf(_("Minimum password length is %d characters, please retry."), mOwner->mC.password_min_len);
-				mOwner->DCPublicHS(os.str(),conn);
+				mOwner->DCPublicHS(os.str(), conn);
 				return 1;
 			}
 
-			if (mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text.c_str()) ) {
-				// sent the report to the opchat
+			if (mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text.c_str())) {
 				os << autosprintf(_("A new user has been registered with class %d"), mOwner->mC.autoreg_class);
 				mOwner->ReportUserToOpchat(conn, os.str(), false);
 				os.str(mOwner->mEmpty);
-				// sent the message to the user
 				os << autosprintf(_("You are now registered with nick %s, please reconnect and login with your new password: %s"), regnick.c_str(), text.c_str());
 			} else {
 				os << _("An error occured while registering.");
-				mOwner->DCPublicHS(os.str(),conn);
+				mOwner->DCPublicHS(os.str(), conn);
 				return false;
 			}
 		}
 
-		mOwner->DCPublicHS(os.str(),conn);
+		mOwner->DCPublicHS(os.str(), conn);
 		return 1;
-
 	} else {
-		string text, tmpline;
-		getline(cmd_line,text);
-		text = text.substr(1); // strip space
-		/*while(cmd_line.good()) {
-			tmpline="";
-			getline(cmd_line,tmpline);
-			text += "\r\n" + tmpline;
-		}*/
-		// Send message to opchat
-		os << autosprintf(_("Registration request with password %s"), text.c_str());
+		string text;
+		getline(cmd_line, text);
+
+		if (!text.empty()) {
+			text = text.substr(1); // strip space
+			os << autosprintf(_("Registration request with password %s"), text.c_str());
+		} else
+			os << _("Registration request without password");
+
 		mOwner->ReportUserToOpchat(conn, os.str(), mOwner->mC.dest_regme_chat);
-		// Send message to user
-		mOwner->DCPublicHS(_("Thank you, your request has been sent to operators."),conn);
+		mOwner->DCPublicHS(_("Thank you, your request has been sent to operators."), conn);
 		return 1;
 	}
-
 }
 
 int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)

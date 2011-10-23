@@ -382,6 +382,13 @@ class cServerDC : public cAsyncSocketServer
 		*/
 		void ReportUserToOpchat(cConnDC *, const string &Msg, bool ToMain = false);
 
+		/*
+		* Send host headers to user.
+		* conn = User connection.
+		* where = Appearance destination, 1 - on login, 2 - on connection.
+		*/
+		void SendHeaders(cConnDC *, int where);
+
 		/**
 		* Remove an user from lists.
 		* @param usr The user to remove.
