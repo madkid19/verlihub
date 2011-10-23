@@ -617,7 +617,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		if(user && user->mxConn) {
 			string text;
 			getline(cmd_line,text);
-			text = text.substr(1); // strip space
+			if (!text.empty()) text = text.substr(1); // strip space
 
 			if(text.size() < (unsigned int) mOwner->mC.password_min_len) {
 				os << autosprintf(_("Minimum password length is %d characters, please retry."), mOwner->mC.password_min_len);
