@@ -202,6 +202,7 @@ void cDCConf::AddVars()
 	Add("password_min_len", password_min_len, 6);
 	Add("pwd_tmpban", pwd_tmpban, 10);
 	Add("wrongpassword_report", wrongpassword_report, 1);
+	Add("wrongauthip_report", wrongauthip_report, true);
 	Add("botinfo_report", botinfo_report, 0);
 	Add("send_user_ip",send_user_ip,false);
 	Add("send_user_info", send_user_info, true);

@@ -234,6 +234,14 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 		conn->Send(omsg);
 	}
 
+	// check authorization ip
+	if (conn->mRegInfo && !conn->mRegInfo->mAuthIP.empty() && (conn->mRegInfo->mAuthIP != conn->mAddrIP)) {
+		if (mS->mC.wrongauthip_report) mS->ReportUserToOpchat(conn, autosprintf(_("Authorization IP mismatch from %s"), nick.c_str()));
+		os << autosprintf(_("Authorization IP for this account doesn't match your IP address: %s"), conn->mAddrIP.c_str());
+		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_LOGIN_ERR);
+		return -1;
+	}
+
 	if (conn->NeedsPassword()) {
 		omsg="$GetPass";
 		conn->Send(omsg);

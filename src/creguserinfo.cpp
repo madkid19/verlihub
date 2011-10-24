@@ -112,12 +112,8 @@ ostream & operator << (ostream &os, cRegUserInfo &ui)
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Hidden kicks") << ((ui.mHideKick != 0) ? _("Yes") : _("No")) << "\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Hidden key") << ((ui.mHideKeys != 0) ? _("Yes") : _("No")) << "\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Hidden share") << ((ui.mHideShare != 0) ? _("Yes") : _("No")) << "\r\n";
-	string alternateIP;
-	if(ui.mAlternateIP.empty())
-		alternateIP = "--";
-	else
-		alternateIP = ui.mAlternateIP;
-	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Alternate IP") << alternateIP;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Authorization IP") << (ui.mAuthIP.empty() ? "--" : ui.mAuthIP) << "\r\n";
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Alternate IP") << (ui.mAlternateIP.empty() ? "--" : ui.mAlternateIP);
 	return os;
 }
 

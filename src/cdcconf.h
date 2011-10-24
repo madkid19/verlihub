@@ -213,6 +213,7 @@ public:
 	int password_min_len;
 	int pwd_tmpban;
 	int wrongpassword_report;
+	bool wrongauthip_report;
 	int botinfo_report;
 	double timeout_length[6];
 
