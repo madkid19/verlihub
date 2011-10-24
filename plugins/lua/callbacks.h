@@ -53,6 +53,7 @@ namespace nVerliHub {
 	int _GetUserHost(lua_State *);
 	int _GetUserIP(lua_State *);
 	int _IsUserOnline(lua_State *L);
+	int _InUserSupports(lua_State *L);
 	int _GetNickList(lua_State *);
 	int _GetOPList(lua_State *);
 	int _GetBotList(lua_State *);

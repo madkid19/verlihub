@@ -86,6 +86,7 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("GetUserHost",       &_GetUserHost);
 	RegisterFunction("GetUserIP",         &_GetUserIP);
 	RegisterFunction("IsUserOnline",         &_IsUserOnline);
+	RegisterFunction("InUserSupports", &_InUserSupports);
 	RegisterFunction("Ban",               &_Ban);
 	RegisterFunction("KickUser",          &_KickUser);
 	RegisterFunction("ParseCommand",      &_ParseCommand);

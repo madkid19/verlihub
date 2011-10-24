@@ -20,8 +20,9 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
-#define ERR_PARAM "wrong parameter(s)"
-#define ERR_CALL "call error"
+#define ERR_PARAM "Wrong parameters"
+#define ERR_CALL "Call error"
+#define ERR_SERV "Error getting server"
 
 extern "C"
 {
@@ -33,6 +34,7 @@ extern "C"
 #include "cpilua.h"
 #include "callbacks.h"
 #include "src/cserverdc.h"
+#include "src/cconndc.h"
 #include "src/cuser.h"
 #include "src/script_api.h"
 #include <iostream>
@@ -447,11 +449,73 @@ int _IsUserOnline(lua_State *L)
 		lua_pushboolean(L, (usr == NULL ? 0 : 1));
 		return 1;
 	} else {
-		luaL_error(L, "Error calling VH:GetUserIP; expected 1 argument but got %d", lua_gettop(L) - 1);
+		luaL_error(L, "Error calling VH:IsUserOnline; expected 1 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
 	}
+}
+
+int _InUserSupports(lua_State *L)
+{
+	if (lua_gettop(L) != 3) {
+		luaL_error(L, "Error calling VH:InUserSupports, expected 2 arguments but got %d.", lua_gettop(L) - 1);
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (serv == NULL) {
+		luaerror(L, ERR_SERV);
+		return 2;
+	}
+
+	if (!lua_isstring(L, 2) || !lua_isstring(L, 3)) {
+		luaerror(L, ERR_PARAM);
+		return 2;
+	}
+
+	string nick = (char *)lua_tostring(L, 2);
+	string flag = lua_tostring(L, 3);
+	cUser *usr = serv->mUserList.GetUserByNick(nick);
+
+	if ((usr == NULL) || (usr->mxConn == NULL)) {
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+
+	if (
+	((flag == "OpPlus") && (usr->mxConn->mFeatures & eSF_OPPLUS)) ||
+	((flag == "NoHello") && (usr->mxConn->mFeatures & eSF_NOHELLO)) ||
+	((flag == "NoGetINFO") && (usr->mxConn->mFeatures & eSF_NOGETINFO)) ||
+	((flag == "DHT0") && (usr->mxConn->mFeatures & eSF_DHT0)) ||
+	((flag == "QuickList") && (usr->mxConn->mFeatures & eSF_QUICKLIST)) ||
+	((flag == "BotINFO") && (usr->mxConn->mFeatures & eSF_BOTINFO)) ||
+	(((flag == "ZPipe0") || (flag == "ZPipe")) && (usr->mxConn->mFeatures & eSF_ZLIB)) ||
+	((flag == "ChatOnly") && (usr->mxConn->mFeatures & eSF_CHATONLY)) ||
+	((flag == "MCTo") && (usr->mxConn->mFeatures & eSF_MCTO)) ||
+	((flag == "UserCommand") && (usr->mxConn->mFeatures & eSF_USERCOMMAND)) ||
+	((flag == "BotList") && (usr->mxConn->mFeatures & eSF_BOTLIST)) ||
+	((flag == "HubTopic") && (usr->mxConn->mFeatures & eSF_HUBTOPIC)) ||
+	((flag == "UserIP2") && (usr->mxConn->mFeatures & eSF_USERIP2)) ||
+	((flag == "TTHSearch") && (usr->mxConn->mFeatures & eSF_TTHSEARCH)) ||
+	((flag == "Feed") && (usr->mxConn->mFeatures & eSF_FEED)) ||
+	((flag == "ClientID") && (usr->mxConn->mFeatures & eSF_CLIENTID)) ||
+	((flag == "IN") && (usr->mxConn->mFeatures & eSF_IN)) ||
+	((flag == "BanMsg") && (usr->mxConn->mFeatures & eSF_BANMSG)) ||
+	((flag == "TLS") && (usr->mxConn->mFeatures & eSF_TLS))
+	) {
+		lua_pushboolean(L, 1);
+		lua_pushboolean(L, 1);
+		return 2;
+	}
+
+	lua_pushboolean(L, 1);
+	lua_pushboolean(L, 0);
+	return 2;
 }
 
 int _Ban(lua_State *L)

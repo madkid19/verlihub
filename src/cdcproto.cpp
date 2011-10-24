@@ -1426,9 +1426,10 @@ int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 		if (feature == "OpPlus") conn->mFeatures |= eSF_OPPLUS;
 		else if (feature == "NoHello") conn->mFeatures |= eSF_NOHELLO;
 		else if (feature == "NoGetINFO") conn->mFeatures |= eSF_NOGETINFO;
+		else if (feature == "DHT0") conn->mFeatures |= eSF_DHT0;
 		else if (feature == "QuickList") conn->mFeatures |= eSF_QUICKLIST;
 		else if (feature == "BotINFO") conn->mFeatures |= eSF_BOTINFO;
-		else if (feature == "ZPipe" || feature == "ZPipe0") conn->mFeatures |= eSF_ZLIB;
+		else if (feature == "ZPipe0" || feature == "ZPipe") conn->mFeatures |= eSF_ZLIB;
 		else if (feature == "ChatOnly") conn->mFeatures |= eSF_CHATONLY;
 		else if (feature == "MCTo") conn->mFeatures |= eSF_MCTO;
 		else if (feature == "UserCommand") conn->mFeatures |= eSF_USERCOMMAND;
@@ -1440,6 +1441,7 @@ int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 		else if (feature == "ClientID") conn->mFeatures |= eSF_CLIENTID;
 		else if (feature == "IN") conn->mFeatures |= eSF_IN;
 		else if (feature == "BanMsg") conn->mFeatures |= eSF_BANMSG;
+		else if (feature == "TLS") conn->mFeatures |= eSF_TLS;
 	}
 
 	#ifndef WITHOUT_PLUGINS
