@@ -1415,30 +1415,41 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 
 int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 {
-	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO ZPipe MCTo"); // @rolex: i think it should be ZPipe0
 	istringstream is(msg->mStr);
-
 	string feature;
 	is >> feature;
-	while(1) {
+
+	while (1) {
 		feature = this->mS->mEmpty;
 		is >> feature;
-		if(!feature.size())
-			break;
-		if(feature == "OpPlus") conn->mFeatures |= eSF_OPPLUS;
-		else if(feature == "NoHello") conn->mFeatures |= eSF_NOHELLO;
-		else if(feature == "NoGetINFO") conn->mFeatures |= eSF_NOGETINFO;
-		else if(feature == "QuickList") conn->mFeatures |= eSF_QUICKLIST;
-		else if(feature == "BotINFO") conn->mFeatures |= eSF_BOTINFO;
-		else if(feature == "ZPipe" || feature == "ZPipe0") conn->mFeatures |= eSF_ZLIB;
-		// ChatOnly, UserCommand
+		if (!feature.size()) break;
+		if (feature == "OpPlus") conn->mFeatures |= eSF_OPPLUS;
+		else if (feature == "NoHello") conn->mFeatures |= eSF_NOHELLO;
+		else if (feature == "NoGetINFO") conn->mFeatures |= eSF_NOGETINFO;
+		else if (feature == "QuickList") conn->mFeatures |= eSF_QUICKLIST;
+		else if (feature == "BotINFO") conn->mFeatures |= eSF_BOTINFO;
+		else if (feature == "ZPipe" || feature == "ZPipe0") conn->mFeatures |= eSF_ZLIB;
+		else if (feature == "ChatOnly") conn->mFeatures |= eSF_CHATONLY;
+		else if (feature == "MCTo") conn->mFeatures |= eSF_MCTO;
+		else if (feature == "UserCommand") conn->mFeatures |= eSF_USERCOMMAND;
+		else if (feature == "BotList") conn->mFeatures |= eSF_BOTLIST;
+		else if (feature == "HubTopic") conn->mFeatures |= eSF_HUBTOPIC;
+		else if (feature == "UserIP2") conn->mFeatures |= eSF_USERIP2;
+		else if (feature == "TTHSearch") conn->mFeatures |= eSF_TTHSEARCH;
+		else if (feature == "Feed") conn->mFeatures |= eSF_FEED;
+		else if (feature == "ClientID") conn->mFeatures |= eSF_CLIENTID;
+		else if (feature == "IN") conn->mFeatures |= eSF_IN;
+		else if (feature == "BanMsg") conn->mFeatures |= eSF_BANMSG;
 	}
+
 	#ifndef WITHOUT_PLUGINS
-	if(!mS->mCallBacks.mOnParsedMsgSupport.CallAll(conn, msg)) {
+	if (!mS->mCallBacks.mOnParsedMsgSupport.CallAll(conn, msg)) {
 		conn->CloseNice(1000, eCR_LOGIN_ERR);
 		return -1;
 	}
 	#endif
+
+	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO HubTopic ZPipe0 MCTo"); // @todo: BotList
 	conn->Send(omsg);
 	return 0;
 }

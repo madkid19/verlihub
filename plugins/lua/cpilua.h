@@ -78,7 +78,7 @@ public:
 	const char * toString(int);
 
 	bool AutoLoad();
-	bool CallAll(const char *, char * []);
+	bool CallAll(const char *, char * [], cConnDC *conn = NULL);
 	int Size() { return mLua.size(); }
 	void SetLogLevel(int);
 	bool IsNumber(const char*);

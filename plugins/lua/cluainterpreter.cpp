@@ -155,56 +155,111 @@ void cLuaInterpreter::RegisterFunction(const char *fncname, int (*fncptr)(lua_St
 	lua_rawset(mL, -3);
 }
 
-bool cLuaInterpreter::CallFunction(const char * func, char * args[])
+bool cLuaInterpreter::CallFunction(const char * func, char * args[], cConnDC *conn)
 {
 	lua_settop(mL, 0);
 	int base = lua_gettop(mL);
 	lua_pushliteral(mL, "_TRACEBACK");
 
-#if defined LUA_GLOBALSINDEX
-	lua_rawget(mL, LUA_GLOBALSINDEX); // <=5.1
-#else
-	lua_pushglobaltable(mL); // >=5.2
-#endif
+	#if defined LUA_GLOBALSINDEX
+		lua_rawget(mL, LUA_GLOBALSINDEX); // <=5.1
+	#else
+		lua_pushglobaltable(mL); // >=5.2
+	#endif
 
 	lua_insert(mL, base);
 	lua_getglobal(mL, func);
 
-	if(lua_isnil(mL, -1))
-	{
+	if (lua_isnil(mL, -1)) {
 		// function not exists
 		lua_pop(mL, -1); // remove nil value
 		lua_remove(mL, base); // remove _TRACEBACK
-	}
-	else
-	{
-		int i=0;
-		while(args[i] != NULL)
-		{
+	} else {
+		int i = 0;
+
+		while (args[i] != NULL) {
 			lua_pushstring(mL, args[i]);
 			i++;
 		}
 
 		int result = lua_pcall(mL, i, 1, base);
-		if(result)
-		{
+
+		if (result) {
 			const char *msg = lua_tostring(mL, -1);
-			if(msg == NULL)
-				msg = _("(unknown LUA error)");
+			if (msg == NULL) msg = _("(unknown LUA error)");
 			cout << "LUA error: " << msg << endl;
-			ReportLuaError( (char *) msg);
+			ReportLuaError((char *)msg);
 			lua_pop(mL, 1);
 			lua_remove(mL, base); // remove _TRACEBACK
 			return true;
 		}
 
-		int val = (int)lua_tonumber(mL, -1);
-		lua_pop(mL, 1);
+		bool ret = true;
 
-		lua_remove(mL, base); // remove _TRACEBACK
+		if (lua_istable(mL, -1)) {
+			/*
+			* new style, advanced table return:
+			*
+			* table index = 1, type = string:
+			* value: data = protocol message to send
+			* value: empty = dont send anything
+			*
+			* table index = 2, type = boolean:
+			* value: 0 = discard
+			* value: 1 = dont discard
+			*
+			* table index = 3, type = boolean:
+			* value: 0 = disconnect user
+			* value: 1 = dont disconnect
+			*/
 
-		if(!(bool)val)
-			return false;
+			i = lua_gettop(mL);
+			lua_pushnil(mL);
+
+			while (lua_next(mL, i) != 0) {
+				if (lua_isnumber(mL, -2)) { // table keys must not be named
+					int key = (int)lua_tonumber(mL, -2);
+
+					if (key == 1) { // message?
+						if (lua_isstring(mL, -1) && (conn != NULL)) { // value at index 1 must be a string, connection is required
+							string data = lua_tostring(mL, -1); // (char *)
+							if (!data.empty()) conn->Send(data, false); // send data, script must add the ending pipe
+						}
+					} else if (key == 2) { // discard?
+						if (lua_isnumber(mL, -1)) { // value at index 3 must be a boolean
+							if ((int)lua_tonumber(mL, -1) == 0) ret = false;
+						}
+					} else if (key == 3) { // disconnect?
+						if (lua_isnumber(mL, -1) && (conn != NULL)) { // value at index 3 must be a boolean, connection is required
+							if ((int)lua_tonumber(mL, -1) == 0) {
+								conn->CloseNow(); // disconnect user
+								ret = false; // automatically discard due disconnect
+							}
+						}
+					} else // stop after index 3 if there is more
+						break;
+				}
+
+				lua_pop(mL, 1);
+			}
+
+			//lua_pop(mL, 1);
+			lua_remove(mL, base); // remove _TRACEBACK
+		} else if (lua_isnumber(mL, -1)) {
+			/*
+			* old school, simple boolean return for backward compatibility:
+			*
+			* type = boolean:
+			* value: 0 = discard
+			* value: 1 = dont discard
+			*/
+
+			if ((int)lua_tonumber(mL, -1) == 0) ret = false;
+			lua_pop(mL, 1);
+			lua_remove(mL, base); // remove _TRACEBACK
+		}
+
+		return ret;
 	}
 
 	return true;

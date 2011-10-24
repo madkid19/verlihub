@@ -602,8 +602,8 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 		{
 			omsg = _("Your nick is already in use.");
 			DCPublicHS(omsg, conn);
-			omsg = "$ValidateDenide"; conn->Send(omsg);
-			// todo: add redirect
+			omsg = "$ValidateDenide " + conn->mpUser->mNick; conn->Send(omsg);
+			// @todo: add redirect
 			conn->CloseNow();
 			return false;
 		}

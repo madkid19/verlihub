@@ -29,6 +29,8 @@ extern "C"
     #include "lualib.h"
     #include "lauxlib.h"
 }
+
+#include "src/cconndc.h"
 #include <cstring>
 #include <string>
 #include <iostream>
@@ -46,7 +48,7 @@ public:
 
 	bool Init();
 	void ReportLuaError(char *);
-	bool CallFunction(const char *, char * []);
+	bool CallFunction(const char *, char * [], cConnDC *conn = NULL);
 	void RegisterFunction(const char *, int (*)(lua_State *));
 	void Load();
 
