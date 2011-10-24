@@ -222,11 +222,11 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[], cConnDC *co
 
 					if (key == 1) { // message?
 						if (lua_isstring(mL, -1) && (conn != NULL)) { // value at index 1 must be a string, connection is required
-							string data = lua_tostring(mL, -1); // (char *)
+							string data = lua_tostring(mL, -1);
 							if (!data.empty()) conn->Send(data, false); // send data, script must add the ending pipe
 						}
 					} else if (key == 2) { // discard?
-						if (lua_isnumber(mL, -1)) { // value at index 3 must be a boolean
+						if (lua_isnumber(mL, -1)) { // value at index 2 must be a boolean
 							if ((int)lua_tonumber(mL, -1) == 0) ret = false;
 						}
 					} else if (key == 3) { // disconnect?
@@ -236,14 +236,13 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[], cConnDC *co
 								ret = false; // automatically discard due disconnect
 							}
 						}
-					} else // stop after index 3 if there is more
-						break;
+					}
 				}
 
 				lua_pop(mL, 1);
 			}
 
-			//lua_pop(mL, 1);
+			lua_pop(mL, 1);
 			lua_remove(mL, base); // remove _TRACEBACK
 		} else if (lua_isnumber(mL, -1)) {
 			/*
