@@ -274,15 +274,18 @@ tMsgAct cServerDC::Filter( tDCMsg msg, cConnDC *conn )
 
 int cServerDC::DCPublic(const string &from, const string &txt, cConnDC *conn)
 {
-	static string msg;
-	msg.erase();
-	cDCProto::Create_Chat(msg, from, txt);
 	if (conn) {
-		conn->Send( msg , true);
+		if (!txt.empty()) {
+			static string msg;
+			msg.erase();
+			cDCProto::Create_Chat(msg, from, txt);
+			conn->Send(msg, true);
+		}
+
 		return 1;
-	} else {
-		return 0;
 	}
+
+	return 0;
 }
 
 int cServerDC::DCPublicToAll(const string &from, const string &txt, int min_class, int max_class)
@@ -633,11 +636,10 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	topic += mC.hub_topic + "|";
 	conn->Send(topic, false);
 
-	if(mC.send_user_info) {
-
-		os << "\r\n[::] " << _("Your info") << ": \r\n";
+	if (mC.send_user_info) {
+		os << _("Your information") << ":\r\n";
 		conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
-		DCPublicHS(os.str(),conn);
+		DCPublicHS(os.str(), conn);
 	}
 
 	if(mUserList.Size() > mUsersPeak)
@@ -1230,8 +1232,8 @@ int cServerDC::WhoCC(string CC, string &dest, const string&separator)
 	for(i=mUserList.begin(); i != mUserList.end(); ++i) {
 		conn = ((cUser*)(*i))->mxConn;
 		if(conn && conn->mCC == CC) {
-			dest += (*i)->mNick;
 			dest += separator;
+			dest += (*i)->mNick;
 			cnt++;
 		}
 	}
@@ -1248,15 +1250,15 @@ int cServerDC::WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, c
 		if(conn) {
 			unsigned long num = cBanList::Ip2Num(conn->AddrIP());
 			if(exact && (ip_min == num)) {
-				dest += (*i)->mNick;
 				dest += separator;
+				dest += (*i)->mNick;
 				cnt++;
 			} else if ((ip_min <= num) && (ip_max >= num)) {
+				dest += separator;
 				dest += (*i)->mNick;
 				dest += " (";
 				dest += conn->AddrIP();
 				dest += ")";
-				dest += separator;
 				cnt++;
 			}
 		}

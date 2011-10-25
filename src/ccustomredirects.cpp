@@ -214,11 +214,11 @@ namespace nVerliHub {
 
 	void cRedirectConsole::ListHead(ostream *os)
 	{
-		(*os) << "\n ";
+		(*os) << "\r\n ";
 		(*os) << setw(35) << setiosflags(ios::left) << toUpper(_("Address"));
 		(*os) << setw(35) << setiosflags(ios::left) << toUpper(_("Type"));
-		(*os) << toUpper(_("Status")) << "\n";
-		(*os) << " " << string(30+25+25,'=') << endl;
+		(*os) << toUpper(_("Status")) << "\r\n";
+		(*os) << " " << string(30+25+25,'=');
 	}
 
 	bool cRedirectConsole::IsConnAllowed(cConnDC *conn,int cmd)

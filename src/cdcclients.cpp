@@ -343,8 +343,8 @@ namespace nVerliHub {
 		(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Client ID"));
 		(*os) << setw(30) << setiosflags(ios::left) << toUpper(_("Version"));
 		(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Banned?"));
-		(*os) << toUpper(_("Status")) << endl;
-		(*os) << " " << string(15+15+35+15+15,'=') << endl;
+		(*os) << toUpper(_("Status")) << "\r\n";
+		(*os) << " " << string(15+15+35+15+15,'=');
 	}
 
 	bool cDCClientConsole::IsConnAllowed(cConnDC *conn,int cmd)

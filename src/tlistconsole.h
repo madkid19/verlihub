@@ -23,6 +23,7 @@
 #define NCONFIGLISTCONSOLE_H
 #include "cdccommand.h"
 #include "ccommandcollection.h"
+#include "i18n.h"
 
 namespace nVerliHub {
 	namespace nSocket {
@@ -83,7 +84,7 @@ public:
 		if (Cmd != NULL && this->IsConnAllowed(conn, Cmd->GetID()))
 		{
 			mCmdr.ExecuteCommand(Cmd, os, conn);
-			this->mOwner->mServer->DCPublicHS(os.str().c_str(),conn);
+			this->mOwner->mServer->DCPublicHS(os.str().c_str(), conn);
 			return 1;
 		}
 		return 0;
@@ -130,12 +131,12 @@ public:
 
 	virtual void GetHelpForCommand(int cmd, ostream &os)
 	{
-		os << this->CmdId(cmd) << this->GetParamsRegex(cmd) << "\r\n";
+		os << this->CmdId(cmd) << this->GetParamsRegex(cmd);
 	}
 
 	virtual void GetHelp(ostream &os)
 	{
-		os << "No help available" << "\r\n";
+		os << _("No help available for this command.");
 	}
 
 	virtual OWNER_TYPE * GetPlugin() { return this->mOwner; }
@@ -171,17 +172,17 @@ protected:
 						DATA_TYPE *AddedData = list->AddData(Data);
 						if (AddedData) {
 							list->OnLoadData(*AddedData);
-							(*this->mOS) << "Successfully added: " << *AddedData << "\r\n";
+							(*this->mOS) << _("Item successfully added") << ": " << *AddedData;
 							return true;
 						} else {
-							(*this->mOS) << "Error: Cannot add";
+							(*this->mOS) << _("Unable to add item.");
 						}
 					} else {
-						(*this->mOS) << "Error: Already exists";
+						(*this->mOS) << _("Item already exists.");
 					}
 				}
-			} else {
-				(*this->mOS) << "\r\n";
+			//} else {
+				//(*this->mOS) << "\r\n";
 			}
 			return false;
 		}
@@ -199,11 +200,11 @@ protected:
 				if (this->GetTheList() && this->GetTheList()->FindData(Data))
 				{
 					this->GetTheList()->DelData(Data);
-					(*this->mOS) << "Deleted successfuly";
+					(*this->mOS) << _("Item successfully deleted.");
 					return true;
 				}
 			}
-			(*this->mOS) << "Data not found ";
+			(*this->mOS) << _("Item not found.");
 			return false;
 		}
 	} mcfDel;
@@ -224,15 +225,15 @@ protected:
 					if(Console->ReadDataFromCmd(this, eLC_MOD, *pOrig))
 					{
 						this->GetTheList()->UpdateData(*pOrig);
-						(*this->mOS) << "Successfully modified: " << *pOrig << "\r\n";
+						(*this->mOS) << _("Item successfully modified") << ": " << *pOrig;
 						return true;
 					} else {
-						(*this->mOS) << "Error in data";
+						(*this->mOS) << _("Error in item data.");
 						return false;
 					}
 				}
 			}
-			(*this->mOS) << "Data not found ";
+			(*this->mOS) << _("Item not found.");
 			return false;
 		}
 	} mcfMod;
@@ -248,7 +249,7 @@ protected:
 			for(int i = 0; i < this->GetTheList()->Size(); i++)
 			{
 				pData = (*this->GetTheList())[i];
-				(*this->mOS) << (*pData) << "\r\n";
+				(*this->mOS) << "\r\n" << (*pData);
 			}
 
 			return true;

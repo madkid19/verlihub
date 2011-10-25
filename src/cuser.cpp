@@ -204,25 +204,19 @@ long cUser::ShareEnthropy(const string &sharesize)
 
 void cUser::DisplayInfo(ostream &os, int DisplClass)
 {
-	static const char *ClassName[]={"Guest","Registred", "VIP", "Operator", "Cheef", "Admin" , "6-err","7-err", "8-err","9-err","Master"};
+	//static const char *ClassName[] = {"Guest", "Registred", "VIP", "Operator", "Cheef", "Admin", "6-err", "7-err", "8-err", "9-err", "Master"};
+	//toUpper(ClassName[this->mClass])
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << mNick << "\r\n";
+	if (this->mClass != this->mxConn->GetTheoricalClass()) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Default class") << this->mxConn->GetTheoricalClass() << "\r\n";
+	if (DisplClass >= eUC_CHEEF) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("In list") << this->mInList << "\r\n";
 
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << mNick << " [" << toUpper(ClassName[this->mClass]);
-	if( this->mClass != this->mxConn->GetTheoricalClass() )
-			os << " - " << autosprintf(_("Default class %d"),this->mxConn->GetTheoricalClass());
-	os  << "]" << endl;
-	if(DisplClass >= eUC_CHEEF)
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("In list") << this->mInList << endl;
-	if(!this->mxConn) {
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Special user") << endl;
-	} else {
-		if(DisplClass >= eUC_OPERATOR)
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << "IP" << mxConn->AddrIP() << endl;
-		if(DisplClass >= eUC_OPERATOR && mxConn->AddrHost().size())
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Host") << mxConn->AddrHost() << endl;
-		if(mxConn->mCC.size())
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Country Code") << mxConn->mCC << endl;
-		if(mxConn->mRegInfo != NULL)
-			os << *(mxConn->mRegInfo);
+	if (!this->mxConn)
+		os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Special user") << _("Yes") << "\r\n";
+	else {
+		if (DisplClass >= eUC_OPERATOR) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("IP address") << mxConn->AddrIP() << "\r\n";
+		if (DisplClass >= eUC_OPERATOR && mxConn->AddrHost().size()) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Host") << mxConn->AddrHost() << "\r\n";
+		if (mxConn->mCC.size()) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Country code") << mxConn->mCC << "\r\n";
+		if (mxConn->mRegInfo != NULL) os << *(mxConn->mRegInfo);
 	}
 }
 

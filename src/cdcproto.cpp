@@ -236,6 +236,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 
 	// check authorization ip
 	if (conn->mRegInfo && !conn->mRegInfo->mAuthIP.empty() && (conn->mRegInfo->mAuthIP != conn->mAddrIP)) {
+		mS->mR->LoginError(conn, nick); // important
 		if (mS->mC.wrongauthip_report) mS->ReportUserToOpchat(conn, autosprintf(_("Authorization IP mismatch from %s"), nick.c_str()));
 		os << autosprintf(_("Authorization IP for this account doesn't match your IP address: %s"), conn->mAddrIP.c_str());
 		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_LOGIN_ERR);
@@ -808,7 +809,7 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 			if( conn->mpUser->mFloodCounters[eFC_PM]++ > mS->mC.max_flood_counter_pm) {
 					mS->DCPrivateHS(_("Flooding PM"), conn);
 					ostringstream reportMessage;
-					reportMessage << autosprintf(_("*** PM Same Message Flood detected: %s"), msg->ChunkString(eCH_PM_MSG).c_str());
+					reportMessage << autosprintf(_("*** PM same message flood detected: %s"), msg->ChunkString(eCH_PM_MSG).c_str());
 					mS->ReportUserToOpchat(conn, reportMessage.str());
 					conn->CloseNow();
 					return -5;
@@ -999,8 +1000,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	}
 
 	send = true;
-
-	if(ParseForCommands(text, conn)) return 0;
+	if (ParseForCommands(text, conn)) return 0;
 
 	////////// here is the part that finally distributes messages
 	// check message length only for less than vip regs
@@ -1566,39 +1566,39 @@ int cDCProto::NickList(cConnDC *conn)
 	return 0;
 }
 
-/** test if text is a console command and parse it by console eventually
-return 1 if it was a command else return 0 */
 int cDCProto::ParseForCommands(const string &text, cConnDC *conn)
 {
 	ostringstream omsg;
-	// test op's commands
-	if(conn->mpUser->mClass >=  eUC_OPERATOR && mS->mC.cmd_start_op.find_first_of(text[0]) != string::npos) {
+	// operator commands
+	if (conn->mpUser->mClass >= eUC_OPERATOR && mS->mC.cmd_start_op.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
-		if(mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string *)&text))
+		if (mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string *)&text))
 		#endif
 		{
-			if(!mS->mCo->OpCommand(text,conn)) {
-				omsg << autosprintf(_("Unknown command '%s'. Try !help"), text.c_str());
-				mS->DCPublicHS(omsg.str(),conn);
+			if (!mS->mCo->OpCommand(text, conn)) {
+				omsg << autosprintf(_("Unknown operator command: %s"), text.c_str());
+				mS->DCPublicHS(omsg.str(), conn);
 			}
 		}
+
 		return 1;
 	}
 
-
-	// check user commands
-	if(mS->mC.cmd_start_user.find_first_of(text[0]) != string::npos) {
+	// user commands
+	if (mS->mC.cmd_start_user.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
 		if (mS->mCallBacks.mOnUserCommand.CallAll(conn, (string *)&text))
 		#endif
 		{
-			if(!mS->mCo->UsrCommand(text,conn)) {
-				omsg << autosprintf(_("Unknown command '%s'. Try +help"), text.c_str());
-				mS->DCPublicHS(omsg.str(),conn);
+			if (!mS->mCo->UsrCommand(text, conn)) {
+				omsg << autosprintf(_("Unknown user command: %s"), text.c_str());
+				mS->DCPublicHS(omsg.str(), conn);
 			}
 		}
+
 		return 1;
 	}
+
 	return 0;
 }
 

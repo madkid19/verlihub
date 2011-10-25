@@ -48,12 +48,13 @@ void cInfoServer::SystemInfo(ostream &os)
 	struct sysinfo serverInfo;
 
 	if (sysinfo(&serverInfo)) {
-		os << _("Cannot retrive system information");
+		os << _("Unable to retrive system information.");
 		return;
 	}
 
 	cTime uptime(serverInfo.uptime);
 	utsname osname;
+	os << _("System information") << ":";
 
 	if (uname(&osname) == 0) {
 		os << "\r\n [*] " << setw(PADDING) << setiosflags(ios::left) << "OS" << osname.sysname << " " << osname.release << " (" << osname.machine << ")";
@@ -66,11 +67,11 @@ void cInfoServer::SystemInfo(ostream &os)
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Shared RAM") << convertByte((long long int) serverInfo.sharedram, false).c_str() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Memory in buffers") << convertByte((long long int) serverInfo.bufferram, false).c_str() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Free swap") << convertByte((long long int) serverInfo.freeswap, false).c_str() << "/" << convertByte((long long int) serverInfo.totalswap, false).c_str() << endl;
-	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Number of processes") << serverInfo.procs << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Number of processes") << serverInfo.procs;
 	/*struct rusage resourceUsage; // not used
 	getrusage(RUSAGE_SELF, &resourceUsage);*/
 #else
-	os << _("No info available") << endl;
+	os << _("Information is not available.");
 #endif
 }
 
@@ -84,6 +85,7 @@ void cInfoServer::Output(ostream &os, int Class)
 {
 	iterator it;
 	cTime theTime;
+	os << _("Hub information") << ":";
 	os << "\r\n [*] " << setw(PADDING) << setiosflags(ios::left) << _("Version date") << __CURR_DATE_TIME__ << endl;
 	theTime = mServer->mTime;
 	theTime -= mServer->mStartTime;
@@ -137,12 +139,12 @@ void cInfoServer::Output(ostream &os, int Class)
 		if (!mServer->mC.cc_zone[i-1].empty()) {
 			string zone = mServer->mC.cc_zone[i-1];
 			replace(zone.begin(), zone.end(), ':', ',');
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << mServer->mUserCount[i] << "/" << mServer->mC.max_users[i];
+			os << " [*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << mServer->mUserCount[i] << "/" << mServer->mC.max_users[i];
 			curr = mServer->mUploadZone[i].GetMean(mServer->mTime);
 			total += curr;
 			os << " (" << convertByte(curr, true).c_str() << ")" << " [" << zone.c_str() << "]" << endl;
 		} else
-			os << " [*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << _("Not set") << endl;
+			os << " [*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << _("Not set") << " " << _("[CC]") << endl;
 	}
 
 	// print zone from 4 to 6
@@ -150,12 +152,12 @@ void cInfoServer::Output(ostream &os, int Class)
 		curr = mServer->mUploadZone[i].GetMean(mServer->mTime);
 		total += curr;
 		os << " [*] " << setw(PADDING) << setiosflags(ios::left) << autosprintf(_("Users in zone #%d"), i) << mServer->mUserCount[i] << "/" << mServer->mC.max_users[i];
-		os << " (" << convertByte(curr, true).c_str() << ")" << " [IP-range]" << endl;
+		os << " (" << convertByte(curr, true).c_str() << ") " << _("[IP]") << endl;
 	}
 
 	// print zone 0
 	total += mServer->mUploadZone[0].GetMean(mServer->mTime);
-	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("All other users") << mServer->mUserCount[0] << "/" << mServer->mC.max_users[0] << " (" << convertByte(total, true).c_str() << ")" << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("All other users") << mServer->mUserCount[0] << "/" << mServer->mC.max_users[0] << " (" << convertByte(total, true).c_str() << ")";
 }
 
 cInfoServer::~cInfoServer(){}

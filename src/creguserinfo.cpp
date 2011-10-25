@@ -92,22 +92,28 @@ istream & operator >> (istream &is, cRegUserInfo &ui)
 
 ostream & operator << (ostream &os, cRegUserInfo &ui)
 {
-	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Class") << ui.mClass << "\r\n";
-	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Last login") << cTime(ui.mLoginLast,0).AsDate() << "  [" << ui.mLoginIP << "]\r\n";
+	static const char *ClassName[] = {"Guest", "Registered", "VIP", "Operator", "Cheef", "Administrator", "6-err", "7-err", "8-err", "9-err", "Master"};
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Class") << ClassName[ui.mClass] << " [" << ui.mClass << "]\r\n";
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Last login") << cTime(ui.mLoginLast,0).AsDate() << " " << _("from") << " " << ui.mLoginIP << "\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Registered since");
-	if(ui.mRegDate)
-		os << cTime(ui.mRegDate,0).AsDate() << " " << autosprintf(_("by %s"),ui.mRegOp.c_str());
+
+	if (ui.mRegDate)
+		os << cTime(ui.mRegDate, 0).AsDate() << " " << autosprintf(_("by %s"),ui.mRegOp.c_str());
 	else
 		os <<  _("No information");
+
 	os << "\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Last error");
-	if(ui.mErrorLast)
-		os << cTime(ui.mErrorLast).AsDate() << "  [" << ui.mErrorIP << "]";
+
+	if (ui.mErrorLast)
+		os << cTime(ui.mErrorLast).AsDate() << " " << _("from") << " " << ui.mErrorIP;
 	else
 		os <<  _("No information");
+
 	os << "\r\n";
-	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Login (errors/total)") << ui.mErrorCount << "/" << ui.mLoginCount << "\r\n";
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Login errors/total") << ui.mErrorCount << "/" << ui.mLoginCount << "\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Password set") << ((ui.mPasswd.size() != 0) ? _("Yes") : _("No")) << "\r\n";
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Account enabled") << ((ui.mEnabled != 0) ? _("Yes") : _("No")) << "\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Protected") << ((ui.mClassProtect != 0) ? _("Yes") : _("No")) << "\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Hidden kicks") << ((ui.mHideKick != 0) ? _("Yes") : _("No")) << "\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Hidden key") << ((ui.mHideKeys != 0) ? _("Yes") : _("No")) << "\r\n";
