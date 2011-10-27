@@ -357,7 +357,7 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 			conn->Send(omsg);
 		 	if(mS->mC.wrongpassword_report)
 				mS->ReportUserToOpchat(conn,_("Wrong password"));
-			omsg = _("You provided an incorrect password and have been temporarily banned.");
+			omsg = mS->mC.wrongpassword_msg;
 			mS->mBanList->AddNickTempBan(conn->mpUser->mNick, mS->mTime.Sec() + mS->mC.pwd_tmpban, omsg);
 
 			mS->mR->LoginError(conn, conn->mpUser->mNick);
