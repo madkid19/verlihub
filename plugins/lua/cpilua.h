@@ -62,10 +62,11 @@ public:
 	virtual bool OnParsedMsgRevConnectToMe(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnUnknownMsg(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnOperatorCommand(nSocket::cConnDC *, std::string *);
+	virtual bool OnUserCommand(nSocket::cConnDC *, std::string *);
+	virtual bool OnHubCommand(nSocket::cConnDC *, std::string *, bool, bool);
 	virtual bool OnOperatorKicks(cUser *, cUser *, std::string *);
 	virtual bool OnOperatorDrops(cUser *, cUser *);
 	virtual bool OnValidateTag(nSocket::cConnDC *, cDCTag *);
-	virtual bool OnUserCommand(nSocket::cConnDC *, std::string *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
 	virtual bool OnTimer();
@@ -76,6 +77,7 @@ public:
 	virtual bool OnUnBan(string nick, string op, string reason);
 	virtual bool OnHubName(std::string, std::string);
 	const char * toString(int);
+	const char * boolToString(bool);
 
 	bool AutoLoad();
 	bool CallAll(const char *, char * [], cConnDC *conn = NULL);

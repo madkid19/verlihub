@@ -258,27 +258,38 @@ public:
 	 */
 	virtual bool OnValidateTag(nSocket::cConnDC* , cDCTag *){ return true; }
 
-	//! Event handler function that is called when an operator command is received
-	/*!
-	 * 	Use RegisterCallBack("VH_OnOperatorCommand") to register it. This event can be discardable.
-	\return Return false to ignore the command, otherwise return true.
-	\param conn The pointer to the connection that sent the message
-	\param msg The command
-	 */
-	virtual bool OnOperatorCommand(nSocket::cConnDC* , string *){ return true; }
+	/*
+	* Event handler function that is called when an operator command is received.
+	* Use RegisterCallBack("VH_OnOperatorCommand") to register it. This event can be discarded.
+	* return = Return false to ignore the command, otherwise return true.
+	* conn = The pointer to the connection that sent the message.
+	* cmd = The command.
+	*/
+	virtual bool OnOperatorCommand(nSocket::cConnDC *conn, string *cmd) {return true;}
 
-	//! Event handler function that is called when an user command is received
-	/*!
-	 * 	Use RegisterCallBack("VH_OnUserCommand") to register it. This event can be discardable.
-	\return Return false to ignore the command, otherwise return true.
-	\param conn The pointer to the connection that sent the message
-	\param msg The command
-	 */
-	virtual bool OnUserCommand(nSocket::cConnDC* , string *){ return true; }
+	/*
+	* Event handler function that is called when an user command is received.
+	* Use RegisterCallBack("VH_OnUserCommand") to register it. This event can be discarded.
+	* return = Return false to ignore the command, otherwise return true.
+	* conn = The pointer to the connection that sent the message.
+	* cmd = The command.
+	*/
+	virtual bool OnUserCommand(nSocket::cConnDC *conn, string *cmd) {return true;}
+
+	/*
+	* Event handler function that is called when a hub command is received.
+	* Use RegisterCallBack("VH_OnHubCommand") to register it. This event can be discarded.
+	* return = Return false to ignore the command, otherwise return true.
+	* conn = The pointer to the connection that sent the message.
+	* cmd = The command.
+	* op = Command is user or operator.
+	* pm = Command is sent to PM or MC.
+	*/
+	virtual bool OnHubCommand(nSocket::cConnDC *conn, string *cmd, bool opFlag, bool pmFlag) {return true;}
 
 	//! Event handler function that is called when an operator kicks an user
 	/*!
-	 * 	Use RegisterCallBack("VH_OnUserCommand") to register it. This event can be discardable.
+	 * 	Use RegisterCallBack("VH_OnOperatorKicks") to register it. This event can be discardable.
 	\return Return false to ignore the kick, otherwise return true.
 	\param Op The operator that did the kick
 	\param User The kicked user

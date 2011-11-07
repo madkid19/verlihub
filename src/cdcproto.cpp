@@ -351,26 +351,28 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 			conn->Send(omsg, true);
 		}
 	} else { // wrong password
-		// User is regged so report it
-		if(conn->mRegInfo && conn->mRegInfo->getClass() > 0) {
+		// user is regged so report it
+		if (conn->mRegInfo && conn->mRegInfo->getClass() > 0) {
 			omsg = "$BadPass";
 			conn->Send(omsg);
-		 	if(mS->mC.wrongpassword_report)
-				mS->ReportUserToOpchat(conn,_("Wrong password"));
-			omsg = mS->mC.wrongpassword_msg;
-			mS->mBanList->AddNickTempBan(conn->mpUser->mNick, mS->mTime.Sec() + mS->mC.pwd_tmpban, omsg);
+		 	if (mS->mC.wrongpassword_report) mS->ReportUserToOpchat(conn, _("Wrong password"));
 
+			if (!mS->mC.wrongpass_message.empty())
+				omsg = mS->mC.wrongpass_message;
+			else
+				omsg = _("You provided an incorrect password and have been temporarily banned.");
+
+			mS->mBanList->AddNickTempBan(conn->mpUser->mNick, mS->mTime.Sec() + mS->mC.pwd_tmpban, omsg);
 			mS->mR->LoginError(conn, conn->mpUser->mNick);
-			if(conn->Log(2))
-				conn->LogStream() << "Wrong password, banned for " << mS->mC.pwd_tmpban <<" seconds" << endl;
+			if (conn->Log(2)) conn->LogStream() << "Wrong password, banned for " << mS->mC.pwd_tmpban <<" seconds" << endl;
 			mS->ConnCloseMsg(conn, omsg, 2000, eCR_PASSWORD);
 			return -1;
 		} else {
-			if(conn->Log(3))
-				conn->LogStream() << "User sent password but he isn't regged" << endl;
+			if (conn->Log(3)) conn->LogStream() << "User sent password but he isn't regged" << endl;
 			return -1;
 		}
 	}
+
 	return 0;
 }
 
@@ -1000,7 +1002,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	}
 
 	send = true;
-	if (ParseForCommands(text, conn)) return 0;
+	if (ParseForCommands(text, conn, false)) return 0;
 
 	////////// here is the part that finally distributes messages
 	// check message length only for less than vip regs
@@ -1566,13 +1568,13 @@ int cDCProto::NickList(cConnDC *conn)
 	return 0;
 }
 
-int cDCProto::ParseForCommands(const string &text, cConnDC *conn)
+int cDCProto::ParseForCommands(const string &text, cConnDC *conn, bool pmFlag)
 {
 	ostringstream omsg;
 	// operator commands
 	if (conn->mpUser->mClass >= eUC_OPERATOR && mS->mC.cmd_start_op.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
-		if (mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string *)&text))
+		if ((mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string *)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string *)&text, true, pmFlag)))
 		#endif
 		{
 			if (!mS->mCo->OpCommand(text, conn)) {
@@ -1587,7 +1589,7 @@ int cDCProto::ParseForCommands(const string &text, cConnDC *conn)
 	// user commands
 	if (mS->mC.cmd_start_user.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
-		if (mS->mCallBacks.mOnUserCommand.CallAll(conn, (string *)&text))
+		if ((mS->mCallBacks.mOnUserCommand.CallAll(conn, (string *)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string *)&text, false, pmFlag)))
 		#endif
 		{
 			if (!mS->mCo->UsrCommand(text, conn)) {

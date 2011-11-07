@@ -410,7 +410,7 @@ bool cMainRobot::ReceiveMsg(cConnDC *conn, cMessageDC *message)
 	if (message->mType == eDC_TO)
 	{
 		string &msg = message->ChunkString(eCH_PM_MSG);
-		if (!mxServer->mP.ParseForCommands(msg, conn))
+		if (!mxServer->mP.ParseForCommands(msg, conn, true))
 		{
 			cUser *other = mxServer->mUserList.GetUserByNick ( mxServer->LastBCNick );
 				if(other && other->mxConn)

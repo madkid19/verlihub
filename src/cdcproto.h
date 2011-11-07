@@ -85,13 +85,14 @@ class cDCProto : public cProtocol
 	*/
 	int NickList(nSocket::cConnDC *);
 
-	/**
+	/*
 	* Check if the message is a command and pass it to the console.
-	* @param msg The message.
-	* @param conn User connection.
-	* @return 1 if the message is a command, 0 otherwise.
+	* msg = The message.
+	* conn = User connection.
+	* flag = Message is sent in PM or MC.
+	* return = 1 if the message is a command otherwise 0.
 	*/
-	int ParseForCommands(const string &, nSocket::cConnDC *);
+	int ParseForCommands(const string &, nSocket::cConnDC *, bool);
 
 	/**
 	* Process a given protocol message that has been already parsed.
@@ -100,8 +101,6 @@ class cDCProto : public cProtocol
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
 	virtual int TreatMsg(cMessageParser *msg,  nSocket::cAsyncConn *conn);
-
-
 protected:
 
 	/**

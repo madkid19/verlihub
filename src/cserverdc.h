@@ -726,10 +726,11 @@ private:
 			mOnParsedMsgConnectToMe(mgr, "VH_OnParsedMsgConnectToMe", &cVHPlugin::OnParsedMsgConnectToMe),
 			mOnParsedMsgRevConnectToMe(mgr, "VH_OnParsedMsgRevConnectToMe", &cVHPlugin::OnParsedMsgRevConnectToMe),
 			mOnOperatorCommand(mgr, "VH_OnOperatorCommand", &cVHPlugin::OnOperatorCommand),
+			mOnUserCommand(mgr, "VH_OnUserCommand", &cVHPlugin::OnUserCommand),
+			mOnHubCommand(mgr, "VH_OnHubCommand", &cVHPlugin::OnHubCommand),
 			mOnParsedMsgSR(mgr, "VH_OnParsedMsgSR", &cVHPlugin::OnParsedMsgSR),
 			mOnOperatorKicks( mgr, "VH_OnOperatorKicks", &cVHPlugin::OnOperatorKicks),
 			mOnOperatorDrops( mgr, "VH_OnOperatorDrops", &cVHPlugin::OnOperatorDrops),
-			mOnUserCommand(mgr, "VH_OnUserCommand", &cVHPlugin::OnUserCommand),
 			mOnUserLogin(mgr, "VH_OnUserLogin", &cVHPlugin::OnUserLogin),
 			mOnUserLogout  (mgr, "VH_OnUserLogout",   &cVHPlugin::OnUserLogout ),
 			mOnValidateTag(mgr, "VH_OnValidateTag", &cVHPlugin::OnValidateTag),
@@ -743,8 +744,8 @@ private:
 			mOnHubName(mgr, "VH_OnHubName", &cVHPlugin::OnHubName),
 			mOnNewBan(mgr, "VH_OnNewBan", &cVHPlugin::OnNewBan),
 			mOnUnBan(mgr, "VH_OnUnBan", &cVHPlugin::OnUnBan)
-
 		{};
+
 		cVHCBL_Connection	mOnNewConn;
 		cVHCBL_Connection	mOnCloseConn;
 		cVHCBL_Message		mOnUnknownMsg;
@@ -761,11 +762,12 @@ private:
 		cVHCBL_Message		mOnParsedMsgValidateNick;
 		cVHCBL_Message		mOnParsedMsgConnectToMe;
 		cVHCBL_Message		mOnParsedMsgRevConnectToMe;
-		cVHCBL_ConnText		mOnOperatorCommand;
+		cVHCBL_ConnText mOnOperatorCommand;
+		cVHCBL_ConnText mOnUserCommand;
+		cVHCBL_ConnTextBoolBool mOnHubCommand;
 		cVHCBL_Message		mOnParsedMsgSR;
 		cVHCBL_UsrUsrStr	mOnOperatorKicks;
 		cVHCBL_UsrUsr		mOnOperatorDrops;
-		cVHCBL_ConnText		mOnUserCommand;
 		cVHCBL_User			mOnUserLogin;
 		cVHCBL_User			mOnUserLogout;
 		cVHCBL_ConnTag		mOnValidateTag;

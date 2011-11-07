@@ -99,10 +99,11 @@ bool cpiLua::RegisterAll()
 	RegisterCallBack("VH_OnParsedMsgMyPass");
 	RegisterCallBack("VH_OnUnknownMsg");
 	RegisterCallBack("VH_OnOperatorCommand");
+	RegisterCallBack("VH_OnUserCommand");
+	RegisterCallBack("VH_OnHubCommand");
 	RegisterCallBack("VH_OnOperatorKicks");
 	RegisterCallBack("VH_OnOperatorDrops");
 	RegisterCallBack("VH_OnValidateTag");
-	RegisterCallBack("VH_OnUserCommand");
 	RegisterCallBack("VH_OnUserLogin");
 	RegisterCallBack("VH_OnUserLogout");
 	RegisterCallBack("VH_OnTimer");
@@ -426,23 +427,6 @@ bool cpiLua::OnUnknownMsg(cConnDC *conn, cMessageDC *msg)
 	return true;
 }
 
-bool cpiLua::OnOperatorCommand(cConnDC *conn, string *command)
-{
-	if ((conn != NULL) && (conn->mpUser != NULL) && (command != NULL)) {
-		if (mConsole.DoCommand(*command, conn)) return false;
-
-		char * args[] = {
-			(char *)conn->mpUser->mNick.c_str(),
-			(char *)command->c_str(),
-			NULL
-		};
-
-		return CallAll("VH_OnOperatorCommand", args, conn);
-	}
-
-	return true;
-}
-
 bool cpiLua::OnOperatorKicks(cUser *OP, cUser *user, string *reason)
 {
 	if ((OP != NULL) && (user !=NULL) && (reason != NULL)) {
@@ -474,6 +458,23 @@ bool cpiLua::OnOperatorDrops(cUser *OP, cUser *user)
 	return true;
 }
 
+bool cpiLua::OnOperatorCommand(cConnDC *conn, string *command)
+{
+	if ((conn != NULL) && (conn->mpUser != NULL) && (command != NULL)) {
+		if (mConsole.DoCommand(*command, conn)) return false;
+
+		char * args[] = {
+			(char *)conn->mpUser->mNick.c_str(),
+			(char *)command->c_str(),
+			NULL
+		};
+
+		return CallAll("VH_OnOperatorCommand", args, conn);
+	}
+
+	return true;
+}
+
 bool cpiLua::OnUserCommand(cConnDC *conn, string *command)
 {
 	if ((conn != NULL) && (conn->mpUser != NULL) && (command != NULL)) {
@@ -484,6 +485,23 @@ bool cpiLua::OnUserCommand(cConnDC *conn, string *command)
 		};
 
 		return CallAll("VH_OnUserCommand", args, conn);
+	}
+
+	return true;
+}
+
+bool cpiLua::OnHubCommand(cConnDC *conn, string *command, bool opFlag, bool pmFlag)
+{
+	if ((conn != NULL) && (conn->mpUser != NULL) && (command != NULL)) {
+		char * args[] = {
+			(char *)conn->mpUser->mNick.c_str(),
+			(char *)command->c_str(),
+			(char *)boolToString(opFlag),
+			(char *)boolToString(pmFlag),
+			NULL
+		};
+
+		return CallAll("VH_OnHubCommand", args, conn);
 	}
 
 	return true;
@@ -617,6 +635,18 @@ const char * cpiLua::toString(int number)
 {
 	ostringstream os;
 	os << number;
+	return os.str().c_str();
+}
+
+const char * cpiLua::boolToString(bool b)
+{
+	ostringstream os;
+
+	if (b)
+		os << "1";
+	else
+		os << "0";
+
 	return os.str().c_str();
 }
 

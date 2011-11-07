@@ -120,7 +120,10 @@ bool cLuaInterpreter::Init()
 		return false;
 	}
 
-	lua_pushstring(mL, LUA_PI_VERSION); lua_setglobal(mL,"_PLUGINVERSION");
+	lua_pushstring(mL, LUA_PI_VERSION);
+	lua_setglobal(mL, "_PLUGINVERSION");
+	lua_pushstring(mL, VERSION);
+	lua_setglobal(mL, "_HUBVERSION");
 	return true;
 }
 
@@ -134,6 +137,7 @@ void cLuaInterpreter::Load()
 	};
 
 	CallFunction("Main", args);
+	//if (!CallFunction("Main", args)) @todo: unload self
 }
 
 void cLuaInterpreter::ReportLuaError(char * error)
