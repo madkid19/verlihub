@@ -212,7 +212,7 @@ public:
 	int default_password_encryption;
 	int password_min_len;
 	int pwd_tmpban;
-	string wrongpassword_msg;
+	string wrongpass_message;
 	int wrongpassword_report;
 	bool wrongauthip_report;
 	int botinfo_report;

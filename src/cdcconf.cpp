@@ -201,7 +201,7 @@ void cDCConf::AddVars()
 	Add("default_password_encryption",default_password_encryption,1); //eCRYPT_ENCRYPT
 	Add("password_min_len", password_min_len, 6);
 	Add("pwd_tmpban", pwd_tmpban, 10);
-	Add("wrongpassword_msg", wrongpassword_msg, "You provided an incorrect password and have been temporarily banned.");
+	Add("wrongpass_message", wrongpass_message, "");
 	Add("wrongpassword_report", wrongpassword_report, 1);
 	Add("wrongauthip_report", wrongauthip_report, true);
 	Add("botinfo_report", botinfo_report, 0);
