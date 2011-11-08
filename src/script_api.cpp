@@ -150,6 +150,19 @@ bool CloseConnection(char *nick)
 	}
 }
 
+bool StopHub(int code)
+{
+	cServerDC *server = GetCurrentVerlihub();
+
+	if (!server) {
+		cerr << "Server verlihub is unfortunately not running or not found." << endl;
+		return false;
+	}
+
+	server->cAsyncSocketServer::stop(code);
+	return true;
+}
+
 char * GetUserCC(char * nick)
 {
 	cUser *usr = GetUser(nick);

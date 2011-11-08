@@ -213,6 +213,31 @@ int _Disconnect(lua_State *L)
 	return 1;
 }
 
+int _StopHub(lua_State *L)
+{
+	if (lua_gettop(L) == 2) {
+		if (!lua_isnumber(L, 2)) {
+			luaerror(L, ERR_PARAM);
+			return 2;
+		}
+
+		int code = (int)lua_tonumber(L, 2);
+
+		if (!StopHub(code)) {
+			luaerror(L, ERR_CALL);
+			return 2;
+		}
+	} else {
+		luaL_error(L, "Error calling VH:StopHub, expected 1 argument but got %d.", lua_gettop(L) - 1);
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+
+	lua_pushboolean(L, 1);
+	return 1;
+}
+
 int _GetMyINFO(lua_State *L)
 {
 	string nick;

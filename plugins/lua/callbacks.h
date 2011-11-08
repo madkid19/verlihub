@@ -35,6 +35,7 @@ namespace nVerliHub {
 	int _SendToAll(lua_State *);
 	int _SendPMToAll(lua_State *);
 	int _Disconnect(lua_State *);
+	int _StopHub(lua_State *);
 	int _GetMyINFO(lua_State *);
 	int _GetUserCC(lua_State *);
 	int _GetIPCC(lua_State *);

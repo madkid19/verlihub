@@ -32,6 +32,7 @@ namespace nVerliHub {
 	bool SendToAll(char *data);
 	bool SendPMToAll(char *data, char *from, int min_class,  int max_class);
 	bool CloseConnection(char *nick);
+	bool StopHub(int code);
 	char * GetUserCC(char * nick);
 	string GetIPCC(const string);
 	char * GetMyINFO(char *nick);
