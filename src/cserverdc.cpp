@@ -624,7 +624,7 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	// The user has to change password
 	if(conn->mRegInfo && conn->mRegInfo->mPwdChange) {
 
-		os << _("<< Please change your password NOW using command +passwd <new_passwd>! See +help >>");
+		os << _("You must set your password now using +passwd command.");
 		DCPrivateHS(os.str(), conn);
 		DCPublicHS(os.str(), conn);
 		conn->SetTimeOut(eTO_SETPASS, mC.timeout_length[eTO_SETPASS], this->mTime);
