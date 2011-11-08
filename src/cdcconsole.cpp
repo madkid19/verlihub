@@ -1942,7 +1942,7 @@ bool cDCConsole::cfRegUsr::operator()()
 		break;
 		case eAC_CLASS: // class
 			#ifndef WITHOUT_PLUGINS
-			if(!mS->mCallBacks.mOnUpdateClass.CallAll(nick,ui.mClass, ParClass)) {
+			if(!mS->mCallBacks.mOnUpdateClass.CallAll(nick, ui.mClass, ParClass)) {
 				(*mOS) << _("Action has been discarded by plugin.");
 				return false;
 			}

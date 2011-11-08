@@ -490,14 +490,14 @@ bool cpiLua::OnUserCommand(cConnDC *conn, string *command)
 	return true;
 }
 
-bool cpiLua::OnHubCommand(cConnDC *conn, string *command, bool opFlag, bool pmFlag)
+bool cpiLua::OnHubCommand(cConnDC *conn, string *command, int op, int pm)
 {
 	if ((conn != NULL) && (conn->mpUser != NULL) && (command != NULL)) {
 		char * args[] = {
 			(char *)conn->mpUser->mNick.c_str(),
 			(char *)command->c_str(),
-			(char *)boolToString(opFlag),
-			(char *)boolToString(pmFlag),
+			(char *)toString(op),
+			(char *)toString(pm),
 			NULL
 		};
 
@@ -561,7 +561,7 @@ bool cpiLua::OnNewReg(string mNick, int mClass)
 {
 	char * args[] = {
 		(char *)mNick.c_str(),
-		(char *)toString(mClass), // @fixme: broken
+		(char *)toString(mClass),
 		NULL
 	};
 
@@ -572,7 +572,7 @@ bool cpiLua::OnDelReg(string mNick, int mClass)
 {
 	char * args[] = {
 		(char *)mNick.c_str(),
-		(char *)toString(mClass), // @fixme: broken
+		(char *)toString(mClass),
 		NULL
 	};
 
@@ -584,7 +584,7 @@ bool cpiLua::OnUpdateClass(string mNick, int oldClass, int newClass)
 	char * args[] = {
 		(char *)mNick.c_str(),
 		(char *)toString(oldClass),
-		(char *)toString(newClass), // @fixme: broken
+		(char *)toString(newClass),
 		NULL
 	};
 
@@ -631,23 +631,11 @@ bool cpiLua::OnHubName(string nick, string hubname)
 	return CallAll("VH_OnHubName", args);
 }
 
-const char * cpiLua::toString(int number)
+const char * cpiLua::toString(int n)
 {
-	ostringstream os;
-	os << number;
-	return os.str().c_str();
-}
-
-const char * cpiLua::boolToString(bool b)
-{
-	ostringstream os;
-
-	if (b)
-		os << "1";
-	else
-		os << "0";
-
-	return os.str().c_str();
+	char *s = new char[5];
+	sprintf(s, "%d", n);
+	return s;
 }
 
 	}; // namepsace nLuaPlugin

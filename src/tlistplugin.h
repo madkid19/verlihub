@@ -77,6 +77,8 @@ public:
 
 	virtual bool RegisterAll() {
 		RegisterCallBack("VH_OnUserCommand");
+		// is VH_OnUserCommand really called?
+		// @todo: add VH_OnOperatorCommand
 		return true;
 	}
 

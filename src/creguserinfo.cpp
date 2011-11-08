@@ -93,7 +93,7 @@ istream & operator >> (istream &is, cRegUserInfo &ui)
 ostream & operator << (ostream &os, cRegUserInfo &ui)
 {
 	static const char *ClassName[] = {"Guest", "Registered", "VIP", "Operator", "Cheef", "Administrator", "6-err", "7-err", "8-err", "9-err", "Master"};
-	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Class") << ClassName[ui.mClass] << " [" << ui.mClass << "]\r\n";
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Class") << ((ui.mClass == -1) ? _("Pinger") : (ClassName[ui.mClass] ? ClassName[ui.mClass] : _("Invalid"))) << " [" << ui.mClass << "]\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Last login") << cTime(ui.mLoginLast,0).AsDate() << " " << _("from") << " " << ui.mLoginIP << "\r\n";
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Registered since");
 

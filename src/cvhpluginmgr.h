@@ -242,7 +242,7 @@ public:
 
 };
 
-typedef tVHCBL_4Types<nSocket::cConnDC, std::string, bool, bool> cVHCBL_ConnTextBoolBool;
+typedef tVHCBL_4Types<nSocket::cConnDC, std::string, int, int> cVHCBL_ConnTextIntInt;
 typedef tVHCBL_3Types<cUser *, cUser *,  std::string *> cVHCBL_UsrUsrStr;
 typedef tVHCBL_3Types<std::string, int ,  int> cVHCBL_StrIntInt;
 typedef tVHCBL_3Types<std::string, std::string ,  std::string> cVHCBL_StrStrStr;

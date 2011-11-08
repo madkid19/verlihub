@@ -250,7 +250,7 @@ char * ParseCommand(char *command_line)
 	printf("%p", usr->mxConn);
 	if ((!usr) || (usr && !usr->mxConn)) return false;
 	cout << "here" << endl;
-	if (!server->mP.ParseForCommands(command_line, usr->mxConn, true)) {
+	if (!server->mP.ParseForCommands(command_line, usr->mxConn, 1)) {
 		// unknown command
 	}
 	return (char *) "";

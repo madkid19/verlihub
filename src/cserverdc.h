@@ -764,7 +764,7 @@ private:
 		cVHCBL_Message		mOnParsedMsgRevConnectToMe;
 		cVHCBL_ConnText mOnOperatorCommand;
 		cVHCBL_ConnText mOnUserCommand;
-		cVHCBL_ConnTextBoolBool mOnHubCommand;
+		cVHCBL_ConnTextIntInt mOnHubCommand;
 		cVHCBL_Message		mOnParsedMsgSR;
 		cVHCBL_UsrUsrStr	mOnOperatorKicks;
 		cVHCBL_UsrUsr		mOnOperatorDrops;

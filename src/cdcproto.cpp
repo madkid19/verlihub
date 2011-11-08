@@ -1002,7 +1002,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	}
 
 	send = true;
-	if (ParseForCommands(text, conn, false)) return 0;
+	if (ParseForCommands(text, conn, 0)) return 0;
 
 	////////// here is the part that finally distributes messages
 	// check message length only for less than vip regs
@@ -1568,13 +1568,13 @@ int cDCProto::NickList(cConnDC *conn)
 	return 0;
 }
 
-int cDCProto::ParseForCommands(const string &text, cConnDC *conn, bool pmFlag)
+int cDCProto::ParseForCommands(const string &text, cConnDC *conn, int pm)
 {
 	ostringstream omsg;
 	// operator commands
 	if (conn->mpUser->mClass >= eUC_OPERATOR && mS->mC.cmd_start_op.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
-		if ((mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string *)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string *)&text, true, pmFlag)))
+		if ((mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string *)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string *)&text, 1, pm)))
 		#endif
 		{
 			if (!mS->mCo->OpCommand(text, conn)) {
@@ -1589,7 +1589,7 @@ int cDCProto::ParseForCommands(const string &text, cConnDC *conn, bool pmFlag)
 	// user commands
 	if (mS->mC.cmd_start_user.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
-		if ((mS->mCallBacks.mOnUserCommand.CallAll(conn, (string *)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string *)&text, false, pmFlag)))
+		if ((mS->mCallBacks.mOnUserCommand.CallAll(conn, (string *)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string *)&text, 0, pm)))
 		#endif
 		{
 			if (!mS->mCo->UsrCommand(text, conn)) {

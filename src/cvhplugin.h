@@ -99,12 +99,13 @@ public:
 	 */
 	virtual void OnLoad(nSocket::cServerDC* server){mServer = server;}
 
-	//! Event handler function that is called when there is a new incoming connection
-	/*!
-	 * 	Use RegisterCallBack("VH_OnNewConn") to register it. This event cannot be discardable.
-	\param conn The new connection
-	 */
-	virtual bool OnNewConn(nSocket::cConnDC * conn){ return true; }
+	/*
+	* Event handler function that is called when there is a new incoming connection.
+	* Use RegisterCallBack("VH_OnNewConn") to register it. This event can be discarded.
+	* conn = The new connection.
+	* return = Return false to close the connection otherwise return true.
+	*/
+	virtual bool OnNewConn(nSocket::cConnDC* conn) {return true;}
 
 	//! Event handler function that is called when a connection is closed
 	/*!
@@ -285,7 +286,7 @@ public:
 	* op = Command is user or operator.
 	* pm = Command is sent to PM or MC.
 	*/
-	virtual bool OnHubCommand(nSocket::cConnDC *conn, string *cmd, bool opFlag, bool pmFlag) {return true;}
+	virtual bool OnHubCommand(nSocket::cConnDC *conn, string *cmd, int op, int pm) {return true;}
 
 	//! Event handler function that is called when an operator kicks an user
 	/*!
