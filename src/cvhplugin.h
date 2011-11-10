@@ -140,7 +140,7 @@ public:
 	* conn = The pointer to the connection that sent the message.
 	* msg = The pointer to cMessageDC object.
 	*/
-	virtual bool OnParsedMsgAnyEx(nSocket::cConnDC *conn, nProtocol::cMessageDC *msg) { return true; }
+	virtual bool OnParsedMsgAnyEx(nSocket::cConnDC *conn, nProtocol::cMessageDC *msg) {return true;}
 
 	//! Event handler function that is called when $Support message is received
 	/*!
@@ -150,6 +150,22 @@ public:
 	\todo Add it in cdcproto.cpp
 	 */
 	virtual bool OnParsedMsgSupport(nSocket::cConnDC* conn, nProtocol::cMessageDC *msg){ return true; }
+
+	/*
+	* Event handler function that is called when $BotINFO message is received.
+	* Use RegisterCallBack("VH_OnParsedMsgBotINFO") to register it. This event can be discarded.
+	* conn = The pointer to the connection that sent the message.
+	* msg = The pointer to cMessageDC object.
+	*/
+	virtual bool OnParsedMsgBotINFO(nSocket::cConnDC *conn, nProtocol::cMessageDC *msg) {return true;}
+
+	/*
+	* Event handler function that is called when $Version message is received.
+	* Use RegisterCallBack("VH_OnParsedMsgVersion") to register it. This event can be discarded.
+	* conn = The pointer to the connection that sent the message.
+	* msg = The pointer to cMessageDC object.
+	*/
+	virtual bool OnParsedMsgVersion(nSocket::cConnDC *conn, nProtocol::cMessageDC *msg) {return true;}
 
 	//! Event handler function that is called when $ValidateNick message is received
 	/*!
@@ -323,27 +339,29 @@ public:
 	 */
 	virtual bool OnUserLogout(cUser* User){ return true; }
 
-	//! Event handler function that is called when a new ban is done
-	/*!
-	 * 	Use RegisterCallBack("VH_OnNewBan") to register it. This event can be discardable.
-	\param Ban cBan object
-	 */
-	virtual bool OnNewBan(nTables::cBan * Ban){ return true; }
+	/*
+	* Event handler function that is called when a new ban is about to be created.
+	* Use RegisterCallBack("VH_OnNewBan") to register it. This event can be discarded.
+	* user = The operator.
+	* ban = cBan object.
+	*/
+	virtual bool OnNewBan(cUser* User, nTables::cBan * Ban) {return true;}
 
-	//! Event handler function that is called when unban is done
-	/*!
-	 * 	Use RegisterCallBack("VH_OnUnBan") to register it. This event can be discardable.
-	\param nick The nick we are going to unban
-	\param op The operator
-	\param reason Th reason of the unban
-	 */
-	virtual bool OnUnBan(string nick, string op, string reason){ return true; }
+	/*
+	* Event handler function that is called when a ban is about to be removed.
+	* Use RegisterCallBack("VH_OnUnBan") to register it. This event can be discarded.
+	* user = The operator.
+	* nick = The nick we are going to unban.
+	* op = The operators nick.
+	* reason = The reason of the unban.
+	*/
+	virtual bool OnUnBan(cUser* User, string nick, string op, string reason) {return true;}
 
-	//! Event handler function that is called when timer is called
-	/*!
-	 * 	Use RegisterCallBack("VH_OnTimer") to register it. This event cannot be discardable.
-	 */
-	virtual bool OnTimer( ){ return true; }
+	/*
+	* Event handler function that is called when timer is called.
+	* Use RegisterCallBack("VH_OnTimer") to register it. This event isnt discardable.
+	*/
+	virtual bool OnTimer(unsigned long ms) {return true;}
 
 	/// Called when loading and  when it's the correct time to register for callbacks
 	virtual bool RegisterAll() = 0;
@@ -367,29 +385,33 @@ public:
 	 */
 	virtual bool OnHubName(string nick, string hubname) {return true;};
 
-	//! Event handler function that is called when an operator wants to delete an user
-	/*!
-	 * 	This event can be discardable
-		\param mNick the nickname of the user we are going to delete
-		\param mClass the user's class
+	/*
+	* Event handler function that is called when an operator wants to delete a registered user.
+	* Use RegisterCallBack("VH_OnDelReg") to register it. This event can be discarded.
+	* user = The operator.
+	* nick = The nickname of the registered user.
+	* class = The users class.
 	*/
-	virtual bool OnDelReg(string mNick, int mClass) {return true;};
+	virtual bool OnDelReg(cUser* User, string mNick, int mClass) {return true;}
 
-	//! Event handler function that is called when an operator wants to register a new user
-	/*!
-	 * 	This event can be discardable
-	\param mNick the nickname of the user we are going to register
-	\param mClass the user's class
-	 */
-	virtual bool OnNewReg(string mNick, int mClass) {return true;};
+	/*
+	* Event handler function that is called when an operator wants to register a new user.
+	* Use RegisterCallBack("VH_OnNewReg") to register it. This event can be discarded.
+	* user = The operator.
+	* nick = The nickname of the registered user.
+	* class = The users class.
+	*/
+	virtual bool OnNewReg(cUser* User, string mNick, int mClass) {return true;}
 
-	//! Event handler function that is called when an operator update user's class
-	/*!
-	 * 	This event can be discardable
-	\param mNick the nickname of the user
-	\param mClass the new user's class
-	 */
-	virtual bool OnUpdateClass(string mNick, int oldClass, int newClass) {return true;};
+	/*
+	* Event handler function that is called when an operator wants to update a registered users class.
+	* Use RegisterCallBack("VH_OnDelReg") to register it. This event can be discarded.
+	* user = The operator.
+	* nick = The nickname of the registered user.
+	* oldclass = The users old class.
+	* newclass = The users new class.
+	*/
+	virtual bool OnUpdateClass(cUser* User, string mNick, int oldClass, int newClass) {return true;}
 
 	/// per-user data of the plugin
 	virtual cPluginUserData *GetPluginUserData( cUser * );

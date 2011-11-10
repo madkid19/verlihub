@@ -46,17 +46,15 @@ cServerDC *GetCurrentVerlihub()
 
 cUser *GetUser(char *nick)
 {
-	cServerDC *server = GetCurrentVerlihub();
-	if(!server) {
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (!serv) {
 		cerr << "Server verlihub is unfortunately not running or not found." << endl;
 		return NULL;
 	}
-	cUser *usr = server->mUserList.GetUserByNick(string(nick));
 
-	//user without connection (bot) must be accepted as well
-	if (usr == NULL)
-		return NULL;
-
+	cUser *usr = serv->mUserList.GetUserByNick(string(nick));
+	// user without connection, a bot, must be accepted as well
 	return usr;
 }
 
@@ -251,27 +249,23 @@ bool Ban(char *nick, const string op, const string reason, unsigned howlong, uns
 	return true;
 }
 
-char * ParseCommand(char *command_line)
+bool ParseCommand(char *nick, char *cmd, int pm)
 {
-	cServerDC *server = GetCurrentVerlihub();
-	if(!server) {
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (!serv) {
 		cerr << "Server verlihub is unfortunately not running or not found." << endl;
 		return false;
 	}
-	cUser *usr = GetUser((char *) server->mC.hub_security.c_str());
-	printf("%p\n", usr);
-	printf("%p", usr->mxConn);
-	if ((!usr) || (usr && !usr->mxConn)) return false;
-	cout << "here" << endl;
-	if (!server->mP.ParseForCommands(command_line, usr->mxConn, 1)) {
-		// unknown command
-	}
-	return (char *) "";
+
+	cUser *usr = GetUser(nick);
+	if (!usr || !usr->mxConn) return false;
+	serv->mP.ParseForCommands(cmd, usr->mxConn, pm);
+	return true;
 }
 
 bool SetConfig(char *config_name, char *var, char *val)
 {
-	// config_name ignored for now!
 	cServerDC *server = GetCurrentVerlihub();
 	if(!server)
 	{
@@ -301,7 +295,6 @@ bool SetConfig(char *config_name, char *var, char *val)
 
 int GetConfig(char *config_name, char *var, char *buf, int size)
 {
-	// config_name ignored for now!
 	cServerDC *server = GetCurrentVerlihub();
 	if(!server)
 	{

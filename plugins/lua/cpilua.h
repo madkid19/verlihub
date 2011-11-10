@@ -57,6 +57,8 @@ public:
 	virtual bool OnParsedMsgAny(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgAnyEx(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgSupport(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgBotINFO(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgVersion(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgMyPass(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgConnectToMe(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgRevConnectToMe(nSocket::cConnDC *, nProtocol::cMessageDC *);
@@ -69,14 +71,15 @@ public:
 	virtual bool OnValidateTag(nSocket::cConnDC *, cDCTag *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
-	virtual bool OnTimer();
-	virtual bool OnNewReg(std::string, int);
-	virtual bool OnDelReg(std::string, int);
-	virtual bool OnUpdateClass(string, int, int);
-	virtual bool OnNewBan(cBan *);
-	virtual bool OnUnBan(string nick, string op, string reason);
+	virtual bool OnTimer(unsigned long);
+	virtual bool OnNewReg(cUser *, std::string, int);
+	virtual bool OnDelReg(cUser *, std::string, int);
+	virtual bool OnUpdateClass(cUser *, std::string, int, int);
+	virtual bool OnNewBan(cUser *, cBan *);
+	virtual bool OnUnBan(cUser *, string nick, string op, string reason);
 	virtual bool OnHubName(std::string, std::string);
 	const char * toString(int);
+	const char * longToString(unsigned long);
 
 	bool AutoLoad();
 	bool CallAll(const char *, char * [], cConnDC *conn = NULL);

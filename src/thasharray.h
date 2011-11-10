@@ -372,7 +372,7 @@ namespace nVerliHub {
 						 */
 						DataType Set(tHashType hash, const DataType &element)
 						{
-							DataType _result = NULL;
+							DataType _result = 0; // NULL
 							if(mHash == hash) {
 								_result = mData;
 								mData = element;

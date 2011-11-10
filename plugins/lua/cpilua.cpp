@@ -96,6 +96,8 @@ bool cpiLua::RegisterAll()
 	RegisterCallBack("VH_OnParsedMsgAny");
 	RegisterCallBack("VH_OnParsedMsgAnyEx");
 	RegisterCallBack("VH_OnParsedMsgSupport");
+	RegisterCallBack("VH_OnParsedMsgBotINFO");
+	RegisterCallBack("VH_OnParsedMsgVersion");
 	RegisterCallBack("VH_OnParsedMsgMyPass");
 	RegisterCallBack("VH_OnUnknownMsg");
 	RegisterCallBack("VH_OnOperatorCommand");
@@ -185,12 +187,22 @@ bool cpiLua::OnNewConn(cConnDC *conn)
 bool cpiLua::OnCloseConn(cConnDC *conn)
 {
 	if (conn != NULL) {
-		char * args[] = {
-			(char *)conn->AddrIP().c_str(),
-			NULL
-		};
+		if (conn->mpUser != NULL) {
+			char * args[] = {
+				(char *)conn->AddrIP().c_str(),
+				(char *)conn->mpUser->mNick.c_str(),
+				NULL
+			};
 
-		return CallAll("VH_OnCloseConn", args, conn);
+			return CallAll("VH_OnCloseConn", args, conn);
+		} else {
+			char * args[] = {
+				(char *)conn->AddrIP().c_str(),
+				NULL
+			};
+
+			return CallAll("VH_OnCloseConn", args, conn);
+		}
 	}
 
 	return true;
@@ -253,6 +265,36 @@ bool cpiLua::OnParsedMsgSupport(cConnDC *conn, cMessageDC *msg)
 		};
 
 		return CallAll("VH_OnParsedMsgSupport", args, conn);
+	}
+
+	return true;
+}
+
+bool cpiLua::OnParsedMsgBotINFO(cConnDC *conn, cMessageDC *msg)
+{
+	if ((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL)) {
+	    char * args[] = {
+			(char *)conn->mpUser->mNick.c_str(),
+			(char *)msg->mStr.c_str(),
+			NULL
+		};
+
+		return CallAll("VH_OnParsedMsgBotINFO", args, conn);
+	}
+
+	return true;
+}
+
+bool cpiLua::OnParsedMsgVersion(cConnDC *conn, cMessageDC *msg)
+{
+	if ((conn != NULL) && (msg != NULL)) {
+	    char * args[] = {
+			(char *)conn->AddrIP().c_str(),
+			(char *)msg->mStr.c_str(),
+			NULL
+		};
+
+		return CallAll("VH_OnParsedMsgVersion", args, conn);
 	}
 
 	return true;
@@ -373,6 +415,7 @@ bool cpiLua::OnParsedMsgValidateNick(cConnDC *conn, cMessageDC *msg)
 	if ((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL)) {
 		char * args[] = {
 			(char *)msg->ChunkString(eCH_1_ALL).c_str(),
+			(char *)conn->AddrIP().c_str(),
 			NULL
 		}; // eCH_1_ALL, eCH_1_PARAM
 
@@ -401,7 +444,7 @@ bool cpiLua::OnParsedMsgAnyEx(cConnDC *conn, cMessageDC *msg)
 {
 	if ((conn != NULL) && (conn->mpUser == NULL) && (msg != NULL)) {
 		char * args[] = {
-			(char *)conn->AddrIP().c_str(), // ip, @todo: add hub port
+			(char *)conn->AddrIP().c_str(),
 			(char *)msg->mStr.c_str(),
 			NULL
 		};
@@ -414,14 +457,26 @@ bool cpiLua::OnParsedMsgAnyEx(cConnDC *conn, cMessageDC *msg)
 
 bool cpiLua::OnUnknownMsg(cConnDC *conn, cMessageDC *msg)
 {
-	if ((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL) && (msg->mStr.size() > 0)) {
-		char * args[] = {
-			(char *)conn->mpUser->mNick.c_str(),
-			(char *)msg->mStr.c_str(),
-			NULL
-		};
+	if ((conn != NULL) && (msg != NULL) && (msg->mStr.size() > 0)) {
+		if (conn->mpUser != NULL) {
+			char * args[] = {
+				(char *)conn->mpUser->mNick.c_str(),
+				(char *)msg->mStr.c_str(),
+				(char *)toString(1),
+				NULL
+			};
 
-		return CallAll("VH_OnUnknownMsg", args, conn);
+			return CallAll("VH_OnUnknownMsg", args, conn);
+		} else {
+			char * args[] = {
+				(char *)conn->AddrIP().c_str(),
+				(char *)msg->mStr.c_str(),
+				(char *)toString(0),
+				NULL
+			};
+
+			return CallAll("VH_OnUnknownMsg", args, conn);
+		}
 	}
 
 	return true;
@@ -429,7 +484,7 @@ bool cpiLua::OnUnknownMsg(cConnDC *conn, cMessageDC *msg)
 
 bool cpiLua::OnOperatorKicks(cUser *OP, cUser *user, string *reason)
 {
-	if ((OP != NULL) && (user !=NULL) && (reason != NULL)) {
+	if ((OP != NULL) && (user != NULL) && (reason != NULL)) {
 		char * args[] = {
 			(char *)OP->mNick.c_str(),
 			(char *)user->mNick.c_str(),
@@ -525,13 +580,22 @@ bool cpiLua::OnValidateTag(cConnDC *conn, cDCTag *tag)
 bool cpiLua::OnUserLogin(cUser *user)
 {
 	if (user != NULL) {
-		char * args[] = {
-			(char *)user->mNick.c_str(),
-			(char *)user->mxConn->AddrIP().c_str(),
-			NULL
-		};
+		if (user->mxConn != NULL) {
+			char * args[] = {
+				(char *)user->mNick.c_str(),
+				(char *)user->mxConn->AddrIP().c_str(),
+				NULL
+			};
 
-		return CallAll("VH_OnUserLogin", args, user->mxConn);
+			return CallAll("VH_OnUserLogin", args, user->mxConn);
+		} else {
+			char * args[] = {
+				(char *)user->mNick.c_str(),
+				NULL
+			};
+
+			return CallAll("VH_OnUserLogin", args);
+		}
 	}
 
 	return true;
@@ -540,60 +604,89 @@ bool cpiLua::OnUserLogin(cUser *user)
 bool cpiLua::OnUserLogout(cUser *user)
 {
 	if (user != NULL) {
-		char * args[] = {
-			(char *)user->mNick.c_str(),
-			NULL
-		};
+		if (user->mxConn != NULL) {
+			char * args[] = {
+				(char *)user->mNick.c_str(),
+				(char *)user->mxConn->AddrIP().c_str(),
+				NULL
+			};
 
-		return CallAll("VH_OnUserLogout", args, user->mxConn);
+			return CallAll("VH_OnUserLogout", args, user->mxConn);
+		} else {
+			char * args[] = {
+				(char *)user->mNick.c_str(),
+				NULL
+			};
+
+			return CallAll("VH_OnUserLogout", args);
+		}
 	}
 
 	return true;
 }
 
-bool cpiLua::OnTimer()
+bool cpiLua::OnTimer(unsigned long ms)
 {
-	char * args[] = {NULL};
+	char * args[] = {
+		(char *)longToString(ms),
+		NULL
+	};
+
 	return CallAll("VH_OnTimer", args);
 }
 
-bool cpiLua::OnNewReg(string mNick, int mClass)
+bool cpiLua::OnNewReg(cUser *user, string mNick, int mClass)
 {
-	char * args[] = {
-		(char *)mNick.c_str(),
-		(char *)toString(mClass),
-		NULL
-	};
+	if (user != NULL) {
+		char * args[] = {
+			(char *)mNick.c_str(),
+			(char *)toString(mClass),
+			(char *)user->mNick.c_str(),
+			NULL
+		};
 
-	return CallAll("VH_OnNewReg", args);
+		return CallAll("VH_OnNewReg", args, user->mxConn);
+	}
+
+	return true;
 }
 
-bool cpiLua::OnDelReg(string mNick, int mClass)
+bool cpiLua::OnDelReg(cUser *user, string mNick, int mClass)
 {
-	char * args[] = {
-		(char *)mNick.c_str(),
-		(char *)toString(mClass),
-		NULL
-	};
+	if (user != NULL) {
+		char * args[] = {
+			(char *)mNick.c_str(),
+			(char *)toString(mClass),
+			(char *)user->mNick.c_str(),
+			NULL
+		};
 
-	return CallAll("VH_OnDelReg", args);
+		return CallAll("VH_OnDelReg", args, user->mxConn);
+	}
+
+	return true;
 }
 
-bool cpiLua::OnUpdateClass(string mNick, int oldClass, int newClass)
+bool cpiLua::OnUpdateClass(cUser *user, string mNick, int oldClass, int newClass)
 {
-	char * args[] = {
-		(char *)mNick.c_str(),
-		(char *)toString(oldClass),
-		(char *)toString(newClass),
-		NULL
-	};
+	if (user != NULL) {
+		char * args[] = {
+			(char *)mNick.c_str(),
+			(char *)toString(oldClass),
+			(char *)toString(newClass),
+			(char *)user->mNick.c_str(),
+			NULL
+		};
 
-	return CallAll("VH_OnUpdateClass", args);
+		return CallAll("VH_OnUpdateClass", args, user->mxConn);
+	}
+
+	return true;
 }
 
-bool cpiLua::OnNewBan(cBan *ban)
+bool cpiLua::OnNewBan(cUser *user, cBan *ban)
 {
-	if (ban != NULL) {
+	if ((user != NULL) && (ban != NULL)) {
 		char * args[] = {
 			(char *)ban->mNickOp.c_str(),
 			(char *)ban->mIP.c_str(),
@@ -602,22 +695,26 @@ bool cpiLua::OnNewBan(cBan *ban)
 			NULL
 		};
 
-		return CallAll("VH_OnNewBan", args);
+		return CallAll("VH_OnNewBan", args, user->mxConn);
 	}
 
 	return true;
 }
 
-bool cpiLua::OnUnBan(string nick, string op, string reason)
+bool cpiLua::OnUnBan(cUser *user, string nick, string op, string reason)
 {
-	char * args[] = {
-		(char *)nick.c_str(),
-		(char *)op.c_str(),
-		(char *)reason.c_str(),
-		NULL
-	};
+	if (user != NULL) {
+		char * args[] = {
+			(char *)nick.c_str(),
+			(char *)op.c_str(),
+			(char *)reason.c_str(),
+			NULL
+		};
 
-	return CallAll("VH_OnUnBan", args);
+		return CallAll("VH_OnUnBan", args, user->mxConn);
+	}
+
+	return true;
 }
 
 bool cpiLua::OnHubName(string nick, string hubname)
@@ -635,6 +732,13 @@ const char * cpiLua::toString(int n)
 {
 	char *s = new char[5];
 	sprintf(s, "%d", n);
+	return s;
+}
+
+const char * cpiLua::longToString(unsigned long n)
+{
+	char *s = new char[5];
+	sprintf(s, "%lu", n);
 	return s;
 }
 

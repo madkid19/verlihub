@@ -372,6 +372,9 @@ void cDCConnFactory::DeleteConn(cAsyncConn * &connection)
 {
 	cConnDC *conn = (cConnDC*)connection;
 	if (conn) {
+		#ifndef WITHOUT_PLUGINS
+		mServer->mCallBacks.mOnCloseConn.CallAll(conn);
+		#endif
 		if(conn->GetLSFlag(eLS_ALLOWED)) {
 			mServer->mUserCountTot--;
 			mServer->mUserCount[conn->mGeoZone]--;
@@ -385,9 +388,6 @@ void cDCConnFactory::DeleteConn(cAsyncConn * &connection)
 			delete conn->mpUser;
 			conn->mpUser  = NULL;
 		}
-		#ifndef WITHOUT_PLUGINS
-		mServer->mCallBacks.mOnCloseConn.CallAll(conn);
-		#endif
 	}
 	cConnFactory::DeleteConn(connection);
 }

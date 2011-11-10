@@ -48,7 +48,7 @@ namespace nVerliHub {
 
 namespace nPlugin {
 	template <class Type1> class tVHCBL_1Type;
-	typedef tVHCBL_1Type<string> cVHCBL_String;
+	typedef tVHCBL_1Type<std::string *> cVHCBL_String;
 };
 
 using namespace nPlugin;

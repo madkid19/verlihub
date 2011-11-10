@@ -77,12 +77,14 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	}
 
 	#ifndef WITHOUT_PLUGINS
-	if (msg->mType != eMSG_UNPARSED)  {
-		if (!mS->mCallBacks.mOnParsedMsgAny.CallAll(conn, msg)) return 1;
-
-		if (!mS->mCallBacks.mOnParsedMsgAnyEx.CallAll(conn, msg)) {
-			conn->CloseNow();
-			return -1;
+	if (msg->mType != eMSG_UNPARSED) {
+		if (conn->mpUser != NULL) {
+			if (!mS->mCallBacks.mOnParsedMsgAny.CallAll(conn, msg)) return 1;
+		} else {
+			if (!mS->mCallBacks.mOnParsedMsgAnyEx.CallAll(conn, msg)) {
+				conn->CloseNow();
+				return -1;
+			}
 		}
 	}
 	#endif
@@ -262,7 +264,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 
 		#ifndef WITHOUT_PLUGINS
 		if (!mS->mCallBacks.mOnParsedMsgValidateNick.CallAll(conn, msg)) {
-			conn->CloseNice(1000, eCR_INVALID_USER);
+			conn->CloseNow();
 			return -2;
 		}
 		#endif
@@ -331,8 +333,8 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 	}
 
 	#ifndef WITHOUT_PLUGINS
-	if(!mS->mCallBacks.mOnParsedMsgMyPass.CallAll(conn, msg)) {
-		conn->CloseNice(1000, eCR_LOGIN_ERR);
+	if (!mS->mCallBacks.mOnParsedMsgMyPass.CallAll(conn, msg)) {
+		conn->CloseNow();
 		return -1;
 	}
 	#endif
@@ -379,6 +381,14 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 int cDCProto::DC_Version(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
+
+	#ifndef WITHOUT_PLUGINS
+	if (!mS->mCallBacks.mOnParsedMsgVersion.CallAll(conn, msg)) {
+		conn->CloseNow();
+		return -1;
+	}
+	#endif
+
 	conn->SetLSFlag( eLS_VERSION );
 	string &version=msg->ChunkString(eCH_1_PARAM);
 	if(conn->Log(5))
@@ -466,7 +476,7 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	}
 
 	#ifndef WITHOUT_PLUGINS
-		TagValid = TagValid && mS->mCallBacks.mOnValidateTag.CallAll(conn, tag);
+	TagValid = TagValid && mS->mCallBacks.mOnValidateTag.CallAll(conn, tag);
 	#endif
 
 	if (!TagValid) {
@@ -605,12 +615,15 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		}
 
 		#ifndef WITHOUT_PLUGINS
-			if (!mS->mCallBacks.mOnFirstMyINFO.CallAll(conn, msg)) return -2;
+		if (!mS->mCallBacks.mOnFirstMyINFO.CallAll(conn, msg)) {
+			conn->CloseNow();
+			return -2;
+		}
 		#endif
 	}
 
  	#ifndef WITHOUT_PLUGINS
-		if (!mS->mCallBacks.mOnParsedMsgMyINFO.CallAll(conn, msg)) return -2;
+	if (!mS->mCallBacks.mOnParsedMsgMyINFO.CallAll(conn, msg)) return -2;
 	#endif
 
 	string myinfo_full, myinfo_basic, desc, email, speed, sShare;
@@ -916,7 +929,7 @@ int cDCProto::DC_MCTo(cMessageDC * msg, cConnDC * conn)
 	if (mS->Log(5)) mS->LogStream() << "MCTo from: " << conn->mpUser->mNick << " to: " << msg->ChunkString(eCH_MCTO_TO) << endl;
 
 	#ifndef WITHOUT_PLUGINS
-		if (!mS->mCallBacks.mOnParsedMsgMCTo.CallAll(conn, msg)) return 0;
+	if (!mS->mCallBacks.mOnParsedMsgMCTo.CallAll(conn, msg)) return 0;
 	#endif
 
 	// send
@@ -1028,13 +1041,11 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	}
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgChat.CallAll(conn, msg))
-		send = false;
+	if (!mS->mCallBacks.mOnParsedMsgChat.CallAll(conn, msg)) return 0;
 	#endif
 
-	// Finally send the message
-	if(send)
-		mS->mChatUsers.SendToAll(msg->mStr);
+	// finally send the message
+	if (send) mS->mChatUsers.SendToAll(msg->mStr);
 	return 0;
 }
 
@@ -1139,10 +1150,8 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	}
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgConnectToMe.CallAll(conn, msg))
-		return -2;
+	if (!mS->mCallBacks.mOnParsedMsgConnectToMe.CallAll(conn, msg)) return -2;
 	#endif
-
 
 	if(other->mxConn)
 		other->mxConn->Send(ctm);
@@ -1312,8 +1321,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	}
 
  	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgSearch.CallAll(conn, msg))
-		return -2;
+	if (!mS->mCallBacks.mOnParsedMsgSearch.CallAll(conn, msg)) return -2;
 	#endif
 
 	// Send message
@@ -1350,9 +1358,7 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	string ostr(msg->mStr,0 ,msg->mChunks[eCH_SR_TO].first - 1);
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgSR.CallAll(conn, msg)) {
-		return -2;
-	}
+	if (!mS->mCallBacks.mOnParsedMsgSR.CallAll(conn, msg)) return -2;
 	#endif
 
 	// Send it
@@ -1456,7 +1462,7 @@ int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 
 	#ifndef WITHOUT_PLUGINS
 	if (!mS->mCallBacks.mOnParsedMsgSupport.CallAll(conn, msg)) {
-		conn->CloseNice(1000, eCR_LOGIN_ERR);
+		conn->CloseNow();
 		return -1;
 	}
 	#endif
@@ -1574,7 +1580,7 @@ int cDCProto::ParseForCommands(const string &text, cConnDC *conn, int pm)
 	// operator commands
 	if (conn->mpUser->mClass >= eUC_OPERATOR && mS->mC.cmd_start_op.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
-		if ((mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string *)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string *)&text, 1, pm)))
+		if ((mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string*)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string*)&text, 1, pm)))
 		#endif
 		{
 			if (!mS->mCo->OpCommand(text, conn)) {
@@ -1589,7 +1595,7 @@ int cDCProto::ParseForCommands(const string &text, cConnDC *conn, int pm)
 	// user commands
 	if (mS->mC.cmd_start_user.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
-		if ((mS->mCallBacks.mOnUserCommand.CallAll(conn, (string *)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string *)&text, 0, pm)))
+		if ((mS->mCallBacks.mOnUserCommand.CallAll(conn, (string*)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string*)&text, 0, pm)))
 		#endif
 		{
 			if (!mS->mCo->UsrCommand(text, conn)) {
@@ -1657,6 +1663,13 @@ int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 		mS->ReportUserToOpchat(conn, os.str());
 		os.str("");
 	}
+
+	#ifndef WITHOUT_PLUGINS
+	if (!mS->mCallBacks.mOnParsedMsgBotINFO.CallAll(conn, msg)) {
+		conn->CloseNow();
+		return -1;
+	}
+	#endif
 
 	char S = '$';
 	cConnType *ConnType = mS->mConnTypes->FindConnType("default");

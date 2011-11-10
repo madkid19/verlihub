@@ -90,7 +90,9 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("InUserSupports", &_InUserSupports);
 	RegisterFunction("Ban",               &_Ban);
 	RegisterFunction("KickUser",          &_KickUser);
-	RegisterFunction("ParseCommand",      &_ParseCommand);
+	RegisterFunction("ReportUser", &_ReportUser);
+	RegisterFunction("SendToOpChat", &_SendToOpChat);
+	RegisterFunction("ParseCommand", &_ParseCommand);
 	RegisterFunction("SetConfig",         &_SetConfig);
 	RegisterFunction("GetConfig",         &_GetConfig);
 
@@ -234,12 +236,21 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[], cConnDC *co
 					} else if (key == 2) { // discard?
 						if (lua_isnumber(mL, -1)) { // value at index 2 must be a boolean
 							if ((int)lua_tonumber(mL, -1) == 0) ret = false;
+						} else { // accept boolean and nil
+							if ((int)lua_toboolean(mL, -1) == 0) ret = false;
 						}
 					} else if (key == 3) { // disconnect?
-						if (lua_isnumber(mL, -1) && (conn != NULL)) { // value at index 3 must be a boolean, connection is required
-							if ((int)lua_tonumber(mL, -1) == 0) {
-								conn->CloseNow(); // disconnect user
-								ret = false; // automatically discard due disconnect
+						if (conn != NULL) { // connection is required
+							if (lua_isnumber(mL, -1)) { // value at index 3 must be a boolean
+								if ((int)lua_tonumber(mL, -1) == 0) {
+									conn->CloseNow(); // disconnect user
+									ret = false; // automatically discard due disconnect
+								}
+							} else { // accept boolean and nil
+								if ((int)lua_toboolean(mL, -1) == 0) {
+									conn->CloseNow(); // disconnect user
+									ret = false; // automatically discard due disconnect
+								}
 							}
 						}
 					}
@@ -247,9 +258,6 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[], cConnDC *co
 
 				lua_pop(mL, 1);
 			}
-
-			lua_pop(mL, 1);
-			lua_remove(mL, base); // remove _TRACEBACK
 		} else if (lua_isnumber(mL, -1)) {
 			/*
 			* old school, simple boolean return for backward compatibility:
@@ -260,10 +268,13 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[], cConnDC *co
 			*/
 
 			if ((int)lua_tonumber(mL, -1) == 0) ret = false;
-			lua_pop(mL, 1);
-			lua_remove(mL, base); // remove _TRACEBACK
+		} else { // accept boolean and nil
+			// same as above
+			if ((int)lua_toboolean(mL, -1) == 0) ret = false;
 		}
 
+		lua_pop(mL, 1);
+		lua_remove(mL, base); // remove _TRACEBACK
 		return ret;
 	}
 

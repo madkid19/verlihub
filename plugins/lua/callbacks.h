@@ -49,7 +49,6 @@ namespace nVerliHub {
 	int _GetHubSecAlias(lua_State *);
 	int _SetConfig(lua_State *);
 	int _GetConfig(lua_State *);
-	int _ReportUser(lua_State *);
 	int _GetUserClass(lua_State *);
 	int _GetUserHost(lua_State *);
 	int _GetUserIP(lua_State *);
@@ -61,6 +60,8 @@ namespace nVerliHub {
 	int _GetBots(lua_State *);
 	int _Ban(lua_State *);
 	int _KickUser(lua_State *);
+	int _ReportUser(lua_State *);
+	int _SendToOpChat(lua_State *);
 	int _ParseCommand(lua_State *);
 
 	int _SQLQuery(lua_State *);

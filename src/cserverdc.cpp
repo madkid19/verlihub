@@ -390,7 +390,7 @@ bool cServerDC::RemoveNick(cUser *User)
 
 	if(mUserList.ContainsHash(Hash)) {
 		#ifndef WITHOUT_PLUGINS
-		if(User->mxConn && User->mxConn->GetLSFlag(eLS_LOGIN_DONE)) mCallBacks.mOnUserLogout.CallAll(User);
+		if (User->mxConn && User->mxConn->GetLSFlag(eLS_LOGIN_DONE)) mCallBacks.mOnUserLogout.CallAll(User);
 		#endif
                 // make sure that the user we want to remove is the correct one!
                 cUser *other = mUserList.GetUserByNick(User->mNick);
@@ -530,7 +530,7 @@ int cServerDC::OnNewConn(cAsyncConn *nc)
 	if (!conn) return -1;
 
 	#ifndef WITHOUT_PLUGINS
-		if (!mCallBacks.mOnNewConn.CallAll(conn)) return -1;
+	if (!mCallBacks.mOnNewConn.CallAll(conn)) return -1;
 	#endif
 
 	string omsg;
@@ -645,7 +645,10 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	if(mUserList.Size() > mUsersPeak)
 		mUsersPeak = mUserList.Size();
 	#ifndef WITHOUT_PLUGINS
-	mCallBacks.mOnUserLogin.CallAll(conn->mpUser);
+	if (!mCallBacks.mOnUserLogin.CallAll(conn->mpUser)) {
+		conn->CloseNow();
+		return;
+	}
 	#endif
 
 	if ((conn->mpUser->mClass >= eUC_NORMUSER) && (conn->mpUser->mClass <= eUC_MASTER)) {
@@ -1078,8 +1081,7 @@ int cServerDC::OnTimer(cTime &now)
 	mBanList->mTempIPBanlist.AutoResize();
 	mCo->mTriggers->OnTimer(now.Sec());
 	#ifndef WITHOUT_PLUGINS
-	if (!mCallBacks.mOnTimer.CallAll())
-		return false;
+	if (!mCallBacks.mOnTimer.CallAll(now.MiliSec())) return false;
 	#endif
 	return true;
 }

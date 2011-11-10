@@ -577,7 +577,7 @@ int _Ban(lua_State *L)
 		}
 		bantype = (int) lua_tonumber(L, 6);
 		if(!Ban((char *) nick.c_str(), op, reason, howlong, bantype)) {
-			lua_pushboolean(L, 0); // let the script know that ban was not successful
+			lua_pushboolean(L, 0);
 			luaerror(L, "User not found");
 			return 2;
 		}
@@ -617,7 +617,7 @@ int _KickUser(lua_State *L)
 		data = (char *)lua_tostring(L, 4);
 		if(!KickUser((char *)op.c_str(), (char *)nick.c_str(), (char *)data.c_str()))
 		{
-			lua_pushboolean(L, 0); // let the script know that kick was not successful
+			lua_pushboolean(L, 0);
 			luaerror(L, ERR_CALL);
 			return 2;
 		}
@@ -627,34 +627,6 @@ int _KickUser(lua_State *L)
 		luaL_error(L, "Error calling VH:KickUser; expected 3 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
-	}
-	lua_pushboolean(L, 1);
-	return 1;
-}
-
-int _ParseCommand(lua_State *L)
-{
-	// NOTE: this one is not implemented yet!
-	string data;
-
-	if(lua_gettop(L) == 2)
-	{
-		if(!lua_isstring(L, 2))
-		{
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		data = (char *)lua_tostring(L,2);
-		if(!ParseCommand((char *)data.c_str()))
-		{
-			luaerror(L, ERR_CALL);
-			return 2;
-		}
-	}
-	else
-	{
-		luaerror(L, ERR_PARAM);
-		return 2;
 	}
 	lua_pushboolean(L, 1);
 	return 1;
@@ -681,7 +653,7 @@ int _SetConfig(lua_State *L)
 		}
 		val = (char *)lua_tostring(L, 4);
 		if(!SetConfig((char *)config_name.c_str(), (char *)var.c_str(), (char *)val.c_str())) {
-			lua_pushboolean(L, 0); // let the script know that config change was not successful
+			lua_pushboolean(L, 0);
 			luaerror(L, ERR_CALL);
 			return 2;
 		}
@@ -810,7 +782,7 @@ int _RegBot(lua_State *L)
 			if(uclass >= 3)
 				server->mUserList.SendToAll(server->mOpList.GetNickList(), true);
 		} else {
-			lua_pushboolean(L, 0); // let the script know that registering bot was not successful
+			lua_pushboolean(L, 0);
 		    luaerror(L, "Error adding bot; it may already exist");
 		    return 2;
 		}
@@ -879,7 +851,7 @@ int _EditBot(lua_State *L)
 		share = (char *)lua_tostring(L, 7);
 
 		if(!server->mRobotList.ContainsNick(nick)) {
-			lua_pushboolean(L, 0); // let the script know that editing bot was not successful
+			lua_pushboolean(L, 0);
 			luaerror(L, "Bot not found");
 			return 2;
 		}
@@ -901,7 +873,7 @@ int _EditBot(lua_State *L)
 			if(uclass >= 3)
 				server->mUserList.SendToAll(server->mOpList.GetNickList(), true);
 		} else
-			lua_pushboolean(L, 0); // let the script know that editing bot was not successful
+			lua_pushboolean(L, 0);
 	} else {
 		luaL_error(L, "Error calling VH:EditBot; expected 6 argument but got %d", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
@@ -944,7 +916,7 @@ int _UnRegBot(lua_State *L)
 			li->delBot((char *) nick.c_str() );
 			pi->DelRobot(robot);
 		} else {
-			lua_pushboolean(L, 0); // let the script know that unregistering bot was not successful
+			lua_pushboolean(L, 0);
 		    luaerror(L, "Bot doesn't exist");
 		    return 2;
 		}
@@ -1044,7 +1016,7 @@ int _SQLFetch(lua_State *L)
 		int r = (int)lua_tonumber(L, 2);
 
 		if(!pi->mQuery->GetResult()) {
-			lua_pushboolean(L, 0); // let the script know that fetching row returned no results
+			lua_pushboolean(L, 0);
 			luaerror(L, "No result");
 			return 2;
 		}
@@ -1055,7 +1027,7 @@ int _SQLFetch(lua_State *L)
 
 		if(!(row = pi->mQuery->Row()))
 		{
-			lua_pushboolean(L, 0); // let the script know that fetching row failed
+			lua_pushboolean(L, 0);
 			luaerror(L, "Error fetching row");
 			return 2;
 		}
@@ -1201,49 +1173,98 @@ int _GetTotalShareSize(lua_State *L)
 	lua_pushnumber(L, GetTotalShareSize());
 	return 2;
 }
-/*
+
 int _ReportUser(lua_State *L)
 {
-	string nick, message;
-
-	if(lua_gettop(L) == 3) {
-		if(!lua_isstring(L, 2)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		nick = (char *) lua_tostring(L, 2);
-		if(!lua_isstring(L, 3)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		message = (char *) lua_tostring(L, 3);
-
-		cUser *usr = GetUser(nick);
-		if (!usr) {
-			luaerror(L, "User not found");
-			return 2;
-		} else if(!usr->mxConn) {
-			luaerror(L, "User found but it's a bot");
-			return 2;
-		}
-		else {
-			cServerDC *server = GetCurrentVerlihub();
-			if (!server) {
-				luaerror(L, "Error getting server");
-				return 2;
-			}
-			server->ReportUserToOpchat(usr->mxConn, message, false);
-			lua_pushboolean(L, 1);
-			return 1;
-		}
-	} else {
-		luaL_error(L, "Error calling VH:ReportUser; expected 1 argument but got %d", lua_gettop(L) -1);
+	if (lua_gettop(L) != 3) {
+		luaL_error(L, "Error calling VH:ReportUser, expected 2 arguments but got %d.", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
 	}
+
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (serv == NULL) {
+		luaerror(L, ERR_SERV);
+		return 2;
+	}
+
+	if (!lua_isstring(L, 2) || !lua_isstring(L, 3)) {
+		luaerror(L, ERR_PARAM);
+		return 2;
+	}
+
+	string nick = (char*)lua_tostring(L, 2);
+	string msg = (char*)lua_tostring(L, 3);
+	cUser *usr = serv->mUserList.GetUserByNick(nick);
+
+	if ((usr == NULL) || (usr->mxConn == NULL)) {
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+
+	serv->ReportUserToOpchat(usr->mxConn, msg, false);
+	lua_pushboolean(L, 1);
+	return 1;
 }
-*/
+
+int _SendToOpChat(lua_State *L)
+{
+	if (lua_gettop(L) != 2) {
+		luaL_error(L, "Error calling VH:SendToOpChat, expected 1 argument but got %d.", lua_gettop(L) - 1);
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (serv == NULL) {
+		luaerror(L, ERR_SERV);
+		return 2;
+	}
+
+	if (!lua_isstring(L, 2)) {
+		luaerror(L, ERR_PARAM);
+		return 2;
+	}
+
+	string msg = (char*)lua_tostring(L, 2);
+	serv->mOpChat->SendPMToAll(msg, NULL);
+	lua_pushboolean(L, 1);
+	return 1;
+}
+
+int _ParseCommand(lua_State *L)
+{
+	if (lua_gettop(L) != 4) {
+		luaL_error(L, "Error calling VH:ParseCommand, expected 3 arguments but got %d.", lua_gettop(L) - 1);
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+
+	if (!lua_isstring(L, 2) || !lua_isstring(L, 3) || !lua_isnumber(L, 4)) {
+		luaerror(L, ERR_PARAM);
+		return 2;
+	}
+
+	string nick = (char*)lua_tostring(L, 2);
+	string cmd = (char*)lua_tostring(L, 3);
+	int pm = (int)lua_tonumber(L, 4);
+
+	if (!ParseCommand((char*)nick.c_str(), (char*)cmd.c_str(), pm)) {
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+
+	lua_pushboolean(L, 1);
+	return 1;
+}
+
 int _SetTempRights(lua_State *L)
 {
 	luaL_error(L, "VH:SetTempRights not implemented yet");

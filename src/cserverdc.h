@@ -132,7 +132,7 @@ namespace nVerliHub {
 			eCR_LOGIN_ERR, //< error in login sequence
 			eCR_SYNTAX, // < syntax error in some message
 			eCR_INVALID_KEY,
-			eCR_RECONNECT,
+			eCR_RECONNECT
 		};
 
 		enum
@@ -713,6 +713,8 @@ private:
 			mOnCloseConn(mgr, "VH_OnCloseConn", &cVHPlugin::OnCloseConn),
 			mOnUnknownMsg(mgr, "VH_OnUnknownMsg", &cVHPlugin::OnUnknownMsg),
 			mOnParsedMsgSupport(mgr, "VH_OnParsedMsgSupport", &cVHPlugin::OnParsedMsgSupport),
+			mOnParsedMsgBotINFO(mgr, "VH_OnParsedMsgBotINFO", &cVHPlugin::OnParsedMsgBotINFO),
+			mOnParsedMsgVersion(mgr, "VH_OnParsedMsgVersion", &cVHPlugin::OnParsedMsgVersion),
 			mOnParsedMsgMyPass(mgr, "VH_OnParsedMsgMyPass", &cVHPlugin::OnParsedMsgMyPass),
 			mOnParsedMsgAny(mgr, "VH_OnParsedMsgAny", &cVHPlugin::OnParsedMsgAny),
 			mOnParsedMsgAnyEx(mgr, "VH_OnParsedMsgAnyEx", &cVHPlugin::OnParsedMsgAnyEx),
@@ -746,41 +748,43 @@ private:
 			mOnUnBan(mgr, "VH_OnUnBan", &cVHPlugin::OnUnBan)
 		{};
 
-		cVHCBL_Connection	mOnNewConn;
-		cVHCBL_Connection	mOnCloseConn;
-		cVHCBL_Message		mOnUnknownMsg;
-		cVHCBL_Message		mOnParsedMsgSupport;
-		cVHCBL_Message		mOnParsedMsgMyPass;
-		cVHCBL_Message		mOnParsedMsgAny;
-		cVHCBL_Message		mOnParsedMsgAnyEx;
-		cVHCBL_Message		mOnParsedMsgPM;
-		cVHCBL_Message		mOnParsedMsgMCTo;
-		cVHCBL_Message		mOnParsedMsgChat;
-		cVHCBL_Message		mOnParsedMsgSearch;
-		cVHCBL_Message		mOnParsedMsgMyINFO;
-		cVHCBL_Message		mOnFirstMyINFO;
-		cVHCBL_Message		mOnParsedMsgValidateNick;
-		cVHCBL_Message		mOnParsedMsgConnectToMe;
-		cVHCBL_Message		mOnParsedMsgRevConnectToMe;
+		cVHCBL_Connection mOnNewConn;
+		cVHCBL_Connection mOnCloseConn;
+		cVHCBL_Message mOnUnknownMsg;
+		cVHCBL_Message mOnParsedMsgSupport;
+		cVHCBL_Message mOnParsedMsgBotINFO;
+		cVHCBL_Message mOnParsedMsgVersion;
+		cVHCBL_Message mOnParsedMsgMyPass;
+		cVHCBL_Message mOnParsedMsgAny;
+		cVHCBL_Message mOnParsedMsgAnyEx;
+		cVHCBL_Message mOnParsedMsgPM;
+		cVHCBL_Message mOnParsedMsgMCTo;
+		cVHCBL_Message mOnParsedMsgChat;
+		cVHCBL_Message mOnParsedMsgSearch;
+		cVHCBL_Message mOnParsedMsgMyINFO;
+		cVHCBL_Message mOnFirstMyINFO;
+		cVHCBL_Message mOnParsedMsgValidateNick;
+		cVHCBL_Message mOnParsedMsgConnectToMe;
+		cVHCBL_Message mOnParsedMsgRevConnectToMe;
 		cVHCBL_ConnText mOnOperatorCommand;
 		cVHCBL_ConnText mOnUserCommand;
 		cVHCBL_ConnTextIntInt mOnHubCommand;
-		cVHCBL_Message		mOnParsedMsgSR;
-		cVHCBL_UsrUsrStr	mOnOperatorKicks;
-		cVHCBL_UsrUsr		mOnOperatorDrops;
-		cVHCBL_User			mOnUserLogin;
-		cVHCBL_User			mOnUserLogout;
-		cVHCBL_ConnTag		mOnValidateTag;
-		cVHCBL_Simple 		mOnTimer;
-		cVHCBL_String		mNickListNicks;
-		cVHCBL_String		mNickListInfos;
-		cVHCBL_String		mOpListNicks;
-		cVHCBL_StringInt	mOnNewReg;
-		cVHCBL_StringInt	mOnDelReg;
-		cVHCBL_StrIntInt	mOnUpdateClass;
-		cVHCBL_Strings		mOnHubName;
-		cVHCBL_Ban			mOnNewBan;
-		cVHCBL_StrStrStr	mOnUnBan;
+		cVHCBL_Message mOnParsedMsgSR;
+		cVHCBL_UsrUsrStr mOnOperatorKicks;
+		cVHCBL_UsrUsr mOnOperatorDrops;
+		cVHCBL_User mOnUserLogin;
+		cVHCBL_User mOnUserLogout;
+		cVHCBL_ConnTag mOnValidateTag;
+		cVHCBL_Long mOnTimer;
+		cVHCBL_String mNickListNicks;
+		cVHCBL_String mNickListInfos;
+		cVHCBL_String mOpListNicks;
+		cVHCBL_UsrStrInt mOnNewReg;
+		cVHCBL_UsrStrInt mOnDelReg;
+		cVHCBL_UsrStrIntInt mOnUpdateClass;
+		cVHCBL_Strings mOnHubName;
+		cVHCBL_UsrBan mOnNewBan;
+		cVHCBL_UsrStrStrStr mOnUnBan;
 	};
 	// Structure that holds all callbacks.
 	sCallBacks mCallBacks;

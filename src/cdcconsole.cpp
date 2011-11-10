@@ -1201,7 +1201,7 @@ bool cDCConsole::cfBan::operator()()
 					tmp = _("No reason specified"); // default reason
 				}
 				#ifndef WITHOUT_PLUGINS
-				if(!mS->mCallBacks.mOnUnBan.CallAll(Who, mConn->mpUser->mNick, tmp)) {
+				if (!mS->mCallBacks.mOnUnBan.CallAll(mConn->mpUser, Who, mConn->mpUser->mNick, tmp)) {
 					(*mOS) << _("Action has been discarded by plugin.");
 					return false;
 				}
@@ -1300,8 +1300,8 @@ bool cDCConsole::cfBan::operator()()
 		default: break;
 		}
 		#ifndef WITHOUT_PLUGINS
-		if(!mS->mCallBacks.mOnNewBan.CallAll(&Ban)) {
-			(*mOS) << _("Action has been discarded by plugin");
+		if (!mS->mCallBacks.mOnNewBan.CallAll(mConn->mpUser, &Ban)) {
+			(*mOS) << _("Action has been discarded by plugin.");
 			return false;
 		}
 		#endif
@@ -1872,7 +1872,7 @@ bool cDCConsole::cfRegUsr::operator()()
 			}
 
 			#ifndef WITHOUT_PLUGINS
-			if (!mS->mCallBacks.mOnNewReg.CallAll(nick, ParClass)) {
+			if (!mS->mCallBacks.mOnNewReg.CallAll(this->mConn->mpUser, nick, ParClass)) {
 				(*mOS) << _("Action has been discarded by plugin.");
 				return false;
 			}
@@ -1903,7 +1903,7 @@ bool cDCConsole::cfRegUsr::operator()()
 
 		case eAC_DEL: // delete
 			#ifndef WITHOUT_PLUGINS
-			if(!mS->mCallBacks.mOnDelReg.CallAll(nick,ui.mClass)) {
+			if (!mS->mCallBacks.mOnDelReg.CallAll(this->mConn->mpUser, nick, ui.mClass)) {
 				(*mOS) << _("Action has been discarded by plugin.");
 				return false;
 			}
@@ -1942,7 +1942,7 @@ bool cDCConsole::cfRegUsr::operator()()
 		break;
 		case eAC_CLASS: // class
 			#ifndef WITHOUT_PLUGINS
-			if(!mS->mCallBacks.mOnUpdateClass.CallAll(nick, ui.mClass, ParClass)) {
+			if (!mS->mCallBacks.mOnUpdateClass.CallAll(this->mConn->mpUser, nick, ui.mClass, ParClass)) {
 				(*mOS) << _("Action has been discarded by plugin.");
 				return false;
 			}
