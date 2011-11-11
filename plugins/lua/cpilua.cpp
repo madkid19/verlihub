@@ -625,10 +625,9 @@ bool cpiLua::OnUserLogout(cUser *user)
 	return true;
 }
 
-bool cpiLua::OnTimer(unsigned long ms)
+bool cpiLua::OnTimer()
 {
 	char * args[] = {
-		(char *)longToString(ms),
 		NULL
 	};
 

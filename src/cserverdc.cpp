@@ -1081,7 +1081,7 @@ int cServerDC::OnTimer(cTime &now)
 	mBanList->mTempIPBanlist.AutoResize();
 	mCo->mTriggers->OnTimer(now.Sec());
 	#ifndef WITHOUT_PLUGINS
-	if (!mCallBacks.mOnTimer.CallAll(now.MiliSec())) return false;
+	if (!mCallBacks.mOnTimer.CallAll()) return false;
 	#endif
 	return true;
 }

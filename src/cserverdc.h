@@ -775,7 +775,7 @@ private:
 		cVHCBL_User mOnUserLogin;
 		cVHCBL_User mOnUserLogout;
 		cVHCBL_ConnTag mOnValidateTag;
-		cVHCBL_Long mOnTimer;
+		cVHCBL_Simple mOnTimer;
 		cVHCBL_String mNickListNicks;
 		cVHCBL_String mNickListInfos;
 		cVHCBL_String mOpListNicks;

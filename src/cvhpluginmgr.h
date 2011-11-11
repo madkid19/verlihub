@@ -320,7 +320,7 @@ typedef tVHCBL_2Types<cUser, nTables::cBan> cVHCBL_UsrBan;
 typedef tVHCBL_R2Types<std::string, std::string> cVHCBL_Strings;
 typedef tVHCBL_1Type<string> cVHCBL_String;
 typedef tVHCBL_1Type<cUser> cVHCBL_User;
-typedef tVHCBL_R1Type<unsigned long> cVHCBL_Long;
+//typedef tVHCBL_R1Type<unsigned long> cVHCBL_Long;
 
 	}; // namespace nPlugin
 }; // namespace nVerliHub

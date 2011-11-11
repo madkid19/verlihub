@@ -71,7 +71,7 @@ public:
 	virtual bool OnValidateTag(nSocket::cConnDC *, cDCTag *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
-	virtual bool OnTimer(unsigned long);
+	virtual bool OnTimer();
 	virtual bool OnNewReg(cUser *, std::string, int);
 	virtual bool OnDelReg(cUser *, std::string, int);
 	virtual bool OnUpdateClass(cUser *, std::string, int, int);

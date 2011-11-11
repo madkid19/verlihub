@@ -361,7 +361,7 @@ public:
 	* Event handler function that is called when timer is called.
 	* Use RegisterCallBack("VH_OnTimer") to register it. This event isnt discardable.
 	*/
-	virtual bool OnTimer(unsigned long ms) {return true;}
+	virtual bool OnTimer() {return true;}
 
 	/// Called when loading and  when it's the correct time to register for callbacks
 	virtual bool RegisterAll() = 0;
