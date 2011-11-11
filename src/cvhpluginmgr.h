@@ -74,8 +74,7 @@ class cVHCBL_Simple: public cVHCBL_Base // 0 arguments
 	protected:
 		tpf0TypeFunc m0TFunc;
 	public:
-		cVHCBL_Simple(cVHPluginMgr *mgr, const char *id, tpf0TypeFunc pFunc):
-		cVHCBL_Base(mgr, id), m0TFunc(pFunc) {}
+		cVHCBL_Simple(cVHPluginMgr *mgr, const char *id, tpf0TypeFunc pFunc): cVHCBL_Base(mgr, id), m0TFunc(pFunc) {}
 		virtual bool CallOne(cVHPlugin *pi) {return (pi->*m0TFunc)();}
 };
 
@@ -87,9 +86,8 @@ template <class Type1> class tVHCBL_1Type: public cVHCBL_Base // 1 argument
 		tpf1TypeFunc m1TFunc;
 		Type1 mData1;
 	public:
-		tVHCBL_1Type(cVHPluginMgr *mgr, const char *id, tpf1TypeFunc pFunc):
-		cVHCBL_Base(mgr, id), m1TFunc(pFunc) {}
-		virtual ~tVHCBL_1Type() {}
+		tVHCBL_1Type(cVHPluginMgr *mgr, const char *id, tpf1TypeFunc pFunc): cVHCBL_Base(mgr, id), m1TFunc(pFunc) {}
+		//virtual ~tVHCBL_1Type() {}
 		virtual bool CallOne(cVHPlugin *pi) {return (pi->*m1TFunc)(mData1);}
 
 		virtual bool CallAll(Type1 par1) {
@@ -107,8 +105,7 @@ template <class Type1, class Type2> class tVHCBL_2Types: public cVHCBL_Base // 2
 		Type1 mData1;
 		Type2 mData2;
 	public:
-		tVHCBL_2Types(cVHPluginMgr *mgr, const char *id, tpf2TypesFunc pFunc):
-		cVHCBL_Base(mgr, id), m2TFunc(pFunc) {}
+		tVHCBL_2Types(cVHPluginMgr *mgr, const char *id, tpf2TypesFunc pFunc): cVHCBL_Base(mgr, id), m2TFunc(pFunc) {}
 		virtual ~tVHCBL_2Types() {}
 		virtual bool CallOne(cVHPlugin *pi) {return (pi->*m2TFunc)(mData1, mData2);}
 
@@ -129,8 +126,7 @@ template <class Type1, class Type2, class Type3> class tVHCBL_3Types: public cVH
 		Type2 mData2;
 		Type3 mData3;
 	public:
-		tVHCBL_3Types(cVHPluginMgr *mgr, const char *id, tpf3TypesFunc pFunc):
-		cVHCBL_Base(mgr, id), m3TFunc(pFunc) {}
+		tVHCBL_3Types(cVHPluginMgr *mgr, const char *id, tpf3TypesFunc pFunc): cVHCBL_Base(mgr, id), m3TFunc(pFunc) {}
 		virtual ~tVHCBL_3Types() {}
 		virtual bool CallOne(cVHPlugin *pi) {return (pi->*m3TFunc)(mData1, mData2, mData3);}
 
@@ -153,8 +149,7 @@ template <class Type1, class Type2, class Type3, class Type4> class tVHCBL_4Type
 		Type3 mData3;
 		Type4 mData4;
 	public:
-		tVHCBL_4Types(cVHPluginMgr *mgr, const char *id, tpf4TypesFunc pFunc):
-		cVHCBL_Base(mgr, id), m4TFunc(pFunc) {}
+		tVHCBL_4Types(cVHPluginMgr *mgr, const char *id, tpf4TypesFunc pFunc): cVHCBL_Base(mgr, id), m4TFunc(pFunc) {}
 		virtual ~tVHCBL_4Types() {}
 		virtual bool CallOne(cVHPlugin *pi) {return (pi->*m4TFunc)(mData1, mData2, mData3, mData4);}
 
