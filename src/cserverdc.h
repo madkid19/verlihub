@@ -736,7 +736,7 @@ private:
 			mOnUserLogin(mgr, "VH_OnUserLogin", &cVHPlugin::OnUserLogin),
 			mOnUserLogout  (mgr, "VH_OnUserLogout",   &cVHPlugin::OnUserLogout ),
 			mOnValidateTag(mgr, "VH_OnValidateTag", &cVHPlugin::OnValidateTag),
-			mOnTimer( mgr, "VH_OnTimer", &cVHPlugin::OnTimer ),
+			mOnTimer(mgr, "VH_OnTimer", &cVHPlugin::OnTimer),
 			mNickListNicks( mgr, "VH_OnCreateUserNickList", &cVHPlugin::OnCreateUserNickList),
 			mNickListInfos( mgr, "VH_OnCreateUserInfoList", &cVHPlugin::OnCreateUserInfoList),
 			mOpListNicks( mgr, "VH_OnCreateOpList", &cVHPlugin::OnCreateOpList),
@@ -775,7 +775,7 @@ private:
 		cVHCBL_User mOnUserLogin;
 		cVHCBL_User mOnUserLogout;
 		cVHCBL_ConnTag mOnValidateTag;
-		cVHCBL_Simple mOnTimer;
+		cVHCBL_Long mOnTimer;
 		cVHCBL_String mNickListNicks;
 		cVHCBL_String mNickListInfos;
 		cVHCBL_String mOpListNicks;

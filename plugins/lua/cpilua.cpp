@@ -24,6 +24,7 @@
 #include "src/stringutils.h"
 #include "src/cbanlist.h"
 #include "src/cserverdc.h"
+#include "src/i18n.h"
 #include <dirent.h>
 #include <string>
 #include "src/script_api.h"
@@ -625,9 +626,10 @@ bool cpiLua::OnUserLogout(cUser *user)
 	return true;
 }
 
-bool cpiLua::OnTimer()
+bool cpiLua::OnTimer(long msec)
 {
 	char * args[] = {
+		(char *)longToString(msec),
 		NULL
 	};
 
@@ -727,18 +729,14 @@ bool cpiLua::OnHubName(string nick, string hubname)
 	return CallAll("VH_OnHubName", args);
 }
 
-const char * cpiLua::toString(int n)
+char * cpiLua::toString(int num)
 {
-	char *s = new char[5];
-	sprintf(s, "%d", n);
-	return s;
+	return autosprintf("%d", num);
 }
 
-const char * cpiLua::longToString(unsigned long n)
+char * cpiLua::longToString(long num)
 {
-	char *s = new char[5];
-	sprintf(s, "%lu", n);
-	return s;
+	return autosprintf("%lu", num);
 }
 
 	}; // namepsace nLuaPlugin

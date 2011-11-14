@@ -71,15 +71,15 @@ public:
 	virtual bool OnValidateTag(nSocket::cConnDC *, cDCTag *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
-	virtual bool OnTimer();
+	virtual bool OnTimer(long);
 	virtual bool OnNewReg(cUser *, std::string, int);
 	virtual bool OnDelReg(cUser *, std::string, int);
 	virtual bool OnUpdateClass(cUser *, std::string, int, int);
 	virtual bool OnNewBan(cUser *, cBan *);
 	virtual bool OnUnBan(cUser *, string nick, string op, string reason);
 	virtual bool OnHubName(std::string, std::string);
-	const char * toString(int);
-	const char * longToString(unsigned long);
+	char * toString(int);
+	char * longToString(long);
 
 	bool AutoLoad();
 	bool CallAll(const char *, char * [], cConnDC *conn = NULL);
