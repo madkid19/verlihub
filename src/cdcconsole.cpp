@@ -1521,14 +1521,14 @@ bool cDCConsole::cfGag::operator()()
 
 	if (usr != NULL) {
 		switch (Action) {
-			case eAC_GAG: usr->SetRight(eUR_CHAT, penalty.mStartChat, isUn); break;
-			case eAC_NOPM: usr->SetRight(eUR_PM, penalty.mStartPM, isUn); break;
-			case eAC_NODL: usr->SetRight(eUR_CTM, penalty.mStartCTM, isUn); break;
-			case eAC_NOSEARCH: usr->SetRight(eUR_SEARCH, penalty.mStartSearch, isUn); break;
-			case eAC_NOSHARE: usr->SetRight(eUR_NOSHARE, penalty.mStopShare0, isUn); break;
-			case eAC_CANREG: usr->SetRight(eUR_REG, penalty.mStopReg, isUn); break;
-			case eAC_KVIP: usr->SetRight(eUR_KICK, penalty.mStopKick, isUn); break;
-			case eAC_OPCHAT: usr->SetRight(eUR_OPCHAT, penalty.mStopOpchat, isUn); break;
+			case eAC_GAG: usr->SetRight(eUR_CHAT, penalty.mStartChat, isUn, true); break;
+			case eAC_NOPM: usr->SetRight(eUR_PM, penalty.mStartPM, isUn, true); break;
+			case eAC_NODL: usr->SetRight(eUR_CTM, penalty.mStartCTM, isUn, true); break;
+			case eAC_NOSEARCH: usr->SetRight(eUR_SEARCH, penalty.mStartSearch, isUn, true); break;
+			case eAC_NOSHARE: usr->SetRight(eUR_NOSHARE, penalty.mStopShare0, isUn, true); break;
+			case eAC_CANREG: usr->SetRight(eUR_REG, penalty.mStopReg, isUn, true); break;
+			case eAC_KVIP: usr->SetRight(eUR_KICK, penalty.mStopKick, isUn, true); break;
+			case eAC_OPCHAT: usr->SetRight(eUR_OPCHAT, penalty.mStopOpchat, isUn, true); break;
 			default: return false;
 		};
 	}

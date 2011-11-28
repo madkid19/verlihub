@@ -26,6 +26,7 @@
 #include "cconndc.h"
 #include "cfreqlimiter.h"
 #include "cpenaltylist.h"
+#include "ctime.h"
 
 using namespace std;
 namespace nVerliHub {
@@ -232,7 +233,7 @@ public:
 		return true if the user has given rights
 	*/
 	bool Can(unsigned Right, long now = 0, unsigned OtherClass = 0);
-	void SetRight(unsigned Right, long until, bool allow=false);
+	void SetRight(unsigned Right, long until, bool allow = false, bool notify = false);
 	void ApplyRights(cPenaltyList::sPenalty &pen);
 };
 

@@ -25,6 +25,7 @@
 #include "cserverdc.h"
 #include "i18n.h"
 #include "stringutils.h"
+#include <sys/time.h>
 
 #define PADDING 25
 
@@ -241,56 +242,126 @@ bool cUser::Can(unsigned Right, long now, unsigned OtherClass)
 	return true;
 }
 
-void cUser::SetRight(unsigned Right, long until, bool allow)
+void cUser::SetRight(unsigned Right, long until, bool allow, bool notify)
 {
-	switch(Right)
-	{
+	string msg;
+
+	switch (Right) {
 		case eUR_CHAT:
-			if(!allow) mGag = until;
-			else mGag = 1;
+			if (!allow) {
+				msg = _("You're no longer allowed to use main chat for: %s");
+				mGag = until;
+			} else {
+				msg = _("You're now allowed to use main chat.");
+				mGag = 1;
+			}
+
 			break;
 		case nEnums::eUR_PM:
-			if(!allow) mNoPM = until;
-			else mNoPM = 1;
+			if (!allow) {
+				msg = _("You're no longer allowed to use private chat for: %s");
+				mNoPM = until;
+			} else {
+				msg = _("You're now allowed to use private chat.");
+				mNoPM = 1;
+			}
+
 			break;
 		case nEnums::eUR_SEARCH:
-			if(!allow) mNoSearch = until;
-			else mNoSearch = 1;
+			if (!allow) {
+				msg = _("You're no longer allowed to search files for: %s");
+				mNoSearch = until;
+			} else {
+				msg = _("You're now allowed to search files.");
+				mNoSearch = 1;
+			}
+
 			break;
 		case nEnums::eUR_CTM:
-			if(!allow) mNoCTM = until;
-			else mNoCTM = 1;
+			if (!allow) {
+				msg = _("You're no longer allowed to download files for: %s");
+				mNoCTM = until;
+			} else {
+				msg = _("You're now allowed to download files.");
+				mNoCTM = 1;
+			}
+
 			break;
 		case nEnums::eUR_KICK:
-			if(allow) mCanKick = until;
-			else mCanKick = 1;
+			if (allow) {
+				msg = _("You're now allowed to kick users for: %s");
+				mCanKick = until;
+			} else {
+				msg = _("You're no longer allowed to kick users.");
+				mCanKick = 1;
+			}
+
 			break;
 		case nEnums::eUR_REG:
-			if(allow) mCanReg = until;
-			else mCanReg = 1;
+			if (allow) {
+				msg = _("You're now allowed to register users for: %s");
+				mCanReg = until;
+			} else {
+				msg = _("You're no longer allowed to register users.");
+				mCanReg = 1;
+			}
+
 			break;
 		case nEnums::eUR_OPCHAT:
-			if(allow) mCanOpchat = until;
-			else mCanOpchat = 1;
+			if (allow) {
+				msg = _("You're now allowed to use operator chat for: %s");
+				mCanOpchat = until;
+			} else {
+				msg = _("You're no longer allowed to use operator chat.");
+				mCanOpchat = 1;
+			}
+
 			break;
 		case nEnums::eUR_NOSHARE:
-			if(allow) mCanShare0 = until;
-			else mCanShare0 = 1;
+			if (allow) {
+				msg = _("You're now allowed to hide share for: %s");
+				mCanShare0 = until;
+			} else {
+				msg = _("You're no longer allowed to hide share.");
+				mCanShare0 = 1;
+			}
+
 			break;
 		case nEnums::eUR_DROP:
-			if(allow) mCanDrop = until;
-			else mCanDrop = 1;
+			if (allow) {
+				msg = _("You're now allowed to drop users for: %s");
+				mCanDrop = until;
+			} else {
+				msg = _("You're no longer allowed to drop users.");
+				mCanDrop = 1;
+			}
+
 			break;
 		case nEnums::eUR_TBAN:
-			if(allow) mCanTBan = until;
-			else mCanTBan = 1;
+			if (allow) {
+				msg = _("You're now allowed to temporarily ban users for: %s");
+				mCanTBan = until;
+			} else {
+				msg = _("You're no longer allowed to temporarily ban users.");
+				mCanTBan = 1;
+			}
+
 			break;
 		case nEnums::eUR_PBAN:
-			if(allow) mCanPBan = until;
-			else mCanPBan = 1;
+			if (allow) {
+				msg = _("You're now allowed to permanently ban users for: %s");
+				mCanPBan = until;
+			} else {
+				msg = _("You're no longer allowed to permanently ban users.");
+				mCanPBan = 1;
+			}
+
 			break;
-		default: break;
+		default:
+			break;
 	};
+
+	if (notify && !msg.empty() && (mxConn != NULL)) mxServer->DCPublicHS(autosprintf(msg.c_str(), cTime(until - cTime().Sec()).AsPeriod().AsString().c_str()), mxConn);
 }
 
 void cUser::ApplyRights(cPenaltyList::sPenalty &pen)
