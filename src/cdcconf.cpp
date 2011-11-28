@@ -258,7 +258,8 @@ void cDCConf::AddVars()
 	Add("desc_insert_mode", desc_insert_mode, false);
 	Add("show_email",show_email,1);
 	Add("show_speed",show_speed,1);
-	Add("tag_max_hs_ratio",tag_max_hs_ratio,100.0);
+	Add("tag_min_hs_ratio", tag_min_hs_ratio, 0.);
+	Add("tag_max_hs_ratio", tag_max_hs_ratio, 0.);
 	Add("tag_max_hubs",tag_max_hubs,100);
 	Add("tag_min_hubs", tag_min_hubs, 0);
 	Add("tag_min_hubs_usr", tag_min_hubs_usr, 0);

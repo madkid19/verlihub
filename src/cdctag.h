@@ -69,7 +69,9 @@ namespace nVerliHub {
 			eTC_MAX_SLOTS,
 			/// User has too few open slots
 			eTC_MIN_SLOTS,
-			/// The ratio between open hubs and slots is too high
+			// the ratio between open hubs and slots is too low
+			eTC_MIN_HS_RATIO,
+			// the ratio between open hubs and slots is too high
 			eTC_MAX_HS_RATIO,
 			/// The client is limiting the upload bandwidth
 			/// and the limit is too low

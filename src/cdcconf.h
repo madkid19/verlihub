@@ -188,6 +188,7 @@ public:
 	int tag_min_hubs_usr;
 	int tag_min_hubs_reg;
 	int tag_min_hubs_op;
+	double tag_min_hs_ratio;
 	double tag_max_hs_ratio;
 	bool tag_allow_unknown;
 	bool tag_allow_none;

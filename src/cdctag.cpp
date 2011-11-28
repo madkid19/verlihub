@@ -132,10 +132,16 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 
-	if ((mServer->mC.tag_max_hs_ratio * mSlots) < mTotHubs) {
-		os << autosprintf(_("Your hubs per slots ratio %.2f is too high, maximum is %.2f."), (double)mTotHubs/mSlots, mServer->mC.tag_max_hs_ratio);
-		int slotToOpen = (int)(mTotHubs/mServer->mC.tag_max_hs_ratio);
-		if (slotToOpen > 0) os << " " << autosprintf(_("Open %d slots for %d hubs."), (int)(mTotHubs/mServer->mC.tag_max_hs_ratio), mTotHubs);
+	if ((mServer->mC.tag_min_hs_ratio > 0) && ((mSlots / mTotHubs) < mServer->mC.tag_min_hs_ratio)) {
+		os << autosprintf(_("Your slots per hubs ratio %.2f is too low, minimum is %.2f."), (double)(mSlots/mTotHubs), mServer->mC.tag_min_hs_ratio);
+		os << " " << autosprintf(_("Open %d slots for %d hubs."), (int)(mTotHubs*mServer->mC.tag_min_hs_ratio), mTotHubs);
+		code = eTC_MIN_HS_RATIO;
+		return false;
+	}
+
+	if ((mServer->mC.tag_max_hs_ratio > 0) && ((mSlots / mTotHubs) > mServer->mC.tag_max_hs_ratio)) {
+		os << autosprintf(_("Your slots per hubs ratio %.2f is too high, maximum is %.2f."), (double)(mSlots/mTotHubs), mServer->mC.tag_max_hs_ratio);
+		os << " " << autosprintf(_("Open %d slots for %d hubs."), (int)(mTotHubs*mServer->mC.tag_max_hs_ratio), mTotHubs);
 		code = eTC_MAX_HS_RATIO;
 		return false;
 	}
