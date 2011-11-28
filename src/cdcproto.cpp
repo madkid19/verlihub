@@ -1052,7 +1052,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 int cDCProto::DC_Kick(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
-	if(!conn->mpUser || !conn->mpUser->mInList) return -2; // FIXME is it ok?
+	if(!conn->mpUser || !conn->mpUser->mInList) return -2;
 	string &nick = msg->ChunkString(eCH_1_PARAM);
 
 	// check rights

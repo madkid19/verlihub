@@ -107,9 +107,11 @@ namespace nVerliHub {
 			if(!j)
 				return (char*) "";
 			Random(j);
+			CountPlusPlus(DefaultRedirect[j]);
 			return DefaultRedirect[j];
 		}
 		Random(i);
+		CountPlusPlus(redirects[i]);
 		return redirects[i];
 	}
 
@@ -119,6 +121,21 @@ namespace nVerliHub {
 		int temp = (int) (1.0 * key * rand()/(RAND_MAX+1.0));
 		if(temp < key) key = temp;
 		else key -= 1;
+	}
+
+	void cRedirects::CountPlusPlus(char *addr)
+	{
+		iterator it;
+		cRedirect *redirect;
+
+		for (it = begin(); it != end(); ++it) {
+			redirect = *it;
+
+			if (addr == (char*)redirect->mAddress.c_str()) {
+				redirect->mCount++; // increase counter
+				break;
+			}
+		}
 	}
 
 	bool cRedirects::CompareDataKey(const cRedirect &D1, const cRedirect &D2)
@@ -215,10 +232,11 @@ namespace nVerliHub {
 	void cRedirectConsole::ListHead(ostream *os)
 	{
 		(*os) << "\r\n ";
+		(*os) << setw(10) << setiosflags(ios::left) << toUpper(_("Count"));
 		(*os) << setw(35) << setiosflags(ios::left) << toUpper(_("Address"));
 		(*os) << setw(35) << setiosflags(ios::left) << toUpper(_("Type"));
 		(*os) << toUpper(_("Status")) << "\r\n";
-		(*os) << " " << string(30+25+25,'=');
+		(*os) << " " << string(30 + 25 + 25, '=');
 	}
 
 	bool cRedirectConsole::IsConnAllowed(cConnDC *conn,int cmd)

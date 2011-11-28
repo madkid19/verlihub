@@ -82,7 +82,7 @@ bool LoadFileInString(const string &FileName, string &dest)
 	ifstream is(FileName.c_str());
 
 	if(!is.is_open()) return false;
-	while(!is.eof())
+	while(!is.eof() && is.good())
 	{
 		getline(is, buf);
 		if (AddLine) dest += "\r\n";

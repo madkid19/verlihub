@@ -46,6 +46,7 @@ namespace nVerliHub {
 				char *MatchByType(int Type);
 				int MapTo(int Type);
 				void Random(int &key);
+				void CountPlusPlus(char *addr);
 		};
 
 

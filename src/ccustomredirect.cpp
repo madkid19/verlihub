@@ -32,6 +32,7 @@ namespace nVerliHub {
 		{
 			mEnable = 1;
 			mFlag = 0;
+			mCount = 0;
 		}
 
 		cRedirect::~cRedirect() {}
@@ -40,23 +41,32 @@ namespace nVerliHub {
 		{
 			string buff;
 			os << " ";
+			os << setw(10) << setiosflags(ios::left) << tr.mCount;
 			os << setw(35) << setiosflags(ios::left) << tr.mAddress;
 			os << setw(30) << setiosflags(ios::left);
 			int flag = tr.mFlag;
-			if(flag & eKick) buff += "ban and kick,";
-			if(flag & eUserLimit) buff += "hub full,";
-			if(flag & eShareLimit) buff += "share limit,";
-			if(flag & eTag) buff += "invalid tag,";
-			if(flag & eWrongPasswd) buff += "wrong password,";
-			if(flag & eInvalidKey) buff += "invalid key,";
-			if(flag & eHubBusy) buff += "hub busy,";
-			if(flag & eReconnect) buff += "reconnect,";
+			if (flag & eKick) buff += "ban and kick,";
+			if (flag & eUserLimit) buff += "hub full,";
+			if (flag & eShareLimit) buff += "share limit,";
+			if (flag & eTag) buff += "invalid tag,";
+			if (flag & eWrongPasswd) buff += "wrong password,";
+			if (flag & eInvalidKey) buff += "invalid key,";
+			if (flag & eHubBusy) buff += "hub busy,";
+			if (flag & eReconnect) buff += "reconnect,";
 
-			if(buff.empty()) buff = "default";
-			else buff.erase(buff.end() -1);
+			if (buff.empty())
+				buff = "default";
+			else
+				buff.erase(buff.end() - 1);
+
 			os << buff;
-			if(tr.mEnable) os << _("Enable");
-			else os << _("Disable");
+			os << setw(30) << setiosflags(ios::left);
+
+			if (tr.mEnable)
+				os << _("Enabled");
+			else
+				os << _("Disabled");
+
 			return os;
 		}
 
