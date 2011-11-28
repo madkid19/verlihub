@@ -61,7 +61,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdr(this),
 	mUserCmdr(this),
  	mCmdBan(int(eCM_BAN),".(del|rm|un|info|list|ls)?ban([^_\\s]+)?(_(\\d+\\S))?( this (nick|ip))? ?", "(\\S+)( (.*)$)?", &mFunBan),
-	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|noctm|nosearch|kvip|maykick|noshare|mayreg|mayopchat) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
+	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|nochats|noctm|nosearch|kvip|maykick|noshare|mayreg|mayopchat) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
 	mCmdTrigger(int(eCM_TRIGGER),".(ft|trigger)(\\S+) ", "(\\S+) (.*)", &mFunTrigger),
 	mCmdSetVar(int(eCM_SET),".(set|=) ", "(\\[(\\S+)\\] )?(\\S+) (.*)", &mFunSetVar),
 	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info|list) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
@@ -1475,7 +1475,7 @@ bool cDCConsole::cfSetVar::operator()()
 bool cDCConsole::cfGag::operator()()
 {
 	string cmd, nick, howlong;
-	time_t period = 24*3600*7;
+	time_t period = 24 * 3600 * 7;
 	time_t Now = 1;
 	bool isUn = false;
 	if (mConn->mpUser->mClass < eUC_OPERATOR) return false;
@@ -1492,15 +1492,16 @@ bool cDCConsole::cfGag::operator()()
 	cPenaltyList::sPenalty penalty;
 	penalty.mNick = nick;
 	if (!isUn) Now = cTime().Sec() + period;
-	enum {eAC_GAG, eAC_NOPM, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
-	static const char *actionnames[] = {"gag", "nochat", "nopm", "noctm", "nodl", "nosearch", "kvip", "maykick", "noshare", "mayreg", "mayopchat"};
-	static const int actionids[] = {eAC_GAG, eAC_GAG,eAC_NOPM, eAC_NODL, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
+	enum {eAC_GAG, eAC_NOPM, eAC_NOCHATS, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
+	static const char *actionnames[] = {"gag", "nochat", "nopm", "nochats", "noctm", "nodl", "nosearch", "kvip", "maykick", "noshare", "mayreg", "mayopchat"};
+	static const int actionids[] = {eAC_GAG, eAC_GAG, eAC_NOPM, eAC_NOCHATS, eAC_NODL, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
 	int Action = this->StringToIntFromList(cmd, actionnames, actionids, sizeof(actionnames) / sizeof(char*));
 	if (Action < 0) return false;
 
 	switch (Action) {
 		case eAC_GAG: penalty.mStartChat = Now; break;
 		case eAC_NOPM: penalty.mStartPM = Now; break;
+		case eAC_NOCHATS: penalty.mStartChat = Now; penalty.mStartPM = Now; break;
 		case eAC_NODL: penalty.mStartCTM = Now; break;
 		case eAC_NOSEARCH: penalty.mStartSearch = Now; break;
 		case eAC_KVIP: penalty.mStopKick = Now; break;
@@ -1523,6 +1524,7 @@ bool cDCConsole::cfGag::operator()()
 		switch (Action) {
 			case eAC_GAG: usr->SetRight(eUR_CHAT, penalty.mStartChat, isUn, true); break;
 			case eAC_NOPM: usr->SetRight(eUR_PM, penalty.mStartPM, isUn, true); break;
+			case eAC_NOCHATS: usr->SetRight(eUR_CHAT, penalty.mStartChat, isUn, true); usr->SetRight(eUR_PM, penalty.mStartPM, isUn, true); break;
 			case eAC_NODL: usr->SetRight(eUR_CTM, penalty.mStartCTM, isUn, true); break;
 			case eAC_NOSEARCH: usr->SetRight(eUR_SEARCH, penalty.mStartSearch, isUn, true); break;
 			case eAC_NOSHARE: usr->SetRight(eUR_NOSHARE, penalty.mStopShare0, isUn, true); break;
@@ -1539,20 +1541,21 @@ bool cDCConsole::cfGag::operator()()
 	if (ret)
 		if (description.str() == "") {
 			switch (Action) {
-				case eAC_GAG: (*mOS) << autosprintf(_("Resetting main chat right for: %s"), penalty.mNick.c_str()); break;
-				case eAC_NOPM: (*mOS) << autosprintf(_("Resetting private chat right for: %s"), penalty.mNick.c_str()); break;
-				case eAC_NODL: (*mOS) << autosprintf(_("Resetting download right for: %s"), penalty.mNick.c_str()); break;
-				case eAC_NOSEARCH: (*mOS) << autosprintf(_("Resetting search right for: %s"), penalty.mNick.c_str()); break;
-				case eAC_NOSHARE: (*mOS) << autosprintf(_("Resetting hidden share right for: %s"), penalty.mNick.c_str()); break;
-				case eAC_CANREG: (*mOS) << autosprintf(_("Resetting registering right for: %s"), penalty.mNick.c_str()); break;
-				case eAC_KVIP: (*mOS) << autosprintf(_("Resetting kick right for: %s"), penalty.mNick.c_str()); break;
-				case eAC_OPCHAT: (*mOS) << autosprintf(_("Resetting operator chat right for: %s"), penalty.mNick.c_str()); break;
+				case eAC_GAG: (*mOS) << autosprintf(_("Resetting main chat right for %s."), penalty.mNick.c_str()); break;
+				case eAC_NOPM: (*mOS) << autosprintf(_("Resetting private chat right for %s."), penalty.mNick.c_str()); break;
+				case eAC_NOCHATS: (*mOS) << autosprintf(_("Resetting main and private chat rights for %s."), penalty.mNick.c_str()); break;
+				case eAC_NODL: (*mOS) << autosprintf(_("Resetting download right for %s."), penalty.mNick.c_str()); break;
+				case eAC_NOSEARCH: (*mOS) << autosprintf(_("Resetting search right for %s."), penalty.mNick.c_str()); break;
+				case eAC_NOSHARE: (*mOS) << autosprintf(_("Resetting hidden share right for %s."), penalty.mNick.c_str()); break;
+				case eAC_CANREG: (*mOS) << autosprintf(_("Resetting registering right for %s."), penalty.mNick.c_str()); break;
+				case eAC_KVIP: (*mOS) << autosprintf(_("Resetting kick right for %s."), penalty.mNick.c_str()); break;
+				case eAC_OPCHAT: (*mOS) << autosprintf(_("Resetting operator chat right for %s."), penalty.mNick.c_str()); break;
 				default: return false;
 			};
 		} else
 			(*mOS) << description.str().c_str();
 	else
-		(*mOS) << autosprintf(_("Error setting right for: %s"), penalty.mNick.c_str());
+		(*mOS) << autosprintf(_("Error setting right for %s."), penalty.mNick.c_str());
 
 	return true;
 }

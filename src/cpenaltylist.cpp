@@ -56,29 +56,32 @@ ostream &operator << (ostream &os, const cPenaltyList::sPenalty &penalty)
 {
 	cTime Now = cTime().Sec();
 
-	if (penalty.mStartChat > Now)
-		os << autosprintf(_("Setting main chat right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStartChat - Now).AsPeriod().AsString().c_str());
+	if ((penalty.mStartChat > Now) && (penalty.mStartPM > Now))
+		os << autosprintf(_("Setting main and private chat rights for %s to %s."), penalty.mNick.c_str(), cTime(penalty.mStartChat - Now).AsPeriod().AsString().c_str());
+
+	if ((penalty.mStartChat > Now) && (penalty.mStartPM < Now))
+		os << autosprintf(_("Setting main chat right for %s to %s."), penalty.mNick.c_str(), cTime(penalty.mStartChat - Now).AsPeriod().AsString().c_str());
+
+	if ((penalty.mStartPM > Now) && (penalty.mStartChat < Now))
+		os << autosprintf(_("Setting private chat right for %s to %s."), penalty.mNick.c_str(), cTime(penalty.mStartPM - Now).AsPeriod().AsString().c_str());
 
 	if (penalty.mStartSearch > Now)
-		os << autosprintf(_("Setting search right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStartSearch - Now).AsPeriod().AsString().c_str());
+		os << autosprintf(_("Setting search right for %s to %s."), penalty.mNick.c_str(), cTime(penalty.mStartSearch - Now).AsPeriod().AsString().c_str());
 
 	if (penalty.mStartCTM > Now)
-		os << autosprintf(_("Setting download right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStartCTM - Now).AsPeriod().AsString().c_str());
-
-	if (penalty.mStartPM > Now)
-		os << autosprintf(_("Setting private chat right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStartPM - Now).AsPeriod().AsString().c_str());
+		os << autosprintf(_("Setting download right for %s to %s."), penalty.mNick.c_str(), cTime(penalty.mStartCTM - Now).AsPeriod().AsString().c_str());
 
 	if (penalty.mStopKick > Now)
-		os << autosprintf(_("Setting kick right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStopKick - Now).AsPeriod().AsString().c_str());
+		os << autosprintf(_("Setting kick right for %s to %s."), penalty.mNick.c_str(), cTime(penalty.mStopKick - Now).AsPeriod().AsString().c_str());
 
 	if (penalty.mStopShare0 > Now)
-		os << autosprintf(_("Setting hidden share right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStopShare0 - Now).AsPeriod().AsString().c_str());
+		os << autosprintf(_("Setting hidden share right for %s to %s."), penalty.mNick.c_str(), cTime(penalty.mStopShare0 - Now).AsPeriod().AsString().c_str());
 
 	if (penalty.mStopReg > Now)
-		os << autosprintf(_("Setting registering right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStopReg - Now).AsPeriod().AsString().c_str());
+		os << autosprintf(_("Setting registering right for %s to %s."), penalty.mNick.c_str(), cTime(penalty.mStopReg - Now).AsPeriod().AsString().c_str());
 
 	if (penalty.mStopOpchat > Now)
-		os << autosprintf(_("Setting operator chat right for %s to: %s"), penalty.mNick.c_str(), cTime(penalty.mStopOpchat - Now).AsPeriod().AsString().c_str());
+		os << autosprintf(_("Setting operator chat right for %s to %s."), penalty.mNick.c_str(), cTime(penalty.mStopOpchat - Now).AsPeriod().AsString().c_str());
 
 	return os;
 }
