@@ -206,7 +206,7 @@ bool cPlugConsole::cfOff::operator()()
 				(*mOS) << _("Plugin unloaded.");
 				return true;
 			} else {
-				(*mOS) << _("Plugin not unloaded.");
+				(*mOS) << _("Plugin not unloaded, probably because it's not loaded.");
 				return false;
 			}
 		}
@@ -229,7 +229,7 @@ bool cPlugConsole::cfRe::operator()()
 				(*mOS) << _("Plugin reloaded.");
 				return true;
 			} else {
-				(*mOS) << _("Plugin not reloaded.");
+				(*mOS) << _("Plugin not reloaded, probably because it's not loaded.");
 				return false;
 			}
 		}

@@ -31,8 +31,9 @@ namespace nVerliHub {
 cPenaltyList::cPenaltyList(cMySQL &mysql) : cConfMySQL(mysql), mCache(mysql, "temp_rights", "nick")
 {
 	mMySQLTable.mName = "temp_rights";
-	AddCol("nick", "varchar(30)", "", false, mModel.mNick);
+	AddCol("nick", "varchar(64)", "", false, mModel.mNick);
 	AddPrimaryKey("nick");
+	AddCol("op", "varchar(64)", "", true, mModel.mOpNick);
 	AddCol("since", "int(11)", "", true, mModel.mSince);
 	AddCol("st_chat", "int(11)", "1", true, mModel.mStartChat);
 	AddCol("st_search", "int(11)", "1", true, mModel.mStartSearch);
@@ -108,6 +109,7 @@ bool cPenaltyList::AddPenalty(sPenalty &penal)
 {
 	SetBaseTo(&mModel);
 	mModel.mNick = penal.mNick;
+	mModel.mOpNick = penal.mOpNick;
 	bool keep = false;
 	if (LoadPK())
 	{
@@ -143,6 +145,7 @@ bool cPenaltyList::RemPenalty(sPenalty &penal)
 {
 	SetBaseTo(&mModel);
 	mModel.mNick = penal.mNick;
+	mModel.mOpNick = penal.mOpNick;
 	time_t Now = cTime().Sec();
 	if(LoadPK()) {
 		if(penal.mStartChat < Now) mModel.mStartChat = Now;

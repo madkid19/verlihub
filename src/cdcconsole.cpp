@@ -64,7 +64,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|nochats|noctm|nosearch|kvip|maykick|noshare|mayreg|mayopchat) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
 	mCmdTrigger(int(eCM_TRIGGER),".(ft|trigger)(\\S+) ", "(\\S+) (.*)", &mFunTrigger),
 	mCmdSetVar(int(eCM_SET),".(set|=) ", "(\\[(\\S+)\\] )?(\\S+) (.*)", &mFunSetVar),
-	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info|list) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
+	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info|list|lst) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
 	mCmdRaw(int(eCM_RAW),".proto(\\S+)_(\\S+) ","(.*)", &mFunRaw),
 	mCmdCmd(int(eCM_CMD),".cmd(\\S+)","(.*)", &mFunCmd),
 	mCmdWho(int(eCM_WHO),".w(ho)?(\\S+) ","(.*)", &mFunWho),
@@ -1491,6 +1491,7 @@ bool cDCConsole::cfGag::operator()()
 
 	cPenaltyList::sPenalty penalty;
 	penalty.mNick = nick;
+	penalty.mOpNick = mConn->mpUser->mNick;
 	if (!isUn) Now = cTime().Sec() + period;
 	enum {eAC_GAG, eAC_NOPM, eAC_NOCHATS, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
 	static const char *actionnames[] = {"gag", "nochat", "nopm", "nochats", "noctm", "nodl", "nosearch", "kvip", "maykick", "noshare", "mayreg", "mayopchat"};
@@ -1733,52 +1734,58 @@ bool cDCConsole::cfPlug::operator()()
 
 bool cDCConsole::cfRegUsr::operator()()
 {
-	enum { eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO, eAC_LIST };
-	static const char * actionnames [] = { "n","new","newuser", "del","delete", "pass","passwd", "enable",
-		"disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set","=", "info", "list" };
-	static const int actionids [] = { eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET, eAC_INFO, eAC_LIST };
-
-
-	if(this->mConn->mpUser->mClass < eUC_OPERATOR)
-		return false;
-
+	if ((this->mConn == NULL) || (this->mConn->mpUser == NULL)) return false;
+	enum {eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO, eAC_LIST};
+	static const char *actionnames[] = {"n", "new", "newuser", "del", "delete", "pass", "passwd", "enable", "disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set", "=", "info", "list", "lst"};
+	static const int actionids[] = {eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET, eAC_INFO, eAC_LIST, eAC_LIST};
 	string tmp;
-	mIdRex->Extract(2,mIdStr,tmp);
-	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
-	if(Action < 0)
-		return false;
-	//static cPCRE mParmSearch("^(\\d+\\.\\d+\\.\\d+\\.\\d+)((\\/(\\d+))|(\\.\\.|-)(\\d+\\.\\d+\\.\\d+\\.\\d+))?$",0);
-	if(Action == eAC_LIST) {
-		(*mOS) << _("Found nicks:") << "\n" << mParStr;
-		return true;
-		int offset, page, nClass = 0;
-		this->GetParInt(2, page);
-		this->GetParInt(3, offset);
-		string nick;
-		this->GetParInt(1, nClass);
-		if(!nClass) {
-			this->GetParStr(1,nick);
-		} else {
+	mIdRex->Extract(2, mIdStr, tmp);
+	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames) / sizeof(char*));
+	if (Action < 0) return false;
 
-		}
-//		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick, nClass);
+	if ((this->mConn->mpUser->mClass < eUC_OPERATOR) || ((Action != eAC_INFO) && (!this->mConn->mpUser->Can(eUR_REG, mS->mTime.Sec())))) {
+		(*mOS) << _("You have no rights to do this.");
+		return false;
 	}
 
-//	"!r(eg)?(\S+) ", "(\\S+)( (((\\S+) )?(.*)))?"
-	string nick, par, field, pass;
-
-	int ParClass = 1;
-	int MyClass = this->mConn->mpUser->mClass;
-	if((Action != eAC_INFO) && (! this->mConn->mpUser->Can(eUR_REG,mS->mTime.Sec())))
+	if (mS->mC.classdif_reg > 10) {
+		(*mOS) << _("Valid classdif_reg value must be between 1 and 5, please correct this first.");
 		return false;
+	}
 
-	mParRex->Extract(1,mParStr,nick);
+	int MyClass = this->mConn->mpUser->mClass;
+
+	if (Action == eAC_LIST) {
+		int cls = 0;
+		this->GetParInt(1, cls);
+
+		/*if (!this->GetParInt(1, cls)) {
+			(*mOS) << _("Missing class parameter.");
+			return false;
+		}*/
+
+		if ((MyClass < eUC_MASTER) && (cls >= 0) && (cls > (MyClass - mS->mC.classdif_reg))) {
+			(*mOS) << _("You have no rights to do this.");
+			return false;
+		}
+
+		ostringstream lst;
+		int res = mS->mR->ShowUsers(this->mConn, lst, cls);
+
+		if (res != 0)
+			(*mOS) << autosprintf(_("Found %d registered users with class %d"), res, cls) << ":\r\n\r\n" << lst.str().c_str();
+		else
+			(*mOS) << autosprintf(_("No registered users with class %d found."), cls);
+
+		return true;
+	}
+
+	string nick, par, field, pass;
+	int ParClass = 1;
+	mParRex->Extract(1, mParStr, nick);
 	bool WithPar = false;
-
-	WithPar=mParRex->PartFound(3);
-	if(Action != eAC_SET && WithPar)
-		mParRex->Extract(3,mParStr,par);
-
+	WithPar = mParRex->PartFound(3);
+	if (Action != eAC_SET && WithPar) mParRex->Extract(3, mParStr, par);
 	bool WithPass = false;
 
 	if (Action == eAC_NEW) {
@@ -1790,15 +1797,16 @@ bool cDCConsole::cfRegUsr::operator()()
 		}
 	}
 
-	if(Action == eAC_SET) {
+	if (Action == eAC_SET) {
 		WithPar = WithPar && mParRex->PartFound(5);
-		if(!WithPar) {
+
+		if (!WithPar) {
 			(*mOS) << _("Missing command parameters.");
 			return false;
 		}
-		mParRex->Extract(5,mParStr,field);
-		if(WithPar)
-			mParRex->Extract(6,mParStr,par);
+
+		mParRex->Extract(5, mParStr, field);
+		if (WithPar) mParRex->Extract(6, mParStr, par);
 	}
 
 	cUser *user = mS->mUserList.GetUserByNick(nick);
@@ -1807,62 +1815,61 @@ bool cDCConsole::cfRegUsr::operator()()
 	bool RegFound = mS->mR->FindRegInfo(ui, nick);
 	bool authorized = false;
 
-	if (mS->mC.classdif_reg > 10) {
-		(*mOS) << _("Valid classdif_reg value must be between 1 and 5, please correct this first.");
+	// check rights
+	if (RegFound && ((MyClass < eUC_MASTER) && !((MyClass >= (int)(ui.mClass + mS->mC.classdif_reg) && MyClass >= (ui.mClassProtect)) || ((Action == eAC_INFO) && (MyClass >= (ui.mClass - 1)))))) {
+		(*mOS) << _("You have no rights to do this.");
 		return false;
 	}
-	// check rights
-	if(RegFound) {
 
-		if ((MyClass < eUC_MASTER) && !(
-			(MyClass >= (int) (ui.mClass+mS->mC.classdif_reg) &&
-			MyClass >= (ui.mClassProtect)) ||
-			((Action == eAC_INFO) &&(MyClass >= (ui.mClass - 1)))
-		 ))
-		{
-			(*mOS) << _("You have no rights to do this.");
-			return false;
-		}
-	}
-
-	switch(Action) {
-		case eAC_CLASS: case eAC_PROTECT: case eAC_HIDEKICK: case eAC_NEW:
+	switch (Action) {
+		case eAC_CLASS:
+		case eAC_PROTECT:
+		case eAC_HIDEKICK:
+		case eAC_NEW:
 			std::istringstream lStringIS(par);
 			lStringIS >> ParClass;
-		break;
+			break;
 	};
 
-	switch(Action) {
-		case eAC_SET: authorized = RegFound && (( MyClass >= eUC_ADMIN ) && (MyClass > ui.mClass) && (field != "class")); break;
-		case eAC_NEW:
-			authorized = !RegFound  && (MyClass >= (int) (ParClass + mS->mC.classdif_reg));
+	switch (Action) {
+		case eAC_SET:
+			authorized = RegFound && ((MyClass >= eUC_ADMIN) && (MyClass > ui.mClass) && (field != "class"));
 			break;
-		case eAC_PASS: case eAC_HIDEKICK: case eAC_ENABLE: case eAC_DISABLE: case eAC_DEL:
-			authorized = RegFound && (MyClass >= (int) (ui.mClass+mS->mC.classdif_reg));
+		case eAC_NEW:
+			authorized = !RegFound && (MyClass >= (int)(ParClass + mS->mC.classdif_reg));
+			break;
+		case eAC_PASS:
+		case eAC_HIDEKICK:
+		case eAC_ENABLE:
+		case eAC_DISABLE:
+		case eAC_DEL:
+			authorized = RegFound && (MyClass >= (int)(ui.mClass + mS->mC.classdif_reg));
 			break;
 		case eAC_CLASS:
-			authorized = RegFound && (MyClass >= (int) (ui.mClass+mS->mC.classdif_reg)) && (MyClass >= (int) (ParClass + mS->mC.classdif_reg));
+			authorized = RegFound && (MyClass >= (int)(ui.mClass + mS->mC.classdif_reg)) && (MyClass >= (int)(ParClass + mS->mC.classdif_reg));
 			break;
 		case eAC_PROTECT:
-			authorized = RegFound && (MyClass >= (int)(ui.mClass+mS->mC.classdif_reg)) && (MyClass >= (ParClass + 1));
+			authorized = RegFound && (MyClass >= (int)(ui.mClass + mS->mC.classdif_reg)) && (MyClass >= (ParClass + 1));
 			break;
-		case eAC_INFO : authorized = RegFound && (MyClass >= eUC_OPERATOR); break;
+		case eAC_INFO:
+			authorized = RegFound && (MyClass >= eUC_OPERATOR);
+			break;
 	};
 
-	if(MyClass == eUC_MASTER)
-		authorized = RegFound || (!RegFound && (Action == eAC_NEW));
+	if (MyClass == eUC_MASTER) authorized = RegFound || (!RegFound && (Action == eAC_NEW));
 
-	if(!authorized) {
-		if(!RegFound)
-			*mOS << autosprintf(_("Registered user not found: %s"), nick.c_str());
-		else if(Action == eAC_NEW)
-			*mOS << autosprintf(_("User %s already exists."), nick.c_str());
+	if (!authorized) {
+		if (!RegFound)
+			(*mOS) << autosprintf(_("Registered user not found: %s"), nick.c_str());
+		else if (Action == eAC_NEW)
+			(*mOS) << autosprintf(_("%s is already registered."), nick.c_str());
 		else
-			*mOS << _("You have no rights to do this.");
+			(*mOS) << _("You have no rights to do this.");
+
 		return false;
 	}
 
- 	if(Action >= eAC_CLASS && Action <= eAC_SET && !WithPar) {
+ 	if ((Action >= eAC_CLASS) && (Action <= eAC_SET) && !WithPar) {
  		(*mOS) << _("Missing command parameters.");
  		return false;
 	}
@@ -1870,7 +1877,7 @@ bool cDCConsole::cfRegUsr::operator()()
 	switch (Action) {
 		case eAC_NEW: // new
 			if (RegFound) {
-				*mOS << autosprintf(_("User %s already exists."), nick.c_str());
+				*mOS << autosprintf(_("%s is already registered."), nick.c_str());
 				return false;
 			}
 
@@ -1886,23 +1893,24 @@ bool cDCConsole::cfRegUsr::operator()()
 					ostr.str(mS->mEmpty);
 
 					if (!WithPass)
-						ostr << _("You have been registered, please set up your password with +passwd <password> command.");
+						ostr << autosprintf(_("You have been registered with class %d, please set up your password with +passwd <password> command."), ParClass);
 					else
-						ostr << _("You have been registered with following password") << ": " << pass.c_str();
+						ostr << autosprintf(_("You have been registered with class %d and following password: %s"), ParClass, pass.c_str());
 
 					mS->DCPrivateHS(ostr.str(), user->mxConn);
 					// @todo: no reconnect required
 				}
 
 				if (!WithPass)
-					(*mOS) << _("User has been added, please tell him to set his password.");
+					(*mOS) << autosprintf(_("%s has been registered with class %d, please tell him to set his password."), nick.c_str(), ParClass);
 				else
-					(*mOS) << _("User has been added with password.");
+					(*mOS) << autosprintf(_("%s has been registered with class %d and password."), nick.c_str(), ParClass);
 			} else {
 				(*mOS) << _("Error adding new user.");
 				return false;
 			}
-		break;
+
+			break;
 
 		case eAC_DEL: // delete
 			#ifndef WITHOUT_PLUGINS
@@ -1911,29 +1919,29 @@ bool cDCConsole::cfRegUsr::operator()()
 				return false;
 			}
 			#endif
-			if(mS->mR->DelReg(nick)) {
+
+			if (mS->mR->DelReg(nick)) {
 				ostringstream userInfo;
 				userInfo << ui;
-				(*mOS) << autosprintf(_("Deleted user %s from database, user information"), nick.c_str()) << ":\r\n";
-				(*mOS) << userInfo.str();
+				(*mOS) << autosprintf(_("%s has been unregistered, user information"), nick.c_str()) << ":\r\n" << userInfo.str();
+				return true;
 			} else {
 				ostringstream userInfo;
 				userInfo << ui;
-				(*mOS) << autosprintf(_("Error deleting user %s from database, user information"), nick.c_str()) << ":\r\n";
-				(*mOS) << userInfo.str();
+				(*mOS) << autosprintf(_("Error unregistering %s, user information"), nick.c_str()) << ":\r\n" << userInfo.str();
 				return false;
 			}
-		break;
+
+			break;
 		case eAC_PASS: // pass
-			if(WithPar) {
+			if (WithPar) {
 				#if ! defined _WIN32
-				if( mS->mR->ChangePwd(nick, par, 1))
+				if (mS->mR->ChangePwd(nick, par, 1))
 				#else
-				if(mS->mR->ChangePwd(nick, par, 0))
+				if (mS->mR->ChangePwd(nick, par, 0))
 				#endif
 					(*mOS) << _("Password updated.");
-				else
-				{
+				else {
 					(*mOS) << _("Error updating password.");
 					return false;
 				}
@@ -1942,7 +1950,8 @@ bool cDCConsole::cfRegUsr::operator()()
 				par = "1";
 				ostr << _("You can change your password now, use +passwd command followed by your new password.");
 			}
-		break;
+
+			break;
 		case eAC_CLASS: // class
 			#ifndef WITHOUT_PLUGINS
 			if (!mS->mCallBacks.mOnUpdateClass.CallAll(this->mConn->mpUser, nick, ui.mClass, ParClass)) {
@@ -1950,55 +1959,55 @@ bool cDCConsole::cfRegUsr::operator()()
 				return false;
 			}
 			#endif
-			field="class";
+
+			field = "class";
 			ostr << autosprintf(_("Your class has been changed to %s, changes will take effect on next login."), par.c_str());
 		break;
 		case eAC_ENABLE: //enable
 			field = "enabled";
 			par = "1";
-			WithPar= true;
+			WithPar = true;
 			ostr << _("Your registration has been enabled.");
 			break;
 		case eAC_DISABLE: // disable
 			field = "enabled";
 			par = "0";
-			WithPar= true;
+			WithPar = true;
 			ostr << _("Your registration has been disabled.");
 			break;
 		case eAC_PROTECT: // protect
 			field = "class_protect";
 			ostr << autosprintf(_("You are protected by classes greater than %s."), par.c_str());
-			if(user)
-				user->mProtectFrom = ParClass;
+			if (user) user->mProtectFrom = ParClass;
 			break;
 		case eAC_HIDEKICK: // hidekick
 			field = "class_hidekick";
 			ostr << autosprintf(_("You kicks are hidden by classes greater than %s."), par.c_str());
 			break;
-		case eAC_SET:
-		break; // set
+		case eAC_SET: // set
+			break;
 		case eAC_INFO:
-			(*mOS) << autosprintf(_("Registration information for %s:"), ui.GetNick().c_str()) << "\r\n" << ui;
-		break;
+			(*mOS) << autosprintf(_("%s registration information"), ui.GetNick().c_str()) << ":\r\n" << ui;
+			break;
 		default:
-			mIdRex->Extract(1,mIdStr,par);
+			mIdRex->Extract(1, mIdStr, par);
 			(*mOS) << _("This command is not implemented.");
 			return false;
 			break;
 	}
 
-	if( (WithPar && (Action >=eAC_ENABLE) && (Action <=eAC_SET)) || ( (Action==eAC_PASS) && !WithPar ))
-	{
-		if (mS->mR->SetVar(nick, field, par)) 	{
-			(*mOS) << autosprintf(_("Updated variable '%s' to value %s for user %s"), field.c_str(), par.c_str(), nick.c_str());
-			if(user && user->mxConn && ostr.str().size())
-				mS->DCPrivateHS(ostr.str(), user->mxConn);
+	if ((WithPar && (Action >= eAC_ENABLE) && (Action <= eAC_SET)) || ((Action == eAC_PASS) && !WithPar)) {
+		if (mS->mR->SetVar(nick, field, par)) {
+			(*mOS) << autosprintf(_("Updated variable %s to value %s for user %s."), field.c_str(), par.c_str(), nick.c_str());
+			if (user && user->mxConn && ostr.str().size()) mS->DCPrivateHS(ostr.str(), user->mxConn);
+			return true;
 		} else {
-			(*mOS) << autosprintf(_("Error setting variable '%s' to value %s for user %s"), field.c_str(), par.c_str(), nick.c_str());
+			(*mOS) << autosprintf(_("Error setting variable %s to value %s for user %s."), field.c_str(), par.c_str(), nick.c_str());
 			return false;
 		}
 	}
-	(*mOS) << "";
+
+	(*mOS) << _("Some information is missing.");
 	return true;
 }
 

@@ -24,6 +24,7 @@
 #include "cuser.h"
 #include "creguserinfo.h"
 #include "stringutils.h"
+#include "i18n.h"
 #include <sstream>
 #include <cctype>
 #include <algorithm>
@@ -94,39 +95,31 @@ bool cRegList::FindRegInfo(cRegUserInfo &ui, const string &nick)
 	return LoadPK();
 }
 
-bool cRegList::ShowUsers(cConnDC *op, ostream &os, int page, int offset, string nick)
+int cRegList::ShowUsers(cConnDC *op, ostringstream &os, int cls)
 {
-	 if(op && op->mpUser) {
-		db_iterator it;
-cout << "Offset is  " << offset << " and page is " << page << endl;
-		if(offset >= 30)
-			 offset = 30;
-		if(page < 0)
-			 page = 0;
-		int start = page*offset;
+	 if (op && op->mpUser) {
 		ostringstream oss;
-		oss << "SELECT nick,class FROM " << mMySQLTable.mName << " WHERE `class` <= " << op->mpUser->mClass;
-		if(nick != "*") {
-			oss << " AND nick LIKE '%";
-			cConfMySQL::WriteStringConstant(oss, nick);
-			oss << "%'";
-		}
-		oss << " ORDER BY `class` DESC LIMIT " << start << "," << offset;
+		oss << "SELECT `nick` FROM " << mMySQLTable.mName << " WHERE `class` = " << cls << " ORDER BY `nick` ASC";
 		mQuery.OStream() << oss.str();
-		if(mQuery.Query() <= 0) return false;
+		if (mQuery.Query() <= 0) return 0;
 		int n = mQuery.StoreResult();
-
 		cMySQLColumn col;
 		MYSQL_ROW row;
-		for(int i = 0; i < n; i++) {
-			 row = mQuery.Row();
-			 os << row[0] << " (Class " << row[1] << ")\n" ;
+		cUser *usr = NULL;
+
+		for (int i = 0; i < n; i++) {
+			row = mQuery.Row();
+			usr = mS->mUserList.GetUserByNick(row[0]);
+			os << " " << row[0];
+			if (usr && usr->mxConn) os << " [" << toUpper(_("On")) << "]";
+			os << "\r\n";
 		}
-		os << "(result from " << start << " to " << start+offset << ")\n";
+
 		mQuery.Clear();
-		return true;
-	 }
-	 return false;
+		return n;
+	}
+
+	return 0;
 }
 
 /** add registered user */
