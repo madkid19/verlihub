@@ -116,15 +116,15 @@ bool cPlug::Plugin()
 				else if (dest->SupportsScripts())
 					result = dest->LoadScript(mPath, os);
 				else {
-					mLastError = _("Plugin does not support scripts");
+					mLastError = _("Plugin does not support scripts.");
 					SaveMe();
 					return false;
 				}
 
 				if (result)
-					os << _("Loaded");
+					os << _("Script loaded.");
 				else
-					os << _("Error loading script");
+					os << _("Error loading script.");
 				mLastError = os.str();
 				SaveMe();
 				return result;
@@ -132,7 +132,7 @@ bool cPlug::Plugin()
 		} else {
 			if (pm->LoadPlugin(mPath)) {
 				mLoadTime = cTime().Sec();
-				mLastError = _("Loaded");
+				mLastError = _("Plugin loaded.");
 				SaveMe();
 				return true;
 			} else {
@@ -154,7 +154,7 @@ bool cPlug::CheckMakeTime()
 	mMakeTime = mOwner->GetFileTime(mPath);
 
 	if(mMakeTime && mMakeTime < mOwner->mVHTime) {
-		mLastError = _("Warning: the plugin should be recompiled because VerliHub has been recently updated");
+		mLastError = _("Warning: The plugin should be recompiled because Verlihub has been recently updated.");
 		SaveMe();
 		return false;
 	}
@@ -180,7 +180,7 @@ bool cPlug::Replug()
 	cVHPlugin *pi=IsLoaded();
 	if (pm && pi && CheckMakeTime()) {
 		if (pm->ReloadPlugin(pi->Name())) {
-			mLastError = _("Reloaded");
+			mLastError = _("Plugin reloaded.");
 			SaveMe();
 			return true;
 		} else {
@@ -204,13 +204,16 @@ void cPlug::SaveMe()
 
 ostream& operator << (ostream &os, const cPlug &plug)
 {
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Name") << plug.mNick.c_str() << " [" << (plug.IsLoaded() ? toUpper(_("On")) : toUpper(_("Off"))) << "]" ;
-	os << "  [" << (plug.mLoadOnStartup ? toUpper(_("Auto")) : toUpper(_("Manual"))) << "]" << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Path") << plug.mPath.c_str() << endl;
-	if(!plug.mDesc.empty())
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Description") << plug.mDesc.c_str() << endl;
-	if(!plug.mLastError.empty())
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Last Error") << plug.mLastError.c_str() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Name") << plug.mNick.c_str() << " [" << (plug.IsLoaded() ? toUpper(_("On")) : toUpper(_("Off"))) << "]";
+	os << " [" << (plug.mLoadOnStartup ? toUpper(_("Auto")) : toUpper(_("Manual"))) << "]" << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Path") << plug.mPath.c_str() << endl;
+
+	if (!plug.mDesc.empty())
+		os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Description") << plug.mDesc.c_str() << endl;
+
+	if (!plug.mLastError.empty())
+		os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Last error") << plug.mLastError.c_str() << endl;
+
 	return os;
 }
 
