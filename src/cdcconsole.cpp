@@ -61,7 +61,7 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdr(this),
 	mUserCmdr(this),
  	mCmdBan(int(eCM_BAN),".(del|rm|un|info|list|ls)?ban([^_\\s]+)?(_(\\d+\\S))?( this (nick|ip))? ?", "(\\S+)( (.*)$)?", &mFunBan),
-	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|nochats|noctm|nosearch|kvip|maykick|noshare|mayreg|mayopchat) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
+	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|nochats|noctm|nodl|nosearch|kvip|maykick|noshare|mayreg|mayopchat) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
 	mCmdTrigger(int(eCM_TRIGGER),".(ft|trigger)(\\S+) ", "(\\S+) (.*)", &mFunTrigger),
 	mCmdSetVar(int(eCM_SET),".(set|=) ", "(\\[(\\S+)\\] )?(\\S+) (.*)", &mFunSetVar),
 	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info|list|lst) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
@@ -1467,7 +1467,7 @@ bool cDCConsole::cfSetVar::operator()()
 	struct rlimit userLimit;
 	// Get maximum file descriptor number
 	if(!getrlimit(RLIMIT_NOFILE, &userLimit) && userLimit.rlim_cur < mS->mC.max_users_total)
-		(*mOS) << "\n" << autosprintf(_("WARNING: VerliHub allows maximum %d users, but current resource limit is %d. Consider to run ulimit -n <max_users>"), mS->mC.max_users_total, (int) userLimit.rlim_cur);
+		(*mOS) << "\n" << autosprintf(_("Warning: Verlihub allows maximum %d users, but current resource limit is %d. Consider to run ulimit -n <max_users> and restart the hub."), mS->mC.max_users_total, (int) userLimit.rlim_cur);
 	return true;
 }
 
