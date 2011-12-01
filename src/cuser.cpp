@@ -289,70 +289,70 @@ void cUser::SetRight(unsigned Right, long until, bool allow, bool notify)
 			break;
 		case nEnums::eUR_KICK:
 			if (allow) {
-				msg = _("You're now allowed to kick users for %s.");
+				msg = _("You're no longer allowed to kick users.");
 				mCanKick = until;
 			} else {
-				msg = _("You're no longer allowed to kick users.");
+				msg = _("You're now allowed to kick users for %s.");
 				mCanKick = 1;
 			}
 
 			break;
 		case nEnums::eUR_REG:
 			if (allow) {
-				msg = _("You're now allowed to register users for %s.");
+				msg = _("You're no longer allowed to register users.");
 				mCanReg = until;
 			} else {
-				msg = _("You're no longer allowed to register users.");
+				msg = _("You're now allowed to register users for %s.");
 				mCanReg = 1;
 			}
 
 			break;
 		case nEnums::eUR_OPCHAT:
 			if (allow) {
-				msg = _("You're now allowed to use operator chat for %s.");
+				msg = _("You're no longer allowed to use operator chat.");
 				mCanOpchat = until;
 			} else {
-				msg = _("You're no longer allowed to use operator chat.");
+				msg = _("You're now allowed to use operator chat for %s.");
 				mCanOpchat = 1;
 			}
 
 			break;
 		case nEnums::eUR_NOSHARE:
 			if (allow) {
-				msg = _("You're now allowed to hide share for %s.");
+				msg = _("You're no longer allowed to hide share.");
 				mCanShare0 = until;
 			} else {
-				msg = _("You're no longer allowed to hide share.");
+				msg = _("You're now allowed to hide share for %s.");
 				mCanShare0 = 1;
 			}
 
 			break;
 		case nEnums::eUR_DROP:
 			if (allow) {
-				msg = _("You're now allowed to drop users for %s.");
+				msg = _("You're no longer allowed to drop users.");
 				mCanDrop = until;
 			} else {
-				msg = _("You're no longer allowed to drop users.");
+				msg = _("You're now allowed to drop users for %s.");
 				mCanDrop = 1;
 			}
 
 			break;
 		case nEnums::eUR_TBAN:
 			if (allow) {
-				msg = _("You're now allowed to temporarily ban users for %s.");
+				msg = _("You're no longer allowed to temporarily ban users.");
 				mCanTBan = until;
 			} else {
-				msg = _("You're no longer allowed to temporarily ban users.");
+				msg = _("You're now allowed to temporarily ban users for %s.");
 				mCanTBan = 1;
 			}
 
 			break;
 		case nEnums::eUR_PBAN:
 			if (allow) {
-				msg = _("You're now allowed to permanently ban users for %s.");
+				msg = _("You're no longer allowed to permanently ban users.");
 				mCanPBan = until;
 			} else {
-				msg = _("You're no longer allowed to permanently ban users.");
+				msg = _("You're now allowed to permanently ban users for %s.");
 				mCanPBan = 1;
 			}
 
