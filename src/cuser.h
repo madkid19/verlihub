@@ -227,6 +227,7 @@ public:
 
 	public: long ShareEnthropy(const string &sharesize);
 	void DisplayInfo(ostream &os, int DisplClass);
+	void DisplayRightsInfo(ostream &os, bool head = false);
 
 	/*!
 		\fn Can(unsigned Right, long now = 0, unsigned OtherClass = 0)

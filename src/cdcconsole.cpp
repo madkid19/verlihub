@@ -445,6 +445,8 @@ int cDCConsole::CmdMyInfo(istringstream & cmd_line, cConnDC * conn)
 	string omsg;
 	os << _("Your information") << ":\r\n";
 	conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
+	os << "\r\n";
+	conn->mpUser->DisplayRightsInfo(os);
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg, conn);
 	return 1;
@@ -1493,129 +1495,7 @@ bool cDCConsole::cfGag::operator()()
 		cUser *user = mS->mUserList.GetUserByNick(nick);
 
 		if (user && user->mxConn) {
-			char *tmp;
-			cTime now = cTime().Sec();
-			(*mOS) << _("User rights information") << ":\r\n";
-			(*mOS) << " [::] " << autosprintf(_("Nick: %s"), user->mNick.c_str()) << "\r\n";
-			(*mOS) << " [::] " << autosprintf(_("Class: %d"), user->mClass) << "\r\n";
-
-			// main chat
-			if (user->mClass >= eUC_ADMIN)
-				tmp = _("Yes");
-			else if (!user->mGag)
-				tmp = _("No");
-			else if (user->mGag > now)
-				tmp = autosprintf(_("No [%s]"), cTime(user->mGag - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can use main chat: %s"), tmp) << "\r\n";
-
-			// private chat
-			if (user->mClass >= eUC_ADMIN)
-				tmp = _("Yes");
-			else if (!user->mNoPM)
-				tmp = _("No");
-			else if (user->mNoPM > now)
-				tmp = autosprintf(_("No [%s]"), cTime(user->mNoPM - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can use private chat: %s"), tmp) << "\r\n";
-
-			// operator chat
-			if ((user->mClass < eUC_OPERATOR) && user->mCanOpchat && (user->mCanOpchat < now))
-				tmp = _("No");
-			else if (user->mCanOpchat > now)
-				tmp = autosprintf(_("Yes [%s]"), cTime(user->mCanOpchat - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can use operator chat: %s"), tmp) << "\r\n";
-
-			// search files
-			if (user->mClass >= eUC_ADMIN)
-				tmp = _("Yes");
-			else if (!user->mNoSearch)
-				tmp = _("No");
-			else if (user->mNoSearch > now)
-				tmp = autosprintf(_("No [%s]"), cTime(user->mNoSearch - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can search files: %s"), tmp) << "\r\n";
-
-			// download files
-			if (user->mClass >= eUC_ADMIN)
-				tmp = _("Yes");
-			else if (!user->mNoCTM)
-				tmp = _("No");
-			else if (user->mNoCTM > now)
-				tmp = autosprintf(_("No [%s]"), cTime(user->mNoCTM - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can download files: %s"), tmp) << "\r\n";
-
-			// hide share
-			if ((user->mClass < eUC_VIPUSER) && user->mCanShare0 && (user->mCanShare0 < now))
-				tmp = _("No");
-			else if (user->mCanShare0 > now)
-				tmp = autosprintf(_("Yes [%s]"), cTime(user->mCanShare0 - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can hide share: %s"), tmp) << "\r\n";
-
-			// register users
-			if ((user->mClass < mS->mC.min_class_register) && user->mCanReg && (user->mCanReg < now))
-				tmp = _("No");
-			else if (user->mCanReg > now)
-				tmp = autosprintf(_("Yes [%s]"), cTime(user->mCanReg - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can register users: %s"), tmp) << "\r\n";
-
-			// drop users
-			if ((user->mClass < eUC_OPERATOR) && user->mCanDrop && (user->mCanDrop < now))
-				tmp = _("No");
-			else if (user->mCanDrop > now)
-				tmp = autosprintf(_("Yes [%s]"), cTime(user->mCanDrop - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can drop users: %s"), tmp) << "\r\n";
-
-			// kick users
-			if ((user->mClass < eUC_OPERATOR) && user->mCanKick && (user->mCanKick < now))
-				tmp = _("No");
-			else if (user->mCanKick > now)
-				tmp = autosprintf(_("Yes [%s]"), cTime(user->mCanKick - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can kick users: %s"), tmp) << "\r\n";
-
-			// temporarily ban users
-			if ((user->mClass < eUC_OPERATOR) && user->mCanTBan && (user->mCanTBan < now))
-				tmp = _("No");
-			else if (user->mCanTBan > now)
-				tmp = autosprintf(_("Yes [%s]"), cTime(user->mCanTBan - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can temporarily ban users: %s"), tmp) << "\r\n";
-
-			// permanently ban users
-			if ((user->mClass < eUC_OPERATOR) && user->mCanPBan && (user->mCanPBan < now))
-				tmp = _("No");
-			else if (user->mCanPBan > now)
-				tmp = autosprintf(_("Yes [%s]"), cTime(user->mCanPBan - now).AsPeriod().AsString().c_str());
-			else
-				tmp = _("Yes");
-
-			(*mOS) << " [::] " << autosprintf(_("Can permanently ban users: %s"), tmp);
+			user->DisplayRightsInfo(*mOS, true);
 			return true;
 		} else {
 			(*mOS) << autosprintf(_("%s is not in list."), nick.c_str());
