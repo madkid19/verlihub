@@ -47,7 +47,7 @@ public:
 	virtual bool RegisterAll();
 	virtual bool OnParsedMsgSearch(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual void OnLoad(nSocket::cServerDC *);
-	virtual bool OnTimer();
+	virtual bool OnTimer(long msec);
 	cStats * mStats;
 private:
 	nUtils::cTimeOut mStatsTimer;
