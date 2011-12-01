@@ -196,11 +196,14 @@ char *GetMyINFO(char *nick)
 	else return (char *)"";
 }
 
-int GetUserClass(char * nick)
+int GetUserClass(char *nick)
 {
 	cUser *usr = GetUser(nick);
-	if(usr) return usr->mClass;
-	else return -1;
+
+	if (usr)
+		return usr->mClass;
+	else
+		return -2;
 }
 
 char *GetUserHost(char *nick)

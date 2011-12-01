@@ -34,51 +34,60 @@ namespace nVerliHub {
 	int _SendToClass(lua_State *);
 	int _SendToAll(lua_State *);
 	int _SendPMToAll(lua_State *);
+	int _SendToOpChat(lua_State *);
+
+	int _ReportUser(lua_State *);
 	int _Disconnect(lua_State *);
-	int _StopHub(lua_State *);
+	int _KickUser(lua_State *);
+	int _Ban(lua_State *);
+
 	int _GetMyINFO(lua_State *);
+	int _GetUserIP(lua_State *);
+	int _GetUserHost(lua_State *);
 	int _GetUserCC(lua_State *);
 	int _GetIPCC(lua_State *);
-	int _GetVHCfgDir(lua_State *);
-	int _GetUpTime(lua_State *L);
+	int _GetUserClass(lua_State *);
+
+	int _GetConfig(lua_State *);
+	int _SetConfig(lua_State *);
+
 	int _RegBot(lua_State *);
 	int _UnRegBot(lua_State *);
-	int _EditBot(lua_State *L);
-	int _IsBot(lua_State *L);
-	int _GetHubIp(lua_State *);
-	int _GetHubSecAlias(lua_State *);
-	int _SetConfig(lua_State *);
-	int _GetConfig(lua_State *);
-	int _GetUserClass(lua_State *);
-	int _GetUserHost(lua_State *);
-	int _GetUserIP(lua_State *);
-	int _IsUserOnline(lua_State *L);
-	int _InUserSupports(lua_State *L);
-	int _GetNickList(lua_State *);
-	int _GetOPList(lua_State *);
-	int _GetBotList(lua_State *);
+	int _EditBot(lua_State *);
+	int _IsBot(lua_State *);
 	int _GetBots(lua_State *);
-	int _Ban(lua_State *);
-	int _KickUser(lua_State *);
-	int _ReportUser(lua_State *);
-	int _SendToOpChat(lua_State *);
-	int _ParseCommand(lua_State *);
 
 	int _SQLQuery(lua_State *);
 	int _SQLFetch(lua_State *);
 	int _SQLFree(lua_State *);
 
-	int _GetUsersCount(lua_State *L);
+	int _AddRegUser(lua_State *);
+	int _DelRegUser(lua_State *);
+
+	int _GetTopic(lua_State *);
+	int _SetTopic(lua_State *);
+
+	int _IsUserOnline(lua_State *);
+	int _InUserSupports(lua_State *);
+	int _GetNickList(lua_State *);
+	int _GetOPList(lua_State *);
+	int _GetBotList(lua_State *);
+
+	int _StopHub(lua_State *);
+	int _GetVHCfgDir(lua_State *);
+	int _GetUpTime(lua_State *);
+	int _GetHubIp(lua_State *);
+	int _GetHubSecAlias(lua_State *);
+	int _GetUsersCount(lua_State *);
 	int _GetTotalShareSize(lua_State *);
+
+	int _ParseCommand(lua_State *);
 
 	int _GetTempRights(lua_State *);
 	int _SetTempRights(lua_State *);
-	int _AddRegUser(lua_State *);
-	int _DelRegUser(lua_State *);
-	int _GetTopic(lua_State *L);
-	int _SetTopic(lua_State *L);
-	nLuaPlugin::cLuaInterpreter *FindLua(lua_State *lua_state);
+
 	void luaerror(lua_State *, const char *);
+	nLuaPlugin::cLuaInterpreter *FindLua(lua_State *lua_state);
 }; // namespace nVerliHub
 
 #endif

@@ -45,7 +45,7 @@ cBanList::cBanList(cServerDC *s) : cConfMySQL(s->mMySQL), mS(s),mModel(s)
 	AddCol("range_to", "bigint(32)", "", true, mModel.mRangeMax);
 	AddCol("date_start", "int(11)", "0", true, mModel.mDateStart);
 	AddCol("date_limit", "int(11)", "", true, mModel.mDateEnd);
-	AddCol("nick_op", "varchar(30)", "", true, mModel.mNickOp);
+	AddCol("nick_op", "varchar(64)", "", true, mModel.mNickOp);
 	AddCol("reason", "text", "", true, mModel.mReason);
 	AddCol("share_size", "varchar(15)", "", true, mModel.mShare);
 	AddCol("email", "varchar(128)", "", true, mModel.mMail);

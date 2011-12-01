@@ -57,7 +57,7 @@ cRegList::cRegList(cMySQL &mysql, cServerDC *server): cConfMySQL(mysql)
 	AddCol("hide_keys", "tinyint(1)", "0", true, mModel.mHideKeys);
 	AddCol("hide_share", "tinyint(1)", "0", true, mModel.mHideShare);
 	AddCol("reg_date", "int(11)", "", true, mModel.mRegDate);
-	AddCol("reg_op", "varchar(30)", "", true, mModel.mRegOp);
+	AddCol("reg_op", "varchar(64)", "", true, mModel.mRegOp);
 	AddCol("pwd_change", "tinyint(1)", "1", true, mModel.mPwdChange);
 	AddCol("pwd_crypt", "tinyint(1)", "1", true, mModel.mPWCrypt);
 	AddCol("login_pwd", "varchar(60)", "", true, mModel.mPasswd);
