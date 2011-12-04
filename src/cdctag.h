@@ -57,11 +57,21 @@ namespace nVerliHub {
 			eTC_PARSE,
 			/// User has too many open hubs
 			eTC_MAX_HUB,
+			// user has too few open hubs
+			eTC_MIN_HUB,
+			// user has too few open hubs as user
+			eTC_MIN_HUB_USR,
+			// user has too few open hubs as registered user
+			eTC_MIN_HUB_REG,
+			// user has too few open hubs as operator
+			eTC_MIN_HUB_OP,
 			/// User has too many open slots
 			eTC_MAX_SLOTS,
 			/// User has too few open slots
 			eTC_MIN_SLOTS,
-			/// The ratio between open hubs and slots is too high
+			// the ratio between open hubs and slots is too low
+			eTC_MIN_HS_RATIO,
+			// the ratio between open hubs and slots is too high
 			eTC_MAX_HS_RATIO,
 			/// The client is limiting the upload bandwidth
 			/// and the limit is too low
@@ -155,6 +165,15 @@ namespace nVerliHub {
 
 			/// The number of open hubs.
 			int mTotHubs;
+
+			// the number of open hubs as user
+			int mHubsUsr;
+
+			// the number of open hubs as registered user
+			int mHubsReg;
+
+			// the number of open hubs as operator
+			int mHubsOp;
 
 			/// The number of open slots.
 			int mSlots;

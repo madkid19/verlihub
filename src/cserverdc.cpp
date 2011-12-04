@@ -45,9 +45,9 @@
 #include "ctriggers.h"
 #include "i18n.h"
 
-#define HUB_VERSION_CLASS "(" __CURR_DATE_TIME__ ")"
+#define HUB_VERSION_CLASS __CURR_DATE_TIME__
 #define LOCK_VERSION PACKAGE
-#define HUB_VERSION_NAME "VerliHub"
+#define HUB_VERSION_NAME "Verlihub"
 #define PADDING 25
 
 namespace nVerliHub {
@@ -274,15 +274,18 @@ tMsgAct cServerDC::Filter( tDCMsg msg, cConnDC *conn )
 
 int cServerDC::DCPublic(const string &from, const string &txt, cConnDC *conn)
 {
-	static string msg;
-	msg.erase();
-	cDCProto::Create_Chat(msg, from, txt);
 	if (conn) {
-		conn->Send( msg , true);
+		if (!txt.empty()) {
+			static string msg;
+			msg.erase();
+			cDCProto::Create_Chat(msg, from, txt);
+			conn->Send(msg, true);
+		}
+
 		return 1;
-	} else {
-		return 0;
 	}
+
+	return 0;
 }
 
 int cServerDC::DCPublicToAll(const string &from, const string &txt, int min_class, int max_class)
@@ -387,7 +390,7 @@ bool cServerDC::RemoveNick(cUser *User)
 
 	if(mUserList.ContainsHash(Hash)) {
 		#ifndef WITHOUT_PLUGINS
-		if(User->mxConn && User->mxConn->GetLSFlag(eLS_LOGIN_DONE)) mCallBacks.mOnUserLogout.CallAll(User);
+		if (User->mxConn && User->mxConn->GetLSFlag(eLS_LOGIN_DONE)) mCallBacks.mOnUserLogout.CallAll(User);
 		#endif
                 // make sure that the user we want to remove is the correct one!
                 cUser *other = mUserList.GetUserByNick(User->mNick);
@@ -524,59 +527,26 @@ int cServerDC::SendToAllWithNickCC(const string &start,const string &end, int cm
 int cServerDC::OnNewConn(cAsyncConn *nc)
 {
 	cConnDC *conn = (cConnDC *)nc;
+	if (!conn) return -1;
+
 	#ifndef WITHOUT_PLUGINS
-	if(!mCallBacks.mOnNewConn.CallAll(conn))
-		return -1;
+	if (!mCallBacks.mOnNewConn.CallAll(conn)) return -1;
 	#endif
 
-	stringstream errmsg,os;
-	if(!conn) return -1;
 	string omsg;
-	cTime runtime;
-	runtime -= mStartTime;
-	if(mFrequency.mNumFill > 0) {
-		if (mSysLoad == eSL_RECOVERY)
-			mStatus = _("Recovery mode");
-		else if (mSysLoad == eSL_CAPACITY)
-			mStatus = _("Near capacity");
-		else if (mSysLoad == eSL_PROGRESSIVE)
-			mStatus = _("Progressive mode");
-		else if (mSysLoad == eSL_NORMAL)
-			mStatus = _("Normal mode");
-		else
-			mStatus = _("Not available");
-	}
-
-	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" VERSION "|";
-	if (mC.host_header == 1) {
-		if(mC.extended_welcome_message) {
-			os << HUB_VERSION_NAME "-" << VERSION << " " << HUB_VERSION_CLASS << "|";
-			os << "<" << mC.hub_security << ">" << " " << _("RunTime") << ": " << runtime.AsPeriod()<<"|";
-			os << "<" << mC.hub_security << ">" << " " << _("User Count") << ": " << mUserCountTot <<"|";
-			os << "<" << mC.hub_security << ">" << " " << _("System Status") << ": " << mStatus << "|";
-			if(!mC.hub_version_special.empty())
-				os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
-		} else {
-			os << autosprintf(_("This hub is running version %s%s %s of %s (RunTime: %s / User count: %d)"),
-			VERSION, mC.hub_version_special.c_str(), HUB_VERSION_CLASS, HUB_VERSION_NAME, runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
-		}
-		cDCProto::Create_Chat(omsg, mC.hub_security, os.str());
-	}
-	conn->Send(omsg, false);
-	os.str(mEmpty);
+	omsg = "$Lock EXTENDEDPROTOCOL_" LOCK_VERSION " Pk=version" VERSION;
+	conn->Send(omsg, true);
+	SendHeaders(conn, 2);
 
 	if (mSysLoad >= eSL_RECOVERY) {
+		stringstream os;
 		os << _("The hub is currently unable to service your request. Please try again in a few minutes.");
 		DCPublicHS(os.str(), conn);
 		conn->CloseNice(500, eCR_HUB_LOAD);
 		return -1;
 	}
 
-//FIXME: This make no sense
-#ifndef _WIN32
-	if(!this->mUseDNS)
-		conn->SetTimeOut(eTO_KEY, mC.timeout_length[eTO_KEY], mTime);
-#endif
+	conn->SetTimeOut(eTO_KEY, mC.timeout_length[eTO_KEY], mTime);
 	return 0;
 }
 
@@ -633,8 +603,10 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 		}
 		else
 		{
-			omsg = _("You are already in the hub.");
+			omsg = _("Your nick is already in use.");
 			DCPublicHS(omsg, conn);
+			omsg = "$ValidateDenide " + conn->mpUser->mNick; conn->Send(omsg);
+			// @todo: add redirect
 			conn->CloseNow();
 			return false;
 		}
@@ -652,7 +624,7 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	// The user has to change password
 	if(conn->mRegInfo && conn->mRegInfo->mPwdChange) {
 
-		os << _("<< Please change your password NOW using command +passwd <new_passwd>! See +help >>");
+		os << _("You must set your password now using +passwd command.");
 		DCPrivateHS(os.str(), conn);
 		DCPublicHS(os.str(), conn);
 		conn->SetTimeOut(eTO_SETPASS, mC.timeout_length[eTO_SETPASS], this->mTime);
@@ -664,17 +636,19 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	topic += mC.hub_topic + "|";
 	conn->Send(topic, false);
 
-	if(mC.send_user_info) {
-
-		os << "\r\n[::] " << _("Your info") << ": \r\n";
+	if (mC.send_user_info) {
+		os << _("Your information") << ":\r\n";
 		conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
-		DCPublicHS(os.str(),conn);
+		DCPublicHS(os.str(), conn);
 	}
 
 	if(mUserList.Size() > mUsersPeak)
 		mUsersPeak = mUserList.Size();
 	#ifndef WITHOUT_PLUGINS
-	mCallBacks.mOnUserLogin.CallAll(conn->mpUser);
+	if (!mCallBacks.mOnUserLogin.CallAll(conn->mpUser)) {
+		conn->CloseNow();
+		return;
+	}
 	#endif
 
 	if ((conn->mpUser->mClass >= eUC_NORMUSER) && (conn->mpUser->mClass <= eUC_MASTER)) {
@@ -740,8 +714,20 @@ void cServerDC::DoUserLogin(cConnDC *conn)
 		}
 	}
 
-	AfterUserLogin(conn);
+	if (!mC.hub_topic.empty()) { // send hub name with topic
+		static string omsg;
+		cDCProto::Create_HubName(omsg, mC.hub_name, mC.hub_topic);
 
+		#ifndef WITHOUT_PLUGINS
+		if (mCallBacks.mOnHubName.CallAll(conn->mpUser->mNick, omsg))
+		#endif
+		{
+			conn->Send(omsg);
+		}
+	}
+
+	SendHeaders(conn, 1);
+	AfterUserLogin(conn);
 	conn->ClearTimeOut(eTO_LOGIN);
 	conn->mpUser->mT.login.Get();
 }
@@ -893,9 +879,7 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick, int &closeReason)
 	stringstream errmsg,os;
 	// Default close reason
 	closeReason = eCR_INVALID_USER;
-	if(!conn)
-		return 0;
-	string omsg;
+	if (!conn) return 0;
 	//time_t n;
 	bool close=false;
 
@@ -927,38 +911,43 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick, int &closeReason)
 		case eVN_OK:
 		break;
 		case eVN_CHARS:
-			errmsg << _("unallowed characters in your nick.");
+			errmsg << _("Unallowed characters in your nick.");
 			if(mC.nick_chars.size())
 				 errmsg << autosprintf(_("use these: %s"), mC.nick_chars.c_str());
 		break;
 		case eVN_SHORT:
-			errmsg << _("your nick is too short");
+			errmsg << _("Your nick is too short.");
 		break;
 		case eVN_LONG:
-			errmsg << _("your nick is too long");
+			errmsg << _("Your nick is too long.");
 		break;
-		case eVN_USED:
-			errmsg << _("your nick is already in use");
+		case eVN_USED: // never happens
+			errmsg << _("Your nick is already in use.");
 		break;
 		case eVN_PREFIX:
 			errmsg << autosprintf(_("Invalid nick prefix. Use: %s"), mC.nick_prefix.c_str());
 		break;
 		case eVN_NOT_REGED_OP:
-			errmsg << _("operator not registered");
+			errmsg << _("Operator not registered.");
 		break;
 		case eVN_BANNED:
-			errmsg << autosprintf(_("Wait %s before reconnecting!!"), cTime(mBanList->IsNickTempBanned(nick) - cTime().Sec()).AsPeriod().AsString().c_str());
+			errmsg << autosprintf(_("Wait %s before reconnecting."), cTime(mBanList->IsNickTempBanned(nick) - cTime().Sec()).AsPeriod().AsString().c_str());
 		break;
 		default:
-			errmsg << _("unknown error");
+			errmsg << _("Unknown error.");
 		break;
 	}
 
+	if (close) {
+		if (vn == eVN_USED) {
+			static string omsg; omsg = "$ValidateDenide"; conn->Send(omsg);
+		}
 
-	if(close) {
-		DCPublicHS(errmsg.str(),conn);
+		DCPublicHS(errmsg.str(), conn);
+
 		if (conn->Log(3))
-			conn->LogStream() << "Bad Nick: " << errmsg.str() << endl;
+			conn->LogStream() << "Bad nick: " << errmsg.str() << endl;
+
 		return 0;
 	}
 
@@ -1092,8 +1081,7 @@ int cServerDC::OnTimer(cTime &now)
 	mBanList->mTempIPBanlist.AutoResize();
 	mCo->mTriggers->OnTimer(now.Sec());
 	#ifndef WITHOUT_PLUGINS
-	if (!mCallBacks.mOnTimer.CallAll())
-		return false;
+	if (!mCallBacks.mOnTimer.CallAll(now.MiliSec())) return false;
 	#endif
 	return true;
 }
@@ -1246,8 +1234,8 @@ int cServerDC::WhoCC(string CC, string &dest, const string&separator)
 	for(i=mUserList.begin(); i != mUserList.end(); ++i) {
 		conn = ((cUser*)(*i))->mxConn;
 		if(conn && conn->mCC == CC) {
-			dest += (*i)->mNick;
 			dest += separator;
+			dest += (*i)->mNick;
 			cnt++;
 		}
 	}
@@ -1264,15 +1252,15 @@ int cServerDC::WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, c
 		if(conn) {
 			unsigned long num = cBanList::Ip2Num(conn->AddrIP());
 			if(exact && (ip_min == num)) {
-				dest += (*i)->mNick;
 				dest += separator;
+				dest += (*i)->mNick;
 				cnt++;
 			} else if ((ip_min <= num) && (ip_max >= num)) {
+				dest += separator;
 				dest += (*i)->mNick;
 				dest += " (";
 				dest += conn->AddrIP();
 				dest += ")";
-				dest += separator;
 				cnt++;
 			}
 		}
@@ -1280,26 +1268,78 @@ int cServerDC::WhoIP(unsigned long ip_min, unsigned long ip_max, string &dest, c
 	return cnt;
 }
 
+int cServerDC::CntConnIP(string ip)
+{
+	cUserCollection::iterator i;
+	int cnt = 0;
+	cConnDC *conn;
+
+	for (i = mUserList.begin(); i != mUserList.end(); ++i) {
+		conn = ((cUser*)(*i))->mxConn;
+
+		if (conn) {
+			if ((conn->GetTheoricalClass() <= eUC_REGUSER) && (conn->AddrIP() == ip))
+				cnt++;
+		}
+	}
+
+	return cnt;
+}
+
 void cServerDC::ReportUserToOpchat(cConnDC *conn, const string &Msg, bool ToMain)
 {
-	ostringstream os;
-	os << Msg;
 	if (conn) {
-		if (conn->mpUser)
-			os << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << conn->mpUser->mNick << endl;
-		if(!mUseDNS && mC.report_dns_lookup)
-			conn->DNSLookup();
-		os << setw(PADDING) << setiosflags(ios::left) << _("IP") << conn->AddrIP().c_str() << endl;
-		if(!conn->AddrHost().empty())
-			os << setw(PADDING) << setiosflags(ios::left) << _("Host") << conn->AddrHost().c_str() << endl;
-		if (!ToMain && this->mOpChat) {
+		ostringstream os;
+		os << Msg;
+
+		if (conn->mpUser) os << " ][ " << _("Nickname") << ": " << conn->mpUser->mNick;
+		os << " ][ " << _("IP") << ": " << conn->AddrIP().c_str();
+		if (!mUseDNS && mC.report_dns_lookup) conn->DNSLookup();
+		if (!conn->AddrHost().empty()) os << " ][ " << _("Host") << ": " << conn->AddrHost().c_str();
+
+		if (!ToMain && this->mOpChat)
 			this->mOpChat->SendPMToAll(os.str(), NULL);
-		} else {
+		else {
 			static string ChatMsg;
 			ChatMsg.erase();
-			cDCProto::Create_Chat(ChatMsg, mC.opchat_name,os.str());
+			cDCProto::Create_Chat(ChatMsg, mC.opchat_name, os.str());
 			this->mOpchatList.SendToAll(ChatMsg, false, true);
 		}
+	}
+}
+
+void cServerDC::SendHeaders(cConnDC * conn, int where)
+{
+	/*
+	* 0 = dont send headers
+	* 1 = send headers on login
+	* 2 = send headers on connection
+	*/
+
+	if (((mC.host_header > 2) ? 2 : mC.host_header) == where) {
+		ostringstream os;
+		cTime runtime;
+		runtime -= mStartTime;
+		mStatus = _("Not available");
+
+		if (mFrequency.mNumFill > 0) {
+			if (mSysLoad == eSL_RECOVERY) mStatus = _("Recovery mode");
+			else if (mSysLoad == eSL_CAPACITY) mStatus = _("Near capacity");
+			else if (mSysLoad == eSL_PROGRESSIVE) mStatus = _("Progressive mode");
+			else if (mSysLoad == eSL_NORMAL) mStatus = _("Normal mode");
+		}
+
+		if (mC.extended_welcome_message) {
+			os << "<" << mC.hub_security << "> " << autosprintf(_("Running %s %s build %s"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS) << "|";
+			os << "<" << mC.hub_security << "> " << autosprintf(_("Runtime: %s"), runtime.AsPeriod().AsString().c_str()) << "|";
+			os << "<" << mC.hub_security << "> " << autosprintf(_("User count: %d"), mUserCountTot) << "|";
+			os << "<" << mC.hub_security << "> " << autosprintf(_("System status: %s"), mStatus.c_str()) << "|";
+			if (!mC.hub_version_special.empty()) os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
+		} else
+			os << autosprintf(_("Running %s %s build %s%s ][ Runtime: %s ][ User count: %d"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS, mC.hub_version_special.c_str(), runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
+
+		string res = os.str();
+		conn->Send(res, false);
 	}
 }
 

@@ -34,6 +34,7 @@ namespace nVerliHub {
 		typedef enum
 		{
 			eDC_GETINFO,
+			eDC_USERIP,
 			eDC_SEARCH_PAS,
 			eDC_SEARCH,
 			eDC_SR,
@@ -47,6 +48,7 @@ namespace nVerliHub {
 			eDC_MCONNECTTOME,
 			eDC_RCONNECTTOME,
 			eDC_TO,
+			eDC_MCTO,
 			eDC_CHAT,
 			eDC_QUIT,
 			eDC_OPFORCEMOVE,
@@ -54,13 +56,11 @@ namespace nVerliHub {
 			eDC_MSEARCH_PAS,
 			eDC_MSEARCH,
 			eDCE_SUPPORTS,
-			eDCM_NETINFO,
 			eDCO_BAN,
 			eDCO_TBAN,
 			eDCO_UNBAN,
 			eDCO_GETBANLIST,
 			eDCO_WHOIP,
-			eDCO_BANNED,
 			eDCO_SETTOPIC,
 			eDCO_GETTOPIC,
 			eDCB_BOTINFO,
@@ -85,6 +85,8 @@ namespace nVerliHub {
 		enum { eCH_RC_ALL, eCH_RC_NICK, eCH_RC_OTHER };
 		// private chat : CHMSH is a "<nick> msg" together
 		enum { eCH_PM_ALL, eCH_PM_TO, eCH_PM_FROM, eCH_PM_CHMSG, eCH_PM_NICK, eCH_PM_MSG } ;
+		// private mainchat message
+		enum {eCH_MCTO_ALL, eCH_MCTO_TO, eCH_MCTO_FROM, eCH_MCTO_CHMSG, eCH_MCTO_NICK, eCH_MCTO_MSG};
 		// MyINFO : INFO is all the rest together
 		enum { eCH_MI_ALL, eCH_MI_DEST, eCH_MI_NICK, eCH_MI_INFO, eCH_MI_DESC, eCH_MI_SPEED, eCH_MI_MAIL, eCH_MI_SIZE };
 		/// connecttome   $ConnectToMe <remoteNick> <senderIp>:<senderPort>
@@ -97,8 +99,6 @@ namespace nVerliHub {
 		enum {eCH_PS_ALL, eCH_PS_NICK, eCH_PS_QUERY, eCH_PS_SEARCHLIMITS, eCH_PS_SEARCHPATTERN};
 		// search result $SR <resultNick> <filepath>^E<filesize> <freeslots>/<totalslots>^E<hubname> (<hubhost>[:<hubport>])^E<searchingNick>
 		enum {eCH_SR_ALL, eCH_SR_FROM, eCH_SR_PATH, eCH_SR_SIZE, eCH_SR_SLOTS, eCH_SR_SL_FR, eCH_SR_SL_TO, eCH_SR_HUBINFO, eCH_SR_TO};
-		// $NetInfo slots$hubs$active|
-		enum {eCH_NI_ALL, eCH_NI_SLOTS, eCH_NI_HUBS, eCH_NI_ACTIVE};
 		// $Ban nick$reason
 		// $TempBan nick$time$reason
 		enum {eCH_NB_ALL, eCH_NB_NICK, eCH_NB_REASON, eCH_NB_TIME};

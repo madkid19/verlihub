@@ -25,6 +25,7 @@
 #include "cserverdc.h"
 #include "i18n.h"
 #include "stringutils.h"
+#include <sys/time.h>
 
 #define PADDING 25
 
@@ -62,7 +63,8 @@ void cUserBase::Send(string &data, bool, bool)
 cUser::cUser() :
 	mShare(0),
 	mSearchNumber(0),
-	mFloodPM(0.00,30.,10,user_global_time.Get())
+	mFloodPM(0.00,30.,10,user_global_time.Get()),
+	mFloodMCTo(0.00, 30., 10, user_global_time.Get())
 {
 	mxConn = NULL;
 	mxServer = NULL;
@@ -93,7 +95,8 @@ cUser::cUser(const string &nick) :
 	mShare(0),
 	mSearchNumber(0),
 	mHideKicksForClass(eUC_NORMUSER),
-	mFloodPM(0.00,30.,30,user_global_time.Get())
+	mFloodPM(0.00,30.,30,user_global_time.Get()),
+	mFloodMCTo(0.00, 30., 30, user_global_time.Get())
 {
 	SetClassName("cUser");
 	IsPassive = false;
@@ -202,26 +205,150 @@ long cUser::ShareEnthropy(const string &sharesize)
 
 void cUser::DisplayInfo(ostream &os, int DisplClass)
 {
-	static const char *ClassName[]={"Guest","Registred", "VIP", "Operator", "Cheef", "Admin" , "6-err","7-err", "8-err","9-err","Master"};
+	//static const char *ClassName[] = {"Guest", "Registred", "VIP", "Operator", "Cheef", "Admin", "6-err", "7-err", "8-err", "9-err", "Master"};
+	//toUpper(ClassName[this->mClass])
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << mNick << "\r\n";
+	if (this->mClass != this->mxConn->GetTheoricalClass()) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Default class") << this->mxConn->GetTheoricalClass() << "\r\n";
+	if (DisplClass >= eUC_CHEEF) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("In list") << this->mInList << "\r\n";
 
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << mNick << " [" << toUpper(ClassName[this->mClass]);
-	if( this->mClass != this->mxConn->GetTheoricalClass() )
-			os << " - " << autosprintf(_("Default class %d"),this->mxConn->GetTheoricalClass());
-	os  << "]" << endl;
-	if(DisplClass >= eUC_CHEEF)
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("In list") << this->mInList << endl;
-	if(!this->mxConn) {
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Special user") << endl;
-	} else {
-		if(DisplClass >= eUC_OPERATOR)
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << "IP" << mxConn->AddrIP() << endl;
-		if(DisplClass >= eUC_OPERATOR && mxConn->AddrHost().size())
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Host") << mxConn->AddrHost() << endl;
-		if(mxConn->mCC.size())
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Country Code") << mxConn->mCC << endl;
-		if(mxConn->mRegInfo != NULL)
-			os << *(mxConn->mRegInfo);
+	if (!this->mxConn)
+		os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Special user") << _("Yes") << "\r\n";
+	else {
+		if (DisplClass >= eUC_OPERATOR) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("IP address") << mxConn->AddrIP() << "\r\n";
+		if (DisplClass >= eUC_OPERATOR && mxConn->AddrHost().size()) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Host") << mxConn->AddrHost() << "\r\n";
+		if (mxConn->mCC.size()) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Country code") << mxConn->mCC;
+		if (mxConn->mRegInfo != NULL) os << "\r\n" << *(mxConn->mRegInfo);
 	}
+}
+
+void cUser::DisplayRightsInfo(ostream &os, bool head)
+{
+	char *tmp;
+	cTime now = cTime().Sec();
+
+	if (head) {
+		os << _("User rights information") << ":\r\n";
+		os << " [*] " << autosprintf(_("Nick: %s"), this->mNick.c_str()) << "\r\n";
+		os << " [*] " << autosprintf(_("Class: %d"), this->mClass) << "\r\n";
+	}
+
+	// main chat
+	if (this->mClass >= eUC_ADMIN)
+		tmp = _("Yes");
+	else if (!this->mGag)
+		tmp = _("No");
+	else if (this->mGag > now)
+		tmp = autosprintf(_("No [%s]"), cTime(this->mGag - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can use main chat: %s"), tmp) << "\r\n";
+
+	// private chat
+	if (this->mClass >= eUC_ADMIN)
+		tmp = _("Yes");
+	else if (!this->mNoPM)
+		tmp = _("No");
+	else if (this->mNoPM > now)
+		tmp = autosprintf(_("No [%s]"), cTime(this->mNoPM - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can use private chat: %s"), tmp) << "\r\n";
+
+	// operator chat
+	if ((this->mClass < eUC_OPERATOR) && this->mCanOpchat && (this->mCanOpchat < now))
+		tmp = _("No");
+	else if (this->mCanOpchat > now)
+		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanOpchat - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can use operator chat: %s"), tmp) << "\r\n";
+
+	// search files
+	if (this->mClass >= eUC_ADMIN)
+		tmp = _("Yes");
+	else if (!this->mNoSearch)
+		tmp = _("No");
+	else if (this->mNoSearch > now)
+		tmp = autosprintf(_("No [%s]"), cTime(this->mNoSearch - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can search files: %s"), tmp) << "\r\n";
+
+	// download files
+	if (this->mClass >= eUC_ADMIN)
+		tmp = _("Yes");
+	else if (!this->mNoCTM)
+		tmp = _("No");
+	else if (this->mNoCTM > now)
+		tmp = autosprintf(_("No [%s]"), cTime(this->mNoCTM - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can download files: %s"), tmp) << "\r\n";
+
+	// hide share
+	if ((this->mClass < eUC_VIPUSER) && this->mCanShare0 && (this->mCanShare0 < now))
+		tmp = _("No");
+	else if (this->mCanShare0 > now)
+		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanShare0 - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can hide share: %s"), tmp) << "\r\n";
+
+	// register users
+	if ((this->mClass < mxServer->mC.min_class_register) && this->mCanReg && (this->mCanReg < now))
+		tmp = _("No");
+	else if (this->mCanReg > now)
+		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanReg - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can register users: %s"), tmp) << "\r\n";
+
+	// drop users
+	if ((this->mClass < eUC_OPERATOR) && this->mCanDrop && (this->mCanDrop < now))
+		tmp = _("No");
+	else if (this->mCanDrop > now)
+		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanDrop - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can drop users: %s"), tmp) << "\r\n";
+
+	// kick users
+	if ((this->mClass < eUC_OPERATOR) && this->mCanKick && (this->mCanKick < now))
+		tmp = _("No");
+	else if (this->mCanKick > now)
+		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanKick - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can kick users: %s"), tmp) << "\r\n";
+
+	// temporarily ban users
+	if ((this->mClass < eUC_OPERATOR) && this->mCanTBan && (this->mCanTBan < now))
+		tmp = _("No");
+	else if (this->mCanTBan > now)
+		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanTBan - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can temporarily ban users: %s"), tmp) << "\r\n";
+
+	// permanently ban users
+	if ((this->mClass < eUC_OPERATOR) && this->mCanPBan && (this->mCanPBan < now))
+		tmp = _("No");
+	else if (this->mCanPBan > now)
+		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanPBan - now).AsPeriod().AsString().c_str());
+	else
+		tmp = _("Yes");
+
+	os << " [*] " << autosprintf(_("Can permanently ban users: %s"), tmp);
 }
 
 bool cUser::Can(unsigned Right, long now, unsigned OtherClass)
@@ -245,56 +372,126 @@ bool cUser::Can(unsigned Right, long now, unsigned OtherClass)
 	return true;
 }
 
-void cUser::SetRight(unsigned Right, long until, bool allow)
+void cUser::SetRight(unsigned Right, long until, bool allow, bool notify)
 {
-	switch(Right)
-	{
+	string msg;
+
+	switch (Right) {
 		case eUR_CHAT:
-			if(!allow) mGag = until;
-			else mGag = 1;
+			if (!allow) {
+				msg = _("You're no longer allowed to use main chat for %s.");
+				mGag = until;
+			} else {
+				msg = _("You're now allowed to use main chat.");
+				mGag = 1;
+			}
+
 			break;
 		case nEnums::eUR_PM:
-			if(!allow) mNoPM = until;
-			else mNoPM = 1;
+			if (!allow) {
+				msg = _("You're no longer allowed to use private chat for %s.");
+				mNoPM = until;
+			} else {
+				msg = _("You're now allowed to use private chat.");
+				mNoPM = 1;
+			}
+
 			break;
 		case nEnums::eUR_SEARCH:
-			if(!allow) mNoSearch = until;
-			else mNoSearch = 1;
+			if (!allow) {
+				msg = _("You're no longer allowed to search files for %s.");
+				mNoSearch = until;
+			} else {
+				msg = _("You're now allowed to search files.");
+				mNoSearch = 1;
+			}
+
 			break;
 		case nEnums::eUR_CTM:
-			if(!allow) mNoCTM = until;
-			else mNoCTM = 1;
+			if (!allow) {
+				msg = _("You're no longer allowed to download files for %s.");
+				mNoCTM = until;
+			} else {
+				msg = _("You're now allowed to download files.");
+				mNoCTM = 1;
+			}
+
 			break;
 		case nEnums::eUR_KICK:
-			if(allow) mCanKick = until;
-			else mCanKick = 1;
+			if (allow) {
+				msg = _("You're no longer allowed to kick users.");
+				mCanKick = until;
+			} else {
+				msg = _("You're now allowed to kick users for %s.");
+				mCanKick = 1;
+			}
+
 			break;
 		case nEnums::eUR_REG:
-			if(allow) mCanReg = until;
-			else mCanReg = 1;
+			if (allow) {
+				msg = _("You're no longer allowed to register users.");
+				mCanReg = until;
+			} else {
+				msg = _("You're now allowed to register users for %s.");
+				mCanReg = 1;
+			}
+
 			break;
 		case nEnums::eUR_OPCHAT:
-			if(allow) mCanOpchat = until;
-			else mCanOpchat = 1;
+			if (allow) {
+				msg = _("You're no longer allowed to use operator chat.");
+				mCanOpchat = until;
+			} else {
+				msg = _("You're now allowed to use operator chat for %s.");
+				mCanOpchat = 1;
+			}
+
 			break;
 		case nEnums::eUR_NOSHARE:
-			if(allow) mCanShare0 = until;
-			else mCanShare0 = 1;
+			if (allow) {
+				msg = _("You're no longer allowed to hide share.");
+				mCanShare0 = until;
+			} else {
+				msg = _("You're now allowed to hide share for %s.");
+				mCanShare0 = 1;
+			}
+
 			break;
 		case nEnums::eUR_DROP:
-			if(allow) mCanDrop = until;
-			else mCanDrop = 1;
+			if (allow) {
+				msg = _("You're no longer allowed to drop users.");
+				mCanDrop = until;
+			} else {
+				msg = _("You're now allowed to drop users for %s.");
+				mCanDrop = 1;
+			}
+
 			break;
 		case nEnums::eUR_TBAN:
-			if(allow) mCanTBan = until;
-			else mCanTBan = 1;
+			if (allow) {
+				msg = _("You're no longer allowed to temporarily ban users.");
+				mCanTBan = until;
+			} else {
+				msg = _("You're now allowed to temporarily ban users for %s.");
+				mCanTBan = 1;
+			}
+
 			break;
 		case nEnums::eUR_PBAN:
-			if(allow) mCanPBan = until;
-			else mCanPBan = 1;
+			if (allow) {
+				msg = _("You're no longer allowed to permanently ban users.");
+				mCanPBan = until;
+			} else {
+				msg = _("You're now allowed to permanently ban users for %s.");
+				mCanPBan = 1;
+			}
+
 			break;
-		default: break;
+		default:
+			break;
 	};
+
+	if (notify && !msg.empty() && (mxConn != NULL)) mxServer->DCPublicHS(autosprintf(msg.c_str(), cTime(until - cTime().Sec()).AsPeriod().AsString().c_str()), mxConn);
 }
 
 void cUser::ApplyRights(cPenaltyList::sPenalty &pen)
@@ -414,7 +611,7 @@ bool cMainRobot::ReceiveMsg(cConnDC *conn, cMessageDC *message)
 	if (message->mType == eDC_TO)
 	{
 		string &msg = message->ChunkString(eCH_PM_MSG);
-		if (!mxServer->mP.ParseForCommands(msg, conn))
+		if (!mxServer->mP.ParseForCommands(msg, conn, 1))
 		{
 			cUser *other = mxServer->mUserList.GetUserByNick ( mxServer->LastBCNick );
 				if(other && other->mxConn)

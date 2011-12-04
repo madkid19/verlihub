@@ -167,11 +167,11 @@ bool cPluginManager::UnregisterCallBack(string id, cPluginBase *pi)
 void cPluginManager::List(ostream &os)
 {
 	os << " " << setw(40) << setiosflags(ios::left) << toUpper(_("Name"));
-	os << toUpper(_("Version")) << "\n";
-	os << " " << string(40+25,'=') << endl;
+	os << toUpper(_("Version")) << "\r\n";
+	os << " " << string(40+25,'=');
 	tPlugins::iterator it;
 	for (it = mPlugins.begin(); it != mPlugins.end(); ++it) {
-		os << " " << setw(40) << setiosflags(ios::left) << (*it)->mPlugin->Name() << (*it)->mPlugin->Version() << "\r\n";
+		os << "\r\n " << setw(40) << setiosflags(ios::left) << (*it)->mPlugin->Name() << (*it)->mPlugin->Version();
 	}
 }
 
@@ -179,8 +179,8 @@ void cPluginManager::ListAll(ostream &os)
 {
 	tCBList::iterator it;
 	for (it = mCallBacks.begin(); it != mCallBacks.end(); ++it) {
-		os << "CB: " << (*it)->Name() << "\r\n";
-		(*it)->ListRegs(os,"   ");
+		os << "\r\nCB: " << (*it)->Name();
+		(*it)->ListRegs(os,"\t");
 	}
 }
 

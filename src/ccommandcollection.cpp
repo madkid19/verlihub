@@ -20,6 +20,7 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "ccommandcollection.h"
+#include "i18n.h"
 #include <iostream>
 
 namespace nVerliHub {
@@ -35,7 +36,7 @@ cCommandCollection::~cCommandCollection()
 
 void cCommandCollection::Add(cCommand *command)
 {
-	if(command) {
+	if (command) {
 		mCmdList.push_back(command);
 		command->mCmdr = this;
 	}
@@ -44,7 +45,8 @@ void cCommandCollection::Add(cCommand *command)
 int cCommandCollection::ParseAll(const string &commandLine, ostream &os, void *options)
 {
 	cCommand *Cmd = this->FindCommand(commandLine);
-	if(Cmd != NULL)
+
+	if (Cmd != NULL)
 		return (int)this->ExecuteCommand(Cmd, os, options);
 	else
 		return -1;
@@ -53,24 +55,27 @@ int cCommandCollection::ParseAll(const string &commandLine, ostream &os, void *o
 cCommand *cCommandCollection::FindCommand(const string &commandLine)
 {
 	tCmdList::iterator it;
-	for(it = mCmdList.begin(); it != mCmdList.end(); ++it) {
+
+	for (it = mCmdList.begin(); it != mCmdList.end(); ++it) {
 		cCommand *Cmd = *it;
-		if( Cmd && Cmd->ParseCommandLine(commandLine))
-			return Cmd;
+		if (Cmd && Cmd->ParseCommandLine(commandLine)) return Cmd;
 	}
+
 	return NULL;
 }
 
 bool cCommandCollection::ExecuteCommand(cCommand *command, ostream &os, void *options)
 {
-	if(command->TestParams()) {
-		if(command->Execute(os, options))
-			os << " OK";
-		else
-			os << "Error";
+	if (command->TestParams()) {
+		command->Execute(os, options);
+		//if (command->Execute(os, options))
+			//os << _("[OK]");
+		//else
+			//os << _("[ERROR]");
+
 		return true;
 	} else {
-		os << "Params error.." << "\r\n";
+		os << _("Command parameters error") << ":\r\n";
 		command->GetSyntaxHelp(os);
 		return false;
 	}
@@ -78,19 +83,19 @@ bool cCommandCollection::ExecuteCommand(cCommand *command, ostream &os, void *op
 
 void cCommandCollection::List(ostream *os)
 {
-	 for(tCmdList::iterator it = mCmdList.begin(); it != mCmdList.end(); ++it) {
-		if(*it) {
-			(*it)->Describe(*os);
+	for (tCmdList::iterator it = mCmdList.begin(); it != mCmdList.end(); ++it) {
+		if (*it) {
 			(*os) << "\r\n";
+			(*it)->Describe(*os);
 		}
 	}
 }
 
 void cCommandCollection::InitAll(void *data)
 {
-	for(tCmdList::iterator it = mCmdList.begin(); it != mCmdList.end(); ++it)
-		if(*it)
-			(*it)->Init(data);
+	for (tCmdList::iterator it = mCmdList.begin(); it != mCmdList.end(); ++it) {
+		if (*it) (*it)->Init(data);
+	}
 }
 	}; //namespace nCmdr
 }; // namespace nVerliHub

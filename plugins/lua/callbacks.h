@@ -35,8 +35,10 @@ namespace nVerliHub {
 	int _SendToAll(lua_State *);
 	int _SendPMToAll(lua_State *);
 	int _Disconnect(lua_State *);
+	int _StopHub(lua_State *);
 	int _GetMyINFO(lua_State *);
 	int _GetUserCC(lua_State *);
+	int _GetIPCC(lua_State *);
 	int _GetVHCfgDir(lua_State *);
 	int _GetUpTime(lua_State *L);
 	int _RegBot(lua_State *);
@@ -47,17 +49,19 @@ namespace nVerliHub {
 	int _GetHubSecAlias(lua_State *);
 	int _SetConfig(lua_State *);
 	int _GetConfig(lua_State *);
-	int _ReportUser(lua_State *);
 	int _GetUserClass(lua_State *);
 	int _GetUserHost(lua_State *);
 	int _GetUserIP(lua_State *);
 	int _IsUserOnline(lua_State *L);
+	int _InUserSupports(lua_State *L);
 	int _GetNickList(lua_State *);
 	int _GetOPList(lua_State *);
 	int _GetBotList(lua_State *);
 	int _GetBots(lua_State *);
 	int _Ban(lua_State *);
 	int _KickUser(lua_State *);
+	int _ReportUser(lua_State *);
+	int _SendToOpChat(lua_State *);
 	int _ParseCommand(lua_State *);
 
 	int _SQLQuery(lua_State *);

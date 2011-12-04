@@ -71,54 +71,62 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	//@todo tMsgAct action = this->mS->Filter(tDCMsg(msg->mType),conn);
 	if(strlen(Msg->mStr.data()) < Msg->mStr.size())
 	{
-		//mS->ReportUserToOpchat(conn,"Sending null chars, probably attempt of an attack.");
+		mS->ReportUserToOpchat(conn, _("Sending null chars, probably attempt of an attack")); // Msg->mStr
 		conn->CloseNow();
 		return -1;
 	}
 
 	#ifndef WITHOUT_PLUGINS
-	if (msg->mType != eMSG_UNPARSED)  {
-		if (!mS->mCallBacks.mOnParsedMsgAny.CallAll(conn, msg)) return 1;
+	if (msg->mType != eMSG_UNPARSED) {
+		if (conn->mpUser != NULL) {
+			if (!mS->mCallBacks.mOnParsedMsgAny.CallAll(conn, msg)) return 1;
+		} else {
+			if (!mS->mCallBacks.mOnParsedMsgAnyEx.CallAll(conn, msg)) {
+				conn->CloseNow();
+				return -1;
+			}
+		}
 	}
 	#endif
 
-	switch ( msg->mType )
+	switch (msg->mType)
 	{
-		case eDC_UNKNOWN: mS->mCallBacks.mOnUnknownMsg.CallAll(conn, msg); return 1;
-			break;
+		case eDC_UNKNOWN: mS->mCallBacks.mOnUnknownMsg.CallAll(conn, msg); return 1; break;
 		case eMSG_UNPARSED: msg->Parse(); return TreatMsg(msg, conn); break;
 		case eDC_KEY: this->DC_Key(msg, conn); break;
 		case eDC_VALIDATENICK: this->DC_ValidateNick(msg, conn); break;
-		case eDC_MYPASS: this->DC_MyPass( msg, conn); break;
-		case eDC_VERSION: this->DC_Version( msg, conn); break;
-		case eDC_GETNICKLIST: this->DC_GetNickList( msg, conn ); break;
-		case eDC_MYNIFO: this->DC_MyINFO( msg, conn ); break;
-		case eDC_GETINFO: this->DC_GetINFO( msg, conn ); break;
-		case eDC_CONNECTTOME: this->DC_ConnectToMe( msg, conn); break;
-		case eDC_MCONNECTTOME: this->DC_MultiConnectToMe( msg, conn);break;
-		case eDC_RCONNECTTOME: this->DC_RevConnectToMe (msg, conn); break;
-		case eDC_TO: this->DC_To ( msg, conn ); break;
-		case eDC_CHAT: this->DC_Chat (msg, conn ); break;
-		case eDC_OPFORCEMOVE: this->DC_OpForceMove( msg, conn); break;
-		case eDC_KICK: this->DC_Kick( msg, conn); break;
+		case eDC_MYPASS: this->DC_MyPass(msg, conn); break;
+		case eDC_VERSION: this->DC_Version(msg, conn); break;
+		case eDC_GETNICKLIST: this->DC_GetNickList(msg, conn); break;
+		case eDC_MYNIFO: this->DC_MyINFO(msg, conn); break;
+		case eDC_GETINFO: this->DC_GetINFO(msg, conn); break;
+		case eDC_USERIP: this->DC_UserIP(msg, conn); break;
+		case eDC_CONNECTTOME: this->DC_ConnectToMe(msg, conn); break;
+		case eDC_MCONNECTTOME: this->DC_MultiConnectToMe(msg, conn);break;
+		case eDC_RCONNECTTOME: this->DC_RevConnectToMe(msg, conn); break;
+		case eDC_TO: this->DC_To(msg, conn); break;
+		case eDC_MCTO: this->DC_MCTo(msg, conn); break;
+		case eDC_CHAT: this->DC_Chat(msg, conn); break;
+		case eDC_OPFORCEMOVE: this->DC_OpForceMove(msg, conn); break;
+		case eDC_KICK: this->DC_Kick(msg, conn); break;
 		case eDC_SEARCH:
 		case eDC_SEARCH_PAS:
 		case eDC_MSEARCH:
-		case eDC_MSEARCH_PAS:this->DC_Search( msg, conn); break;
-		case eDC_SR: this->DC_SR ( msg, conn ); break;
-		case eDC_QUIT: mS->DCPublicHS("Bye!",conn); conn->CloseNice(2000,eCR_QUIT); break;
-		case eDCE_SUPPORTS: this->DCE_Supports( msg, conn); break;
+		case eDC_MSEARCH_PAS: this->DC_Search(msg, conn); break;
+		case eDC_SR: this->DC_SR(msg, conn); break;
+		case eDC_QUIT: mS->DCPublicHS(_("Goodbye."), conn); conn->CloseNice(2000, eCR_QUIT); break;
+		case eDCE_SUPPORTS: this->DCE_Supports(msg, conn); break;
 		case eDCO_BAN:
 		//case eDCO_TBAN: mP.DCO_TempBan(msg, conn); break;
 		case eDCO_UNBAN: this->DCO_UnBan(msg, conn); break;
 		case eDCO_GETBANLIST: this->DCO_GetBanList(msg, conn); break;
 		case eDCO_WHOIP: this->DCO_WhoIP(msg, conn); break;
-		case eDCO_BANNED: this->DCO_Banned(msg, conn); break;
 		case eDCO_GETTOPIC: this->DCO_GetTopic(msg, conn); break;
 		case eDCO_SETTOPIC: this->DCO_SetTopic(msg, conn); break;
 		case eDCB_BOTINFO: this->DCB_BotINFO(msg, conn); break;
 		default: if(Log(1)) LogStream() << "Incoming untreated event" << endl; break;
 	}
+
 	return 0;
 }
 
@@ -161,32 +169,80 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	limit += limit_extra;
 	limit_cc += limit_extra;
 
-	// Check the max_users limit
-	if((conn->GetTheoricalClass() < eUC_OPERATOR) && ((mS->mUserCountTot >= limit) || (mS->mUserCount[conn->mGeoZone] >= limit_cc))) {
-		os << _("<<User limit exceeded, hub is full.>>") << "\r\n" << autosprintf(_("Online users: %d"),  mS->mUserCountTot);
-		if(conn->Log(2)) {
-			conn->LogStream()
-				<< "Hub is full (" << mS->mUserCountTot
-				<< "/" << limit << "::"
-				<< mS->mUserCount[conn->mGeoZone] << "/"
-				<< limit_cc << "), closing.(" << conn->mCC << ")" << endl;
-		}
+	// check the max_users limit
+	if ((conn->GetTheoricalClass() < eUC_OPERATOR) && ((mS->mUserCountTot >= limit) || (mS->mUserCount[conn->mGeoZone] >= limit_cc))) {
+		if (mS->mUserCount[conn->mGeoZone] >= limit_cc) {
+			string zonestr, zonedat;
 
-		mS->ConnCloseMsg(conn,os.str(),1000, eCR_USERLIMIT);
+			if (conn->mGeoZone >= 1 && conn->mGeoZone <= 3) { // country zones
+				zonestr = _("User limit in country zone %s exceeded at %d/%d online users.");
+				zonedat = mS->mC.cc_zone[conn->mGeoZone - 1];
+			} else if (conn->mGeoZone >= 4 && conn->mGeoZone <= 6) { // ip range zones
+				zonestr = _("User limit in IP zone %s exceeded at %d/%d online users.");
+
+				switch (conn->mGeoZone) {
+					case 4:
+						zonedat = mS->mC.ip_zone4_min + "-" + mS->mC.ip_zone4_max;
+					break;
+					case 5:
+						zonedat = mS->mC.ip_zone5_min + "-" + mS->mC.ip_zone5_max;
+					break;
+					case 6:
+						zonedat = mS->mC.ip_zone6_min + "-" + mS->mC.ip_zone6_max;
+					break;
+				}
+			} else { // main zone
+				zonestr = _("User limit in main zone exceeded at %d/%d online users.");
+			}
+
+			if (conn->mGeoZone == 0)
+				os << autosprintf(zonestr.c_str(), mS->mUserCount[conn->mGeoZone], mS->mUserCountTot);
+			else
+				os << autosprintf(zonestr.c_str(), zonedat.c_str(), mS->mUserCount[conn->mGeoZone], mS->mUserCountTot);
+		} else
+			os << autosprintf(_("User limit exceeded at %d online users."), mS->mUserCountTot);
+
+		if (mS->mC.max_users_total == 0) os << " " << _("This is a registered users only hub.");
+		if (conn->Log(2)) conn->LogStream() << "Hub is full: " << mS->mUserCountTot << "/" << limit << " :: " << mS->mUserCount[conn->mGeoZone] << "/" << limit_cc << " :: " << conn->mCC << endl;
+		omsg = "$HubIsFull"; conn->Send(omsg);
+		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
 		return -1;
 	} else {
 		conn->SetLSFlag(eLS_ALLOWED);
-		mS->mUserCountTot ++;
-		mS->mUserCount[conn->mGeoZone] ++;
+		mS->mUserCountTot++;
+		mS->mUserCount[conn->mGeoZone]++;
 	}
 
-	// Send hub name
-	cDCProto::Create_HubName(omsg,mS->mC.hub_name,mS->mC.hub_topic);
+	// user limit from single ip
+	if ((mS->mC.max_users_from_ip != 0) && (conn->GetTheoricalClass() < eUC_VIPUSER)) {
+		int cnt = mS->CntConnIP(conn->mAddrIP);
+
+		if (cnt >= mS->mC.max_users_from_ip) {
+			os << autosprintf(_("User limit from IP address %s exceeded at %d online users."), conn->mAddrIP.c_str(), cnt);
+			omsg = "$HubIsFull"; conn->Send(omsg);
+			mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
+			return -1;
+		}
+	}
+
+	// send hub name without topic
+	string emp;
+	Create_HubName(omsg, mS->mC.hub_name, emp);
+
 	#ifndef WITHOUT_PLUGINS
-	if(cServerDC::sCurrentServer->mCallBacks.mOnHubName.CallAll(nick, omsg))
+	if (mS->mCallBacks.mOnHubName.CallAll(nick, omsg))
 	#endif
 	{
 		conn->Send(omsg);
+	}
+
+	// check authorization ip
+	if (conn->mRegInfo && !conn->mRegInfo->mAuthIP.empty() && (conn->mRegInfo->mAuthIP != conn->mAddrIP)) {
+		mS->mR->LoginError(conn, nick); // important
+		if (mS->mC.wrongauthip_report) mS->ReportUserToOpchat(conn, autosprintf(_("Authorization IP mismatch from %s"), nick.c_str()));
+		os << autosprintf(_("Authorization IP for this account doesn't match your IP address: %s"), conn->mAddrIP.c_str());
+		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_LOGIN_ERR);
+		return -1;
 	}
 
 	if (conn->NeedsPassword()) {
@@ -200,6 +256,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	try {
 		cUser *NewUser = new cUser(nick);
 		NewUser->mFloodPM.SetParams(0.0, 1. * mS->mC.int_flood_pm_period, mS->mC.int_flood_pm_limit);
+		NewUser->mFloodMCTo.SetParams(0.0, 1. * mS->mC.int_flood_mcto_period, mS->mC.int_flood_mcto_limit);
 		if(!conn->SetUser(NewUser)) {
 			conn->CloseNow();
 			return -1;
@@ -207,7 +264,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 
 		#ifndef WITHOUT_PLUGINS
 		if (!mS->mCallBacks.mOnParsedMsgValidateNick.CallAll(conn, msg)) {
-			conn->CloseNice(1000, eCR_INVALID_USER);
+			conn->CloseNow();
 			return -2;
 		}
 		#endif
@@ -234,23 +291,26 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 
 int cDCProto::DC_Key(cMessageDC * msg, cConnDC * conn)
 {
-	if(msg->SplitChunks()) return -1;
-	// Key already sent
-	if(conn->GetLSFlag(eLS_KEYOK)) {
+	if (msg->SplitChunks()) return -1;
+
+	if (conn->GetLSFlag(eLS_KEYOK)) { // key already sent
 		string omsg = _("Invalid login sequence. Key already sent");
-		if(conn->Log(1)) conn->LogStream() << omsg << endl;
-		mS->ConnCloseMsg(conn,omsg,1000, eCR_LOGIN_ERR);
+		if (conn->Log(1)) conn->LogStream() << omsg << endl;
+		mS->ConnCloseMsg(conn, omsg, 1000, eCR_LOGIN_ERR);
 		return -1;
 	}
-	string key, lock("EXTENDEDPROTOCOL_" PACKAGE);
-	Lock2Key(lock, key);
-	if(key != msg->ChunkString(1)) {
-		if(conn->Log(1)) conn->LogStream() << "Invalid key" << endl;
-		if(mS->mC.drop_invalid_key) {
-			mS->ConnCloseMsg(conn, _("Your client provided an invalid key"),1000, eCR_INVALID_KEY);
+
+	if (mS->mC.drop_invalid_key) {
+		string key, lock("EXTENDEDPROTOCOL_" PACKAGE);
+		Lock2Key(lock, key);
+
+		if (key != msg->ChunkString(1)) {
+			if (conn->Log(1)) conn->LogStream() << "Invalid key" << endl;
+			mS->ConnCloseMsg(conn, _("Your client provided an invalid key"), 1000, eCR_INVALID_KEY);
 			return -1;
 		}
 	}
+
 	conn->SetLSFlag(eLS_KEYOK);
 	conn->ClearTimeOut(eTO_KEY);
 	conn->SetTimeOut(eTO_VALNICK, mS->mC.timeout_length[eTO_VALNICK], mS->mTime);
@@ -262,7 +322,6 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
 	string &pwd=msg->ChunkString(eCH_1_PARAM);
-
 	string omsg;
 
 	if(!conn->mpUser) {
@@ -272,6 +331,14 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 		mS->ConnCloseMsg(conn,omsg,1000, eCR_LOGIN_ERR);
 		return -1;
 	}
+
+	#ifndef WITHOUT_PLUGINS
+	if (!mS->mCallBacks.mOnParsedMsgMyPass.CallAll(conn, msg)) {
+		conn->CloseNow();
+		return -1;
+	}
+	#endif
+
 	// Check user password
 	if(conn->mpUser->CheckPwd(pwd)) {
 		conn->SetLSFlag( eLS_PASSWD );
@@ -286,34 +353,42 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 			conn->Send(omsg, true);
 		}
 	} else { // wrong password
-		// User is regged so report it
-		if(conn->mRegInfo && conn->mRegInfo->getClass() > 0) {
+		// user is regged so report it
+		if (conn->mRegInfo && conn->mRegInfo->getClass() > 0) {
 			omsg = "$BadPass";
 			conn->Send(omsg);
-		 	if(mS->mC.wrongpassword_report)
-				mS->ReportUserToOpchat(conn,_("Wrong password"));
-			omsg = _("You provided an incorrect password and have been temporarily banned.");
-			mS->mBanList->AddNickTempBan(conn->mpUser->mNick, mS->mTime.Sec() + mS->mC.pwd_tmpban, omsg);
+		 	if (mS->mC.wrongpassword_report) mS->ReportUserToOpchat(conn, _("Wrong password"));
 
+			if (!mS->mC.wrongpass_message.empty())
+				omsg = mS->mC.wrongpass_message;
+			else
+				omsg = _("You provided an incorrect password and have been temporarily banned.");
+
+			mS->mBanList->AddNickTempBan(conn->mpUser->mNick, mS->mTime.Sec() + mS->mC.pwd_tmpban, omsg);
 			mS->mR->LoginError(conn, conn->mpUser->mNick);
-			if(conn->Log(2))
-				conn->LogStream() << "Wrong password, banned for " << mS->mC.pwd_tmpban <<" seconds" << endl;
+			if (conn->Log(2)) conn->LogStream() << "Wrong password, banned for " << mS->mC.pwd_tmpban <<" seconds" << endl;
 			mS->ConnCloseMsg(conn, omsg, 2000, eCR_PASSWORD);
 			return -1;
 		} else {
-			if(conn->Log(3))
-				conn->LogStream() << "User sent password but he isn't regged" << endl;
+			if (conn->Log(3)) conn->LogStream() << "User sent password but he isn't regged" << endl;
 			return -1;
 		}
-
-
 	}
+
 	return 0;
 }
 
 int cDCProto::DC_Version(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
+
+	#ifndef WITHOUT_PLUGINS
+	if (!mS->mCallBacks.mOnParsedMsgVersion.CallAll(conn, msg)) {
+		conn->CloseNow();
+		return -1;
+	}
+	#endif
+
 	conn->SetLSFlag( eLS_VERSION );
 	string &version=msg->ChunkString(eCH_1_PARAM);
 	if(conn->Log(5))
@@ -323,7 +398,6 @@ int cDCProto::DC_Version(cMessageDC * msg, cConnDC * conn)
 	return 1;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_GetNickList(cMessageDC * , cConnDC * conn)
 {
 	if(!conn) return -1;
@@ -346,7 +420,6 @@ int cDCProto::DC_GetNickList(cMessageDC * , cConnDC * conn)
 	return NickList(conn);
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 {
 	string cmsg;
@@ -381,18 +454,15 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 		return -1;
 	}
 
-
-	////////////////////// BEGIN TAG VERRIFICATION
+	/* begin tag verification */
 	// parse conention type
-	if(conn->mConnType == NULL)
-		conn->mConnType = ParseSpeed(msg->ChunkString(eCH_MI_SPEED));
-
-	// analyze check user's tag
+	if (conn->mConnType == NULL) conn->mConnType = ParseSpeed(msg->ChunkString(eCH_MI_SPEED));
+	// check users tag
 	cDCTag *tag = mS->mCo->mDCClients->ParseTag(msg->ChunkString(eCH_MI_DESC));
-	if (!mS->mC.tag_allow_none && mS->mCo->mDCClients->mPositionInDesc < 0 && conn->mpUser->mClass < eUC_OPERATOR && conn->mpUser->mClass != eUC_PINGER) {
-		cmsg = _("Turn on your tag");
-		if(conn->Log(2))
-			conn->LogStream() << "No tag " << endl;
+
+	if (!mS->mC.tag_allow_none && (mS->mCo->mDCClients->mPositionInDesc < 0) && (conn->mpUser->mClass < mS->mC.tag_min_class_ignore) && (conn->mpUser->mClass != eUC_PINGER)) {
+		cmsg = _("Turn on your tag.");
+		if (conn->Log(2)) conn->LogStream() << "No tag" << endl;
 		mS->ConnCloseMsg(conn, cmsg, 1000, eCR_TAG_NONE);
 		delete tag;
 		return -1;
@@ -400,24 +470,36 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 
 	bool TagValid = true;
 	int tag_result = 0;
-	if (conn->mpUser->mClass < mS->mC.tag_min_class_ignore && conn->mpUser->mClass != eUC_PINGER) {
+
+	if (((!mS->mC.tag_allow_none) || ((mS->mC.tag_allow_none) && (mS->mCo->mDCClients->mPositionInDesc >= 0))) && (conn->mpUser->mClass < mS->mC.tag_min_class_ignore) && (conn->mpUser->mClass != eUC_PINGER)) {
 		TagValid = tag->ValidateTag(os, conn->mConnType, tag_result);
 	}
+
 	#ifndef WITHOUT_PLUGINS
-		TagValid = TagValid && mS->mCallBacks.mOnValidateTag.CallAll(conn, tag);
+	TagValid = TagValid && mS->mCallBacks.mOnValidateTag.CallAll(conn, tag);
 	#endif
 
-	if(!TagValid) {
-		if(conn->Log(2))
-			conn->LogStream() << "Invalid tag: (" << tag_result << ")\n Tag info " << tag << endl;
+	if (!TagValid) {
+		if(conn->Log(2)) conn->LogStream() << "Invalid tag: " << tag_result << "\nTag info: " << tag << endl;
 		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_TAG_INVALID);
 		return -1;
 	}
 
-	if( tag->mClientMode == eCM_PASSIVE ||  tag->mClientMode == eCM_SOCK5 )
-					conn->mpUser->IsPassive = true;
-	////////////////////// END TAG VERRIFICATION
+	if ((tag->mClientMode == eCM_PASSIVE) || (tag->mClientMode == eCM_SOCK5)) conn->mpUser->IsPassive = true;
 	delete tag;
+	/* end tag verification */
+
+	// passive user limit
+	if (conn->mpUser->IsPassive && (mS->mC.max_users_passive != -1) && (conn->GetTheoricalClass() < eUC_OPERATOR) && (mS->mPassiveUsers.Size() >= mS->mC.max_users_passive)) {
+		os << autosprintf(_("Passive user limit exceeded at %d online passive users, please become active to enter the hub."), mS->mPassiveUsers.Size());
+
+		if (conn->Log(2))
+			conn->LogStream() << "Passive user limit exceeded: " << mS->mPassiveUsers.Size() << endl;
+
+		static string omsg; omsg = "$HubIsFull"; conn->Send(omsg);
+		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
+		return -1;
+	}
 
 	// Check min and max share conditions
 	string &str_share=msg->ChunkString(eCH_MI_SIZE);
@@ -516,120 +598,106 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	mS->mTotalShare += conn->mpUser->mShare;
 	conn->mpUser->mEmail = msg->ChunkString(eCH_MI_MAIL);
 
-	// User sent MyINFO for the frist time
-	if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) {
+	// user sent $MyINFO for the first time
+	if (conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) {
 		cBan Ban(mS);
 		bool banned = false;
 		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, eBF_SHARE | eBF_EMAIL);
-		if(banned && conn->GetTheoricalClass() <= eUC_REGUSER) {
+
+		if (banned && conn->GetTheoricalClass() <= eUC_REGUSER) {
 			stringstream msg;
-			msg << _("Banned.") << endl;
+			msg << _("You are banned.") << endl;
 			Ban.DisplayUser(msg);
-			mS->DCPublicHS(msg.str(),conn);
-			conn->LogStream() << "Kicked user for share" << endl;
+			mS->DCPublicHS(msg.str(), conn);
+			conn->LogStream() << "Kicked user due ban detection" << endl;
 			conn->CloseNice(1000, eCR_KICKED);
 			return -1;
 		}
-	}
 
+		#ifndef WITHOUT_PLUGINS
+		if (!mS->mCallBacks.mOnFirstMyINFO.CallAll(conn, msg)) {
+			conn->CloseNow();
+			return -2;
+		}
+		#endif
+	}
 
  	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgMyINFO.CallAll(conn, msg))
-		return -2;
+	if (!mS->mCallBacks.mOnParsedMsgMyINFO.CallAll(conn, msg)) return -2;
 	#endif
 
-	// if tag isn't valid, tell it the user
-	// check hubs / slots etc...
-	string myinfo_full, myinfo_basic,desc, email, speed, sShare;
+	string myinfo_full, myinfo_basic, desc, email, speed, sShare;
 
-
-	//$MyINFO $ALL <nick> <interest>$ $<speed>$<e-mail>$<sharesize>$
-	//@todo @fixme tag.mPositionInDesc may be incorrect after the description has been modified by a plugin
+	// $MyINFO $ALL <nick> <interest>$ $<speed>$<e-mail>$<sharesize>$
+	// @todo: tag.mPositionInDesc may be incorrect after the description has been modified by a plugin
 	mS->mCo->mDCClients->ParsePos(msg->ChunkString(eCH_MI_DESC));
-	desc.assign(msg->ChunkString(eCH_MI_DESC),0,mS->mCo->mDCClients->mPositionInDesc);
+	desc.assign(msg->ChunkString(eCH_MI_DESC), 0, mS->mCo->mDCClients->mPositionInDesc);
+
 	if (mS->mC.desc_insert_mode) {
 		switch (tag->mClientMode) {
-		case eCM_ACTIVE: desc = "A " + desc; break;
-		case eCM_PASSIVE: desc = "P " + desc; break;
-		case eCM_SOCK5: desc = "5 " + desc; break;
-		default: break;
+			case eCM_ACTIVE:
+				desc = (desc.empty() ? "[A]" : ("[A] " + desc));
+			break;
+			case eCM_PASSIVE:
+				desc = (desc.empty() ? "[P]" : ("[P] " + desc));
+			break;
+			case eCM_SOCK5:
+				desc = (desc.empty() ? "[5]" : ("[5] " + desc));
+			break;
 		}
 	}
-	if(mS->mC.show_desc_len >= 0) {
-		desc.assign(desc,0,mS->mC.show_desc_len);
-	}
 
-	if(mS->mC.show_email == 0) {
-		email= " ";
-	} else {
+	if (mS->mC.show_desc_len >= 0) desc.assign(desc, 0, mS->mC.show_desc_len);
+
+	if (mS->mC.show_email == 0)
+		email= "";
+	else
 		email = msg->ChunkString(eCH_MI_MAIL);
-	}
 
-	if(mS->mC.show_speed == 0) {
-		speed = " ";
-	} else {
+	if (mS->mC.show_speed == 0)
+		speed = "";
+	else
 		speed = msg->ChunkString(eCH_MI_SPEED);
-	}
 
-	if(!conn->mpUser->mHideShare == false) {
+	if (conn->mpUser->mHideShare)
 		sShare = "0";
-	} else {
+	else
 		sShare = msg->ChunkString(eCH_MI_SIZE);
-	}
-	Create_MyINFO(
-		myinfo_basic,
-		msg->ChunkString(eCH_MI_NICK),
-		desc,
-		speed,
-		email,
-		sShare
-		);
-	// OPS have hidden myinfo
-	if ( (conn->mpUser->mClass >= eUC_OPERATOR) && (mS->mC.show_tags < 3)) {
-		myinfo_full = myinfo_basic;
-	} else {
+
+	Create_MyINFO(myinfo_basic, msg->ChunkString(eCH_MI_NICK), desc, speed, email, sShare);
+
+	// ops have hidden myinfo
+	//if ((conn->mpUser->mClass >= eUC_OPERATOR) && (mS->mC.show_tags < 3))
+		//myinfo_full = myinfo_basic;
+	//else
 		myinfo_full = msg->mStr;
-	}
 
 	// login or send to all
-	if(conn->mpUser->mInList) {
-		/** send it to all only if ...
-		* it's not too often
-		* it has changed against the last time
-		* and send only the version that has changed only to those who want it
-		*/
-		if(mS->MinDelay(conn->mpUser->mT.info,mS->mC.int_myinfo)) {
-			string send_myinfo;
-			if(myinfo_full != conn->mpUser->mMyINFO) {
-				conn->mpUser->mMyINFO = myinfo_full;
-				if(myinfo_basic != conn->mpUser->mMyINFO_basic) {
-					conn->mpUser->mMyINFO_basic = myinfo_basic;
+	if (conn->mpUser->mInList) {
+		// send it to all only if: its not too often, it has changed since last time, send only the version that has changed only to those who want it
+		if (mS->MinDelay(conn->mpUser->mT.info, mS->mC.int_myinfo) && (myinfo_full != conn->mpUser->mMyINFO)) {
+			conn->mpUser->mMyINFO = myinfo_full;
 
-					send_myinfo = GetMyInfo(conn->mpUser, eUC_NORMUSER);
-					mS->mUserList.SendToAll(send_myinfo, mS->mC.delayed_myinfo, true);
-
-				}
-				if( mS->mC.show_tags >=1 )
-					mS->mOpchatList.SendToAll(myinfo_full, mS->mC.delayed_myinfo, true);
+			if (myinfo_basic != conn->mpUser->mMyINFO_basic) {
+				conn->mpUser->mMyINFO_basic = myinfo_basic;
+				string send_info;
+				send_info = GetMyInfo(conn->mpUser, eUC_NORMUSER);
+				mS->mUserList.SendToAll(send_info, mS->mC.delayed_myinfo, true);
 			}
 
+			if (mS->mC.show_tags >= 1) mS->mOpchatList.SendToAll(myinfo_full, mS->mC.delayed_myinfo, true);
 		}
-	} else { // user logs in the first time
-		// keep it
-		conn->mpUser->mMyINFO = myinfo_full;
+	} else { // user logs in for the first time
+		conn->mpUser->mMyINFO = myinfo_full; // keep it
 		conn->mpUser->mMyINFO_basic = myinfo_basic;
-
-		// note, we got it
 		conn->SetLSFlag(eLS_MYINFO);
-		// if all right, add user to userlist, if not yet there
-		if(!mS->BeginUserLogin(conn))
-			return -1;
+		if (!mS->BeginUserLogin(conn)) return -1; // if all right, add user to userlist, if not yet there
 	}
+
 	conn->ClearTimeOut(eTO_MYINFO);
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_GetINFO(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
@@ -665,6 +733,54 @@ int cDCProto::DC_GetINFO(cMessageDC * msg, cConnDC * conn)
 			conn->Send(buf, true, false);
 		}
 	}
+	return 0;
+}
+
+int cDCProto::DC_UserIP(cMessageDC * msg, cConnDC * conn)
+{
+	/*
+	* @rolex
+	* not sure about this,
+	* but if UserIP2 is present in client supports,
+	* and hub supports it aswell,
+	* then client should never send this command,
+	* and we should ignore it
+	*/
+
+	if (msg->SplitChunks()) return -1;
+	if (!conn->mpUser || !conn->mpUser->mInList) return -1;
+	if (conn->mpUser->mClass < eUC_OPERATOR) return -1;
+	string lst = msg->ChunkString(eCH_1_PARAM);
+	if (lst.empty()) return -1;
+	string sep("$$");
+	lst += sep;
+	int pos;
+	cUser *other;
+	string userip;
+
+	while (lst.find(sep) != string::npos) {
+		pos = lst.find(sep);
+		string nick = lst.substr(0, pos);
+
+		if (!nick.empty()) {
+			other = mS->mUserList.GetUserByNick(nick);
+
+			if (other) {
+				userip.append(nick);
+				userip.append(" ");
+				userip.append(other->mxConn->AddrIP());
+				userip.append(sep);
+			}
+		}
+
+		lst = lst.substr(pos + sep.length());
+	}
+
+	if (!userip.empty()) {
+		userip = "$UserIP " + userip;
+		conn->Send(userip, true);
+	}
+
 	return 0;
 }
 
@@ -708,7 +824,7 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 			if( conn->mpUser->mFloodCounters[eFC_PM]++ > mS->mC.max_flood_counter_pm) {
 					mS->DCPrivateHS(_("Flooding PM"), conn);
 					ostringstream reportMessage;
-					reportMessage << autosprintf(_("*** PM Same Message Flood detected: %s"), msg->ChunkString(eCH_PM_MSG).c_str());
+					reportMessage << autosprintf(_("*** PM same message flood detected: %s"), msg->ChunkString(eCH_PM_MSG).c_str());
 					mS->ReportUserToOpchat(conn, reportMessage.str());
 					conn->CloseNow();
 					return -5;
@@ -744,6 +860,80 @@ int cDCProto::DC_To(cMessageDC * msg, cConnDC * conn)
 	} else if (mS->mRobotList.ContainsNick(str)) {
 		((cUserRobot*)mS->mRobotList.GetUserBaseByNick(str))->ReceiveMsg(conn, msg);
 	}
+	return 0;
+}
+
+int cDCProto::DC_MCTo(cMessageDC * msg, cConnDC * conn)
+{
+	if (msg->SplitChunks()) return -1;
+	if (!conn->mpUser) return -1;
+	if (!conn->mpUser->mInList) return -2;
+	if (!conn->mpUser->Can(eUR_PM, mS->mTime.Sec(), 0)) return -4;
+
+	// verify senders nick
+	if ((msg->ChunkString(eCH_MCTO_FROM) != conn->mpUser->mNick) || (msg->ChunkString(eCH_MCTO_NICK) != conn->mpUser->mNick)) {
+		if (conn->Log(2)) conn->LogStream() << "User pretend to be someone else in MCTo: " << msg->ChunkString(eCH_MCTO_FROM) << endl;
+		conn->CloseNow();
+		return -1;
+	}
+
+	cTime now;
+	now.Get();
+	int fl = 0;
+	fl =- conn->mpUser->mFloodMCTo.Check(now);
+
+	if ((conn->mpUser->mClass < eUC_OPERATOR) && fl) {
+		if (conn->Log(1)) conn->LogStream() << "MCTo flood: " << msg->ChunkString(eCH_MCTO_FROM) << endl;
+
+		if (fl >= 3) {
+			mS->DCPrivateHS(_("MCTo flood."), conn);
+			ostringstream reportMessage;
+			reportMessage << autosprintf(_("*** MCTo flood: %s"), msg->ChunkString(eCH_MCTO_MSG).c_str());
+			mS->ReportUserToOpchat(conn, reportMessage.str());
+			conn->CloseNow();
+		}
+
+		return -1;
+	}
+
+	cUser::tFloodHashType Hash = 0;
+	Hash = tHashArray<void*>::HashString(msg->ChunkString(eCH_MCTO_MSG));
+
+	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR)) {
+		if (Hash == conn->mpUser->mFloodHashes[eFH_MCTO]) {
+			if (conn->mpUser->mFloodCounters[eFC_MCTO]++ > mS->mC.max_flood_counter_mcto) {
+				mS->DCPrivateHS(_("MCTo flood."), conn);
+				ostringstream reportMessage;
+				reportMessage << autosprintf(_("*** MCTo same message flood detected: %s"), msg->ChunkString(eCH_MCTO_MSG).c_str());
+				mS->ReportUserToOpchat(conn, reportMessage.str());
+				conn->CloseNow();
+				return -5;
+			}
+		} else
+			conn->mpUser->mFloodCounters[eFC_MCTO] = 0;
+	}
+
+	conn->mpUser->mFloodHashes[eFH_MCTO] = Hash;
+	// find other user
+	string &str=msg->ChunkString(eCH_MCTO_TO);
+	cUser *other = mS->mUserList.GetUserByNick(str);
+	if (!other) return -2;
+
+	if (conn->mpUser->mClass + mS->mC.classdif_mcto < other->mClass) {
+		mS->DCPrivateHS(_("You can't talk to this user."), conn);
+		mS->DCPublicHS(_("You can't talk to this user."), conn);
+		return -4;
+	}
+
+	// log
+	if (mS->Log(5)) mS->LogStream() << "MCTo from: " << conn->mpUser->mNick << " to: " << msg->ChunkString(eCH_MCTO_TO) << endl;
+
+	#ifndef WITHOUT_PLUGINS
+	if (!mS->mCallBacks.mOnParsedMsgMCTo.CallAll(conn, msg)) return 0;
+	#endif
+
+	// send
+	if (other->mxConn) other->mxConn->Send(msg->mStr);
 	return 0;
 }
 
@@ -825,8 +1015,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	}
 
 	send = true;
-
-	if(ParseForCommands(text, conn)) return 0;
+	if (ParseForCommands(text, conn, 0)) return 0;
 
 	////////// here is the part that finally distributes messages
 	// check message length only for less than vip regs
@@ -852,21 +1041,18 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	}
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgChat.CallAll(conn, msg))
-		send = false;
+	if (!mS->mCallBacks.mOnParsedMsgChat.CallAll(conn, msg)) return 0;
 	#endif
 
-	// Finally send the message
-	if(send)
-		mS->mChatUsers.SendToAll(msg->mStr);
+	// finally send the message
+	if (send) mS->mChatUsers.SendToAll(msg->mStr);
 	return 0;
 }
 
-/** Kick an user */
 int cDCProto::DC_Kick(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks()) return -1;
-	if(!conn->mpUser || !conn->mpUser->mInList) return -2; // FIXME is it ok?
+	if(!conn->mpUser || !conn->mpUser->mInList) return -2;
 	string &nick = msg->ChunkString(eCH_1_PARAM);
 
 	// check rights
@@ -964,59 +1150,54 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	}
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgConnectToMe.CallAll(conn, msg))
-		return -2;
+	if (!mS->mCallBacks.mOnParsedMsgConnectToMe.CallAll(conn, msg)) return -2;
 	#endif
-
 
 	if(other->mxConn)
 		other->mxConn->Send(ctm);
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
 int cDCProto::DC_MultiConnectToMe(cMessageDC * , cConnDC * )
 {
 	return 0;
 }
 
-/** Treat the DC message in a appropriate way */
-int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn )
+int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn)
 {
-	if(msg->SplitChunks()) return -1;
-	if(!conn->mpUser) return -1;
-	if(!conn->mpUser->mInList) return -2;
-	if(!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0))
-		return -4;
+	if (msg->SplitChunks()) return -1;
+	if (!conn->mpUser) return -1;
+	if (!conn->mpUser->mInList) return -2;
+	if (!conn->mpUser->Can(eUR_CTM, mS->mTime.Sec(), 0)) return -4;
 	ostringstream ostr;
 
-	// check nick
-	if(msg->ChunkString(eCH_RC_NICK) != conn->mpUser->mNick) {
+	if (msg->ChunkString(eCH_RC_NICK) != conn->mpUser->mNick) { // check nick
 		ostr << autosprintf(_("Your nick is not %s but %s."), msg->ChunkString(eCH_RC_NICK).c_str(), conn->mpUser->mNick.c_str());
 		mS->ConnCloseMsg(conn, ostr.str(), 1500, eCR_SYNTAX);
 		return -1;
 	}
 
-	// Find and check the other nickname
+	// find and check the other nickname
 	string &str = msg->ChunkString(eCH_RC_OTHER);
 	cUser *other = mS->mUserList.GetUserByNick(str);
-	if(!other) {
+
+	if (!other) {
 		ostr << autosprintf(_("User %s not found."), str.c_str());
+		mS->DCPublicHS(ostr.str(), conn);
 		return -2;
 	}
 
-	if(conn->mpUser->mClass + mS->mC.classdif_download < other->mClass)
-		return -4;
+	if (conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) return -4;
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgRevConnectToMe.CallAll(conn, msg))
-		return -2;
+	if (!mS->mCallBacks.mOnParsedMsgRevConnectToMe.CallAll(conn, msg)) return -2;
 	#endif
 
-	if(other->mxConn)
-		other->mxConn->Send( msg->mStr );
+	if (other->mxConn)
+		other->mxConn->Send(msg->mStr);
 	else
-		mS->DCPrivateHS(_("Robots do not share."),conn);
+		mS->DCPublicHS(_("Robots do not share."), conn);
+
 	return 0;
 }
 
@@ -1140,8 +1321,7 @@ int cDCProto::DC_Search(cMessageDC * msg, cConnDC * conn)
 	}
 
  	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgSearch.CallAll(conn, msg))
-		return -2;
+	if (!mS->mCallBacks.mOnParsedMsgSearch.CallAll(conn, msg)) return -2;
 	#endif
 
 	// Send message
@@ -1178,9 +1358,7 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	string ostr(msg->mStr,0 ,msg->mChunks[eCH_SR_TO].first - 1);
 
 	#ifndef WITHOUT_PLUGINS
-	if (!mS->mCallBacks.mOnParsedMsgSR.CallAll(conn, msg)) {
-		return -2;
-	}
+	if (!mS->mCallBacks.mOnParsedMsgSR.CallAll(conn, msg)) return -2;
 	#endif
 
 	// Send it
@@ -1189,15 +1367,6 @@ int cDCProto::DC_SR(cMessageDC * msg, cConnDC * conn)
 	}
 	return 0;
 }
-
-/**
-  Redirect an user to another hub.
-  If the user is found, send him a message and then he is redirected. The user may not be redirected because he is a protetect user
-
-  @param[in,out] msg The NMDC message
-  @param[in,out] tr The user who sent the message
-  @return The result
-*/
 
 int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 //$ForceMove <newIp>
@@ -1260,45 +1429,49 @@ int cDCProto::DC_OpForceMove(cMessageDC * msg, cConnDC * conn)
 }
 
 
-/** Extended support features */
 int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 {
-	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO ZPipe");
 	istringstream is(msg->mStr);
-
 	string feature;
 	is >> feature;
-	while(1) {
+
+	while (1) {
 		feature = this->mS->mEmpty;
 		is >> feature;
-		if(!feature.size())
-			break;
-		if(feature == "OpPlus") conn->mFeatures |= eSF_OPPLUS;
-		else if(feature == "NoHello") conn->mFeatures |= eSF_NOHELLO;
-		else if(feature == "NoGetINFO") conn->mFeatures |= eSF_NOGETINFO;
-		else if(feature == "QuickList") conn->mFeatures |= eSF_QUICKLIST;
-		else if(feature == "BotINFO") conn->mFeatures |= eSF_BOTINFO;
-		else if(feature == "ZPipe" || feature == "ZPipe0") conn->mFeatures |= eSF_ZLIB;
+		if (!feature.size()) break;
+		if (feature == "OpPlus") conn->mFeatures |= eSF_OPPLUS;
+		else if (feature == "NoHello") conn->mFeatures |= eSF_NOHELLO;
+		else if (feature == "NoGetINFO") conn->mFeatures |= eSF_NOGETINFO;
+		else if (feature == "DHT0") conn->mFeatures |= eSF_DHT0;
+		else if (feature == "QuickList") conn->mFeatures |= eSF_QUICKLIST;
+		else if (feature == "BotINFO") conn->mFeatures |= eSF_BOTINFO;
+		else if (feature == "ZPipe0" || feature == "ZPipe") conn->mFeatures |= eSF_ZLIB;
+		else if (feature == "ChatOnly") conn->mFeatures |= eSF_CHATONLY;
+		else if (feature == "MCTo") conn->mFeatures |= eSF_MCTO;
+		else if (feature == "UserCommand") conn->mFeatures |= eSF_USERCOMMAND;
+		else if (feature == "BotList") conn->mFeatures |= eSF_BOTLIST;
+		else if (feature == "HubTopic") conn->mFeatures |= eSF_HUBTOPIC;
+		else if (feature == "UserIP2") conn->mFeatures |= eSF_USERIP2;
+		else if (feature == "TTHSearch") conn->mFeatures |= eSF_TTHSEARCH;
+		else if (feature == "Feed") conn->mFeatures |= eSF_FEED;
+		else if (feature == "ClientID") conn->mFeatures |= eSF_CLIENTID;
+		else if (feature == "IN") conn->mFeatures |= eSF_IN;
+		else if (feature == "BanMsg") conn->mFeatures |= eSF_BANMSG;
+		else if (feature == "TLS") conn->mFeatures |= eSF_TLS;
 	}
+
 	#ifndef WITHOUT_PLUGINS
-	if(!mS->mCallBacks.mOnParsedMsgSupport.CallAll(conn, msg)) {
-		conn->CloseNice(1000, eCR_LOGIN_ERR);
+	if (!mS->mCallBacks.mOnParsedMsgSupport.CallAll(conn, msg)) {
+		conn->CloseNow();
 		return -1;
 	}
 	#endif
+
+	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO HubTopic ZPipe MCTo"); // @todo: BotList
 	conn->Send(omsg);
 	return 0;
 }
 
-/** Network info (neo Modus) */
-int cDCProto::DCM_NetInfo(cMessageDC * msg, cConnDC * )
-{
-	if(msg->SplitChunks()) return -1;
-
-	return 0;
-}
-
-/** operator ban */
 int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 {
 	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
@@ -1362,84 +1535,81 @@ int cDCProto::DCO_TempBan(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-
-/** Send Userlist and Oplist */
 int cDCProto::NickList(cConnDC *conn)
 {
 	try {
 		bool complete_infolist = false;
 		// 2 = show to all
-		if(mS->mC.show_tags >= 2)
-			complete_infolist= true;
-		if(conn->mpUser && (conn->mpUser->mClass >= eUC_OPERATOR))
-			complete_infolist= true;
+		if (mS->mC.show_tags >= 2) complete_infolist = true;
+		if (conn->mpUser && (conn->mpUser->mClass >= eUC_OPERATOR)) complete_infolist = true;
 		// 0 = hide to all
-		if(mS->mC.show_tags == 0)
-			complete_infolist= false;
+		if (mS->mC.show_tags == 0) complete_infolist = false;
+		if (conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) conn->mNickListInProgress = true;
 
-		if(conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE)
-			conn->mNickListInProgress = true;
-		if(conn->mFeatures & eSF_NOHELLO) {
-			if(conn->Log(3))
-				conn->LogStream() << "Sending MyINFO list" << endl;
-			conn->Send(mS->mUserList.GetInfoList(complete_infolist),true);
-		} else if(conn->mFeatures & eSF_NOGETINFO) {
-			if(conn->Log(3))
-				conn->LogStream() << "Sending MyINFO list" << endl;
-			conn->Send(mS->mUserList.GetNickList(),true);
-			conn->Send(mS->mUserList.GetInfoList(complete_infolist),true);
+		if (conn->mFeatures & eSF_NOHELLO) {
+			if (conn->Log(3)) conn->LogStream() << "Sending MyINFO list" << endl;
+			conn->Send(mS->mUserList.GetInfoList(complete_infolist), true);
+		} else if (conn->mFeatures & eSF_NOGETINFO) {
+			if (conn->Log(3)) conn->LogStream() << "Sending MyINFO list" << endl;
+			conn->Send(mS->mUserList.GetNickList(), true);
+			conn->Send(mS->mUserList.GetInfoList(complete_infolist), true);
 		} else {
-			if(conn->Log(3))
-				conn->LogStream() << "Sending Nicklist" << endl;
-			conn->Send(mS->mUserList.GetNickList(),true);
+			if (conn->Log(3)) conn->LogStream() << "Sending Nicklist" << endl;
+			conn->Send(mS->mUserList.GetNickList(), true);
 		}
-		conn->Send(mS->mOpList.GetNickList(),true);
+
+		conn->Send(mS->mOpList.GetNickList(), true); // send $OpList
+
+		/*if (mS->mRobotList.Size() > 0) { // send $BotList, @fixme: mRobotList is empty
+			string botlist = mS->mRobotList.GetNickList();
+			botlist = "$BotList " + botlist;
+			conn->Send(botlist, true);
+		}*/
 	} catch(...) {
-		if(conn->ErrLog(2))
-			conn->LogStream() << "exception in DC_GetNickList" << endl;
+		if (conn->ErrLog(2)) conn->LogStream() << "Exception in cDCProto::NickList" << endl;
 		conn->CloseNow();
 		return -1;
 	}
+
 	return 0;
 }
 
-/** test if text is a console command and parse it by console eventually
-return 1 if it was a command else return 0 */
-int cDCProto::ParseForCommands(const string &text, cConnDC *conn)
+int cDCProto::ParseForCommands(const string &text, cConnDC *conn, int pm)
 {
 	ostringstream omsg;
-	// test op's commands
-	if(conn->mpUser->mClass >=  eUC_OPERATOR && mS->mC.cmd_start_op.find_first_of(text[0]) != string::npos) {
+	// operator commands
+	if (conn->mpUser->mClass >= eUC_OPERATOR && mS->mC.cmd_start_op.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
-		if(mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string *)&text))
+		if ((mS->mCallBacks.mOnOperatorCommand.CallAll(conn, (string*)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string*)&text, 1, pm)))
 		#endif
 		{
-			if(!mS->mCo->OpCommand(text,conn)) {
-				omsg << autosprintf(_("Unknown command '%s'. Try !help"), text.c_str());
-				mS->DCPublicHS(omsg.str(),conn);
+			if (!mS->mCo->OpCommand(text, conn)) {
+				omsg << autosprintf(_("Unknown operator command: %s"), text.c_str());
+				mS->DCPublicHS(omsg.str(), conn);
 			}
 		}
+
 		return 1;
 	}
 
-
-	// check user commands
-	if(mS->mC.cmd_start_user.find_first_of(text[0]) != string::npos) {
+	// user commands
+	if (mS->mC.cmd_start_user.find_first_of(text[0]) != string::npos) {
 		#ifndef WITHOUT_PLUGINS
-		if (mS->mCallBacks.mOnUserCommand.CallAll(conn, (string *)&text))
+		if ((mS->mCallBacks.mOnUserCommand.CallAll(conn, (string*)&text)) && (mS->mCallBacks.mOnHubCommand.CallAll(conn, (string*)&text, 0, pm)))
 		#endif
 		{
-			if(!mS->mCo->UsrCommand(text,conn)) {
-				omsg << autosprintf(_("Unknown command '%s'. Try +help"), text.c_str());
-				mS->DCPublicHS(omsg.str(),conn);
+			if (!mS->mCo->UsrCommand(text, conn)) {
+				omsg << autosprintf(_("Unknown user command: %s"), text.c_str());
+				mS->DCPublicHS(omsg.str(), conn);
 			}
 		}
+
 		return 1;
 	}
+
 	return 0;
 }
 
-/** operator unban */
 int cDCProto::DCO_UnBan(cMessageDC * msg, cConnDC * conn)
 {
 	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
@@ -1466,7 +1636,6 @@ int cDCProto::DCO_UnBan(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-/** operator getbanlist */
 int cDCProto::DCO_GetBanList(cMessageDC * msg, cConnDC * conn)
 {
 	if(!conn || !conn->mpUser || !conn->mpUser->mInList || conn->mpUser->mClass < eUC_OPERATOR)
@@ -1477,41 +1646,47 @@ int cDCProto::DCO_GetBanList(cMessageDC * msg, cConnDC * conn)
 
 int cDCProto::DCB_BotINFO(cMessageDC * msg, cConnDC * conn)
 {
-	if(msg->SplitChunks())
-		return -1;
+	if (msg->SplitChunks()) return -1;
 	ostringstream os;
-	if(!(conn->mFeatures & eSF_BOTINFO)) {
-		if(conn->Log(2))
-			conn->LogStream() << "User " << conn->mpUser->mNick << " sent $BotINFO but BotINFO extension is not set in $Supports" << endl;
-		os << _("You cannot send $BotINFO because BotINFO extension is not set in $Supports");
+
+	if (!(conn->mFeatures & eSF_BOTINFO)) {
+		if (conn->Log(2)) conn->LogStream() << "User " << conn->mpUser->mNick << " sent $BotINFO but BotINFO extension is not set in $Supports" << endl;
+		os << _("You cannot send $BotINFO because BotINFO extension is not set in $Supports.");
 		mS->DCPublicHS(os.str(), conn);
 		return 0;
 	}
-	if(conn->Log(2))
-		conn->LogStream() << "Bot visit: " << msg->ChunkString(eCH_1_PARAM) << endl;
 
-	if(mS->mC.botinfo_report) {
+	if (conn->Log(2)) conn->LogStream() << "Bot visit: " << msg->ChunkString(eCH_1_PARAM) << endl;
+
+	if (mS->mC.botinfo_report) {
 		os << autosprintf(_("Bot %s has just entered the hub."), msg->ChunkString(eCH_1_PARAM).c_str());
 		mS->ReportUserToOpchat(conn, os.str());
 		os.str("");
 	}
-	char S='$';
+
+	#ifndef WITHOUT_PLUGINS
+	if (!mS->mCallBacks.mOnParsedMsgBotINFO.CallAll(conn, msg)) {
+		conn->CloseNow();
+		return -1;
+	}
+	#endif
+
+	char S = '$';
 	cConnType *ConnType = mS->mConnTypes->FindConnType("default");
 	__int64 hl_minshare = mS->mC.min_share;
-	if (mS->mC.min_share_use_hub > hl_minshare)
-		hl_minshare = mS->mC.min_share_use_hub;
+	if (mS->mC.min_share_use_hub > hl_minshare) hl_minshare = mS->mC.min_share_use_hub;
+	if (!mS->mC.hub_icon_url.empty()) os << "$SetIcon " << mS->mC.hub_icon_url.c_str() << "|";
 	os << "$HubINFO "
-		<< mS->mC.hub_name << S
-		<< mS->mC.hub_host << S
-		<< mS->mC.hub_desc << S
-		<< mS->mC.max_users_total << S
-		<< StringFrom((__int64)(1024*1024)*hl_minshare) << S
-		<< ConnType->mTagMinSlots << S
-		<< mS->mC.tag_max_hubs << S
-		<< "VerliHub" << S
-		<< mS->mC.hub_owner << S
-		<< mS->mC.hub_category;
-
+	<< mS->mC.hub_name << S
+	<< mS->mC.hub_host << S
+	<< mS->mC.hub_desc << S
+	<< mS->mC.max_users_total << S
+	<< StringFrom((__int64)(1024 * 1024) * hl_minshare) << S
+	<< ConnType->mTagMinSlots << S
+	<< mS->mC.tag_max_hubs << S
+	<< "Verlihub" << S
+	<< mS->mC.hub_owner << S
+	<< mS->mC.hub_category;
 	string str = os.str();
 	conn->Send(str);
 	return 0;
@@ -1528,13 +1703,6 @@ int cDCProto::DCO_WhoIP(cMessageDC * msg, cConnDC * conn)
 	unsigned long num = cBanList::Ip2Num(msg->ChunkString(eCH_1_PARAM));
 	mS->WhoIP(num ,num , nicklist, sep, true);
 	conn->Send(nicklist);
-	return 0;
-}
-
-int cDCProto::DCO_Banned(cMessageDC * msg, cConnDC * conn)
-{
-	if(msg->SplitChunks()) return -1;
-
 	return 0;
 }
 
@@ -1567,10 +1735,6 @@ int cDCProto::DCO_SetTopic(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-
-/*!
-    \fn cDCProto::Create_MyINFO(string &dest, const string&nick, const string &desc, const string&speed, const string &mail, const string &share)
- */
 void cDCProto::Create_MyINFO(string &dest, const string&nick, const string &desc, const string&speed, const string &mail, const string &share)
 {
 	dest.reserve(dest.size()+nick.size()+desc.size()+speed.size()+mail.size()+share.size()+ 20);
@@ -1596,9 +1760,6 @@ void cDCProto::Create_Chat(string &dest, const string&nick,const string &text)
 	dest.append(text);
 }
 
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::Append_MyInfoList(string &dest, cUser *, bool DoBasic)
- */
 void cDCProto::Append_MyInfoList(string &dest, const string &MyINFO, const string &MyINFO_basic, bool DoBasic)
 {
 	if(dest[dest.size()-1]=='|')
@@ -1609,9 +1770,6 @@ void cDCProto::Append_MyInfoList(string &dest, const string &MyINFO, const strin
 		dest.append(MyINFO);
 }
 
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::Create_PM(string &dest,const string &from, const string &to, const string &sign, const string &text)
- */
 void cDCProto::Create_PM(string &dest,const string &from, const string &to, const string &sign, const string &text)
 {
 	dest.append("$To: ");
@@ -1625,9 +1783,6 @@ void cDCProto::Create_PM(string &dest,const string &from, const string &to, cons
 }
 
 
-/*!
-    \fn nDirectConnect::nProtocol::cDCProto::Create_PMForBroadcast(string &start,string &end, const string &from, const string &sign, const string &text)
- */
 void cDCProto::Create_PMForBroadcast(string &start,string &end, const string &from, const string &sign, const string &text)
 {
 	start.append("$To: ");
@@ -1639,13 +1794,11 @@ void cDCProto::Create_PMForBroadcast(string &start,string &end, const string &fr
 	end.append(text);
 }
 
-/*!
- 	\fn ndirectconnect::nprotocol::cdcproto::Create_HubName(string &dest, const string &name, const string &topic)
- */
 void cDCProto::Create_HubName(string &dest, string &name, string &topic)
 {
-	dest ="$HubName " + name;
-	if(topic.length()) {
+	dest = "$HubName " + name;
+
+	if (topic.length()) {
 		dest += " - ";
 		dest += topic;
 	}
@@ -1657,9 +1810,6 @@ void cDCProto::Create_Quit(string &dest, const string &nick)
 	dest.append(nick);
 }
 
-/*!
-    \fn ndirectconnect::nprotocol::cdcproto::parsespeed(const string &speed)
- */
 cConnType *cDCProto::ParseSpeed(const string &uspeed)
 {
 	string speed(uspeed, 0, uspeed.size() -1);

@@ -20,6 +20,7 @@
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
 #include "ccommand.h"
+#include "i18n.h"
 #include <iostream>
 using namespace std;
 
@@ -106,18 +107,16 @@ int cCommand::sCmdFunc::StringToIntFromList(const string &str, const char *strin
 	}
 
 	if(theInt == -1) {
-		(*mOS) << "Sorry, '" << str << "' is not implemented" << endl;
-		(*mOS) << "Only known: ";
+		(*mOS) << autosprintf(_("Command suffix %s is not implemented, known suffixes are"), str.c_str()) << ":";
 		for(i = 0; i < item_count; i++)
-			(*mOS) << stringlist[i] << " ";
-		(*mOS) << endl;
+			(*mOS) << " " << stringlist[i];
 	}
 	return theInt;
 }
 
 void cCommand::Describe(ostream &os)
 {
-	os << "Id regex: " << mIdRegexStr << "\tParams regex: " << mParRegexStr;
+	os << _("Suffix regular expression") << ": " << mIdRegexStr << "\t" << _("Parameters regular expression") << ": " << mParRegexStr;
 }
 
 void cCommand::GetSyntaxHelp(ostream &os)

@@ -20,6 +20,7 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
+
 #include "src/cserverdc.h"
 #include "src/script_api.h"
 #include "callbacks.h"
@@ -37,7 +38,7 @@ namespace nVerliHub {
 
 cLuaInterpreter::cLuaInterpreter(string scriptname) : mScriptName(scriptname)
 {
-	mL = lua_open();
+	mL = luaL_newstate(); // lua_open() could be used in <=5.1
 }
 
 cLuaInterpreter::~cLuaInterpreter()
@@ -66,7 +67,9 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("CloseConnection",   &_Disconnect); /* back compatibility */
 	RegisterFunction("Disconnect",   &_Disconnect);
 	RegisterFunction("DisconnectByName",   &_Disconnect); /* back compatibility */
+	RegisterFunction("StopHub", &_StopHub);
 	RegisterFunction("GetUserCC",   &_GetUserCC);
+	RegisterFunction("GetIPCC", &_GetIPCC);
 	RegisterFunction("GetMyINFO",         &_GetMyINFO);
 	RegisterFunction("GetUpTime",         &_GetUpTime);
 	RegisterFunction("RegBot",          &_RegBot);
@@ -84,9 +87,12 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("GetUserHost",       &_GetUserHost);
 	RegisterFunction("GetUserIP",         &_GetUserIP);
 	RegisterFunction("IsUserOnline",         &_IsUserOnline);
+	RegisterFunction("InUserSupports", &_InUserSupports);
 	RegisterFunction("Ban",               &_Ban);
 	RegisterFunction("KickUser",          &_KickUser);
-	RegisterFunction("ParseCommand",      &_ParseCommand);
+	RegisterFunction("ReportUser", &_ReportUser);
+	RegisterFunction("SendToOpChat", &_SendToOpChat);
+	RegisterFunction("ParseCommand", &_ParseCommand);
 	RegisterFunction("SetConfig",         &_SetConfig);
 	RegisterFunction("GetConfig",         &_GetConfig);
 
@@ -117,15 +123,24 @@ bool cLuaInterpreter::Init()
 		return false;
 	}
 
-	lua_pushstring(mL, LUA_PI_VERSION); lua_setglobal(mL,"_PLUGINVERSION");
+	lua_pushstring(mL, LUA_PI_VERSION);
+	lua_setglobal(mL, "_PLUGINVERSION");
+	lua_pushstring(mL, VERSION);
+	lua_setglobal(mL, "_HUBVERSION");
 	return true;
 }
 
 void cLuaInterpreter::Load()
 {
-	//Call Main first if exists
-	char * args[] = { NULL };
+	// call Main() first if exists
+
+	char * args[] = {
+		(char *)mScriptName.c_str(), // set first argument to script name, could be useful for path detection
+		NULL
+	};
+
 	CallFunction("Main", args);
+	//if (!CallFunction("Main", args)) @todo: unload self
 }
 
 void cLuaInterpreter::ReportLuaError(char * error)
@@ -148,51 +163,119 @@ void cLuaInterpreter::RegisterFunction(const char *fncname, int (*fncptr)(lua_St
 	lua_rawset(mL, -3);
 }
 
-bool cLuaInterpreter::CallFunction(const char * func, char * args[])
+bool cLuaInterpreter::CallFunction(const char * func, char * args[], cConnDC *conn)
 {
 	lua_settop(mL, 0);
 	int base = lua_gettop(mL);
 	lua_pushliteral(mL, "_TRACEBACK");
-	lua_rawget(mL, LUA_GLOBALSINDEX);
-	lua_insert(mL, base);
 
+	#if defined LUA_GLOBALSINDEX
+		lua_rawget(mL, LUA_GLOBALSINDEX); // <=5.1
+	#else
+		lua_pushglobaltable(mL); // >=5.2
+	#endif
+
+	lua_insert(mL, base);
 	lua_getglobal(mL, func);
 
-	if(lua_isnil(mL, -1))
-	{
+	if (lua_isnil(mL, -1)) {
 		// function not exists
 		lua_pop(mL, -1); // remove nil value
 		lua_remove(mL, base); // remove _TRACEBACK
-	}
-	else
-	{
-		int i=0;
-		while(args[i] != NULL)
-		{
+	} else {
+		int i = 0;
+
+		while (args[i] != NULL) {
 			lua_pushstring(mL, args[i]);
 			i++;
 		}
 
 		int result = lua_pcall(mL, i, 1, base);
-		if(result)
-		{
+
+		if (result) {
 			const char *msg = lua_tostring(mL, -1);
-			if(msg == NULL)
-				msg = _("(unknown LUA error)");
+			if (msg == NULL) msg = _("(unknown LUA error)");
 			cout << "LUA error: " << msg << endl;
-			ReportLuaError( (char *) msg);
+			ReportLuaError((char *)msg);
 			lua_pop(mL, 1);
 			lua_remove(mL, base); // remove _TRACEBACK
 			return true;
 		}
 
-		int val = (int)lua_tonumber(mL, -1);
+		bool ret = true;
+
+		if (lua_istable(mL, -1)) {
+			/*
+			* new style, advanced table return:
+			*
+			* table index = 1, type = string:
+			* value: data = protocol message to send
+			* value: empty = dont send anything
+			*
+			* table index = 2, type = boolean:
+			* value: 0 = discard
+			* value: 1 = dont discard
+			*
+			* table index = 3, type = boolean:
+			* value: 0 = disconnect user
+			* value: 1 = dont disconnect
+			*/
+
+			i = lua_gettop(mL);
+			lua_pushnil(mL);
+
+			while (lua_next(mL, i) != 0) {
+				if (lua_isnumber(mL, -2)) { // table keys must not be named
+					int key = (int)lua_tonumber(mL, -2);
+
+					if (key == 1) { // message?
+						if (lua_isstring(mL, -1) && (conn != NULL)) { // value at index 1 must be a string, connection is required
+							string data = lua_tostring(mL, -1);
+							if (!data.empty()) conn->Send(data, false); // send data, script must add the ending pipe
+						}
+					} else if (key == 2) { // discard?
+						if (lua_isnumber(mL, -1)) { // value at index 2 must be a boolean
+							if ((int)lua_tonumber(mL, -1) == 0) ret = false;
+						} else { // accept boolean and nil
+							if ((int)lua_toboolean(mL, -1) == 0) ret = false;
+						}
+					} else if (key == 3) { // disconnect?
+						if (conn != NULL) { // connection is required
+							if (lua_isnumber(mL, -1)) { // value at index 3 must be a boolean
+								if ((int)lua_tonumber(mL, -1) == 0) {
+									conn->CloseNow(); // disconnect user
+									ret = false; // automatically discard due disconnect
+								}
+							} else { // accept boolean and nil
+								if ((int)lua_toboolean(mL, -1) == 0) {
+									conn->CloseNow(); // disconnect user
+									ret = false; // automatically discard due disconnect
+								}
+							}
+						}
+					}
+				}
+
+				lua_pop(mL, 1);
+			}
+		} else if (lua_isnumber(mL, -1)) {
+			/*
+			* old school, simple boolean return for backward compatibility:
+			*
+			* type = boolean:
+			* value: 0 = discard
+			* value: 1 = dont discard
+			*/
+
+			if ((int)lua_tonumber(mL, -1) == 0) ret = false;
+		} else { // accept boolean and nil
+			// same as above
+			if ((int)lua_toboolean(mL, -1) == 0) ret = false;
+		}
+
 		lua_pop(mL, 1);
-
 		lua_remove(mL, base); // remove _TRACEBACK
-
-		if(!(bool)val)
-			return false;
+		return ret;
 	}
 
 	return true;

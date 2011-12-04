@@ -41,10 +41,10 @@ cPlugs *cPlugConsole::GetTheList()
 
 void cPlugConsole::ListHead(ostream *os)
 {
-	(*os) << "\r\n";
-	(*os) << "\n[*] " << setw(PADDING) << setiosflags(ios::left) << _("Plugman version") << mOwner->Version().c_str() << endl;
-	(*os) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Verlihub executable") << mOwner->mServer->mExecPath.c_str() << endl;
-	(*os) << "[*] " << setw(PADDING) << setiosflags(ios::left) << "Verlihub make-time" << cTime(mOwner->mList->mVHTime,0).AsDate() << "\n" << endl;
+	(*os) << "\r\n\r\n";
+	(*os) << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Plugman version") << mOwner->Version().c_str() << endl;
+	(*os) << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Verlihub executable") << mOwner->mServer->mExecPath.c_str() << endl;
+	(*os) << " [*] " << setw(PADDING) << setiosflags(ios::left) << "Verlihub make time" << cTime(mOwner->mList->mVHTime,0).AsDate() << "\r\n";
 }
 
 const char *cPlugConsole::CmdSuffix()
@@ -146,7 +146,7 @@ bool cPlugConsole::ReadDataFromCmd(cfBase *cmd, int id, cPlug &data)
 
 	cmd->GetParStr(eADD_NICK, data.mNick);
 	if ((data.mNick.size() > 10) && (id == eLC_ADD)) {
-		*cmd->mOS << _("Plugin name must be max 10 characters long; please provide another one.");
+		*cmd->mOS << _("Plugin name must be max 10 characters long, please provide another one.");
 		return false;
 	}
 	cmd->GetParUnEscapeStr(eADD_PATH, data.mPath);
@@ -168,46 +168,75 @@ void cPlugConsole::AddCommands()
 	mCmdr.Add(&mCmdOn);
 	mCmdr.Add(&mCmdOff);
 	mCmdr.Add(&mCmdRe);
-
 }
 
 bool cPlugConsole::cfOn::operator()()
 {
 	cPlug Data;
-	if(GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data)) {
+
+	if (GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data)) {
 		cPlug *Plug = GetTheList()->FindData(Data);
+
 		if (Plug) {
 			bool res = Plug->Plugin();
-			// Show an error if it fails
-			if(!res) *mOS << Plug->mLastError;
+
+			if (!res) // show an error if it fails
+				(*mOS) << Plug->mLastError;
+			else
+				(*mOS) << _("Plugin loaded.");
+
 			return res;
 		}
-		*mOS << autosprintf(_("Plugin '%s' not found."), Data.mNick.c_str());
+
+		(*mOS) << autosprintf(_("Plugin not found: %s"), Data.mNick.c_str());
 	}
+
 	return false;
 }
 
 bool cPlugConsole::cfOff::operator()()
 {
 	cPlug Data;
-	if(GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data)) {
+
+	if (GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data)) {
 		cPlug *Plug = GetTheList()->FindData(Data);
-		if(Plug)
-			return Plug->Plugout();
-		*mOS << autosprintf(_("Plugin '%s' not found."), Data.mNick.c_str());
+
+		if (Plug) {
+			if (Plug->Plugout()) {
+				(*mOS) << _("Plugin unloaded.");
+				return true;
+			} else {
+				(*mOS) << _("Plugin not unloaded, probably because it's not loaded.");
+				return false;
+			}
+		}
+
+		(*mOS) << autosprintf(_("Plugin not found: %s"), Data.mNick.c_str());
 	}
+
 	return false;
 }
 
 bool cPlugConsole::cfRe::operator()()
 {
 	cPlug Data;
-	if(GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data)) {
+
+	if (GetConsole() && GetConsole()->ReadDataFromCmd(this, eLC_ON, Data)) {
 		cPlug *Plug = GetTheList()->FindData(Data);
-		if(Plug)
-			return Plug->Replug();
-		*mOS << autosprintf(_("Plugin '%s' not found."), Data.mNick.c_str());
+
+		if (Plug) {
+			if (Plug->Replug()) {
+				(*mOS) << _("Plugin reloaded.");
+				return true;
+			} else {
+				(*mOS) << _("Plugin not reloaded, probably because it's not loaded.");
+				return false;
+			}
+		}
+
+		(*mOS) << autosprintf(_("Plugin not found: %s"), Data.mNick.c_str());
 	}
+
 	return false;
 }
 

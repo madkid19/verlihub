@@ -101,26 +101,28 @@ namespace nVerliHub {
 			eTO_MAXTO
 		} tTimeOut;
 
-		/**
-		 * Support flags for client and hub features sent in $Support
-		 * protocol message.
-		 */
+		// support flags for client and hub features sent in $Supports protocol message
 		typedef enum
 		{
-			/// OpPlus feature.
 			eSF_OPPLUS = 1,
-			/// NoHello feature.
 			eSF_NOHELLO = 1 << 1,
-			/// NoGetINFO feature.
 			eSF_NOGETINFO = 1 << 2,
-			/// Passive user feature.
-			eSF_PASSIVE = 1 << 3,
-			/// Quicklist feature.
+			eSF_DHT0 = 1 << 3,
 			eSF_QUICKLIST = 1 << 4,
-			/// BOTinfo feature.
 			eSF_BOTINFO = 1 << 5,
-			/// ZLib feature.
-			eSF_ZLIB = 1 << 6
+			eSF_ZLIB = 1 << 6,
+			eSF_CHATONLY = 1 << 7,
+			eSF_MCTO = 1 << 8,
+			eSF_USERCOMMAND = 1 << 9,
+			eSF_BOTLIST = 1 << 10,
+			eSF_HUBTOPIC = 1 << 11,
+			eSF_USERIP2 = 1 << 12,
+			eSF_TTHSEARCH = 1 << 13,
+			eSF_FEED = 1 << 14,
+			eSF_CLIENTID = 1 << 15,
+			eSF_IN = 1 << 16,
+			eSF_BANMSG = 1 << 17,
+			eSF_TLS = 1 << 18
 		} tSupportFeature;
 	};
 

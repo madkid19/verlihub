@@ -29,17 +29,20 @@ namespace nVerliHub {
 
 cDCConf::cDCConf( cServerDC &serv ): mS(serv)
 {
+	// @rolex: is this even used? if no then make usable, if yes then lengths are completely wrong
 	max_length[eDC_KEY]=128;
-	max_length[eDC_VALIDATENICK]=64;
+	max_length[eDC_VALIDATENICK]=64; // for example: cmd len + max_nick
 	max_length[eDC_MYPASS]=64;
 	max_length[eDC_VERSION]=32;
 	max_length[eDC_GETNICKLIST]=16;
 	max_length[eDC_MYNIFO]=128;
-	max_length[eDC_GETINFO]=10+max_nick;
+	max_length[eDC_GETINFO] = 10+max_nick;
+	max_length[eDC_USERIP] = 11 + max_nick;
 	max_length[eDC_CONNECTTOME]=32*2*max_nick;
 	max_length[eDC_MCONNECTTOME]=64;
 	max_length[eDC_RCONNECTTOME]=64;
 	max_length[eDC_TO]=2048;
+	max_length[eDC_MCTO] = 2048;
 	max_length[eDC_CHAT]=1024;
 	max_length[eDC_QUIT]=64;
 	max_length[eDC_OPFORCEMOVE]=512;
@@ -62,6 +65,7 @@ void cDCConf::AddVars()
 	Add("hub_desc",hub_desc,string("No Description"));
 	Add("hub_topic",hub_topic,"");
 	Add("hub_category",hub_category,string(""));
+	Add("hub_icon_url", hub_icon_url, string(""));
 	Add("hub_owner",hub_owner,string(""));
 	Add("hub_version",hub_version,VERSION);
 	Add("hub_version_special",hub_version_special,string(""));
@@ -88,6 +92,8 @@ void cDCConf::AddVars()
 
 	// Max users configuration
 	Add("max_users",max_users_total,6000);
+	Add("max_users_passive", max_users_passive, -1);
+	Add("max_users_from_ip", max_users_from_ip, 0);
 	Add("max_extra_regs",max_extra_regs,25);
 	Add("max_extra_vips",max_extra_vips,50);
 	Add("max_extra_ops",max_extra_ops,100);
@@ -159,10 +165,16 @@ void cDCConf::AddVars()
 	Add("int_flood_pm_limit", int_flood_pm_limit, 5);
 	// End private message configuration
 
+	// private mainchat message configuration
+	Add("max_flood_counter_mcto", max_flood_counter_mcto, 5);
+	Add("int_flood_mcto_period", int_flood_mcto_period, 5);
+	Add("int_flood_mcto_limit", int_flood_mcto_limit, 5);
+
 	// User control configuration
 	Add("classdif_reg", classdif_reg, 2);
 	Add("classdif_kick", classdif_kick, 0);
 	Add("classdif_pm",classdif_pm,10);
+	Add("classdif_mcto", classdif_mcto, 10);
 	//Add("classdif_search",classdif_search,10);
 	Add("classdif_download",classdif_download,10);
 	Add("min_class_use_hub",min_class_use_hub,0);
@@ -189,14 +201,16 @@ void cDCConf::AddVars()
 	Add("default_password_encryption",default_password_encryption,1); //eCRYPT_ENCRYPT
 	Add("password_min_len", password_min_len, 6);
 	Add("pwd_tmpban", pwd_tmpban, 10);
+	Add("wrongpass_message", wrongpass_message, "");
 	Add("wrongpassword_report", wrongpassword_report, 1);
+	Add("wrongauthip_report", wrongauthip_report, true);
 	Add("botinfo_report", botinfo_report, 0);
 	Add("send_user_ip",send_user_ip,false);
 	Add("send_user_info", send_user_info, true);
 	// End user control configuration
 
 	// Advanced hub configuration and tweaks
-	Add("extended_welcome_message", extended_welcome_message, 0);
+	Add("extended_welcome_message", extended_welcome_message, 1);
 	Add("host_header", host_header, 1);
 	Add("int_myinfo",int_myinfo,60);
 	Add("int_nicklist",int_nicklist,60);
@@ -244,8 +258,13 @@ void cDCConf::AddVars()
 	Add("desc_insert_mode", desc_insert_mode, false);
 	Add("show_email",show_email,1);
 	Add("show_speed",show_speed,1);
-	Add("tag_max_hs_ratio",tag_max_hs_ratio,100.0);
+	Add("tag_min_hs_ratio", tag_min_hs_ratio, 0.);
+	Add("tag_max_hs_ratio", tag_max_hs_ratio, 0.);
 	Add("tag_max_hubs",tag_max_hubs,100);
+	Add("tag_min_hubs", tag_min_hubs, 0);
+	Add("tag_min_hubs_usr", tag_min_hubs_usr, 0);
+	Add("tag_min_hubs_reg", tag_min_hubs_reg, 0);
+	Add("tag_min_hubs_op", tag_min_hubs_op, 0);
 	Add("tag_min_version",tag_min_version,-1);
 	Add("tag_max_version",tag_max_version,-1);
 	// End tag configuration

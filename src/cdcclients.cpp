@@ -185,35 +185,43 @@ namespace nVerliHub {
 		is >> tag->mClientVersion;
 		is.clear();
 
-		int hubs = -1,tmp;
+		int hubs = -1, hubs_usr = -1, hubs_reg = -1, hubs_op = -1, tmp;
 		char c;
-		// Number of hubs
-		if(mParser.mHubsRE.Exec( tag->mTagBody ) >= 2) {
-			// Hubs where the user is guest
-			mParser.mHubsRE.Extract(1,tag->mTagBody,str);
+
+		if (mParser.mHubsRE.Exec(tag->mTagBody) >= 2) { // number of hubs
+			// hubs where the user is guest
+			mParser.mHubsRE.Extract(1, tag->mTagBody, str);
 			is.str(str);
 			is >> hubs;
 			is.clear();
-			// Hubs where the user is regged
-			if (mParser.mHubsRE.PartFound(2) && mServer->mC.tag_sum_hubs >=2) {
+			hubs_usr = hubs;
+
+			if (mParser.mHubsRE.PartFound(2)) { // hubs where the user is regged
 				tmp = 0;
-				mParser.mHubsRE.Extract(2,tag->mTagBody,str);
+				mParser.mHubsRE.Extract(2, tag->mTagBody, str);
 				is.str(str);
 				is >> c >> tmp;
 				is.clear();
-				hubs += tmp;
+				if (mServer->mC.tag_sum_hubs >= 2) hubs += tmp;
+				hubs_reg = tmp;
 			}
-			// Hubs where the user is operator
-			if (mParser.mHubsRE.PartFound(3)  && mServer->mC.tag_sum_hubs >=3) {
+
+			if (mParser.mHubsRE.PartFound(3)) { // hubs where the user is operator
 				tmp = 0;
-				mParser.mHubsRE.Extract(3,tag->mTagBody,str);
+				mParser.mHubsRE.Extract(3, tag->mTagBody, str);
 				is.str(str);
 				is >> c >> tmp;
 				is.clear();
-				hubs += tmp;
+				if (mServer->mC.tag_sum_hubs >= 3) hubs += tmp;
+				hubs_op = tmp;
 			}
+
 			tag->mTotHubs = hubs;
+			tag->mHubsUsr = hubs_usr;
+			tag->mHubsReg = hubs_reg;
+			tag->mHubsOp = hubs_op;
 		}
+
 		// Open slot
 		if(mParser.mSlotsRE.Exec( tag->mTagBody ) >= 2) {
 			mParser.mSlotsRE.Extract(1,tag->mTagBody,str);
@@ -335,8 +343,8 @@ namespace nVerliHub {
 		(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Client ID"));
 		(*os) << setw(30) << setiosflags(ios::left) << toUpper(_("Version"));
 		(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Banned?"));
-		(*os) << toUpper(_("Status")) << endl;
-		(*os) << " " << string(15+15+35+15+15,'=') << endl;
+		(*os) << toUpper(_("Status")) << "\r\n";
+		(*os) << " " << string(15+15+35+15+15,'=');
 	}
 
 	bool cDCClientConsole::IsConnAllowed(cConnDC *conn,int cmd)

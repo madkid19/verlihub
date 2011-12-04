@@ -32,7 +32,7 @@ cKickList::cKickList(cMySQL &mysql) : cConfMySQL(mysql)
 {
 	SetClassName("cKickList");
 	mMySQLTable.mName = "kicklist";
-	AddCol("nick", "varchar(30)", "", false, mModel.mNick);
+	AddCol("nick", "varchar(64)", "", false, mModel.mNick);
 	AddPrimaryKey("nick");
 	AddCol("time", "int(11)", "", false, mModel.mTime);
 	AddPrimaryKey("time");
@@ -41,7 +41,7 @@ cKickList::cKickList(cMySQL &mysql) : cConfMySQL(mysql)
 	AddCol("share_size", "varchar(15)", "", true, mModel.mShare);
 	AddCol("email", "varchar(128)", "", true, mModel.mEmail);
 	AddCol("reason", "text", "", true, mModel.mReason);
-	AddCol("op", "varchar(30)", "", false, mModel.mOp);
+	AddCol("op", "varchar(64)", "", false, mModel.mOp);
 	AddCol("is_drop", "tinyint(1)", "", true, mModel.mIsDrop);
 	mMySQLTable.mExtra = "PRIMARY KEY(nick, time), ";
 	mMySQLTable.mExtra+= "INDEX op_index (op), ";

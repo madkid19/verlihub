@@ -176,13 +176,12 @@ void cIPLog::AddFields()
 	AddCol("date","int(11)","",true, mModel.mDate );
 	AddCol("action","smallint(6)","0",true, mModel.mType);
 	AddCol("ip", "bigint(20)","",true, mModel.mIP);
-	AddCol("nick", "varchar(32)","",true, mModel.mNick);
+	AddCol("nick", "varchar(64)","",true, mModel.mNick);
 	AddCol("info","int(11)","",true, mModel.mInfo);
 	mMySQLTable.mExtra="id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,"
 		"index ind_ip(ip), index ind_nick(nick)";
 	SetBaseTo(&mModel);
 }
-
 
 /** log that user logged in */
 bool cIPLog::Log(cConnDC *conn, int action, int info)

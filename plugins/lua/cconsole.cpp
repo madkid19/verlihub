@@ -20,6 +20,7 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
+
 extern "C"
 {
 #include <lua.h>
@@ -90,7 +91,7 @@ bool cConsole::cfVersionLuaScript::operator()()
 bool cConsole::cfInfoLuaScript::operator()()
 {
 	int size = 0;
-	if(GetPI()->Size() > 0) size = lua_getgccount(GetPI()->mLua[0]->mL);
+	if(GetPI()->Size() > 0) size = lua_gc(GetPI()->mLua[0]->mL, LUA_GCCOUNT, 0); // lua_getgccount(GetPI()->mLua[0]->mL) could be used in <=5.1
 
 	(*mOS) << "\n" << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Version date") << __CURR_DATE_TIME__ << endl;
 	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Running scripts") << GetPI()->Size() << endl;

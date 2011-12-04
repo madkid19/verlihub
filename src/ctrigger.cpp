@@ -98,7 +98,6 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	ReplaceVarInString(sender, "PAR1", sender, par1);
 	if(!timeTrigger) ReplaceVarInString(sender, "NICK", sender, conn->mpUser->mNick);
 
-
 	if (mFlags & eTF_DB) {
 	  buf = mDefinition;
 	} else {
@@ -122,20 +121,25 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 	  ReplaceVarInString(buf, "PARALL", buf, parall);
 	  ReplaceVarInString(buf, "PAR1", buf, par1);
 	  ReplaceVarInString(buf, "END1", buf, end1);
+
 	  if(!timeTrigger) {
 		ReplaceVarInString(buf, "CC", buf, conn->mCC);
 		ReplaceVarInString(buf, "IP", buf, conn->AddrIP());
 		ReplaceVarInString(buf, "HOST", buf, conn->AddrHost());
 		ReplaceVarInString(buf, "NICK", buf, conn->mpUser->mNick);
+		ReplaceVarInString(buf, "CLASS", buf, (int)conn->mpUser->mClass);
 		ReplaceVarInString(buf, "SHARE", buf, convertByte(conn->mpUser->mShare, false));
 	  }
 
 	  ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.Size());
+	  ReplaceVarInString(buf, "USERS_ACTIVE", buf, (int)server.mActiveUsers.Size());
+	  ReplaceVarInString(buf, "USERS_PASSIVE", buf, (int)server.mPassiveUsers.Size());
 	  ReplaceVarInString(buf, "USERSPEAK", buf, (int)server.mUsersPeak);
 	  ReplaceVarInString(buf, "UPTIME", buf, theTime.AsPeriod().AsString());
 	  ReplaceVarInString(buf, "VERSION", buf, VERSION);
 	  ReplaceVarInString(buf, "HUBNAME", buf, server.mC.hub_name);
 	  ReplaceVarInString(buf, "HUBTOPIC", buf,server.mC.hub_topic);
+	  ReplaceVarInString(buf, "HUBDESC", buf,server.mC.hub_desc);
 	  ReplaceVarInString(buf, "VERSION_DATE", buf, __CURR_DATE_TIME__);
 	  ReplaceVarInString(buf, "TOTAL_SHARE", buf, convertByte(server.mTotalShare, false));
 	  char tmf[3];

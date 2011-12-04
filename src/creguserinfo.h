@@ -103,6 +103,8 @@ class cRegUserInfo
 		string mLoginIP;
 		/** last error ip */
 		string mErrorIP;
+		// authorization ip for account
+		string mAuthIP;
 		/** alternate IP address for the ConnectToMe messages ip */
 		string mAlternateIP;
 		/** can change password */

@@ -187,14 +187,14 @@ const char *cConnTypeConsole::CmdPrefix(){ return "!";}
 
 void cConnTypeConsole::ListHead(ostream *os)
 {
-	(*os) << "\n ";
+	(*os) << "\r\n ";
 	(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Name"));
 	(*os) << setw(12) << setiosflags(ios::left) << toUpper(_("Min slot"));
 	(*os) << setw(10) << setiosflags(ios::left) << toUpper(_("Max slot"));
 	(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Min upload"));
 	(*os) << setw(18) << setiosflags(ios::left) << toUpper(_("Min upload/slot"));
-	(*os) << toUpper(_("Description")) << "\n";
-	(*os) << " " << string(15+12+10+15+35,'=') << endl;
+	(*os) << toUpper(_("Description")) << "\r\n";
+	(*os) << " " << string(15+12+10+15+35,'=');
 }
 
 bool cConnTypeConsole::IsConnAllowed(cConnDC *conn,int cmd)

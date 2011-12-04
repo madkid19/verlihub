@@ -65,6 +65,8 @@ public:
 	friend class nVerliHub::nSocket::cConnDC;
 public:
 	unsigned int max_users_total;
+	int max_users_passive;
+	unsigned int max_users_from_ip;
 	unsigned int max_users[7];
 	unsigned int max_extra_regs;
 	unsigned int max_extra_vips;
@@ -96,6 +98,7 @@ public:
 	unsigned max_chat_msg;
 	int max_chat_lines;
 	int max_flood_counter_pm;
+	int max_flood_counter_mcto;
 	int nicklist_on_login;
 	bool delayed_login;
 	int delayed_search;
@@ -108,9 +111,10 @@ public:
 	string nick_prefix_autoreg;
 	bool nick_prefix_cc;
 	bool extended_welcome_message;
-	int host_header;
+	unsigned int host_header;
 	string hub_security;
 	string hub_category;
+	string hub_icon_url;
 	string hub_security_desc;
 	string opchat_name;
 	string opchat_desc;
@@ -136,6 +140,7 @@ public:
 	unsigned classdif_search;
 	unsigned classdif_download;
 	unsigned classdif_pm;
+	unsigned classdif_mcto;
 	unsigned classdif_kick;
 	int min_class_register;
 	int min_class_bc;
@@ -156,6 +161,8 @@ public:
 	int int_login;
 	int int_flood_pm_period;
 	int int_flood_pm_limit;
+	int int_flood_mcto_period;
+	int int_flood_mcto_limit;
 	int int_chat_ms;
 	int int_nicklist;
 	int int_myinfo;
@@ -177,6 +184,11 @@ public:
 	string ip_zone6_max;
 
 	int tag_max_hubs;
+	int tag_min_hubs;
+	int tag_min_hubs_usr;
+	int tag_min_hubs_reg;
+	int tag_min_hubs_op;
+	double tag_min_hs_ratio;
 	double tag_max_hs_ratio;
 	bool tag_allow_unknown;
 	bool tag_allow_none;
@@ -201,7 +213,9 @@ public:
 	int default_password_encryption;
 	int password_min_len;
 	int pwd_tmpban;
+	string wrongpass_message;
 	int wrongpassword_report;
+	bool wrongauthip_report;
 	int botinfo_report;
 	double timeout_length[6];
 

@@ -47,6 +47,7 @@ class cPenaltyList : public cConfMySQL
 		struct sPenalty
 		{
 			string mNick;
+			string mOpNick;
 			long mSince;
 			long mStartChat;
 			long mStartSearch;

@@ -26,6 +26,7 @@
 #include "cconndc.h"
 #include "cfreqlimiter.h"
 #include "cpenaltylist.h"
+#include "ctime.h"
 
 using namespace std;
 namespace nVerliHub {
@@ -79,12 +80,14 @@ namespace nVerliHub {
 			eFH_SEARCH,
 			eFH_CHAT,
 			eFH_PM,
+			eFH_MCTO,
 			eFH_LAST_FH
 		} tFloodHashes;
 
 		typedef enum
 		{
 			eFC_PM,
+			eFC_MCTO,
 			eFC_LAST_FC
 		} tFloodCounters;
 	};
@@ -217,18 +220,21 @@ public:
 	int mHideKicksForClass;
 	/* PM flood detector */
 	cFreqLimiter mFloodPM;
+	// MCTo flood detector
+	cFreqLimiter mFloodMCTo;
 
 	protected: // Protected attributes
 
 	public: long ShareEnthropy(const string &sharesize);
 	void DisplayInfo(ostream &os, int DisplClass);
+	void DisplayRightsInfo(ostream &os, bool head = false);
 
 	/*!
 		\fn Can(unsigned Right, long now = 0, unsigned OtherClass = 0)
 		return true if the user has given rights
 	*/
 	bool Can(unsigned Right, long now = 0, unsigned OtherClass = 0);
-	void SetRight(unsigned Right, long until, bool allow=false);
+	void SetRight(unsigned Right, long until, bool allow = false, bool notify = false);
 	void ApplyRights(cPenaltyList::sPenalty &pen);
 };
 

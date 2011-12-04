@@ -85,13 +85,14 @@ class cDCProto : public cProtocol
 	*/
 	int NickList(nSocket::cConnDC *);
 
-	/**
+	/*
 	* Check if the message is a command and pass it to the console.
-	* @param msg The message.
-	* @param conn User connection.
-	* @return 1 if the message is a command, 0 otherwise.
+	* msg = The message.
+	* conn = User connection.
+	* flag = Message is sent in PM or MC.
+	* return = 1 if the message is a command otherwise 0.
 	*/
-	int ParseForCommands(const string &, nSocket::cConnDC *);
+	int ParseForCommands(const string &, nSocket::cConnDC *, int);
 
 	/**
 	* Process a given protocol message that has been already parsed.
@@ -100,8 +101,6 @@ class cDCProto : public cProtocol
 	* @return A negative number if an error occurs or zero otherwise.
 	*/
 	virtual int TreatMsg(cMessageParser *msg,  nSocket::cAsyncConn *conn);
-
-
 protected:
 
 	/**
@@ -146,14 +145,6 @@ protected:
 	int DCB_BotINFO(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
-	* Treat protocol message. NOT IMPLEMENTED.
-	* @param msg The parsed message.
-	* @param conn User connection.
-	* @return A negative number if an error occurs or zero otherwise.
-	*/
-	int DCO_Banned(cMessageDC * msg, nSocket::cConnDC * conn);
-
-	/**
 	* Treat $WhoIP protocol message and send requested users' IP.
 	* @param msg The parsed message.
 	* @param conn User connection.
@@ -165,6 +156,7 @@ protected:
 	int DC_GetNickList(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_GetINFO(cMessageDC * msg, nSocket::cConnDC * conn);
+	int DC_UserIP(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_MyINFO(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
@@ -175,8 +167,6 @@ protected:
 	int DC_RevConnectToMe(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** Treat the DC message in a appropriate way */
 	int DC_MultiConnectToMe(cMessageDC * msg, nSocket::cConnDC * conn);
-	/** Network info (neo Modus) */
-	int DCM_NetInfo(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** operator ban */
 	int DCO_TempBan(cMessageDC * msg, nSocket::cConnDC * conn);
 	/** operator unban */
@@ -277,6 +267,14 @@ protected:
 	*/
 	int DC_To(cMessageDC * msg, nSocket::cConnDC * conn);
 
+	/*
+	* Treat $MCTo: protocol message.
+	* Check also private message flood.
+	* msg = The parsed message.
+	* conn = User connection.
+	* return = A negative number if an error occurs or zero otherwise.
+	*/
+	int DC_MCTo(cMessageDC * msg, nSocket::cConnDC * conn);
 
 	/**
 	* Treat $ValidateNick protocol message.

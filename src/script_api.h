@@ -32,13 +32,15 @@ namespace nVerliHub {
 	bool SendToAll(char *data);
 	bool SendPMToAll(char *data, char *from, int min_class,  int max_class);
 	bool CloseConnection(char *nick);
+	bool StopHub(int code);
 	char * GetUserCC(char * nick);
+	string GetIPCC(const string);
 	char * GetMyINFO(char *nick);
 	int GetUserClass(char *nick);
 	char * GetUserHost(char *nick);
 	char * GetUserIP(char *nick);
 	bool Ban(char *, const string, const string, unsigned, unsigned);
-	char * ParseCommand(char *command_line);
+	bool ParseCommand(char *nick, char *cmd, int pm);
 	bool KickUser(char *OPNick, char *nick, char *reason);
 	bool SetConfig(char *config_name, char *var, char *val);
 	int GetConfig(char *config_name, char *var, char *val, int size);

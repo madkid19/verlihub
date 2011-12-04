@@ -30,7 +30,7 @@ namespace nVerliHub {
 
 cpiPlug::cpiPlug()
 {
-	mName = "plugman";
+	mName = "Plugman";
 	mVersion = PLUGMAN_VERSION;
 }
 
@@ -61,4 +61,3 @@ bool cpiPlug::OnOperatorCommand(cConnDC *conn, string *str)
 }; // namespace nVerliHub
 
 REGISTER_PLUGIN(nVerliHub::nPlugMan::cpiPlug);
-

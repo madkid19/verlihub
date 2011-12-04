@@ -168,7 +168,7 @@ unsigned int cConnDC::GetLSFlag(unsigned int statusFlag)
 
 const char *cConnDC::GetTimeOutType(tTimeOut timeout)
 {
-	static const char *timeoutType [] = { _("Key"), _("ValidateNick"), _("Login"), _("MyINFO"), _("Flush"), _("Set Password") };
+	static const char *timeoutType [] = {_("Key"), _("ValidateNick"), _("Login"), _("MyINFO"), _("Password")};
 	return timeoutType[timeout];
 }
 
@@ -180,7 +180,7 @@ int cConnDC::OnTimer(cTime &now)
 	int i;
 	for(i=0; i < eTO_MAXTO; i++) {
 		if(!CheckTimeOut(tTimeOut(i), now)) {
-			os << _("Operation timeout") << " (" << this->GetTimeOutType(tTimeOut(i)) << ")";
+			os << autosprintf(_("Operation timeout: %s"), this->GetTimeOutType(tTimeOut(i)));
 			if(Log(2))
 				LogStream() << "Operation timeout (" << tTimeOut(i) << ")" << endl;
 			Server()->ConnCloseMsg(this,os.str(),6000, eCR_TIMEOUT);
@@ -372,6 +372,9 @@ void cDCConnFactory::DeleteConn(cAsyncConn * &connection)
 {
 	cConnDC *conn = (cConnDC*)connection;
 	if (conn) {
+		#ifndef WITHOUT_PLUGINS
+		mServer->mCallBacks.mOnCloseConn.CallAll(conn);
+		#endif
 		if(conn->GetLSFlag(eLS_ALLOWED)) {
 			mServer->mUserCountTot--;
 			mServer->mUserCount[conn->mGeoZone]--;
@@ -385,9 +388,6 @@ void cDCConnFactory::DeleteConn(cAsyncConn * &connection)
 			delete conn->mpUser;
 			conn->mpUser  = NULL;
 		}
-		#ifndef WITHOUT_PLUGINS
-		mServer->mCallBacks.mOnCloseConn.CallAll(conn);
-		#endif
 	}
 	cConnFactory::DeleteConn(connection);
 }

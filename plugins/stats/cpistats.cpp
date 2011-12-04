@@ -51,7 +51,7 @@ bool cpiStats::RegisterAll()
 	return true;
 }
 
-bool cpiStats::OnTimer()
+bool cpiStats::OnTimer(long msec)
 {
 	if(mStatsTimer.Check(this->mServer->mTime , 1) == 0)  {
 		this->mStats->mTime = this->mServer->mTime.Sec();

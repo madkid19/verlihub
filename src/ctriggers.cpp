@@ -381,14 +381,14 @@ const char *cTriggerConsole::CmdSuffix(){ return "trigger";}
 
 void cTriggerConsole::ListHead(ostream *os)
 {
-	(*os) << "\n ";
+	(*os) << "\r\n ";
 	(*os) << setw(30) << setiosflags(ios::left) << toUpper(_("Name"));
 	(*os) << setw(25) << setiosflags(ios::left) << toUpper(_("Definition"));
 	(*os) << setw(8) << setiosflags(ios::left) << toUpper(_("Flag"));
 	(*os) << setw(15) << setiosflags(ios::left) << toUpper(_("Send as"));
 	(*os) << setw(10) << setiosflags(ios::left) << toUpper(_("Min class"));
-	(*os) << toUpper(_("Max class")) << "\n";
-	(*os) << " " << string(30+25+8+10+10+15,'=') << endl;
+	(*os) << toUpper(_("Max class")) << "\r\n";
+	(*os) << " " << string(30+25+8+10+10+15,'=');
 }
 
   /**

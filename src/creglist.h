@@ -52,7 +52,7 @@ public:
 		if not foud return 0
 		else return 1 and fill in the reuserinfo parameter */
 	bool FindRegInfo(cRegUserInfo &, const string &nick);
-	bool ShowUsers(cConnDC *op, ostream &os, int page, int offset, string nick);
+	int ShowUsers(cConnDC *op, ostringstream &os, int cls);
 	/** add registered user */
 	bool AddRegUser(const string &nick, nSocket::cConnDC *op, int cl, const char *password = NULL);
 	/** No descriptions */

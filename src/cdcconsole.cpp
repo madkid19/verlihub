@@ -22,6 +22,7 @@
 #include "cserverdc.h"
 #include "cdcconsole.h"
 #include "cuser.h"
+#include "cusercollection.h"
 #include "ckicklist.h"
 #include "ckick.h"
 #include "cinterpolexp.h"
@@ -61,10 +62,10 @@ cDCConsole::cDCConsole(cServerDC *s, cMySQL &mysql):
 	mCmdr(this),
 	mUserCmdr(this),
  	mCmdBan(int(eCM_BAN),".(del|rm|un|info|list|ls)?ban([^_\\s]+)?(_(\\d+\\S))?( this (nick|ip))? ?", "(\\S+)( (.*)$)?", &mFunBan),
-	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|noctm|nosearch|kvip|maykick|noshare|mayreg|mayopchat) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
+	mCmdGag(int(eCM_GAG),".(un)?(gag|nochat|nopm|nochats|noctm|nodl|nosearch|kvip|maykick|noshare|mayreg|mayopchat|noinfo|mayinfo) ", "(\\S+)( (\\d+\\w))?", &mFunGag),
 	mCmdTrigger(int(eCM_TRIGGER),".(ft|trigger)(\\S+) ", "(\\S+) (.*)", &mFunTrigger),
 	mCmdSetVar(int(eCM_SET),".(set|=) ", "(\\[(\\S+)\\] )?(\\S+) (.*)", &mFunSetVar),
-	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info|list) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
+	mCmdRegUsr(int(eCM_REG),".r(eg)?(n(ew)?(user)?|del(ete)?|pass(wd)?|(en|dis)able|(set)?class|(protect|hidekick)(class)?|set|=|info|list|lst) ", "(\\S+)( (((\\S+) )?(.*)))?", &mFunRegUsr),
 	mCmdRaw(int(eCM_RAW),".proto(\\S+)_(\\S+) ","(.*)", &mFunRaw),
 	mCmdCmd(int(eCM_CMD),".cmd(\\S+)","(.*)", &mFunCmd),
 	mCmdWho(int(eCM_WHO),".w(ho)?(\\S+) ","(.*)", &mFunWho),
@@ -141,225 +142,257 @@ cDCConsole::~cDCConsole(){
 
 int cDCConsole::OpCommand(const string &str, cConnDC * conn)
 {
+	if (!conn || !conn->mpUser) return 0;
 	istringstream cmd_line(str);
 	string cmd;
 	ostringstream os;
 	cmd_line >> cmd;
+	cmd = toLower(cmd); // @todo: use mS->mC.cmd_start_op instead of exclamation mark
 
-	if(!conn || !conn->mpUser) return 0;
-	tUserCl cl=conn->mpUser->mClass;
-
-	switch(cl) {
+	switch (conn->mpUser->mClass) {
 		case eUC_MASTER:
-			if( cmd == "!quit"      ) return CmdQuit(cmd_line,conn,0);
-			if( cmd == "!restart"   ) return CmdQuit(cmd_line,conn,1);
-			if( cmd == "!dbg_hash"  ) {
-				mOwner->mUserList.DumpProfile(cerr);
-				return 1;
-		 	}
-			if( cmd == "!core_dump" ) return CmdQuit(cmd_line,conn,-1);
-			if( cmd == "!hublist"   ) {
-				mOwner->RegisterInHublist(mOwner->mC.hublist_host, mOwner->mC.hublist_port, conn);
-				return 1;
-			}
+			if (cmd == "!quit") return CmdQuit(cmd_line, conn, 0);
+			if (cmd == "!restart") return CmdQuit(cmd_line, conn, 1);
+			if (cmd == "!dbg_hash") { mOwner->mUserList.DumpProfile(cerr); return 1; }
+			if (cmd == "!core_dump") return CmdQuit(cmd_line, conn, -1);
+			if (cmd == "!hublist") { mOwner->RegisterInHublist(mOwner->mC.hublist_host, mOwner->mC.hublist_port, conn); return 1; }
 		case eUC_ADMIN:
-			if( cmd == "!userlimit" || cmd=="!ul" ) return CmdUserLimit(cmd_line,conn);
-			if( cmd == "!reload"    || cmd=="!re" ) return CmdReload(cmd_line,conn);
+			if (cmd == "!userlimit" || cmd == "!ul") return CmdUserLimit(cmd_line, conn);
+			if (cmd == "!reload" || cmd == "!re") return CmdReload(cmd_line, conn);
 		case eUC_CHEEF:
-			if( cmd == "!ccbroadcast" || cmd=="!ccbc" ) return CmdCCBroadcast(cmd_line,conn,eUC_NORMUSER,eUC_MASTER);
-			if( cmd == "!class"                   ) return CmdClass     (cmd_line, conn);
-			if( cmd == "!protect"                 ) return CmdProtect   (cmd_line, conn);
+			if (cmd == "!ccbroadcast" || cmd == "!ccbc") return CmdCCBroadcast(cmd_line, conn, eUC_NORMUSER, eUC_MASTER);
+			if (cmd == "!class") return CmdClass(cmd_line, conn);
+			if (cmd == "!protect") return CmdProtect(cmd_line, conn);
 		case eUC_OPERATOR:
-			if( cmd == "!topic"      || cmd=="!hubtopic" ) return CmdTopic(cmd_line,conn);
-			if( cmd == "!getip"      || cmd=="!gi" ) return CmdGetip(cmd_line,conn);
-			if( cmd == "!gethost"    || cmd=="!gh" ) return CmdGethost(cmd_line,conn);
-			if( cmd == "!getinfo"    || cmd=="!gn" ) return CmdGetinfo(cmd_line,conn);
-			if( cmd == "!help"       || cmd=="!?"  ) return CmdHelp(cmd_line,conn);
-			if( cmd == "!hideme"     || cmd=="!hm" ) return CmdHideMe    (cmd_line, conn);
-			if( cmd == "!hidekick"   || cmd=="!hk" ) return CmdHideKick  (cmd_line, conn);
-			if( cmd == "!unhidekick" || cmd=="!uhk") return CmdUnHideKick(cmd_line, conn);
-			if( cmd == "!commands"   || cmd=="!cmds") return CmdCmds(cmd_line,conn);
+			if (cmd == "!topic" || cmd == "!hubtopic" ) return CmdTopic(cmd_line, conn);
+			if (cmd == "!getip" || cmd == "!gi") return CmdGetip(cmd_line, conn);
+			if (cmd == "!gethost" || cmd == "!gh") return CmdGethost(cmd_line, conn);
+			if (cmd == "!getinfo" || cmd == "!gn") return CmdGetinfo(cmd_line, conn);
+			if (cmd == "!help" || cmd == "!?") return CmdHelp(cmd_line, conn);
+			if (cmd == "!hideme" || cmd == "!hm") return CmdHideMe(cmd_line, conn);
+			if (cmd == "!hidekick" || cmd == "!hk") return CmdHideKick(cmd_line, conn);
+			if (cmd == "!unhidekick" || cmd == "!uhk") return CmdUnHideKick(cmd_line, conn);
+			if (cmd == "!commands" || cmd == "!cmds") return CmdCmds(cmd_line, conn);
 
 			try {
-				if(mCmdr.ParseAll(str, os, conn) >= 0) {
-					mOwner->DCPublicHS(os.str().c_str(),conn);
+				if (mCmdr.ParseAll(str, os, conn) >= 0) {
+					mOwner->DCPublicHS(os.str().c_str(), conn);
 					return 1;
 				}
-			} catch(const char *ex) {
+			} catch (const char *ex) {
 				if(Log(0)) LogStream() << "Exception in commands: " << ex << endl;
+			} catch (...) {
+				if(Log(0)) LogStream() << "Exception in commands." << endl;
 			}
-			catch (...) {
-				if(Log(0)) LogStream() << "Exception in commands.." << endl;
-			}
-
 		break;
-		default: return 0;
+		default:
+			return 0;
 		break;
 	}
-	if (mTriggers->DoCommand(conn,cmd, cmd_line, *mOwner))
-		return 1;
+
+	if (mTriggers->DoCommand(conn, cmd, cmd_line, *mOwner)) return 1;
 	return 0;
 }
 
-int cDCConsole::UsrCommand(const string & str, cConnDC * conn)
+int cDCConsole::UsrCommand(const string &str, cConnDC * conn)
 {
+	if (!conn || !conn->mpUser) return 0;
 	istringstream cmd_line(str);
 	ostringstream os;
 	string cmd;
+
 	if (mOwner->mC.disable_usr_cmds) {
-		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
+		mOwner->DCPublicHS(_("All user commands are currently disabled."), conn);
 		return 1;
 	}
-	cmd_line >> cmd;
 
-	switch(conn->mpUser->mClass) {
+	cmd_line >> cmd;
+	cmd = toLower(cmd); // @todo: use mS->mC.cmd_start_user instead of plus character
+
+	switch (conn->mpUser->mClass) {
 		case eUC_MASTER:
 		case eUC_ADMIN:
 		case eUC_CHEEF:
 		case eUC_OPERATOR:
 		case eUC_VIPUSER:
 		case eUC_REGUSER:
-			if( cmd == "+kick" ) return CmdKick( cmd_line, conn);
+			if (cmd == "+kick") return CmdKick(cmd_line, conn);
 		case eUC_NORMUSER:
-			if( cmd == "+passwd" ) return CmdRegMyPasswd( cmd_line, conn);
-			if( cmd == "+help"     ) return CmdHelp(cmd_line , conn);
-			if( cmd == "+myinfo" ) return CmdMyInfo( cmd_line, conn);
-			if( cmd == "+myip" ) return CmdMyIp( cmd_line, conn);
-			if( cmd == "+me" ) return CmdMe( cmd_line, conn);
-			if( cmd == "+regme" ) return CmdRegMe( cmd_line, conn);
-			if( cmd == "+chat" ) return CmdChat( cmd_line, conn, true);
-			if( cmd == "+nochat" ) return CmdChat( cmd_line, conn, false);
-			if( cmd == "+info" ) return CmdUInfo( cmd_line, conn);
-			if( cmd == "+release" ) return CmdRInfo( cmd_line, conn);
-			if(mUserCmdr.ParseAll(str, os, conn) >= 0)
-			{
-				mOwner->DCPublicHS(os.str().c_str(),conn);
+			if (cmd == "+passwd" || cmd == "+password") return CmdRegMyPasswd(cmd_line, conn);
+			if (cmd == "+help") return CmdHelp(cmd_line, conn);
+			if (cmd == "+myinfo") return CmdMyInfo(cmd_line, conn);
+			if (cmd == "+myip") return CmdMyIp(cmd_line, conn);
+			if (cmd == "+me") return CmdMe(cmd_line, conn);
+			if (cmd == "+regme") return CmdRegMe(cmd_line, conn);
+			if (cmd == "+chat") return CmdChat(cmd_line, conn, true);
+			if (cmd == "+nochat") return CmdChat(cmd_line, conn, false);
+			if (cmd == "+info") return CmdUInfo(cmd_line, conn);
+			if (cmd == "+release" || cmd == "+verlihub" || cmd == "+vh") return CmdRInfo(cmd_line, conn);
+
+			if (mUserCmdr.ParseAll(str, os, conn) >= 0) {
+				mOwner->DCPublicHS(os.str().c_str(), conn);
 				return 1;
 			}
 		break;
-		default: break;
+		default:
+			return 0;
+		break;
 	}
 
-	if (mTriggers->DoCommand(conn,cmd, cmd_line, *mOwner))
-		return 1;
+	if (mTriggers->DoCommand(conn, cmd, cmd_line, *mOwner)) return 1;
 	return 0;
 }
 
-int cDCConsole:: CmdGetip(istringstream &cmd_line, cConnDC *conn)
-{
-	ostringstream os;
-	string s;
-	cUser * user;
-	while(cmd_line.good()) {
-		cmd_line >> s;
-		if(cmd_line.fail())
-			break;
-		user = mOwner->mUserList.GetUserByNick(s);
-		if(user && user-> mxConn )
-			os << autosprintf(_("IP of user %s: %s"), s.c_str(), user->mxConn->AddrIP().c_str()) << endl;
-		else
-		    	os << autosprintf(_("User %s not found."), s.c_str()) << endl;
-	}
-	mOwner->DCPublicHS(os.str().c_str(),conn);
-	return 1;
-
-}
-
-int cDCConsole::CmdCmds(istringstream &cmd_line , cConnDC *conn)
+int cDCConsole::CmdCmds(istringstream &cmd_line, cConnDC *conn)
 {
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] " << _("Full list of commands:") << "\r\n";
-	mCmdr.List(& os);
+	os << _("Full list of commands") << ":";
+	mCmdr.List(&os);
 	mOwner->mP.EscapeChars(os.str(), omsg);
-	mOwner->DCPublicHS(omsg.c_str(),conn);
+	mOwner->DCPublicHS(omsg.c_str(), conn);
 	return 1;
 }
 
-int cDCConsole::CmdGethost(istringstream &cmd_line , cConnDC *conn)
+int cDCConsole::CmdGetip(istringstream &cmd_line, cConnDC *conn)
 {
-	ostringstream os;
+	ostringstream os, o;
 	string s;
-	cUser * user;
-	while(cmd_line.good()) {
+	cUser *user;
+	int c = 0;
+
+	while (cmd_line.good()) {
 		cmd_line >> s;
-		if(cmd_line.fail()) break;
+		if (cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
-		if(user && user->mxConn) {
-			if(!mOwner->mUseDNS)
-				user->mxConn->DNSLookup();
-			os << autosprintf(_("Host of user %s: %s"), s.c_str(), user->mxConn->AddrHost().c_str()) << endl;
-		} else {
-			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
-		}
+
+		if (user && user->mxConn) {
+			os << "\r\n [*] " << _("User") << ": " << user->mNick.c_str();
+			os << " ][ " << _("IP") << ": " << user->mxConn->AddrIP().c_str();
+		} else
+		    os << "\r\n [*] " << autosprintf(_("User not found: %s"), s.c_str());
+
+		c++;
 	}
-	mOwner->DCPublicHS(os.str().c_str(),conn);
+
+	if (c == 0)
+		o << _("Please specify one or more nicks separated by space.");
+	else
+		o << autosprintf(_("Showing %d results"), c) << ":" << os.str();
+
+	mOwner->DCPublicHS(o.str().c_str(), conn);
 	return 1;
 }
 
-/** get user's host and ip */
-int cDCConsole::CmdGetinfo(istringstream &cmd_line , cConnDC *conn )
+int cDCConsole::CmdGethost(istringstream &cmd_line, cConnDC *conn)
 {
-	ostringstream os;
+	ostringstream os, o;
 	string s;
-	cUser * user;
-	while(cmd_line.good()) {
+	cUser *user;
+	int c = 0;
+
+	while (cmd_line.good()) {
 		cmd_line >> s;
-		if(cmd_line.fail())
-			break;
+		if (cmd_line.fail()) break;
 		user = mOwner->mUserList.GetUserByNick(s);
-		if(user && user->mxConn) {
-			if(!mOwner->mUseDNS)
-				user->mxConn->DNSLookup();
-			os << "\r\n";
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("User") << s.c_str() << endl;
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("IP") << user->mxConn->AddrIP().c_str() << endl;
-			os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Country Code") << user->mxConn->mCC.c_str() << endl;
-		} else {
-			os << autosprintf(_("User %s not found."), s.c_str()) << endl;
-		}
+
+		if (user && user->mxConn) {
+			if (!mOwner->mUseDNS) user->mxConn->DNSLookup();
+
+			if (!user->mxConn->AddrHost().empty()) {
+				os << "\r\n [*] " << _("User") << ": " << user->mNick.c_str();
+				os << " ][ " << _("Host") << ": " << user->mxConn->AddrHost().c_str();
+			} else
+				os << "\r\n [*] " << autosprintf(_("Unable to resolve users hostname: %s"), user->mNick.c_str());
+		} else
+			os << "\r\n [*] " << autosprintf(_("User not found: %s"), s.c_str());
+
+		c++;
 	}
-	mOwner->DCPublicHS(os.str().c_str(),conn);
+
+	if (c == 0)
+		o << _("Please specify one or more nicks separated by space.");
+	else
+		o << autosprintf(_("Showing %d results"), c) << ":" << os.str();
+
+	mOwner->DCPublicHS(o.str().c_str(), conn);
 	return 1;
 }
 
-/** quit program */
+int cDCConsole::CmdGetinfo(istringstream &cmd_line, cConnDC *conn)
+{
+	ostringstream os, o;
+	string s;
+	cUser *user;
+	int c = 0;
+
+	while (cmd_line.good()) {
+		cmd_line >> s;
+		if (cmd_line.fail()) break;
+		user = mOwner->mUserList.GetUserByNick(s);
+
+		if (user && user->mxConn) {
+			if (!mOwner->mUseDNS) user->mxConn->DNSLookup();
+			os << "\r\n [*] " << _("User") << ": " << user->mNick.c_str();
+			os << " ][ " << _("IP") << ": " << user->mxConn->AddrIP().c_str();
+			os << " ][ " << _("CC") << ": " << user->mxConn->mCC.c_str();
+			if (!user->mxConn->AddrHost().empty()) os << " ][ " << _("Host") << ": " << user->mxConn->AddrHost().c_str();
+		} else
+			os << "\r\n [*] " << autosprintf(_("User not found: %s"), s.c_str());
+
+		c++;
+	}
+
+	if (c == 0)
+		o << _("Please specify one or more nicks separated by space.");
+	else
+		o << autosprintf(_("Showing %d results"), c) << ":" << os.str();
+
+	mOwner->DCPublicHS(o.str().c_str(), conn);
+	return 1;
+}
+
 int cDCConsole::CmdQuit(istringstream &, cConnDC * conn, int code)
 {
 	ostringstream os;
-	if(conn->Log(1)) conn->LogStream() << "Stopping hub with code " << code << " .";
-	os << toUpper(_("Stopping Hub..."));
-	mOwner->DCPublicHS(os.str(),conn);
-	if (code >= 0) {
+	if (conn->Log(1)) conn->LogStream() << "Stopping hub with code: " << code << endl;
+	os << _("Stopping hub.");
+	mOwner->DCPublicHS(os.str(), conn);
+
+	if (code >= 0)
 		mOwner->stop(code);
-	} else {
+	else
 		*(int*)1 = 0;
-	}
+
 	return 1;
 }
 
 bool cDCConsole::cfGetConfig::operator()()
 {
-	ostringstream os;
-
 	if (mConn->mpUser->mClass < eUC_ADMIN) {
-		*mOS << _("No rights");
+		*mOS << _("No rights.");
 		return false;
 	}
+
+	ostringstream os, lst;
 	string file;
 	cConfigBaseBase::tIVIt it;
-	const int width = 5;
 	GetParStr(1, file);
 
-	os << "\n ";
-	os << setw(34) << setiosflags(ios::left) << toUpper(_("Variable"));
-	os << toUpper(_("Value")) << "\n";
-	os << " " << string(34+35, '=') << endl;
-	if(file.empty())
+	if (file.empty()) {
 		file = mS->mDBConf.config_name;
 
-	mS->mSetupList.OutputFile(file.c_str(), os);
-	mS->DCPrivateHS(os.str(),mConn);
+		for (it = mS->mC.mvItems.begin(); it != mS->mC.mvItems.end(); it++)
+			lst << " [*] " << mS->mC.mhItems.GetByHash(*it)->mName << " = " << *(mS->mC.mhItems.GetByHash(*it)) << "\r\n";
+	} else
+		mS->mSetupList.OutputFile(file.c_str(), lst);
+
+	if (lst.str() == "")
+		os << autosprintf(_("Configuration file %s is empty."), file.c_str());
+	else
+		os << autosprintf(_("Configuration file %s"), file.c_str()) << ":\r\n\r\n" << lst.str();
+
+	mS->DCPrivateHS(os.str(), mConn);
 	return true;
 }
 
@@ -389,7 +422,7 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 	}
 
 	if(! str.size()) {
-		ostr << _("Usage example: !ccbc :US:GB: <message>.") << " " << _("Please type !help for more info") << endl;
+		ostr << _("Usage example: !ccbc :US:GB: <message>");
                 mOwner->DCPublicHS(ostr.str(), conn);
 		return 1;
 	}
@@ -401,7 +434,7 @@ int cDCConsole::CmdCCBroadcast(istringstream & cmd_line, cConnDC * conn, int cl_
 		mOwner->LastBCNick = conn->mpUser->mNick;
 	int count = mOwner->SendToAllWithNickCC(start,end, cl_min, cl_max, cc_zone);
 	TimeAfter.Get();
-	ostr << autosprintf(_("Message delivered to %d users in zone %s in %s"), count,  cc_zone.c_str(), (TimeAfter-TimeBefore).AsPeriod().AsString().c_str());
+	ostr << autosprintf(_("Message delivered to %d users in zone %s in %s."), count,  cc_zone.c_str(), (TimeAfter-TimeBefore).AsPeriod().AsString().c_str());
 	mOwner->DCPublicHS(ostr.str(), conn);
 	return 1;
 }
@@ -410,10 +443,12 @@ int cDCConsole::CmdMyInfo(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg;
-	os << "\r\n[::] " << _("Your info") << ": \r\n";
+	os << _("Your information") << ":\r\n";
 	conn->mpUser->DisplayInfo(os, eUC_OPERATOR);
+	os << "\r\n";
+	conn->mpUser->DisplayRightsInfo(os);
 	omsg = os.str();
-	mOwner->DCPublicHS(omsg,conn);
+	mOwner->DCPublicHS(omsg, conn);
 	return 1;
 }
 
@@ -421,7 +456,7 @@ int cDCConsole::CmdMyIp(istringstream & cmd_line, cConnDC * conn)
 {
 	ostringstream os;
 	string omsg;
-	os << autosprintf(_("Your IP is %s"), conn->AddrIP().c_str());
+	os << autosprintf(_("Your IP address: %s [%s]"), conn->AddrIP().c_str(), conn->mCC.c_str());
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;
@@ -467,31 +502,32 @@ int cDCConsole::CmdChat (istringstream & cmd_line, cConnDC * conn, bool switchon
 	return 1;
 }
 
-int cDCConsole::CmdRInfo(istringstream & cmd_line, cConnDC * conn)
+int cDCConsole::CmdRInfo(istringstream &cmd_line, cConnDC * conn)
 {
-	if (mOwner->mC.disable_usr_cmds) {
-		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
+	if (!conn->mpUser) return 0;
+
+	if (mOwner->mC.disable_usr_cmds) { // why double check?
+		mOwner->DCPublicHS(_("All user commands are currently disabled."), conn);
 		return 1;
 	}
-	if(!conn->mpUser) {
-		return 0;
-	}
+
 	ostringstream os;
 	string omsg;
-	//This is here as manual values for true release info available to all
-	os << "\r\nVerliHub-" VERSION " (" __CURR_DATE_TIME__ ")" << endl;
-	os << toUpper(_("Authors")) << "\n\tDavide Simoncelli (netcelli@verlihub-project.org)" << endl;
-	os << "\tchaosuk (chaos@dchublist.com)" << endl;
-	os << toUpper(_("Translators")) << "\n\tCzech (Uhlik), Italian (netcelli), Russian (plugman)" << endl;
-	os << toUpper(_("Contributors")) << "\n\tStefano, Intruder, Rolex, Frog" << endl;
-	os << toUpper(_("Website/Forums design")) << "\n\tStefano Simoncelli (netcelli@verlihub-project.org)" << endl;
-	os << toUpper(_("Credits")) << "\n\tWe would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << endl;
-	os << toUpper(_("Website")) << "\n\thttp://www.verlihub-project.org" << endl;
-	os << "\tForums: http://www.verlihub-project.org/discussions" << endl;
-	os << "\tManual: http://www.verlihub-project.org/page/index" << endl;
+
+	os << "Verlihub " VERSION " build " __CURR_DATE_TIME__ << "\r\n";
+	os << " == " << toUpper(_("Authors")) << " ==\r\n\tDavide Simoncelli (netcelli@verlihub-project.org)" << "\r\n";
+	os << "\tchaosuk (chaos@dchublist.com)" << "\r\n";
+	os << " == " << toUpper(_("Translators")) << " ==\r\n\tCzech (Uhlik), Italian (netcelli), Russian (plugman)" << "\r\n";
+	os << " == " << toUpper(_("Contributors")) << " ==\r\n\tStefano, Intruder, RoLex, Frog" << "\r\n";
+	os << " == " << toUpper(_("Web part")) << " ==\r\n\tStefano Simoncelli (netcelli@verlihub-project.org)" << "\r\n";
+	os << " == " << toUpper(_("Credits")) << " ==\r\n\tWe would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << "\r\n";
+	os << " == " << toUpper(_("More")) << " ==\r\n\tWebsite: http://www.verlihub-project.org/" << "\r\n";
+	os << "\tForums: http://www.verlihub-project.org/discussions" << "\r\n";
+	os << "\tManual: http://www.verlihub-project.org/page/index" << "\r\n";
+	os << "\tSupport hub: dchub://hub.verlihub-project.org:7777/";
 
 	omsg = os.str();
-	mOwner->DCPublicHS(omsg,conn);
+	mOwner->DCPublicHS(omsg, conn);
 	return 1;
 }
 
@@ -541,16 +577,16 @@ int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 	else
 		hubOwner = "--";
 // 	hubHealth
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub owner") << hubOwner << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Address") << mOwner->mC.hub_host.c_str() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Total users") << mServer->mUserCountTot << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Total bots") <<  mServer->mRobotList.Size() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Total share") << convertByte(mServer->mTotalShare, false).c_str() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub health") << mServer->mStatus.c_str() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Your status") << uType.c_str() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Your can search every") << autosprintf(ngettext("%d second", "%d seconds", sInt), sInt) << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Connection type") << cType.c_str() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("You are sharing") << convertByte(conn->mpUser->mShare, false).c_str() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub owner") << hubOwner << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Address") << mOwner->mC.hub_host.c_str() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Total users") << mServer->mUserCountTot << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Total bots") <<  mServer->mRobotList.Size() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Total share") << convertByte(mServer->mTotalShare, false).c_str() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub health") << mServer->mStatus.c_str() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Your status") << uType.c_str() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Your can search every") << autosprintf(ngettext("%d second", "%d seconds", sInt), sInt) << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Connection type") << cType.c_str() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("You are sharing") << convertByte(conn->mpUser->mShare, false).c_str();
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg,conn);
 	return 1;
@@ -565,7 +601,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		return 1;
 	}
 	if(mOwner->mC.autoreg_class > 3) {
-		mOwner->DCPublicHS(_("Registration failed; please contact an operator for more help."),conn);
+		mOwner->DCPublicHS(_("Registration failed, please contact an operator for more help."),conn);
 		return 1;
 	}
 	__int64 user_share, min_share;
@@ -581,7 +617,7 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		ReplaceVarInString(prefix,"CC",prefix, conn->mCC);
 
 		if( prefix.size() && StrCompare(regnick,0,prefix.size(),prefix) !=0 ) {
-			os << autosprintf(_("Your nick must start with %s"), prefix.c_str());
+			os << autosprintf(_("Your nick must start with: %s"), prefix.c_str());
 			mOwner->DCPublicHS(os.str(),conn);
 			return 1;
 		}
@@ -594,9 +630,9 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 			min_share = mOwner->mC.min_share_ops;
 
 		if(user_share < min_share) {
-			os << autosprintf(_("You need to share at least %s"), convertByte(min_share*1024, false).c_str());
+			os << autosprintf(_("You need to share at least %s."), convertByte(min_share*1024, false).c_str());
 			mOwner->DCPublicHS(os.str(),conn);
-			return 0;
+			return 1;
 		}
 
 		cUser *user = mServer->mUserList.GetUserByNick(regnick);
@@ -604,58 +640,50 @@ int cDCConsole::CmdRegMe(istringstream & cmd_line, cConnDC * conn)
 		bool RegFound = mOwner->mR->FindRegInfo(ui, regnick);
 
 		if (RegFound) {
-			os << _("You are already registered");
+			os << _("You are already registered.");
 			mOwner->DCPublicHS(os.str(),conn);
-			return 0;
+			return 1;
 		}
 
-		if(user && user->mxConn) {
+		if (user && user->mxConn) {
 			string text;
-			getline(cmd_line,text);
+			getline(cmd_line, text);
+			if (!text.empty()) text = text.substr(1); // strip space
 
-			if(text.size() < (unsigned int) mOwner->mC.password_min_len) {
+			if (text.size() < (unsigned int)mOwner->mC.password_min_len) {
 				os << autosprintf(_("Minimum password length is %d characters, please retry."), mOwner->mC.password_min_len);
-				mOwner->DCPublicHS(os.str(),conn);
-				return 0;
+				mOwner->DCPublicHS(os.str(), conn);
+				return 1;
 			}
 
-			// Strip space
-			text = text.substr(1);
-			if (mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text.c_str()) ) {
-				// sent the report to the opchat
+			if (mOwner->mR->AddRegUser(regnick, NULL, mOwner->mC.autoreg_class, text.c_str())) {
 				os << autosprintf(_("A new user has been registered with class %d"), mOwner->mC.autoreg_class);
 				mOwner->ReportUserToOpchat(conn, os.str(), false);
 				os.str(mOwner->mEmpty);
-				// sent the message to the user
-				os << autosprintf(_("You are now registered with nick '%s'! Please reconnect and login with your password. Don't forget your password! It is '%s'."), regnick.c_str(), text.c_str());
+				os << autosprintf(_("You are now registered with nick %s, please reconnect and login with your new password: %s"), regnick.c_str(), text.c_str());
 			} else {
 				os << _("An error occured while registering.");
-				mOwner->DCPublicHS(os.str(),conn);
+				mOwner->DCPublicHS(os.str(), conn);
 				return false;
 			}
 		}
 
-		mOwner->DCPublicHS(os.str(),conn);
+		mOwner->DCPublicHS(os.str(), conn);
 		return 1;
-
 	} else {
-		string text, tmpline;
-		getline(cmd_line,text);
-		while(cmd_line.good()) {
-			tmpline="";
-			getline(cmd_line,tmpline);
-			text += "\r\n" + tmpline;
-		}
-		// Send message to opchat
-		os << "\r\n";
-		os << "[*] " << _("Registration request") << endl;
-		os << setw(PADDING) << setiosflags(ios::left) << _("Password") << text << endl;
+		string text;
+		getline(cmd_line, text);
+		if (!text.empty()) text = text.substr(1); // strip space
+
+		if (!text.empty())
+			os << autosprintf(_("Registration request with password %s"), text.c_str());
+		else
+			os << _("Registration request without password");
+
 		mOwner->ReportUserToOpchat(conn, os.str(), mOwner->mC.dest_regme_chat);
-		// Send message to user
-		mOwner->DCPublicHS(_("Thank you, your request has been sent to operators."),conn);
+		mOwner->DCPublicHS(_("Thank you, your request has been sent to operators."), conn);
 		return 1;
 	}
-
 }
 
 int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
@@ -686,9 +714,9 @@ int cDCConsole::CmdTopic(istringstream &cmd_line, cConnDC *conn)
 	cDCProto::Create_HubName(omsg, mOwner->mC.hub_name, topic);
 	mOwner->SendToAll(omsg, eUC_NORMUSER, eUC_MASTER);
 	if (topic.length())
-		os << autosprintf(_("%s has set the topic to : %s"), conn->mpUser->mNick.c_str(), topic.c_str());
+		os << autosprintf(_("%s changed topic to: %s"), conn->mpUser->mNick.c_str(), topic.c_str());
 	else
-		os << autosprintf(_("%s resetted the topic"), conn->mpUser->mNick.c_str());
+		os << autosprintf(_("%s removed topic."), conn->mpUser->mNick.c_str());
 	mOwner->DCPublicHSToAll(os.str());
 	return 1;
 }
@@ -728,7 +756,7 @@ int cDCConsole::CmdRegMyPasswd(istringstream & cmd_line, cConnDC * conn)
 		return 0;
 
 	if(!ui.mPwdChange) {
-		ostr << _("You are not allowed to change your password now. Ask an OP.");
+		ostr << _("You are not allowed to change your password now, ask an operator.");
 		mOwner->DCPrivateHS(ostr.str(),conn);
 		mOwner->DCPublicHS(ostr.str(),conn);
 		return 1;
@@ -812,8 +840,7 @@ int cDCConsole::CmdClass(istringstream &cmd_line, cConnDC *conn)
 
 	if(!s.size() || nclass < 0 || nclass > 5 || nclass >= mclass)
 	{
-		os << _("Use !class <nick> [<class>=3].") << " " << _("Please type !help for more info.") << endl
-			<< autosprintf(_("Max class is %d"), mclass) << endl;
+		os << _("Usage: !class <nick> [<class>=3].") << " " << autosprintf(_("Maximum class is %d."), mclass);
 		mOwner->DCPublicHS(os.str().c_str(),conn);
 		return 1;
 	}
@@ -949,31 +976,33 @@ int cDCConsole::CmdReload(istringstream &cmd_line, cConnDC *conn)
 
 bool cDCConsole::cfReport::operator()()
 {
-	if(mS->mC.disable_report_cmd) {
+	if (mS->mC.disable_report_cmd) {
 		*mOS << _("Report command is currently disabled.");
 		return false;
 	}
+
 	ostringstream os;
 	string omsg, nick, reason;
 	cUser *user;
-	enum { eREP_ALL, eREP_NICK, eREP_RASONP, eREP_REASON };
-
+	enum {eREP_ALL, eREP_NICK, eREP_RASONP, eREP_REASON};
 	GetParOnlineUser(eREP_NICK, user, nick);
 	GetParStr(eREP_REASON, reason);
 
-	//-- to opchat
-	os << "\r\n";
-	os << "[*] " << _("Reported user ") << endl;
+	// to opchat
 	if (user && user->mxConn) {
-		os << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << nick.c_str() << endl;
-		os << setw(PADDING) << setiosflags(ios::left) << _("IP") << user->mxConn->AddrIP().c_str() << endl;
-		os << setw(PADDING) << setiosflags(ios::left) << _("Host") << user->mxConn->AddrHost().c_str() << endl;
+		os << autosprintf(_("Reported user %s"), user->mNick.c_str());
+		os << " ][ " << _("IP") << ": " << user->mxConn->AddrIP().c_str();
+		if (!user->mxConn->AddrHost().empty()) os << " ][ " << _("Host") << ": " << user->mxConn->AddrHost().c_str();
 	} else
-		os << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << nick.c_str() << " [" << toUpper(_("Offline")) << "]" << endl;
-	os << setw(PADDING) << setiosflags(ios::left) << _("Reason") << reason.c_str() << endl;
-	os << "[*] " << _("from") << endl;
+		os << autosprintf(_("Reported offline user %s"), nick.c_str());
+
+	if (reason.empty())
+		os << " " << _("without reason");
+	else
+		os << " ][ " << _("Reason") << ": " << reason.c_str();
+
 	mS->ReportUserToOpchat(mConn, os.str(), mS->mC.dest_report_chat);
-	//-- to sender
+	// to sender
 	*mOS << _("Thank you, your report has been accepted.");
 	return true;
 }
@@ -1170,16 +1199,17 @@ bool cDCConsole::cfBan::operator()()
 		case BAN_INFO:
 			if (unban) {
 				if(!GetParStr(BAN_REASON,tmp)) {
-					(*mOS) << _("Please provide a valid reason.");
-					return false;
+					//(*mOS) << _("Please provide a valid reason.");
+					//return false;
+					tmp = _("No reason specified"); // default reason
 				}
 				#ifndef WITHOUT_PLUGINS
-				if(!mS->mCallBacks.mOnUnBan.CallAll(Who, mConn->mpUser->mNick, tmp)) {
-					(*mOS) << _("Action has been discarded by plugin");
+				if (!mS->mCallBacks.mOnUnBan.CallAll(mConn->mpUser, Who, mConn->mpUser->mNick, tmp)) {
+					(*mOS) << _("Action has been discarded by plugin.");
 					return false;
 				}
 				#endif
-				(*mOS) << autosprintf(_("User %s unbanned."), mConn->mpUser->mNick.c_str()) << "\r\n";
+				(*mOS) << autosprintf(_("User %s unbanned"), mConn->mpUser->mNick.c_str()) << ":\r\n";
 			}
 
 			if(BanType == eBF_NICKIP) {
@@ -1273,8 +1303,8 @@ bool cDCConsole::cfBan::operator()()
 		default: break;
 		}
 		#ifndef WITHOUT_PLUGINS
-		if(!mS->mCallBacks.mOnNewBan.CallAll(&Ban)) {
-			(*mOS) << _("Action has been discarded by plugin");
+		if (!mS->mCallBacks.mOnNewBan.CallAll(mConn->mpUser, &Ban)) {
+			(*mOS) << _("Action has been discarded by plugin.");
 			return false;
 		}
 		#endif
@@ -1295,7 +1325,7 @@ bool cDCConsole::cfBan::operator()()
 		mS->DCPrivateHS(os.str(), mConn);
 	}
 		break;
-	default:(*mOS) << _("This command is not implemented.") << "\r\n" << _("Available command are: ") << endl;
+	default:(*mOS) << _("This command is not implemented, available commands are") << ":";
 		return false;
 		break;
 	}
@@ -1321,7 +1351,7 @@ bool cDCConsole::cfInfo::operator()()
 	{
 		case eINFO_SERVER: mInfoServer.SystemInfo(*mOS); break;
 		case eINFO_HUB: mInfoServer.Output(*mOS, MyClass); break;
-		default : (*mOS) << _("This command is not implemented.") << "\r\n" << _("Available command are: ") << "!hubinfo and !serverinfo" << endl;
+		default : (*mOS) << _("This command is not implemented, available commands are: !hubinfo !serverinfo");
 			return false;
 	}
 
@@ -1415,7 +1445,7 @@ bool cDCConsole::cfSetVar::operator()()
 	if (file == mS->mDBConf.config_name) {
 		ci = mS->mC[var];
 		if(!ci) {
-			(*mOS) << autosprintf(_("Undefined variable %s"), var.c_str());
+			(*mOS) << autosprintf(_("Undefined configuration variable: %s"), var.c_str());
 			return false;
 		}
 	} else {
@@ -1430,7 +1460,7 @@ bool cDCConsole::cfSetVar::operator()()
 		ci->ConvertFrom(val);
 		ostringstream newValue;
 		newValue << *ci;
-		(*mOS) << autosprintf(_("Updated %s.%s from '%s' to '%s'"), file.c_str(), var.c_str(), oldValue.str().c_str(), newValue.str().c_str());
+		(*mOS) << autosprintf(_("Updated configuration %s.%s from '%s' to '%s'."), file.c_str(), var.c_str(), oldValue.str().c_str(), newValue.str().c_str());
 		mS->mSetupList.SaveItem(file.c_str(), ci);
 		if(DeleteItem)
 			delete ci;
@@ -1440,27 +1470,47 @@ bool cDCConsole::cfSetVar::operator()()
 	struct rlimit userLimit;
 	// Get maximum file descriptor number
 	if(!getrlimit(RLIMIT_NOFILE, &userLimit) && userLimit.rlim_cur < mS->mC.max_users_total)
-		(*mOS) << "\n" << autosprintf(_("WARNING: VerliHub allows maximum %d users, but current resource limit is %d. Consider to run ulimit -n <max_users>"), mS->mC.max_users_total, (int) userLimit.rlim_cur);
+		(*mOS) << "\n" << autosprintf(_("Warning: Verlihub allows maximum %d users, but current resource limit is %d. Consider to run ulimit -n <max_users> and restart the hub."), mS->mC.max_users_total, (int) userLimit.rlim_cur);
 	return true;
 }
 
-
 bool cDCConsole::cfGag::operator()()
 {
-	string cmd, nick, howlong;
-	time_t period = 24*3600*7;
-	time_t Now = 1;
-
-	bool isUn = false;
-
-	if(mConn->mpUser->mClass < eUC_OPERATOR)
-		return false;
-
-	isUn = mIdRex->PartFound(1);
+	enum {eAC_GAG, eAC_NOPM, eAC_NOCHATS, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT, eAC_NOINFO};
+	static const char *actionnames[] = {"gag", "nochat", "nopm", "nochats", "noctm", "nodl", "nosearch", "kvip", "maykick", "noshare", "mayreg", "mayopchat", "noinfo", "mayinfo"};
+	static const int actionids[] = {eAC_GAG, eAC_GAG, eAC_NOPM, eAC_NOCHATS, eAC_NODL, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT, eAC_NOINFO, eAC_NOINFO};
+	string cmd;
 	mIdRex->Extract(2, mIdStr, cmd);
+	int Action = this->StringToIntFromList(cmd, actionnames, actionids, sizeof(actionnames) / sizeof(char*));
+	if (Action < 0) return false;
 
+	if (mConn->mpUser->mClass < eUC_OPERATOR) {
+		(*mOS) << _("You have no rights to do this.");
+		return false;
+	}
+
+	if (Action == eAC_NOINFO) {
+		string nick;
+		mParRex->Extract(1, mParStr, nick);
+		cUser *user = mS->mUserList.GetUserByNick(nick);
+
+		if (user && user->mxConn) {
+			user->DisplayRightsInfo(*mOS, true);
+			return true;
+		} else {
+			(*mOS) << autosprintf(_("%s is not in list."), nick.c_str());
+			return false;
+		}
+	}
+
+	string nick, howlong;
+	time_t period = 24 * 3600 * 7;
+	time_t Now = 1;
+	bool isUn = false;
+	isUn = mIdRex->PartFound(1);
 	mParRex->Extract(1, mParStr, nick);
-	if(mParRex->PartFound(3)) {
+
+	if (mParRex->PartFound(3)) {
 		mParRex->Extract(3, mParStr, howlong);
 		period = mS->Str2Period(howlong, *mOS);
 		if (!period) return false;
@@ -1468,18 +1518,13 @@ bool cDCConsole::cfGag::operator()()
 
 	cPenaltyList::sPenalty penalty;
 	penalty.mNick = nick;
+	penalty.mOpNick = mConn->mpUser->mNick;
+	if (!isUn) Now = cTime().Sec() + period;
 
-	if(!isUn) Now = cTime().Sec() + period;
-
-	enum {eAC_GAG, eAC_NOPM, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
-	static const char *actionnames[]={"gag","nochat","nopm","noctm","nodl","nosearch","kvip", "maykick", "noshare", "mayreg", "mayopchat"};
-	static const int actionids[]={eAC_GAG, eAC_GAG,eAC_NOPM, eAC_NODL, eAC_NODL, eAC_NOSEARCH, eAC_KVIP, eAC_KVIP, eAC_NOSHARE, eAC_CANREG, eAC_OPCHAT};
-	int Action = this->StringToIntFromList(cmd, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
-	if (Action < 0) return false;
-
-	switch(Action) {
+	switch (Action) {
 		case eAC_GAG: penalty.mStartChat = Now; break;
 		case eAC_NOPM: penalty.mStartPM = Now; break;
+		case eAC_NOCHATS: penalty.mStartChat = Now; penalty.mStartPM = Now; break;
 		case eAC_NODL: penalty.mStartCTM = Now; break;
 		case eAC_NOSEARCH: penalty.mStartSearch = Now; break;
 		case eAC_KVIP: penalty.mStopKick = Now; break;
@@ -1490,30 +1535,62 @@ bool cDCConsole::cfGag::operator()()
 	};
 
 	bool ret = false;
-	if(!isUn) ret = mS->mPenList->AddPenalty(penalty);
-	else ret = mS->mPenList->RemPenalty(penalty);
+
+	if (!isUn)
+		ret = mS->mPenList->AddPenalty(penalty);
+	else
+		ret = mS->mPenList->RemPenalty(penalty);
 
 	cUser *usr = mS->mUserList.GetUserByNick(nick);
-	if(usr != NULL) {
-		switch(Action) {
-			case eAC_GAG: usr->SetRight(eUR_CHAT, penalty.mStartChat, isUn); break;
-			case eAC_NOPM: usr->SetRight(eUR_PM, penalty.mStartPM, isUn); break;
-			case eAC_NODL: usr->SetRight(eUR_CTM, penalty.mStartCTM, isUn); break;
-			case eAC_NOSEARCH: usr->SetRight(eUR_SEARCH, penalty.mStartSearch, isUn); break;
-			case eAC_NOSHARE: usr->SetRight(eUR_NOSHARE, penalty.mStopShare0, isUn); break;
-			case eAC_CANREG: usr->SetRight(eUR_REG, penalty.mStopReg, isUn); break;
-			case eAC_KVIP: usr->SetRight(eUR_KICK, penalty.mStopKick, isUn); break;
-			case eAC_OPCHAT: usr->SetRight(eUR_OPCHAT, penalty.mStopOpchat, isUn); break;
-			default: break;
+
+	if (usr != NULL) {
+		switch (Action) {
+			case eAC_GAG: usr->SetRight(eUR_CHAT, penalty.mStartChat, isUn, true); break;
+			case eAC_NOPM: usr->SetRight(eUR_PM, penalty.mStartPM, isUn, true); break;
+			case eAC_NOCHATS: usr->SetRight(eUR_CHAT, penalty.mStartChat, isUn, true); usr->SetRight(eUR_PM, penalty.mStartPM, isUn, true); break;
+			case eAC_NODL: usr->SetRight(eUR_CTM, penalty.mStartCTM, isUn, true); break;
+			case eAC_NOSEARCH: usr->SetRight(eUR_SEARCH, penalty.mStartSearch, isUn, true); break;
+			case eAC_NOSHARE: usr->SetRight(eUR_NOSHARE, penalty.mStopShare0, isUn, true); break;
+			case eAC_CANREG: usr->SetRight(eUR_REG, penalty.mStopReg, isUn, true); break;
+			case eAC_KVIP: usr->SetRight(eUR_KICK, penalty.mStopKick, isUn, true); break;
+			case eAC_OPCHAT: usr->SetRight(eUR_OPCHAT, penalty.mStopOpchat, isUn, true); break;
+			default: return false;
 		};
+
+		// apply rights to user object
+		usr->ApplyRights(penalty);
+		cUserCollection::tHashType Hash = mS->mUserList.Nick2Hash(usr->mNick);
+
+		// apply operator chat right
+		if (usr->Can(eUR_OPCHAT, mS->mTime.Sec()))
+			mS->mOpchatList.AddWithHash(usr, Hash);
+		else {
+			if (mS->mOpchatList.ContainsHash(Hash)) mS->mOpchatList.RemoveByHash(Hash);
+		}
 	}
 
 	ostringstream description;
 	description << penalty;
-	if (ret)
-		(*mOS) << autosprintf(_(" %s saved"), description.str().c_str());
-	else
-		(*mOS) << autosprintf(_("Error saving %s"), description.str().c_str());
+
+	if (ret) {
+		if (description.str() == "") {
+			switch (Action) {
+				case eAC_GAG: (*mOS) << autosprintf(_("Resetting main chat right for %s."), penalty.mNick.c_str()); break;
+				case eAC_NOPM: (*mOS) << autosprintf(_("Resetting private chat right for %s."), penalty.mNick.c_str()); break;
+				case eAC_NOCHATS: (*mOS) << autosprintf(_("Resetting main and private chat rights for %s."), penalty.mNick.c_str()); break;
+				case eAC_NODL: (*mOS) << autosprintf(_("Resetting download right for %s."), penalty.mNick.c_str()); break;
+				case eAC_NOSEARCH: (*mOS) << autosprintf(_("Resetting search right for %s."), penalty.mNick.c_str()); break;
+				case eAC_NOSHARE: (*mOS) << autosprintf(_("Resetting hidden share right for %s."), penalty.mNick.c_str()); break;
+				case eAC_CANREG: (*mOS) << autosprintf(_("Resetting registering right for %s."), penalty.mNick.c_str()); break;
+				case eAC_KVIP: (*mOS) << autosprintf(_("Resetting kick right for %s."), penalty.mNick.c_str()); break;
+				case eAC_OPCHAT: (*mOS) << autosprintf(_("Resetting operator chat right for %s."), penalty.mNick.c_str()); break;
+				default: return false;
+			};
+		} else
+			(*mOS) << description.str().c_str();
+	} else
+		(*mOS) << autosprintf(_("Error setting right for %s."), penalty.mNick.c_str());
+
 	return true;
 }
 
@@ -1575,7 +1652,7 @@ bool cDCConsole::cfWho::operator()()
 		break;
 		case eAC_CC:
 			if(tmp.size() != 2) {
-				(*mOS) << _("Country code must be 2 characters long (for ex. US)");
+				(*mOS) << _("Country code must be 2 characters long, for example US.");
 				return false;
 			}
 
@@ -1588,9 +1665,9 @@ bool cDCConsole::cfWho::operator()()
 	}
 
 	if(cnt)
-		(*mOS) << "\n\t" << userlist;
+		(*mOS) << userlist;
 	else
-		(*mOS) << _("No user found.");
+		(*mOS) << _("No users found.");
 	return true;
 }
 
@@ -1652,11 +1729,11 @@ bool cDCConsole::cfPlug::operator()()
 	switch (Action)
 	{
 		case eAC_LIST:
-			(*mOS) << _("Loaded plugins:") << " \r\n";
+			(*mOS) << _("Loaded plugins") << ":\r\n";
 			mS->mPluginManager.List(*mOS);
 			break;
 		case eAC_REG:
-			(*mOS) << _("Available callbacks:") << " \r\n";
+			(*mOS) << _("Available callbacks") << ":\r\n";
 			mS->mPluginManager.ListAll(*mOS);
 			break;
 		case eAC_OUT:
@@ -1670,7 +1747,7 @@ bool cDCConsole::cfPlug::operator()()
 			if(mParRex->PartFound(1)) {
 				mParRex->Extract(1, mParStr, tmp);
 				if(!mS->mPluginManager.LoadPlugin(tmp)) {
-					(*mOS) << mS->mPluginManager.GetError() << "\r\n";
+					(*mOS) << mS->mPluginManager.GetError();
 					return false;
 				}
 			}
@@ -1678,7 +1755,7 @@ bool cDCConsole::cfPlug::operator()()
 		case eAC_RELAOD:
 			if(GetParStr(1, tmp)) {
 				if(!mS->mPluginManager.ReloadPlugin(tmp)) {
-					(*mOS) << mS->mPluginManager.GetError() << "\r\n";
+					(*mOS) << mS->mPluginManager.GetError();
 					return false;
 				}
 			}
@@ -1690,61 +1767,79 @@ bool cDCConsole::cfPlug::operator()()
 
 bool cDCConsole::cfRegUsr::operator()()
 {
-	enum { eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO, eAC_LIST };
-	static const char * actionnames [] = { "n","new","newuser", "del","delete", "pass","passwd", "enable",
-		"disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set","=", "info", "list" };
-	static const int actionids [] = { eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET, eAC_INFO, eAC_LIST };
-
-
-	if(this->mConn->mpUser->mClass < eUC_OPERATOR)
-		return false;
-
+	if ((this->mConn == NULL) || (this->mConn->mpUser == NULL)) return false;
+	enum {eAC_NEW, eAC_DEL, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_PROTECT, eAC_HIDEKICK, eAC_SET, eAC_INFO, eAC_LIST};
+	static const char *actionnames[] = {"n", "new", "newuser", "del", "delete", "pass", "passwd", "enable", "disable", "class", "setclass", "protect", "protectclass", "hidekick", "hidekickclass", "set", "=", "info", "list", "lst"};
+	static const int actionids[] = {eAC_NEW, eAC_NEW, eAC_NEW, eAC_DEL, eAC_DEL, eAC_PASS, eAC_PASS, eAC_ENABLE, eAC_DISABLE, eAC_CLASS, eAC_CLASS, eAC_PROTECT, eAC_PROTECT, eAC_HIDEKICK, eAC_HIDEKICK, eAC_SET, eAC_SET, eAC_INFO, eAC_LIST, eAC_LIST};
 	string tmp;
-	mIdRex->Extract(2,mIdStr,tmp);
-	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
-	if(Action < 0)
-		return false;
-	//static cPCRE mParmSearch("^(\\d+\\.\\d+\\.\\d+\\.\\d+)((\\/(\\d+))|(\\.\\.|-)(\\d+\\.\\d+\\.\\d+\\.\\d+))?$",0);
-	if(Action == eAC_LIST) {
-		(*mOS) << _("Found nicks:") << "\n" << mParStr;
-		return true;
-		int offset, page, nClass = 0;
-		this->GetParInt(2, page);
-		this->GetParInt(3, offset);
-		string nick;
-		this->GetParInt(1, nClass);
-		if(!nClass) {
-			this->GetParStr(1,nick);
-		} else {
+	mIdRex->Extract(2, mIdStr, tmp);
+	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames) / sizeof(char*));
+	if (Action < 0) return false;
 
-		}
-//		return mS->mR->ShowUsers(this->mConn,*mOS,page,offset,nick, nClass);
+	if ((this->mConn->mpUser->mClass < eUC_OPERATOR) || ((Action != eAC_INFO) && (!this->mConn->mpUser->Can(eUR_REG, mS->mTime.Sec())))) {
+		(*mOS) << _("You have no rights to do this.");
+		return false;
 	}
 
-//	"!r(eg)?(\S+) ", "(\\S+)( (((\\S+) )?(.*)))?"
-	string nick, par, field;
-
-	int ParClass = 1;
-	int MyClass = this->mConn->mpUser->mClass;
-	if((Action != eAC_INFO) && (! this->mConn->mpUser->Can(eUR_REG,mS->mTime.Sec())))
+	if (mS->mC.classdif_reg > 10) {
+		(*mOS) << _("Valid classdif_reg value must be between 1 and 5, please correct this first.");
 		return false;
+	}
 
-	mParRex->Extract(1,mParStr,nick);
-	bool WithPar = false;
+	int MyClass = this->mConn->mpUser->mClass;
 
-	WithPar=mParRex->PartFound(3);
-	if(Action != eAC_SET && WithPar)
-		mParRex->Extract(3,mParStr,par);
+	if (Action == eAC_LIST) {
+		int cls = 0;
+		this->GetParInt(1, cls);
 
-	if(Action == eAC_SET) {
-		WithPar = WithPar && mParRex->PartFound(5);
-		if(!WithPar) {
-			(*mOS) << _("Missing parameters.");
+		/*if (!this->GetParInt(1, cls)) {
+			(*mOS) << _("Missing class parameter.");
+			return false;
+		}*/
+
+		if ((MyClass < eUC_MASTER) && (cls >= 0) && (cls > (MyClass - mS->mC.classdif_reg))) {
+			(*mOS) << _("You have no rights to do this.");
 			return false;
 		}
-		mParRex->Extract(5,mParStr,field);
-		if(WithPar)
-			mParRex->Extract(6,mParStr,par);
+
+		ostringstream lst;
+		int res = mS->mR->ShowUsers(this->mConn, lst, cls);
+
+		if (res != 0)
+			(*mOS) << autosprintf(_("Found %d registered users with class %d"), res, cls) << ":\r\n\r\n" << lst.str().c_str();
+		else
+			(*mOS) << autosprintf(_("No registered users with class %d found."), cls);
+
+		return true;
+	}
+
+	string nick, par, field, pass;
+	int ParClass = 1;
+	mParRex->Extract(1, mParStr, nick);
+	bool WithPar = false;
+	WithPar = mParRex->PartFound(3);
+	if (Action != eAC_SET && WithPar) mParRex->Extract(3, mParStr, par);
+	bool WithPass = false;
+
+	if (Action == eAC_NEW) {
+		WithPass = mParRex->PartFound(5);
+
+		if (WithPass) {
+			mParRex->Extract(5, mParStr, par); // class
+			mParRex->Extract(6, mParStr, pass); // password
+		}
+	}
+
+	if (Action == eAC_SET) {
+		WithPar = WithPar && mParRex->PartFound(5);
+
+		if (!WithPar) {
+			(*mOS) << _("Missing command parameters.");
+			return false;
+		}
+
+		mParRex->Extract(5, mParStr, field);
+		if (WithPar) mParRex->Extract(6, mParStr, par);
 	}
 
 	cUser *user = mS->mUserList.GetUserByNick(nick);
@@ -1753,190 +1848,199 @@ bool cDCConsole::cfRegUsr::operator()()
 	bool RegFound = mS->mR->FindRegInfo(ui, nick);
 	bool authorized = false;
 
-	if (mS->mC.classdif_reg > 10) {
-		(*mOS) << _("Invalid classdif_reg value. Must be between 1 and 5. Please correct this first!");
+	// check rights
+	if (RegFound && ((MyClass < eUC_MASTER) && !((MyClass >= (int)(ui.mClass + mS->mC.classdif_reg) && MyClass >= (ui.mClassProtect)) || ((Action == eAC_INFO) && (MyClass >= (ui.mClass - 1)))))) {
+		(*mOS) << _("You have no rights to do this.");
 		return false;
 	}
-	// check rights
-	if(RegFound) {
 
-		if ((MyClass < eUC_MASTER) && !(
-			(MyClass >= (int) (ui.mClass+mS->mC.classdif_reg) &&
-			MyClass >= (ui.mClassProtect)) ||
-			((Action == eAC_INFO) &&(MyClass >= (ui.mClass - 1)))
-		 ))
-		{
-			(*mOS) << _("You have no rights to do this.");
-			return false;
-		}
-	}
-
-	switch(Action) {
-		case eAC_CLASS: case eAC_PROTECT: case eAC_HIDEKICK: case eAC_NEW:
+	switch (Action) {
+		case eAC_CLASS:
+		case eAC_PROTECT:
+		case eAC_HIDEKICK:
+		case eAC_NEW:
 			std::istringstream lStringIS(par);
 			lStringIS >> ParClass;
-		break;
+			break;
 	};
 
-	switch(Action) {
-		case eAC_SET: authorized = RegFound && (( MyClass >= eUC_ADMIN ) && (MyClass > ui.mClass) && (field != "class")); break;
-		case eAC_NEW:
-			authorized = !RegFound  && (MyClass >= (int) (ParClass + mS->mC.classdif_reg));
+	switch (Action) {
+		case eAC_SET:
+			authorized = RegFound && ((MyClass >= eUC_ADMIN) && (MyClass > ui.mClass) && (field != "class"));
 			break;
-		case eAC_PASS: case eAC_HIDEKICK: case eAC_ENABLE: case eAC_DISABLE: case eAC_DEL:
-			authorized = RegFound && (MyClass >= (int) (ui.mClass+mS->mC.classdif_reg));
+		case eAC_NEW:
+			authorized = !RegFound && (MyClass >= (int)(ParClass + mS->mC.classdif_reg));
+			break;
+		case eAC_PASS:
+		case eAC_HIDEKICK:
+		case eAC_ENABLE:
+		case eAC_DISABLE:
+		case eAC_DEL:
+			authorized = RegFound && (MyClass >= (int)(ui.mClass + mS->mC.classdif_reg));
 			break;
 		case eAC_CLASS:
-			authorized = RegFound && (MyClass >= (int) (ui.mClass+mS->mC.classdif_reg)) && (MyClass >= (int) (ParClass + mS->mC.classdif_reg));
+			authorized = RegFound && (MyClass >= (int)(ui.mClass + mS->mC.classdif_reg)) && (MyClass >= (int)(ParClass + mS->mC.classdif_reg));
 			break;
 		case eAC_PROTECT:
-			authorized = RegFound && (MyClass >= (int)(ui.mClass+mS->mC.classdif_reg)) && (MyClass >= (ParClass + 1));
+			authorized = RegFound && (MyClass >= (int)(ui.mClass + mS->mC.classdif_reg)) && (MyClass >= (ParClass + 1));
 			break;
-		case eAC_INFO : authorized = RegFound && (MyClass >= eUC_OPERATOR); break;
+		case eAC_INFO:
+			authorized = RegFound && (MyClass >= eUC_OPERATOR);
+			break;
 	};
 
-	if(MyClass == eUC_MASTER)
-		authorized = RegFound || (!RegFound && (Action == eAC_NEW));
+	if (MyClass == eUC_MASTER) authorized = RegFound || (!RegFound && (Action == eAC_NEW));
 
-	if(!authorized) {
-		if(!RegFound)
-			*mOS << autosprintf(_("No registered user found with nick '%s'"), nick.c_str());
-		else if(Action == eAC_NEW)
-			*mOS << autosprintf(_("User '%s' already exists"), nick.c_str());
+	if (!authorized) {
+		if (!RegFound)
+			(*mOS) << autosprintf(_("Registered user not found: %s"), nick.c_str());
+		else if (Action == eAC_NEW)
+			(*mOS) << autosprintf(_("%s is already registered."), nick.c_str());
 		else
-			*mOS << _("You have no rights to do this.");
+			(*mOS) << _("You have no rights to do this.");
+
 		return false;
 	}
 
- 	if(Action >= eAC_CLASS && Action <= eAC_SET && !WithPar) {
- 		(*mOS) << _("Missing parameters.");
+ 	if ((Action >= eAC_CLASS) && (Action <= eAC_SET) && !WithPar) {
+ 		(*mOS) << _("Missing command parameters.");
  		return false;
 	}
 
 	switch (Action) {
 		case eAC_NEW: // new
-			if(RegFound) {
-				*mOS << autosprintf(_("User '%s' already exists"), nick.c_str());
+			if (RegFound) {
+				*mOS << autosprintf(_("%s is already registered."), nick.c_str());
 				return false;
 			}
+
 			#ifndef WITHOUT_PLUGINS
-			if(!mS->mCallBacks.mOnNewReg.CallAll(nick,ParClass)) {
-				(*mOS) << _("Action has been discarded by plugin");
+			if (!mS->mCallBacks.mOnNewReg.CallAll(this->mConn->mpUser, nick, ParClass)) {
+				(*mOS) << _("Action has been discarded by plugin.");
 				return false;
 			}
 			#endif
 
-			if (mS->mR->AddRegUser(nick, mConn, ParClass)) {
-				if(user && user->mxConn) {
+			if (mS->mR->AddRegUser(nick, mConn, ParClass, (WithPass ? pass.c_str() : NULL))) {
+				if (user && user->mxConn) {
 					ostr.str(mS->mEmpty);
-					ostr << _("You have been registered, please set up your password NOW \n"
-						"using command +passwd <your_new_passwd>\n"
-						"replace <your_new_passwd> with your new password.");
+
+					if (!WithPass)
+						ostr << autosprintf(_("You have been registered with class %d, please set up your password with +passwd <password> command."), ParClass);
+					else
+						ostr << autosprintf(_("You have been registered with class %d and following password: %s"), ParClass, pass.c_str());
+
 					mS->DCPrivateHS(ostr.str(), user->mxConn);
+					// @todo: no reconnect required
 				}
-				(*mOS) << _("User has been added; please tell him to change his password");
-			}
-			else
-			{
-				(*mOS) << _("Error adding the new user");
+
+				if (!WithPass)
+					(*mOS) << autosprintf(_("%s has been registered with class %d, please tell him to set his password."), nick.c_str(), ParClass);
+				else
+					(*mOS) << autosprintf(_("%s has been registered with class %d and password."), nick.c_str(), ParClass);
+			} else {
+				(*mOS) << _("Error adding new user.");
 				return false;
 			}
-		break;
+
+			break;
+
 		case eAC_DEL: // delete
 			#ifndef WITHOUT_PLUGINS
-			if(!mS->mCallBacks.mOnDelReg.CallAll(nick,ui.mClass)) {
-				(*mOS) << _("Action has been discarded by plugin");
+			if (!mS->mCallBacks.mOnDelReg.CallAll(this->mConn->mpUser, nick, ui.mClass)) {
+				(*mOS) << _("Action has been discarded by plugin.");
 				return false;
 			}
 			#endif
-			if(mS->mR->DelReg(nick)) {
+
+			if (mS->mR->DelReg(nick)) {
 				ostringstream userInfo;
 				userInfo << ui;
-				(*mOS) << autosprintf(_("Deleted user '%s' from database"), nick.c_str()) << "\r\n";
-				(*mOS) << autosprintf(_("User information: %s"), userInfo.str().c_str()) <<"\r\n";
+				(*mOS) << autosprintf(_("%s has been unregistered, user information"), nick.c_str()) << ":\r\n" << userInfo.str();
+				return true;
 			} else {
 				ostringstream userInfo;
 				userInfo << ui;
-				(*mOS) << autosprintf(_("Error deleting user '%s'"), nick.c_str()) << "'\r\n";
-				(*mOS) << autosprintf(_("User information: %s"), userInfo.str().c_str()) <<"\r\n";
+				(*mOS) << autosprintf(_("Error unregistering %s, user information"), nick.c_str()) << ":\r\n" << userInfo.str();
 				return false;
 			}
-		break;
+
+			break;
 		case eAC_PASS: // pass
-			if(WithPar) {
+			if (WithPar) {
 				#if ! defined _WIN32
-				if( mS->mR->ChangePwd(nick, par, 1))
+				if (mS->mR->ChangePwd(nick, par, 1))
 				#else
-				if(mS->mR->ChangePwd(nick, par, 0))
+				if (mS->mR->ChangePwd(nick, par, 0))
 				#endif
-					(*mOS) << _("Password updated");
-				else
-				{
-					(*mOS) << _("Error updating password");
+					(*mOS) << _("Password updated.");
+				else {
+					(*mOS) << _("Error updating password.");
 					return false;
 				}
 			} else {
 				field = "pwd_change";
 				par = "1";
-				ostr << _("You can change your password now, use command +passwd followed by your new password");
+				ostr << _("You can change your password now, use +passwd command followed by your new password.");
 			}
-		break;
+
+			break;
 		case eAC_CLASS: // class
 			#ifndef WITHOUT_PLUGINS
-			if(!mS->mCallBacks.mOnUpdateClass.CallAll(nick,ui.mClass, ParClass)) {
-				(*mOS) << _("Action has been discarded by plugin");
+			if (!mS->mCallBacks.mOnUpdateClass.CallAll(this->mConn->mpUser, nick, ui.mClass, ParClass)) {
+				(*mOS) << _("Action has been discarded by plugin.");
 				return false;
 			}
 			#endif
-			field="class";
-			ostr << autosprintf(_("Your class has been changed to %s. Changes will take effect on next login."), par.c_str());
+
+			field = "class";
+			ostr << autosprintf(_("Your class has been changed to %s, changes will take effect on next login."), par.c_str());
 		break;
 		case eAC_ENABLE: //enable
 			field = "enabled";
 			par = "1";
-			WithPar= true;
-			ostr << _("Your registration has been enabled");
+			WithPar = true;
+			ostr << _("Your registration has been enabled.");
 			break;
 		case eAC_DISABLE: // disable
 			field = "enabled";
 			par = "0";
-			WithPar= true;
-			ostr << _("Your registration has been disabled");
+			WithPar = true;
+			ostr << _("Your registration has been disabled.");
 			break;
 		case eAC_PROTECT: // protect
 			field = "class_protect";
-			ostr << autosprintf(_("You are protected by classes greater than %s"), par.c_str());
-			if(user)
-				user->mProtectFrom = ParClass;
+			ostr << autosprintf(_("You are protected by classes greater than %s."), par.c_str());
+			if (user) user->mProtectFrom = ParClass;
 			break;
 		case eAC_HIDEKICK: // hidekick
 			field = "class_hidekick";
-			ostr << autosprintf(_("You kicks are hidden by classes greater than %s"), par.c_str());
+			ostr << autosprintf(_("You kicks are hidden by classes greater than %s."), par.c_str());
 			break;
-		case eAC_SET:
-		break; // set
+		case eAC_SET: // set
+			break;
 		case eAC_INFO:
-			(*mOS) << "\n" << ui << endl;
-		break;
+			(*mOS) << autosprintf(_("%s registration information"), ui.GetNick().c_str()) << ":\r\n" << ui;
+			break;
 		default:
-			mIdRex->Extract(1,mIdStr,par);
+			mIdRex->Extract(1, mIdStr, par);
 			(*mOS) << _("This command is not implemented.");
 			return false;
 			break;
 	}
 
-	if( (WithPar && (Action >=eAC_ENABLE) && (Action <=eAC_SET)) || ( (Action==eAC_PASS) && !WithPar ))
-	{
-		if (mS->mR->SetVar(nick, field, par)) 	{
-			(*mOS) << autosprintf(_("Updated variable '%s' to value %s for user %s"), field.c_str(), par.c_str(), nick.c_str());
-			if(user && user->mxConn && ostr.str().size())
-				mS->DCPrivateHS(ostr.str(), user->mxConn);
+	if ((WithPar && (Action >= eAC_ENABLE) && (Action <= eAC_SET)) || ((Action == eAC_PASS) && !WithPar)) {
+		if (mS->mR->SetVar(nick, field, par)) {
+			(*mOS) << autosprintf(_("Updated variable %s to value %s for user %s."), field.c_str(), par.c_str(), nick.c_str());
+			if (user && user->mxConn && ostr.str().size()) mS->DCPrivateHS(ostr.str(), user->mxConn);
+			return true;
 		} else {
-			(*mOS) << autosprintf(_("Error setting variable '%s' to value %s for user %s"), field.c_str(), par.c_str(), nick.c_str());
+			(*mOS) << autosprintf(_("Error setting variable %s to value %s for user %s."), field.c_str(), par.c_str(), nick.c_str());
 			return false;
 		}
 	}
-	(*mOS) << "";
+
+	(*mOS) << _("Some information is missing.");
 	return true;
 }
 

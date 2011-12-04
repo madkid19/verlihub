@@ -36,7 +36,7 @@ namespace nVerliHub {
 			eWrongPasswd = 0x000010,
 			eInvalidKey = 0x000020,
 			eHubBusy = 0x000040,
-			eReconnect =  0x000080
+			eReconnect = 0x000080
 		};
 	};
 
@@ -77,6 +77,9 @@ namespace nVerliHub {
 
 				// The flag to determinate the kind of the redirect
 				int mFlag;
+
+				// redirect counter
+				int mCount;
 
 				// The target
 				string mAddress;
