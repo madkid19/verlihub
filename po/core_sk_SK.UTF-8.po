@@ -1,11 +1,12 @@
 # 
+# Translators:
 # uNix <unix.sk@azet.sk>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: Verlihub\n"
-"Report-Msgid-Bugs-To: http://bugs.verlihub-project.org/\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-07-10 08:46+0100\n"
-"PO-Revision-Date: 2011-07-11 00:09+0000\n"
+"PO-Revision-Date: 2011-10-19 03:29+0000\n"
 "Last-Translator: netcelli <netcelli@gmail.com>\n"
 "Language-Team: VerliHub team\n"
 "MIME-Version: 1.0\n"
@@ -879,7 +880,7 @@ msgstr "Akcia bola odstraňujú plugin"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1181
 #, c-format
-msgid "User %s unbanned."
+msgid "User %s unbanned"
 msgstr ""
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1203

@@ -1,12 +1,13 @@
 # 
-# uhlik carbon <uhlikx@seznam.cz>, 2011.
+# Translators:
 # Stefano  <netcelli@gmail.com>, 2011.
+# uhlik carbon <uhlikx@seznam.cz>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: Verlihub\n"
-"Report-Msgid-Bugs-To: http://bugs.verlihub-project.org/\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-07-10 08:46+0100\n"
-"PO-Revision-Date: 2011-07-11 00:09+0000\n"
+"PO-Revision-Date: 2011-11-20 00:57+0000\n"
 "Last-Translator: uhlik <uhlikx@seznam.cz>\n"
 "Language-Team: VerliHub team\n"
 "MIME-Version: 1.0\n"
@@ -221,7 +222,7 @@ msgstr "System Status"
 msgid ""
 "This hub is running version %s%s %s of %s (RunTime: %s / User count: %d)"
 msgstr ""
-"Tento hub běží na verzi %s%s %s of %s (RunTime: %s / Počet uživatelů: %d)"
+"Tento hub běží na verzi %s%s %s %s (RunTime: %s / Počet uživatelů: %d)"
 
 #: /home/stefano/Git/verlihub/src/cserverdc.cpp:569
 msgid ""
@@ -504,7 +505,7 @@ msgstr "Uživatel"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:317
 msgid "Country Code"
-msgstr "K země"
+msgstr "Kód země"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:331
 msgid "Stopping Hub..."
@@ -606,43 +607,43 @@ msgstr "Majitel hubu"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:545
 msgid "Total users"
-msgstr ""
+msgstr "Celkem uživatelů"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:546
 msgid "Total bots"
-msgstr ""
+msgstr "Celkem botů"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:547
 msgid "Total share"
-msgstr ""
+msgstr "Celkem sdílení"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:548
 msgid "Hub health"
-msgstr ""
+msgstr "Stav hubu"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:549
 msgid "Your status"
-msgstr ""
+msgstr "Tvůj status"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:550
 msgid "Your can search every"
-msgstr ""
+msgstr "Můžeš hledat"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:550
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "každou %d sekundu"
+msgstr[1] "každé %d sekundy"
+msgstr[2] "každých %d sekund"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:551
 msgid "Connection type"
-msgstr ""
+msgstr "Typ připojení"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:552
 msgid "You are sharing"
-msgstr ""
+msgstr "Sdílíš"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:567
 msgid "Registration failed; please contact an operator for more help."
@@ -688,11 +689,11 @@ msgstr "Vyskytla se chyba v průběhu registrace."
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:650
 msgid "Registration request"
-msgstr ""
+msgstr "Žádost o registraci"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:651
 msgid "Password"
-msgstr ""
+msgstr "Heslo"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:654
 msgid "Thank you, your request has been sent to operators."
@@ -801,7 +802,7 @@ msgstr "Kopání uživatele %s jsou nyní viditelná."
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:912
 msgid "Use !protect <nickname> <class>."
-msgstr ""
+msgstr "Použij !protect <nickname> <class>"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:924
 #, c-format
@@ -820,11 +821,11 @@ msgstr "Příkaz pro odeslání reportu je vypnut."
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:965
 msgid "Reported user "
-msgstr ""
+msgstr "Nahlášený uživatel "
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:971
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:972
 msgid "Reason"
@@ -832,7 +833,7 @@ msgstr "Důvod"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:973
 msgid "from"
-msgstr ""
+msgstr "z"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:976
 msgid "Thank you, your report has been accepted."
@@ -888,8 +889,8 @@ msgstr "Akce byla zrušena pluginem"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1181
 #, c-format
-msgid "User %s unbanned."
-msgstr "Uživatel %s odbanován."
+msgid "User %s unbanned"
+msgstr "Uživatel %s odbanován"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:1203
 #, c-format
