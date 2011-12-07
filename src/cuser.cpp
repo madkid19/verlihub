@@ -223,7 +223,6 @@ void cUser::DisplayInfo(ostream &os, int DisplClass)
 
 void cUser::DisplayRightsInfo(ostream &os, bool head)
 {
-	char *tmp;
 	cTime now = cTime().Sec();
 
 	if (head) {
@@ -234,121 +233,121 @@ void cUser::DisplayRightsInfo(ostream &os, bool head)
 
 	// main chat
 	if (this->mClass >= eUC_ADMIN)
-		tmp = _("Yes");
+		os << " [*] " << autosprintf(_("Can use main chat: %s"), _("Yes")) << "\r\n";
 	else if (!this->mGag)
-		tmp = _("No");
-	else if (this->mGag > now)
-		tmp = autosprintf(_("No [%s]"), cTime(this->mGag - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can use main chat: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can use main chat: %s"), _("No")) << "\r\n";
+	else if (this->mGag > now) {
+		ostringstream oss;
+		oss << autosprintf(_("No [%s]"), cTime(this->mGag - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can use main chat: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can use main chat: %s"), _("Yes")) << "\r\n";
 
 	// private chat
 	if (this->mClass >= eUC_ADMIN)
-		tmp = _("Yes");
+		os << " [*] " << autosprintf(_("Can use private chat: %s"), _("Yes")) << "\r\n";
 	else if (!this->mNoPM)
-		tmp = _("No");
-	else if (this->mNoPM > now)
-		tmp = autosprintf(_("No [%s]"), cTime(this->mNoPM - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can use private chat: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can use private chat: %s"), _("No")) << "\r\n";
+	else if (this->mNoPM > now) {
+		ostringstream oss;
+		oss << autosprintf(_("No [%s]"), cTime(this->mNoPM - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can use private chat: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can use private chat: %s"), _("Yes")) << "\r\n";
 
 	// operator chat
 	if ((this->mClass < eUC_OPERATOR) && this->mCanOpchat && (this->mCanOpchat < now))
-		tmp = _("No");
-	else if (this->mCanOpchat > now)
-		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanOpchat - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can use operator chat: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can use operator chat: %s"), _("No")) << "\r\n";
+	else if (this->mCanOpchat > now) {
+		ostringstream oss;
+		oss << autosprintf(_("Yes [%s]"), cTime(this->mCanOpchat - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can use operator chat: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can use operator chat: %s"), _("Yes")) << "\r\n";
 
 	// search files
 	if (this->mClass >= eUC_ADMIN)
-		tmp = _("Yes");
+		os << " [*] " << autosprintf(_("Can search files: %s"), _("Yes")) << "\r\n";
 	else if (!this->mNoSearch)
-		tmp = _("No");
-	else if (this->mNoSearch > now)
-		tmp = autosprintf(_("No [%s]"), cTime(this->mNoSearch - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can search files: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can search files: %s"), _("No")) << "\r\n";
+	else if (this->mNoSearch > now) {
+		ostringstream oss;
+		oss << autosprintf(_("No [%s]"), cTime(this->mNoSearch - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can search files: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can search files: %s"), _("Yes")) << "\r\n";
 
 	// download files
 	if (this->mClass >= eUC_ADMIN)
-		tmp = _("Yes");
+		os << " [*] " << autosprintf(_("Can download files: %s"), _("Yes")) << "\r\n";
 	else if (!this->mNoCTM)
-		tmp = _("No");
-	else if (this->mNoCTM > now)
-		tmp = autosprintf(_("No [%s]"), cTime(this->mNoCTM - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can download files: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can download files: %s"), _("No")) << "\r\n";
+	else if (this->mNoCTM > now) {
+		ostringstream oss;
+		oss << autosprintf(_("No [%s]"), cTime(this->mNoCTM - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can download files: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can download files: %s"), _("Yes")) << "\r\n";
 
 	// hide share
 	if ((this->mClass < eUC_VIPUSER) && this->mCanShare0 && (this->mCanShare0 < now))
-		tmp = _("No");
-	else if (this->mCanShare0 > now)
-		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanShare0 - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can hide share: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can hide share: %s"), _("No")) << "\r\n";
+	else if (this->mCanShare0 > now) {
+		ostringstream oss;
+		oss << autosprintf(_("Yes [%s]"), cTime(this->mCanShare0 - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can hide share: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can hide share: %s"), _("Yes")) << "\r\n";
 
 	// register users
 	if ((this->mClass < mxServer->mC.min_class_register) && this->mCanReg && (this->mCanReg < now))
-		tmp = _("No");
-	else if (this->mCanReg > now)
-		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanReg - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can register users: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can register users: %s"), _("No")) << "\r\n";
+	else if (this->mCanReg > now) {
+		ostringstream oss;
+		oss << autosprintf(_("Yes [%s]"), cTime(this->mCanReg - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can register users: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can register users: %s"), _("Yes")) << "\r\n";
 
 	// drop users
 	if ((this->mClass < eUC_OPERATOR) && this->mCanDrop && (this->mCanDrop < now))
-		tmp = _("No");
-	else if (this->mCanDrop > now)
-		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanDrop - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can drop users: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can drop users: %s"), _("No")) << "\r\n";
+	else if (this->mCanDrop > now) {
+		ostringstream oss;
+		oss << autosprintf(_("Yes [%s]"), cTime(this->mCanDrop - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can drop users: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can drop users: %s"), _("Yes")) << "\r\n";
 
 	// kick users
 	if ((this->mClass < eUC_OPERATOR) && this->mCanKick && (this->mCanKick < now))
-		tmp = _("No");
-	else if (this->mCanKick > now)
-		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanKick - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can kick users: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can kick users: %s"), _("No")) << "\r\n";
+	else if (this->mCanKick > now) {
+		ostringstream oss;
+		oss << autosprintf(_("Yes [%s]"), cTime(this->mCanKick - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can kick users: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can kick users: %s"), _("Yes")) << "\r\n";
 
 	// temporarily ban users
 	if ((this->mClass < eUC_OPERATOR) && this->mCanTBan && (this->mCanTBan < now))
-		tmp = _("No");
-	else if (this->mCanTBan > now)
-		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanTBan - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can temporarily ban users: %s"), tmp) << "\r\n";
+		os << " [*] " << autosprintf(_("Can temporarily ban users: %s"), _("No")) << "\r\n";
+	else if (this->mCanTBan > now) {
+		ostringstream oss;
+		oss << autosprintf(_("Yes [%s]"), cTime(this->mCanTBan - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can temporarily ban users: %s"), oss.str().c_str()) << "\r\n";
+	} else
+		os << " [*] " << autosprintf(_("Can temporarily ban users: %s"), _("Yes")) << "\r\n";
 
 	// permanently ban users
 	if ((this->mClass < eUC_OPERATOR) && this->mCanPBan && (this->mCanPBan < now))
-		tmp = _("No");
-	else if (this->mCanPBan > now)
-		tmp = autosprintf(_("Yes [%s]"), cTime(this->mCanPBan - now).AsPeriod().AsString().c_str());
-	else
-		tmp = _("Yes");
-
-	os << " [*] " << autosprintf(_("Can permanently ban users: %s"), tmp);
+		os << " [*] " << autosprintf(_("Can permanently ban users: %s"), _("No"));
+	else if (this->mCanPBan > now) {
+		ostringstream oss;
+		oss << autosprintf(_("Yes [%s]"), cTime(this->mCanPBan - now).AsPeriod().AsString().c_str());
+		os << " [*] " << autosprintf(_("Can permanently ban users: %s"), oss.str().c_str());
+	} else
+		os << " [*] " << autosprintf(_("Can permanently ban users: %s"), _("Yes"));
 }
 
 bool cUser::Can(unsigned Right, long now, unsigned OtherClass)
