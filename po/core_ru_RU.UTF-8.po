@@ -1,13 +1,15 @@
 # 
-# Александр  <exside@mail.com>, 2011.
+# Translators:
 # Stefano  <netcelli@gmail.com>, 2011.
+# Александр  <exside@mail.com>, 2011.
+# Александр  <plugmn@gmail.com>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: Verlihub\n"
-"Report-Msgid-Bugs-To: http://bugs.verlihub-project.org/\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-07-10 08:46+0100\n"
-"PO-Revision-Date: 2011-07-11 00:09+0000\n"
-"Last-Translator: plugman <exside@mail.com>\n"
+"PO-Revision-Date: 2011-10-19 03:29+0000\n"
+"Last-Translator: plugman <plugmn@gmail.com>\n"
 "Language-Team: VerliHub team\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -611,43 +613,43 @@ msgstr "Владелец хаба"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:545
 msgid "Total users"
-msgstr ""
+msgstr "Всего пользователей"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:546
 msgid "Total bots"
-msgstr ""
+msgstr "Всего ботов"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:547
 msgid "Total share"
-msgstr ""
+msgstr "Общая шара"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:548
 msgid "Hub health"
-msgstr ""
+msgstr "Хаб работает уже"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:549
 msgid "Your status"
-msgstr ""
+msgstr "Ваш статус"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:550
 msgid "Your can search every"
-msgstr ""
+msgstr "Вы можете использовать поиск каждые"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:550
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Секунда %d"
+msgstr[1] "Секунды %d"
+msgstr[2] "Секунд %d"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:551
 msgid "Connection type"
-msgstr ""
+msgstr "Тип соединения"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:552
 msgid "You are sharing"
-msgstr ""
+msgstr "Вы расшарили"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:567
 msgid "Registration failed; please contact an operator for more help."
@@ -695,11 +697,11 @@ msgstr "Обнаружена ошибка при регистрации."
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:650
 msgid "Registration request"
-msgstr ""
+msgstr "Запрос на регистрацию"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:651
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:654
 msgid "Thank you, your request has been sent to operators."
@@ -831,7 +833,7 @@ msgstr ""
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:971
 msgid "Offline"
-msgstr ""
+msgstr "Отключён"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:972
 msgid "Reason"
@@ -839,7 +841,7 @@ msgstr "Причина"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:973
 msgid "from"
-msgstr ""
+msgstr "от"
 
 #: /home/stefano/Git/verlihub/src/cdcconsole.cpp:976
 msgid "Thank you, your report has been accepted."
@@ -1336,7 +1338,7 @@ msgstr "Осталось"
 
 #: /home/stefano/Git/verlihub/src/cban.cpp:103
 msgid "Permanently"
-msgstr ""
+msgstr "Постоянно"
 
 #: /home/stefano/Git/verlihub/src/cban.cpp:109
 msgid "IP range"
