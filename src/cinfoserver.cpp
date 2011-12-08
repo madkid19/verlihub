@@ -23,7 +23,7 @@
 #include "stringutils.h"
 #include "cserverdc.h"
 #include "curr_date_time.h"
-#if ! defined _WIN32 && ! defined HAVE_FREEBSD && ! defined HAVE_OPENBSD && ! defined HAVE_APPLE
+#if defined HAVE_LINUX
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
 #include <sys/time.h>
@@ -44,7 +44,7 @@ cInfoServer::cInfoServer()
 
 void cInfoServer::SystemInfo(ostream &os)
 {
-#if ! defined _WIN32 && ! defined HAVE_FREEBSD && ! defined HAVE_OPENBSD && ! defined HAVE_APPLE
+#if defined HAVE_LINUX
 	struct sysinfo serverInfo;
 
 	if (sysinfo(&serverInfo)) {
