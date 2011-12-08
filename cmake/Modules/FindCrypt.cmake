@@ -8,10 +8,18 @@
 IF(CRYPT_LIBRARIES)
 	SET(CRYPT_FOUND TRUE)
 ELSE(CRYPT_LIBRARIES)
-	find_library(CRYPT_LIBRARIES NAMES crypt PATHS
-		/usr/lib
-		/usr/local/lib
-	)
+	IF(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
+		find_library(CRYPT_LIBRARIES NAMES gcrypt PATHS
+			/usr/lib
+			/usr/local/lib
+		)
+	ELSE(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
+		find_library(CRYPT_LIBRARIES NAMES crypt PATHS
+			/usr/lib
+			/usr/local/lib
+		)
+	ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")
+
 	IF(CRYPT_LIBRARIES)
 		SET(CRYPT_FOUND TRUE)
 		MESSAGE(STATUS "Found Crypt: ${CRYPT_LIBRARIES}")
