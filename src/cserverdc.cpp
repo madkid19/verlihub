@@ -631,10 +631,12 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 		os.str("");
 	}
 
-	// Send the hub topic
-	string topic("$HubTopic ");
-	topic += mC.hub_topic + "|";
-	conn->Send(topic, false);
+	// send the hub topic
+	if (!mC.hub_topic.empty()) {
+		string topic("$HubTopic ");
+		topic += mC.hub_topic + "|";
+		conn->Send(topic, false);
+	}
 
 	if (mC.send_user_info) {
 		os << _("Your information") << ":\r\n";

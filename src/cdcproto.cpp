@@ -1706,15 +1706,21 @@ int cDCProto::DCO_WhoIP(cMessageDC * msg, cConnDC * conn)
 	return 0;
 }
 
-int cDCProto::DCO_GetTopic(cMessageDC *, cConnDC * conn)
+int cDCProto::DCO_GetTopic(cMessageDC *, cConnDC *conn)
 {
-	string topic("$HubTopic ");
-	topic += mS->mC.hub_topic;
-	conn->Send(topic);
+	if (!conn->mpUser) return -1;
+	if (!conn->mpUser->mInList) return -2;
+
+	if (!mS->mC.hub_topic.empty()) {
+		string topic("$HubTopic ");
+		topic += mS->mC.hub_topic;
+		conn->Send(topic);
+	}
+
 	return 0;
 }
 
-/** Change the hub's topic by sending $HubTopic; if the user has no rights it returns an error */
+/** Change the hub's topic by sending $SetTopic; if the user has no rights it returns an error */
 int cDCProto::DCO_SetTopic(cMessageDC * msg, cConnDC * conn)
 {
 	if(msg->SplitChunks())
