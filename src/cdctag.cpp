@@ -76,8 +76,8 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 
-	if ((mTotHubs < 0) || (mSlots < 0)) {
-		os << _("Error: Your client tag is reporting less than 0 hubs or slots.");
+	if ((mTotHubs <= 0) || (mSlots < 0)) {
+		os << _("Error: Your client tag is reporting 0 or less hubs or less than 0 slots.");
 		code = eTC_PARSE;
 		return false;
 	}
