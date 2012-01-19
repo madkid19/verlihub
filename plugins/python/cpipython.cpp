@@ -862,7 +862,7 @@ bool cpiPython::OnUserLogout(cUser *user)
 	return true;
 }
 
-bool cpiPython::OnTimer()
+bool cpiPython::OnTimer(long msec)
 {
 
 	//return true;  // disabled for now

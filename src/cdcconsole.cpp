@@ -2040,7 +2040,6 @@ bool cDCConsole::cfRegUsr::operator()()
 		}
 	}
 
-	(*mOS) << _("Some information is missing.");
 	return true;
 }
 

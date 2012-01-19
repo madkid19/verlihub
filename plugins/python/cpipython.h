@@ -68,7 +68,7 @@ public:
 	virtual bool OnUserCommand(nSocket::cConnDC *, std::string *);
 	virtual bool OnUserLogin(cUser *);
 	virtual bool OnUserLogout(cUser *);
-	virtual bool OnTimer();
+	virtual bool OnTimer(long msec);
 	virtual bool OnNewReg(nTables::cRegUserInfo *);
 	virtual bool OnNewBan(nTables::cBan *);
 
