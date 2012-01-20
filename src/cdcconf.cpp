@@ -61,18 +61,18 @@ cDCConf::~cDCConf()
 void cDCConf::AddVars()
 {
 	// Hub info and basic settings
-	Add("hub_name",hub_name,string("VerliHub"));
-	Add("hub_desc",hub_desc,string("No Description"));
-	Add("hub_topic",hub_topic,"");
+	Add("hub_name",hub_name,string("Verlihub"));
+	Add("hub_desc",hub_desc,string(""));
+	Add("hub_topic",hub_topic,string(""));
 	Add("hub_category",hub_category,string(""));
 	Add("hub_icon_url", hub_icon_url, string(""));
 	Add("hub_owner",hub_owner,string(""));
 	Add("hub_version",hub_version,VERSION);
 	Add("hub_version_special",hub_version_special,string(""));
-	Add("hub_security", hub_security, string("VerliHub"));
-	Add("hub_security_desc", hub_security_desc, string("Hub-Security for broadcasting messages"));
+	Add("hub_security", hub_security, string("Verlihub"));
+	Add("hub_security_desc", hub_security_desc, string("Hub security"));
 	Add("opchat_name", opchat_name, string("OpChat"));
-	Add("opchat_desc", opchat_desc, string("Operator chat - only for OPs"));
+	Add("opchat_desc", opchat_desc, string("Operator chat"));
 	Add("hub_host",hub_host,string(""));
 	Add("listen_ip",mS.mAddr,string("0.0.0.0"));
 	#if !defined _WIN32
@@ -99,8 +99,8 @@ void cDCConf::AddVars()
 	Add("max_extra_ops",max_extra_ops,100);
 	Add("max_extra_cheefs",max_extra_cheefs,100);
 	Add("max_extra_admins",max_extra_admins,200);
-	Add("max_users0",max_users[0],600);
-	Add("max_users1",max_users[1],5400);
+	Add("max_users0",max_users[0],6000);
+	Add("max_users1",max_users[1],1000);
 	Add("max_users2",max_users[2],1000);
 	Add("max_users3",max_users[3],1000);
 	Add("max_users4",max_users[4],1000);
@@ -109,18 +109,18 @@ void cDCConf::AddVars()
 	// End max users configuration
 
 	// Share configuration
-	Add("min_share",min_share,(unsigned long)1*1024);
-	Add("min_share_reg",min_share_reg,(unsigned long)1*1024);
-	Add("min_share_vip",min_share_vip,(unsigned long)1*1024);
+	Add("min_share",min_share,(unsigned long)0);
+	Add("min_share_reg",min_share_reg,(unsigned long)0);
+	Add("min_share_vip",min_share_vip,(unsigned long)0);
 	Add("min_share_ops",min_share_ops,(unsigned long)0);
 	Add("min_share_factor_passive", min_share_factor_passive, 1.0);
 	Add("min_share_use_hub",min_share_use_hub,(unsigned long)0);
 	Add("min_share_use_hub_reg",min_share_use_hub_reg,(unsigned long)0);
 	Add("min_share_use_hub_vip",min_share_use_hub_vip,(unsigned long)0);
-	Add("max_share",max_share,(unsigned long)10*1024*1024);
-	Add("max_share_reg",max_share_reg,(unsigned long)10*1024*1024);
-	Add("max_share_vip",max_share_vip,(unsigned long)10*1024*1024);
-	Add("max_share_ops",max_share_ops,(unsigned long)10*1024*1024);
+	Add("max_share",max_share,(unsigned long)30*1024*1024);
+	Add("max_share_reg",max_share_reg,(unsigned long)30*1024*1024);
+	Add("max_share_vip",max_share_vip,(unsigned long)30*1024*1024);
+	Add("max_share_ops",max_share_ops,(unsigned long)30*1024*1024);
 	// End share configuration
 
 	// Search configuration
@@ -131,14 +131,14 @@ void cDCConf::AddVars()
 	Add("int_search_reg_pass",int_search_reg_pass,48);
 	Add("int_search_vip",int_search_vip,8);
 	Add("int_search_op",int_search_op,1);
-	Add("min_search_chars", min_search_chars, 5);
+	Add("min_search_chars", min_search_chars, 4);
 	Add("max_passive_sr",max_passive_sr,25);
 	Add("delayed_search",delayed_search, 1);
 	// End search configuration
 
 	// Nicklist configuration
 	Add("max_nick",max_nick,64u);
-	Add("min_nick",min_nick,3u);
+	Add("min_nick",min_nick,1u);
 	Add("nick_chars",nick_chars, string(""));
 	Add("nick_prefix",nick_prefix,string(""));
 	Add("nick_prefix_cc", nick_prefix_cc, false);
@@ -187,7 +187,7 @@ void cDCConf::AddVars()
 	Add("min_class_bc_vips", min_class_bc_vips, 4);
 	Add("bc_reply",mS.LastBCNick,mEmpty);
 	Add("plugin_mod_class",plugin_mod_class,5);
-	Add("topic_mod_class",topic_mod_class,5);
+	Add("topic_mod_class",topic_mod_class,4);
 	Add("cmd_start_op",cmd_start_op,string("!"));
 	Add("cmd_start_user",cmd_start_user,string("+"));
 	Add("dest_report_chat", dest_report_chat, false);
@@ -200,7 +200,7 @@ void cDCConf::AddVars()
 	Add("allways_ask_password", allways_ask_password, false);
 	Add("default_password_encryption",default_password_encryption,1); //eCRYPT_ENCRYPT
 	Add("password_min_len", password_min_len, 6);
-	Add("pwd_tmpban", pwd_tmpban, 10);
+	Add("pwd_tmpban", pwd_tmpban, 60);
 	Add("wrongpass_message", wrongpass_message, "");
 	Add("wrongpassword_report", wrongpassword_report, 1);
 	Add("wrongauthip_report", wrongauthip_report, true);
@@ -215,13 +215,13 @@ void cDCConf::AddVars()
 	Add("int_myinfo",int_myinfo,60);
 	Add("int_nicklist",int_nicklist,60);
 	Add("int_login",int_login, 60);
-	Add("max_class_int_login",max_class_int_login,4);
+	Add("max_class_int_login",max_class_int_login,3);
 	Add("tban_kick",tban_kick,300);
 	Add("tban_max",tban_max,3600*24);
 	Add("log_level",mS.msLogLevel, 0);
 	Add("dns_lookup",mS.mUseDNS, 0);
 	Add("report_dns_lookup",report_dns_lookup,0);
-	Add("hide_all_kicks",hide_all_kicks,0);
+	Add("hide_all_kicks",hide_all_kicks,1);
 	Add("timer_conn_period", mS.timer_conn_period, 4);
 	Add("timer_serv_period", mS.timer_serv_period, 1);
 	Add("min_frequency", min_frequency, 0.3);
@@ -260,7 +260,7 @@ void cDCConf::AddVars()
 	Add("show_speed",show_speed,1);
 	Add("tag_min_hs_ratio", tag_min_hs_ratio, 0.);
 	Add("tag_max_hs_ratio", tag_max_hs_ratio, 0.);
-	Add("tag_max_hubs",tag_max_hubs,100);
+	Add("tag_max_hubs",tag_max_hubs, 0);
 	Add("tag_min_hubs", tag_min_hubs, 0);
 	Add("tag_min_hubs_usr", tag_min_hubs_usr, 0);
 	Add("tag_min_hubs_reg", tag_min_hubs_reg, 0);
