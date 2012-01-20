@@ -90,13 +90,13 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 
-	if (mTotHubs > mServer->mC.tag_max_hubs) {
+	if ((mServer->mC.tag_max_hubs > 0) && (mTotHubs > mServer->mC.tag_max_hubs)) {
 		os << autosprintf(_("Too many open hubs, maximum is %d and you have %d."), mServer->mC.tag_max_hubs, mTotHubs);
 		code = eTC_MAX_HUB;
 		return false;
 	}
 
-	if (mTotHubs < mServer->mC.tag_min_hubs) {
+	if ((mServer->mC.tag_min_hubs > 0) && (mTotHubs < mServer->mC.tag_min_hubs)) {
 		os << autosprintf(_("Too few open hubs, minimum is %d and you have %d."), mServer->mC.tag_min_hubs, mTotHubs);
 		code = eTC_MIN_HUB;
 		return false;
