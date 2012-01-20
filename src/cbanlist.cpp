@@ -48,7 +48,6 @@ cBanList::cBanList(cServerDC *s) : cConfMySQL(s->mMySQL), mS(s),mModel(s)
 	AddCol("nick_op", "varchar(64)", "", true, mModel.mNickOp);
 	AddCol("reason", "text", "", true, mModel.mReason);
 	AddCol("share_size", "varchar(15)", "", true, mModel.mShare);
-	AddCol("email", "varchar(128)", "", true, mModel.mMail);
 	mMySQLTable.mExtra = "UNIQUE (ip,nick), ";
 	mMySQLTable.mExtra += "INDEX nick_index (nick), ";
 	mMySQLTable.mExtra += "INDEX date_index (date_limit), ";
@@ -183,7 +182,7 @@ void cBanList::AddBan(cBan &ban)
 		update = true;
 		mModel = OldBan;
 		if(ban.mReason.size())
-			mModel.mReason += "(" + mModel.mNickOp + ")\r\n" + ban.mReason;
+			mModel.mReason += " / " + ban.mReason;
 		if(!ban.mDateEnd || (ban.mDateEnd > mModel.mDateEnd))
 			mModel.mDateEnd = ban.mDateEnd;
 		mModel.mNickOp = ban.mNickOp;
@@ -205,53 +204,59 @@ void cBanList::AddBan(cBan &ban)
 
 bool cBanList::TestBan(cBan &ban, cConnDC *connection, const string &nick, unsigned mask)
 {
-	ostringstream query;
-	if(connection != NULL) {
+	if (connection != NULL) {
+		ostringstream query;
 		bool fristWhere = false;
 		string ip = connection->AddrIP();
 		SelectFields(query);
 		string host = connection->AddrHost();
-		// IP and NICK and BOTH are done by this first one
 		query << " WHERE (";
-		if(mask & (eBF_NICKIP | eBF_IP)) {
+
+		// ip and nick and both are done by this first one
+		if (mask & (eBF_NICKIP | eBF_IP)) {
 			AddTestCondition(query, ip, eBF_IP);
 			query << " OR ";
 			fristWhere = true;
 		}
-		if(mask & (eBF_NICKIP | eBF_NICK))
-			AddTestCondition(query , nick , eBF_NICK);
 
-		if(mask & eBF_RANGE)
-			AddTestCondition(query << " OR ", ip , eBF_RANGE);
-		if(connection->mpUser != NULL) {
-			if(mask & eBF_SHARE) {
+		if (mask & (eBF_NICKIP | eBF_NICK))
+			AddTestCondition(query, nick, eBF_NICK);
+
+		if (mask & eBF_RANGE)
+			AddTestCondition(query << " OR ", ip, eBF_RANGE);
+
+		if (connection->mpUser != NULL) {
+			if (mask & eBF_SHARE) {
 				ostringstream os (ostringstream::out);
 				os << connection->mpUser->mShare;
-				if(fristWhere) query << " OR ";
-				AddTestCondition (query, os.str(), eBF_SHARE); //fix OR condition
+				if (fristWhere) query << " OR ";
+				AddTestCondition(query, os.str(), eBF_SHARE); //fix or condition
 			}
 		}
-		if(mask & eBF_HOST1)
-			AddTestCondition (query << " OR ", host, eBF_HOST1);
-		if(mask & eBF_HOST2)
-			AddTestCondition (query << " OR ", host, eBF_HOST2);
-		if(mask & eBF_HOST3)
-			AddTestCondition (query << " OR ", host, eBF_HOST3);
-		if(mask & eBF_HOSTR1)
-			AddTestCondition (query << " OR ", host, eBF_HOSTR1);
-		if(mask & eBF_PREFIX)
-			AddTestCondition (query << " OR ", nick, eBF_PREFIX);
 
-		query << " ) AND ( (date_limit >= " << cTime().Sec() <<
-			") OR date_limit IS NULL OR (date_limit = 0)) ORDER BY date_limit DESC LIMIT 1";
+		if (mask & eBF_HOST1)
+			AddTestCondition(query << " OR ", host, eBF_HOST1);
 
-		if(StartQuery(query.str()) == -1)
-			return false;
+		if (mask & eBF_HOST2)
+			AddTestCondition(query << " OR ", host, eBF_HOST2);
+
+		if (mask & eBF_HOST3)
+			AddTestCondition(query << " OR ", host, eBF_HOST3);
+
+		if (mask & eBF_HOSTR1)
+			AddTestCondition(query << " OR ", host, eBF_HOSTR1);
+
+		if (mask & eBF_PREFIX)
+			AddTestCondition(query << " OR ", nick, eBF_PREFIX);
+
+		query << " ) AND ( (date_limit >= " << cTime().Sec() << ") OR date_limit IS NULL OR (date_limit = 0)) ORDER BY date_limit DESC LIMIT 1";
+		if (StartQuery(query.str()) == -1) return false;
 		SetBaseTo(&ban);
 		bool found = (Load() >= 0);
 		EndQuery();
 		return found;
 	}
+
 	return false;
 }
 
@@ -287,7 +292,6 @@ void cBanList::NewBan(cBan &ban, const cKick &kick, long period, int mask)
 	ban.mNick  = kick.mNick;
 	ban.SetType(mask);
 	ban.mHost = kick.mHost;
-	ban.mMail = kick.mEmail;
 	ban.mShare = kick.mShare;
 }
 
@@ -372,9 +376,6 @@ bool cBanList::AddTestCondition(ostream &os, const string &value, int mask)
 		break;
 		case eBF_SHARE :
 			os << "(nick='_shareban_' AND share_size = '" << value << "')";
-		break;
-		case eBF_EMAIL :
-			os << "(nick='_emailban_' AND ip = '" << value << "')";
 		break;
 		case eBF_HOST1 :
 			if(!this->GetHostSubstring(value, host, 1)) {

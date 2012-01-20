@@ -602,11 +602,11 @@ int cDCProto::DC_MyINFO(cMessageDC * msg, cConnDC * conn)
 	if (conn->GetLSFlag(eLS_LOGIN_DONE) != eLS_LOGIN_DONE) {
 		cBan Ban(mS);
 		bool banned = false;
-		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, eBF_SHARE | eBF_EMAIL);
+		banned = mS->mBanList->TestBan(Ban, conn, conn->mpUser->mNick, eBF_SHARE);
 
 		if (banned && conn->GetTheoricalClass() <= eUC_REGUSER) {
 			stringstream msg;
-			msg << _("You are banned.") << endl;
+			msg << _("You are banned from this hub.") << "\r\n";
 			Ban.DisplayUser(msg);
 			mS->DCPublicHS(msg.str(), conn);
 			conn->LogStream() << "Kicked user due ban detection" << endl;

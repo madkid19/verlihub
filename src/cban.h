@@ -45,12 +45,10 @@ namespace nVerliHub {
 			eBF_HOST3 = 1 << 6,
 			/// Share is banned.
 			eBF_SHARE = 1 << 7,
-			/// Email is banned
-			eBF_EMAIL = 1 << 8,
 			/// Prefix of nick is banned
-			eBF_PREFIX = 1 << 9,
+			eBF_PREFIX = 1 << 8,
 			/// Reverse host is banned
-			eBF_HOSTR1 = 1 << 10,
+			eBF_HOSTR1 = 1 << 9,
 		};
 	};
 	namespace nSocket {
@@ -138,9 +136,6 @@ namespace nVerliHub {
 
 				/// Banned share size.
 				__int64 mShare;
-
-				/// Banned email address.
-				string mMail;
 
 				/// Lowest IP in banned IP range.
 				unsigned long mRangeMin;

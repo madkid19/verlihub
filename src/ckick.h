@@ -43,7 +43,6 @@ public:
 	string mIP;
 	string mOp;
 	bool mIsDrop;
-	string mEmail;
 	string mHost;
 	__int64 mShare;
 };

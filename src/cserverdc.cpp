@@ -942,52 +942,50 @@ int cServerDC::ValidateUser(cConnDC *conn, const string &nick, int &closeReason)
 
 	if (close) {
 		if (vn == eVN_USED) {
-			static string omsg; omsg = "$ValidateDenide"; conn->Send(omsg);
+			static string omsg;
+			omsg = "$ValidateDenide";
+			conn->Send(omsg);
 		}
 
 		DCPublicHS(errmsg.str(), conn);
-
-		if (conn->Log(3))
-			conn->LogStream() << "Bad nick: " << errmsg.str() << endl;
-
+		if (conn->Log(3)) conn->LogStream() << "Bad nick: " << errmsg.str() << endl;
 		return 0;
 	}
 
 	cBan Ban(this);
 	bool banned = false;
-	if(conn->GetTheoricalClass() < eUC_MASTER) { // Master class is immune
-		if( conn->GetTheoricalClass() >= eUC_REGUSER ) {
-			banned = mBanList->TestBan(Ban, conn, nick, eBF_NICK);
-			if (banned && !((1 << Ban.mType) & (eBF_NICK | eBF_NICKIP))) banned = false;
-		} else {
-			// Here we can't check share ban because user hasn't sent $MyInfo string yet
-			banned = mBanList->TestBan(Ban, conn, nick, eBF_NICKIP | eBF_RANGE | eBF_HOST2 | eBF_HOST1 | eBF_HOST3 | eBF_HOSTR1 | eBF_PREFIX);
-		}
+
+	if (conn->GetTheoricalClass() < eUC_MASTER) { // master class is immune
+		// here we cant check share ban because user hasnt sent $MyINFO yet
+		if (conn->GetTheoricalClass() == eUC_NORMUSER)
+			banned = mBanList->TestBan(Ban, conn, nick, eBF_NICK | eBF_NICKIP | eBF_RANGE | eBF_HOST2 | eBF_HOST1 | eBF_HOST3 | eBF_HOSTR1 | eBF_PREFIX);
+		else // registered users avoid prefix ban check because we might actually ban a prefix for unregistered users, but let registered users to use it
+			banned = mBanList->TestBan(Ban, conn, nick, eBF_NICK | eBF_NICKIP | eBF_RANGE | eBF_HOST2 | eBF_HOST1 | eBF_HOST3 | eBF_HOSTR1);
 	}
 
-	if(banned) {
-		errmsg << _("<<You are banned>>") << endl;
+	if (banned) {
+		errmsg << _("You are banned from this hub.") << "\r\n";
 		Ban.DisplayUser(errmsg);
-		DCPublicHS(errmsg.str(),conn);
-		if(conn->Log(1))
-			conn->LogStream() << "Unallowed user (" << Ban.mType << "), closing" << endl;
+		DCPublicHS(errmsg.str(), conn);
+		if (conn->Log(1)) conn->LogStream() << "Unallowed user (" << Ban.mType << "), closing" << endl;
 		return 0;
 	}
 
-	if(mC.nick_prefix_cc) {
-		if(conn->mCC.size() && conn->mCC != "--") {
+	if (mC.nick_prefix_cc) {
+		if (conn->mCC.size() && conn->mCC != "--") {
 			string Prefix("[");
 			Prefix += conn->mCC;
 			Prefix += "]";
-			if(StrCompare(nick,0,4,Prefix) != 0) 	{
-				errmsg << autosprintf(_("Please add %s in front of your nick"), Prefix.c_str()) << endl;
+
+			if (StrCompare(nick, 0, 4, Prefix) != 0) {
+				errmsg << autosprintf(_("Please add %s in front of your nick."), Prefix.c_str());
 				close = conn->GetTheoricalClass() < eUC_REGUSER;
 			}
 		}
 	}
 
-	if(close) {
-		DCPublicHS(errmsg.str(),conn);
+	if (close) {
+		DCPublicHS(errmsg.str(), conn);
 		return 0;
 	}
 

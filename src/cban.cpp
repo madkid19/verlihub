@@ -54,7 +54,6 @@ cUnBan::cUnBan(cBan &Ban, cServerDC *s): cBan(s)
 	mNick = Ban.mNick;
 	mHost = Ban.mHost;
 	mShare = Ban.mShare;
-	mMail = Ban.mMail;
 	mRangeMin = Ban.mRangeMin;
 	mRangeMax = Ban.mRangeMax;
 	mDateStart = Ban.mDateStart;
@@ -86,30 +85,29 @@ ostream & operator << (ostream &os, cBan &ban)
 void cBan::DisplayUser(ostream &os)
 {
 	os << "\r\n";
-	if(mNick.size())
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << mNick.c_str() << endl;
-	if(mIP.size() && mIP[0] != '_')
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("IP") << mIP.c_str() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Reason") << mReason.c_str();
-	// Append extra ban message
-	if(!mS->mC.ban_extra_message.empty())
-		os << " " << mS->mC.ban_extra_message;
-	os << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Left");
-	if(mDateEnd) {
+	if (mNick.size()) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Nickname") << mNick.c_str() << "\r\n";
+	if (mIP.size() && (mIP[0] != '_')) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("IP") << mIP.c_str() << "\r\n";
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Reason") << mReason.c_str() << "\r\n";
+	// append extra ban message
+	if (!mS->mC.ban_extra_message.empty()) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Extra message") << mS->mC.ban_extra_message << "\r\n";
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Time");
+
+	if (mDateEnd) {
 		cTime HowLong(mDateEnd - cTime().Sec());
-		os << toLower(_("Remaining")) << " " << HowLong.AsPeriod().AsString().c_str();
+		os << HowLong.AsPeriod().AsString().c_str() << " " << _("remaining");
 	} else
-		os << toLower(_("Permanently"));
-	os  << endl;
+		os << _("Permanently");
+
+	os << "\r\n";
 	string initialRange, endRange;
-	if(mRangeMin) {
+
+	if (mRangeMin) {
 		cBanList::Num2Ip(mRangeMin, initialRange);
 		cBanList::Num2Ip(mRangeMax, endRange);
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("IP range") << initialRange.c_str() << " - " << endRange.c_str() << endl;
+		os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("IP range") << initialRange.c_str() << "-" << endRange.c_str() << "\r\n";
 	}
-	if(mShare)
-		os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Share") << mShare << " (" << convertByte(mShare, false).c_str() << ")" << endl;
+
+	if (mShare) os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Share") << mShare << " (" << convertByte(mShare, false).c_str() << ")" << "\r\n";
 }
 
 void cUnBan::DisplayUser(ostream &os)
@@ -121,13 +119,13 @@ void cUnBan::DisplayUser(ostream &os)
 void cBan::DisplayComplete(ostream &os)
 {
 	DisplayUser(os);
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("OP") << mNickOp.c_str() << endl;
-	os << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Ban type") << this->GetBanType() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("OP") << mNickOp.c_str() << "\r\n";
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Ban type") << this->GetBanType() << "\r\n";
 }
 
 const char *cBan::GetBanType()
 {
-	static const char *banTypes[] = {_("Nick+IP"), _("IP"), _("Nick"),_("IP Range"), _("Host Level 1"),_("Host Level 2"), _("Host Level 3"), _("Share Size"), _("E-mail"), _("Nick Prefix"), _("Reverse Host")};
+	static const char *banTypes[] = {_("Nick + IP"), _("IP"), _("Nick"), _("IP range"), _("Host level 1"), _("Host level 2"), _("Host level 3"), _("Share size"), _("Nick prefix"), _("Reverse host")};
 	return banTypes[mType];
 }
 

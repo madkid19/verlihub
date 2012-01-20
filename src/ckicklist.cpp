@@ -39,7 +39,6 @@ cKickList::cKickList(cMySQL &mysql) : cConfMySQL(mysql)
 	AddCol("ip", "varchar(15)", "", true, mModel.mIP);
 	AddCol("host", "text", "", true, mModel.mHost);
 	AddCol("share_size", "varchar(15)", "", true, mModel.mShare);
-	AddCol("email", "varchar(128)", "", true, mModel.mEmail);
 	AddCol("reason", "text", "", true, mModel.mReason);
 	AddCol("op", "varchar(64)", "", false, mModel.mOp);
 	AddCol("is_drop", "tinyint(1)", "", true, mModel.mIsDrop);
@@ -76,7 +75,6 @@ bool cKickList::AddKick(cConnDC *conn ,const string &OPNick, const string *reaso
 		OldKick.mTime = cTime().Sec();
 		OldKick.mHost = conn->AddrHost();
 		OldKick.mShare = conn->mpUser->mShare;
-		OldKick.mEmail = conn->mpUser->mEmail;
 		OldKick.mIsDrop = (reason == NULL);
 	}
 	if(reason) OldKick.mReason += *reason; else OldKick.mIsDrop = true;
