@@ -120,27 +120,27 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 
-	if (mSlots < conn_type->mTagMinSlots) {
+	if ((conn_type->mTagMinSlots > 0) && (mSlots < conn_type->mTagMinSlots)) {
 		os << autosprintf(_("Too little open slots for your connection type %s, minimum is %d and you have %d."), conn_type->mIdentifier.c_str(), conn_type->mTagMinSlots, mSlots);
 		code = eTC_MIN_SLOTS;
 		return false;
 	}
 
-	if (mSlots > conn_type->mTagMaxSlots) {
+	if ((conn_type->mTagMaxSlots > 0) && (mSlots > conn_type->mTagMaxSlots)) {
 		os << autosprintf(_("Too many open slots for your connection type %s, maximum is %d and you have %d."), conn_type->mIdentifier.c_str(), conn_type->mTagMaxSlots, mSlots);
 		code = eTC_MAX_SLOTS;
 		return false;
 	}
 
 	if ((mServer->mC.tag_min_hs_ratio > 0) && ((mSlots / mTotHubs) < mServer->mC.tag_min_hs_ratio)) {
-		os << autosprintf(_("Your slots per hubs ratio %.2f is too low, minimum is %.2f."), (double)(mSlots/mTotHubs), mServer->mC.tag_min_hs_ratio);
+		os << autosprintf(_("Your slots per hub ratio %.2f is too low, minimum is %.2f."), (double)(mSlots/mTotHubs), mServer->mC.tag_min_hs_ratio);
 		os << " " << autosprintf(_("Open %d slots for %d hubs."), (int)(mTotHubs*mServer->mC.tag_min_hs_ratio), mTotHubs);
 		code = eTC_MIN_HS_RATIO;
 		return false;
 	}
 
 	if ((mServer->mC.tag_max_hs_ratio > 0) && ((mSlots / mTotHubs) > mServer->mC.tag_max_hs_ratio)) {
-		os << autosprintf(_("Your slots per hubs ratio %.2f is too high, maximum is %.2f."), (double)(mSlots/mTotHubs), mServer->mC.tag_max_hs_ratio);
+		os << autosprintf(_("Your slots per hub ratio %.2f is too high, maximum is %.2f."), (double)(mSlots/mTotHubs), mServer->mC.tag_max_hs_ratio);
 		os << " " << autosprintf(_("Open %d slots for %d hubs."), (int)(mTotHubs*mServer->mC.tag_max_hs_ratio), mTotHubs);
 		code = eTC_MAX_HS_RATIO;
 		return false;
@@ -182,7 +182,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 	}
 
 	if ((maxVersion != -1) && (mClientVersion < maxVersion)) {
-		os << _("Your client version is too recent.") << " ";
+		os << _("Your client version is too recent, please downgrade it.") << " ";
 
 		if (client)
 			os << autosprintf(_("Allowed maximum version number for %s client is: %.2f"), client->mName.c_str(), maxVersion);
