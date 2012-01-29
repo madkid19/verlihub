@@ -1130,59 +1130,51 @@ bool cDCConsole::cfClean::operator()()
 
 bool cDCConsole::cfBan::operator()()
 {
-	static const char *bannames[]={"nick", "ip", "nickip", "", "range", "host1", "host2" , "host3", "hostr1",  "share", "prefix"};
-	static const int banids[]= {eBF_NICK, eBF_IP, eBF_NICKIP, eBF_NICKIP, eBF_RANGE,
-      eBF_HOST1, eBF_HOST2, eBF_HOST3, eBF_HOSTR1, eBF_SHARE, eBF_PREFIX};
-
-	enum { BAN_BAN, BAN_UNBAN, BAN_INFO, BAN_LIST };
-	static const char *prefixnames[]={"add", "new", "rm", "del", "un", "info", "check", "list", "ls"};
-	static const int prefixids[]= { BAN_BAN, BAN_BAN, BAN_UNBAN, BAN_UNBAN, BAN_UNBAN, BAN_INFO, BAN_INFO, BAN_LIST, BAN_LIST };
-
-	cBan Ban(mS);
-	int BanType = eBF_NICKIP;
-	cKick Kick;
-	time_t BanTime = 0;
-	string tmp;
-	int Count = 0;
-	if(!mConn->mpUser)
-		return false;
+	if (!mConn->mpUser) return false;
 	int MyClass = mConn->mpUser->mClass;
-	if(MyClass < eUC_OPERATOR)
+
+	if (MyClass < eUC_OPERATOR) {
+		(*mOS) << _("You have no rights to do this.");
 		return false;
+	}
 
-	//"!(un)?ban([^_\\s]+)?(_(\\d+\\S))?( this (nick|ip))? ", "(\\S+)( (.*)$)?"
-
-	enum { BAN_PREFIX = 1, BAN_TYPE = 2, BAN_LENGTH = 4, BAN_THIS = 6, BAN_WHO = 1, BAN_REASON = 3};
-	bool IsNick = false;
-	bool IsPerm = !mIdRex->PartFound(BAN_LENGTH);
-
+	static const char *bannames[] = {"nick", "ip", "nickip", "", "range", "host1", "host2", "host3", "hostr1", "share", "prefix"};
+	static const int banids[] = {eBF_NICK, eBF_IP, eBF_NICKIP, eBF_NICKIP, eBF_RANGE, eBF_HOST1, eBF_HOST2, eBF_HOST3, eBF_HOSTR1, eBF_SHARE, eBF_PREFIX};
+	enum {BAN_BAN, BAN_UNBAN, BAN_INFO, BAN_LIST};
+	static const char *prefixnames[] = {"add", "new", "rm", "del", "un", "info", "check", "list", "ls"};
+	static const int prefixids[] = {BAN_BAN, BAN_BAN, BAN_UNBAN, BAN_UNBAN, BAN_UNBAN, BAN_INFO, BAN_INFO, BAN_LIST, BAN_LIST};
+	//".(del|rm|un|info|list|ls)?ban([^_\\s]+)?(_(\\d+\\S))?( this (nick|ip))? ?", "(\\S+)( (.*)$)?"
+	enum {BAN_PREFIX = 1, BAN_TYPE = 2, BAN_LENGTH = 4, BAN_THIS = 6, BAN_WHO = 1, BAN_REASON = 3};
+	string tmp;
 	int BanAction = BAN_BAN;
-	if(mIdRex->PartFound(BAN_PREFIX)) {
-		mIdRex->Extract( BAN_PREFIX, mIdStr, tmp);
-		BanAction = this->StringToIntFromList(tmp, prefixnames, prefixids, sizeof(prefixnames)/sizeof(char*));
+
+	if (mIdRex->PartFound(BAN_PREFIX)) {
+		mIdRex->Extract(BAN_PREFIX, mIdStr, tmp);
+		BanAction = this->StringToIntFromList(tmp, prefixnames, prefixids, sizeof(prefixnames) / sizeof(char*));
 		if (BanAction < 0) return false;
 	}
 
-	if(mIdRex->PartFound(BAN_TYPE)) {
-		mIdRex->Extract( BAN_TYPE, mIdStr, tmp);
-		BanType = this->StringToIntFromList(tmp, bannames, banids, sizeof(bannames)/sizeof(char*));
+	int BanType = eBF_NICKIP;
+
+	if (mIdRex->PartFound(BAN_TYPE)) {
+		mIdRex->Extract(BAN_TYPE, mIdStr, tmp);
+		BanType = this->StringToIntFromList(tmp, bannames, banids, sizeof(bannames) / sizeof(char*));
 		if (BanType < 0) return false;
 	}
 
-	if(BanType == eBF_NICK)
-		IsNick = true;
+	bool IsNick = false;
+	if (BanType == eBF_NICK) IsNick = true;
+	if (mIdRex->PartFound(BAN_THIS)) IsNick = ((0 == mIdRex->Compare(BAN_TYPE, mIdStr, "nick")) || (BanType == eBF_NICK));
+	time_t BanTime = 0;
+	bool IsPerm = !mIdRex->PartFound(BAN_LENGTH);
 
-	if(mIdRex->PartFound(BAN_THIS))
-		IsNick = ((0 == mIdRex->Compare( BAN_TYPE, mIdStr, "nick")) || (BanType == eBF_NICK));
+	if (!IsPerm) {
+		mIdRex->Extract(BAN_LENGTH, mIdStr, tmp);
 
-	string Who;
-	GetParUnEscapeStr(BAN_WHO, Who);
-
-	if(!IsPerm) {
-		mIdRex->Extract(BAN_LENGTH, mIdStr,tmp);
-		if(tmp != "perm") {
+		if (tmp != "perm") {
 			BanTime = mS->Str2Period(tmp, *mOS);
-			if(BanTime < 0) {
+
+			if (BanTime < 0) {
 				(*mOS) << _("Please provide a valid ban time.");
 				return false;
 			}
@@ -1190,9 +1182,14 @@ bool cDCConsole::cfBan::operator()()
 			IsPerm = true;
 	}
 
-	bool unban = (BanAction == BAN_UNBAN);
 	cUser *user = NULL;
+	cBan Ban(mS);
+	cKick Kick;
+	string Who;
+	GetParUnEscapeStr(BAN_WHO, Who);
+	bool unban = (BanAction == BAN_UNBAN);
 	int BanCount = 100;
+	int Count = 0;
 
 	switch (BanAction) {
 		case BAN_UNBAN:
@@ -1211,12 +1208,14 @@ bool cDCConsole::cfBan::operator()()
 			} else
 				(*mOS) << _("Ban information") << ":\r\n";
 
-			if(BanType == eBF_NICKIP) {
+			if (BanType == eBF_NICKIP) {
 				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_NICK, unban);
 				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_IP, unban);
-				if(!unban) {
+
+				if (!unban) {
 					Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_RANGE, false);
 					string Host;
+
 					if (mConn->DNSResolveReverse(Who, Host)) {
 						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, eBF_HOSTR1, false);
 						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, eBF_HOST3, false);
@@ -1224,22 +1223,22 @@ bool cDCConsole::cfBan::operator()()
 						Count += mS->mBanList->Unban(*mOS, Host, tmp, mConn->mpUser->mNick, eBF_HOST1, false);
 					}
 				}
-			} else if(BanType == eBF_NICK) {
+			} else if (BanType == eBF_NICK) {
 				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_NICK, unban);
 				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, eBF_NICKIP, unban);
-			} else {
+			} else
 				Count += mS->mBanList->Unban(*mOS, Who, tmp, mConn->mpUser->mNick, BanType, unban);
-			}
+
 			(*mOS) << "\r\n" << autosprintf(ngettext("%d ban found.", "%d bans found.", Count), Count);
 		break;
 	case BAN_BAN:
 		Ban.mNickOp = mConn->mpUser->mNick;
-		mParRex->Extract(BAN_REASON, mParStr, tmp); // fixme: when no reason is specified, this is either ban time or ban type
+		mParRex->Extract(BAN_REASON, mParStr, tmp);
 
-		if (tmp.length() == 0)
-			Ban.mReason = _("No reason specified");
-		else
+		if (tmp.length() > 0)
 			Ban.mReason = tmp;
+		else
+			Ban.mReason = _("No reason specified"); // default reason, doesnt work when no reason is specified, bad regexp
 
 		Ban.mDateStart = cTime().Sec();
 
@@ -1318,17 +1317,19 @@ bool cDCConsole::cfBan::operator()()
 		Ban.DisplayComplete(*mOS);
 		break;
 	case BAN_LIST:
-	{
-		GetParInt(BAN_WHO,BanCount);
-		ostringstream os;
-		mS->mBanList->List(os,BanCount);
-		mS->DCPrivateHS(os.str(), mConn);
-	}
+		{
+			GetParInt(BAN_WHO, BanCount);
+			ostringstream os;
+			mS->mBanList->List(os, BanCount);
+			mS->DCPrivateHS(os.str(), mConn);
+		}
 		break;
-	default:(*mOS) << _("This command is not implemented, available commands are") << ":";
+	default:
+		(*mOS) << _("This command is not implemented, available commands are") << ":";
 		return false;
 		break;
 	}
+
 	return true;
 }
 

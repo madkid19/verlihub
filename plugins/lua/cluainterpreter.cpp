@@ -113,6 +113,7 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("GetTopic", &_GetTopic);
 	RegisterFunction("SetTopic", &_SetTopic);
 
+	//RegisterFunction("ScriptCommand", &_ScriptCommand);
 
 	lua_setglobal(mL, "VH");
 
@@ -146,7 +147,8 @@ void cLuaInterpreter::Load()
 void cLuaInterpreter::ReportLuaError(char * error)
 {
 	if(cpiLua::me && cpiLua::me->log_level) {
-		string error2 = "[ Lua ERROR ] ";
+		string error2 = _("Lua error");
+		error2.append(": ");
 		error2.append(error);
 		cServerDC * server = cServerDC::sCurrentServer;
 		if(server) SendPMToAll( (char *) error2.c_str(), (char *) server->mC.hub_security.c_str(), 3, 10);
@@ -194,9 +196,9 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[], cConnDC *co
 
 		if (result) {
 			const char *msg = lua_tostring(mL, -1);
-			if (msg == NULL) msg = _("(unknown LUA error)");
-			cout << "LUA error: " << msg << endl;
-			ReportLuaError((char *)msg);
+			if (msg == NULL) msg = "Unknown error";
+			cout << "Lua error: " << msg << endl;
+			ReportLuaError((char*)msg);
 			lua_pop(mL, 1);
 			lua_remove(mL, base); // remove _TRACEBACK
 			return true;
@@ -268,9 +270,9 @@ bool cLuaInterpreter::CallFunction(const char * func, char * args[], cConnDC *co
 			*/
 
 			if ((int)lua_tonumber(mL, -1) == 0) ret = false;
-		} else { // accept boolean and nil
+		//} else { // accept boolean and nil
 			// same as above
-			if ((int)lua_toboolean(mL, -1) == 0) ret = false;
+			//if ((int)lua_toboolean(mL, -1) == 0) ret = false;
 		}
 
 		lua_pop(mL, 1);

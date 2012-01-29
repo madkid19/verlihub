@@ -44,15 +44,15 @@ namespace nVerliHub {
 			os << setw(15) << setiosflags(ios::left) << tr.mTagID;
 			os << setw(30) << setiosflags(ios::left);
  			if(tr.mMinVersion < 0 && tr.mMaxVersion < 0)
- 				os << _("All version");
+ 				os << _("Any");
  			else if(tr.mMinVersion >= 0 && tr.mMaxVersion < 0)
- 				os << autosprintf(_("Min version: %.2f"), tr.mMinVersion);
+ 				os << autosprintf(_("Minimum: %.2f"), tr.mMinVersion);
  			else if(tr.mMinVersion < 0 && tr.mMaxVersion >= 0)
-				os << autosprintf(_("Max version: %.2f"), tr.mMaxVersion);
+				os << autosprintf(_("Maximum: %.2f"), tr.mMaxVersion);
  			else
  				os << tr.mMinVersion << "-" << tr.mMaxVersion;
 			os << setw(15) << setiosflags(ios::left) << (tr.mBan ? _("Yes") : _("No"));
- 			os << (tr.mEnable ? _("Enable") : _("Disable"));
+ 			os << (tr.mEnable ? _("Enabled") : _("Disabled"));
 			return os;
 		}
 	}; // namespace nTables

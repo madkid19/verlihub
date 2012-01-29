@@ -104,8 +104,9 @@ bool cpiISP::OnParsedMsgMyINFO(cConnDC * conn, cMessageDC *msg)
 			string desc_prefix;
 			if (isp->mAddDescPrefix.length() > 0)
 			{
-				ReplaceVarInString(isp->mAddDescPrefix,"CC",desc_prefix,conn->mCC);
-				ReplaceVarInString(desc_prefix,"CLASS",desc_prefix,conn->GetTheoricalClass());
+				ReplaceVarInString(isp->mAddDescPrefix, "CC", desc_prefix, conn->mCC);
+				ReplaceVarInString(desc_prefix, "CLASS", desc_prefix, conn->GetTheoricalClass());
+				if (conn->mpUser->mxServer->mC.show_desc_len >= 0) desc.assign(desc, 0, conn->mpUser->mxServer->mC.show_desc_len);
 				desc = desc_prefix + desc;
 				msg->ApplyChunk(eCH_MI_DESC);
 			}
