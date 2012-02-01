@@ -80,11 +80,10 @@ int cConsole::DoCommand(const string &str, cConnDC * conn)
 
 bool cConsole::cfVersionLuaScript::operator()()
 {
-	(*mOS) << "\r\n[*] " << setw(PADDING) << setiosflags(ios::left) << _("Lua version") << LUA_VERSION << endl;
-	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Lua library version") << LUA_RELEASE << endl;
-	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Copyright") << LUA_COPYRIGHT << endl;
-	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Authors") << LUA_AUTHORS << endl;
-
+	(*mOS) << "\r\n [*] " << setw(PADDING) << setiosflags(ios::left) << _("Lua version") << LUA_VERSION << endl;
+	(*mOS) << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Lua library version") << LUA_RELEASE << endl;
+	(*mOS) << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Copyright") << LUA_COPYRIGHT << endl;
+	(*mOS) << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Authors") << LUA_AUTHORS;
 	return true;
 }
 
@@ -92,19 +91,18 @@ bool cConsole::cfInfoLuaScript::operator()()
 {
 	int size = 0;
 	if(GetPI()->Size() > 0) size = lua_gc(GetPI()->mLua[0]->mL, LUA_GCCOUNT, 0); // lua_getgccount(GetPI()->mLua[0]->mL) could be used in <=5.1
-
-	(*mOS) << "\n" << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Version date") << __CURR_DATE_TIME__ << endl;
-	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Running scripts") << GetPI()->Size() << endl;
-	(*mOS) << "[*] " << setw(PADDING) << setiosflags(ios::left) << _("Memory used") << convertByte(size*1024, false).c_str() << endl;
+	(*mOS) << "\r\n [*] " << setw(PADDING) << setiosflags(ios::left) << _("Version date") << __CURR_DATE_TIME__ << endl;
+	(*mOS) << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Running scripts") << GetPI()->Size() << endl;
+	(*mOS) << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Memory used") << convertByte(size*1024, false).c_str();
 	return true;
 }
 
 bool cConsole::cfGetLuaScript::operator()()
 {
-	(*mOS) << _("Running LUA scripts:") << "\r\n";
-	(*mOS) << "\n ";
+	(*mOS) << _("Running Lua scripts:") << "\r\n";
+	(*mOS) << "\r\n ";
 	(*mOS) << setw(6) << setiosflags(ios::left) << "ID";
-	(*mOS) << toUpper(_("Script")) << "\n";
+	(*mOS) << toUpper(_("Script")) << "\r\n";
 	(*mOS) << " " << string(6+20,'=') << endl;
 	for(int i = 0; i < GetPI()->Size(); i++) {
 		(*mOS) << " " << setw(6) << setiosflags(ios::left) << i << GetPI()->mLua[i]->mScriptName << "\r\n";
@@ -133,7 +131,7 @@ bool cConsole::cfDelLuaScript::operator()()
 		if ((number && num == i) || (!number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile)==0)) {
 			found = true;
 			scriptfile = li->mScriptName;
-			(*mOS) << autosprintf(_("Script %s stopped."), li->mScriptName.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s stopped."), li->mScriptName.c_str());
 			delete li;
 			GetPI()->mLua.erase(it);
 			break;
@@ -142,9 +140,9 @@ bool cConsole::cfDelLuaScript::operator()()
 
 	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script #%s not stopped because it is not running."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script #%s not stopped because it is not running."), scriptfile.c_str());
 		else
-			(*mOS) << autosprintf(_("Script %s not stopped because it is not running."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s not stopped because it is not running."), scriptfile.c_str());
 		return false;
 	}
 	return true;
@@ -171,7 +169,7 @@ bool cConsole::cfAddLuaScript::operator()()
 		DIR *dir = opendir(pathname.c_str());
 		int i = 0;
 		if(!dir) {
-			(*mOS) << autosprintf(_("Failed loading directory %s."), pathname.c_str()) << " ";
+			(*mOS) << autosprintf(_("Failed loading directory %s."), pathname.c_str());
 			return false;
 		}
 		struct dirent *dent = NULL;
@@ -194,16 +192,16 @@ bool cConsole::cfAddLuaScript::operator()()
 			for(it = GetPI()->mLua.begin(); it != GetPI()->mLua.end(); ++it) {
 				li = *it;
 				if (StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile)==0) {
-					(*mOS) << autosprintf(_("Script %s is already running."), scriptfile.c_str()) << " ";
+					(*mOS) << autosprintf(_("Script %s is already running."), scriptfile.c_str());
 					delete ip;
 					return false;
 				}
 			}
-			(*mOS) << autosprintf(_("Script %s is now running."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s is now running."), scriptfile.c_str());
 			GetPI()->AddData(ip);
 			ip->Load();
 		} else {
-			(*mOS) << autosprintf(_("Script %s not found or could not be parsed."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s not found or could not be parsed."), scriptfile.c_str());
 			delete ip;
 			return false;
 		}
@@ -230,7 +228,7 @@ bool cConsole::cfReloadLuaScript::operator()()
 		li = *it;
 		if ((number && num == i) || (!number && StrCompare(li->mScriptName,0,li->mScriptName.size(),scriptfile)==0)) {
 			found = true;
-			(*mOS) << autosprintf(_("Script %s stopped."), li->mScriptName.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s stopped."), li->mScriptName.c_str());
 			scriptfile = li->mScriptName;
 			delete li;
 			GetPI()->mLua.erase(it);
@@ -240,19 +238,19 @@ bool cConsole::cfReloadLuaScript::operator()()
 
 	if(!found) {
 		if(number)
-			(*mOS) << autosprintf(_("Script #%s not stopped because it is not running."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script #%s not stopped because it is not running."), scriptfile.c_str());
 		else
-			(*mOS) << autosprintf(_("Script %s not stopped  because it is not running."), scriptfile.c_str()) << " ";
+			(*mOS) << autosprintf(_("Script %s not stopped  because it is not running."), scriptfile.c_str());
 		return false;
 	} else {
 		cLuaInterpreter *ip = new cLuaInterpreter(scriptfile);
 		if(ip) {
 			if(ip->Init()) {
-				(*mOS) << autosprintf(_("Script %s is now running."), scriptfile.c_str()) << " ";
+				(*mOS) << autosprintf(_("Script %s is now running."), scriptfile.c_str());
 				GetPI()->AddData(ip);
 				ip->Load();
 			} else {
-				(*mOS) << autosprintf(_("Script %s not found or could not be parsed."), scriptfile.c_str()) << " ";
+				(*mOS) << autosprintf(_("Script %s not found or could not be parsed."), scriptfile.c_str());
 				delete ip;
 			}
 		}
@@ -271,10 +269,10 @@ bool cConsole::cfLogLuaScript::operator()()
 		ss.str("");
 		ss << level;
    		string newValue = ss.str();
-		(*mOS) << autosprintf(_("Updated %s.%s from '%s' to '%s'"), "pi_lua", "log_level", oldValue.c_str(), newValue.c_str()) << "\r\n";
+		(*mOS) << autosprintf(_("Updated %s.%s from '%s' to '%s'."), "pi_lua", "log_level", oldValue.c_str(), newValue.c_str());
 		cpiLua::me->SetLogLevel(level);
 	} else {
-		msg << "Current setting is " << cpiLua::log_level;
+		msg << autosprintf(_("Current log level is %d."), cpiLua::log_level);
 		(*mOS) << msg.str();
 	}
 	return true;

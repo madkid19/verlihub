@@ -116,6 +116,7 @@ bool cpiLua::RegisterAll()
 	RegisterCallBack("VH_OnUnBan");
 	RegisterCallBack("VH_OnUpdateClass");
 	RegisterCallBack("VH_OnHubName");
+	RegisterCallBack("VH_OnScriptCommand");
 	return true;
 }
 
@@ -727,6 +728,20 @@ bool cpiLua::OnHubName(string nick, string hubname)
 	};
 
 	return CallAll("VH_OnHubName", args);
+}
+
+bool cpiLua::OnScriptCommand(string cmd, string data, string plug, string script)
+{
+	char * args[] = {
+		(char*)cmd.c_str(),
+		(char*)data.c_str(),
+		(char*)plug.c_str(),
+		(char*)script.c_str(),
+		NULL
+	};
+
+	CallAll("VH_OnScriptCommand", args);
+	return true;
 }
 
 char * cpiLua::toString(int num)

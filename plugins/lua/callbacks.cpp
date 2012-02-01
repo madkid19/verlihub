@@ -1417,6 +1417,38 @@ int _SetTopic(lua_State *L)
 	return 1;
 }
 
+int _ScriptCommand(lua_State *L)
+{
+	if (lua_gettop(L) < 3) {
+		luaL_error(L, "Error calling VH:ScriptCommand, expected 2 arguments but got %d.", lua_gettop(L) - 1);
+		lua_pushboolean(L, 0);
+		return 2;
+	}
+
+	if (!lua_isstring(L, 2) || !lua_isstring(L, 3)) {
+		luaerror(L, ERR_PARAM);
+		return 2;
+	}
+
+	cLuaInterpreter *li = FindLua(L);
+
+	if (li == NULL) {
+		luaerror(L, "Lua not found.");
+		return 2;
+	}
+
+	string cmd = lua_tostring(L, 2);
+	string data = lua_tostring(L, 3);
+
+	if (!ScriptCommand(cmd, data, "lua", li->mScriptName)) {
+		luaerror(L, ERR_CALL);
+		return 2;
+	}
+
+	lua_pushboolean(L, 1);
+	return 1;
+}
+
 void luaerror(lua_State *L, const char * errstr)
 {
 	lua_pushboolean(L, 0);

@@ -77,6 +77,9 @@ namespace nVerliHub {
 	int _DelRegUser(lua_State *);
 	int _GetTopic(lua_State *L);
 	int _SetTopic(lua_State *L);
+
+	int _ScriptCommand(lua_State *);
+
 	nLuaPlugin::cLuaInterpreter *FindLua(lua_State *lua_state);
 	void luaerror(lua_State *, const char *);
 }; // namespace nVerliHub

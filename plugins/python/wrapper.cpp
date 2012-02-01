@@ -517,6 +517,18 @@ static PyObject * __GetUserCC(PyObject *self, PyObject *args)  // (nick)
 	Py_RETURN_NONE;
 }
 
+static PyObject * __GetIPCC(PyObject *self, PyObject *args)  // (ip)
+{
+	char *res;
+	if (Call( W_GetIPCC, args, "s", "s", &res ))
+	{
+		PyObject *p = Py_BuildValue ( "s", res );
+		freee(res);
+		return p;
+	}
+	Py_RETURN_NONE;
+}
+
 static PyObject * __Ban(PyObject *self, PyObject *args)  // (nick, time, type)
 {	return pybool( BasicCall( W_Ban, args, "ssl" ) );	}
 
@@ -715,6 +727,7 @@ static PyMethodDef w_vh_methods[] = {
 	{"GetUserHost",			__GetUserHost,			METH_VARARGS},
 	{"GetUserIP",			__GetUserIP,			METH_VARARGS},
 	{"GetUserCC",			__GetUserCC,			METH_VARARGS},
+	{"GetIPCC",			    __GetIPCC,			    METH_VARARGS},
 	{"Ban",				__Ban,				METH_VARARGS},
 	{"KickUser",			__KickUser,			METH_VARARGS},
 	{"ParseCommand",		__ParseCommand,			METH_VARARGS},
@@ -1029,11 +1042,14 @@ w_Targs* w_CallHook (int id , int func, w_Targs* params)   // return > 0 means f
 		case W_OnValidateTag:
 		case W_OnParsedMsgChat:
 		case W_OnParsedMsgSupport:
+		case W_OnParsedMsgBotINFO:
+		case W_OnParsedMsgVersion:
 		case W_OnParsedMsgMyPass:
 		case W_OnParsedMsgRevConnectToMe:
 		case W_OnParsedMsgSearch:
 		case W_OnParsedMsgSR:
 		case W_OnParsedMsgAny:
+		case W_OnParsedMsgAnyEx:
 		case W_OnUnknownMsg:
 			if (! w_unpack( params, "ss", &s0, &s1))
 			{ log1("PY: [%d:%s] CallHook %s: unexpected parameters %s\n", id, name, w_HookName(func), w_packprint(params)); break; }
@@ -1042,6 +1058,7 @@ w_Targs* w_CallHook (int id , int func, w_Targs* params)   // return > 0 means f
 		case W_OnOperatorKicks:
 		case W_OnNewReg:
 		case W_OnParsedMsgPM:
+		case W_OnParsedMsgMCTo:
 			if (! w_unpack( params, "sss", &s0, &s1, &s2))
 			{ log1("PY: [%d:%s] CallHook %s: unexpected parameters %s\n", id, name, w_HookName(func), w_packprint(params)); break; }
 			args = Py_BuildValue("(zzz)", s0, s1, s2);
@@ -1053,6 +1070,7 @@ w_Targs* w_CallHook (int id , int func, w_Targs* params)   // return > 0 means f
 			args = Py_BuildValue("(zzzz)", s0, s1, s2, s3);
 			break;
 		case W_OnParsedMsgMyINFO:
+		case W_OnFirstMyINFO:
 			if (! w_unpack( params, "ssssss", &s0, &s1, &s2, &s3, &s4, &s5))
 			{ log1("PY: [%d:%s] CallHook %s: unexpected parameters %s\n", id, name, w_HookName(func), w_packprint(params)); break; }
 			args = Py_BuildValue("(zzzzzz)", s0, s1, s2, s3, s4, s5);
@@ -1112,16 +1130,36 @@ w_Targs* w_CallHook (int id , int func, w_Targs* params)   // return > 0 means f
 						if (PyArg_ParseTuple(pValue, "zzzzz:OnParsedMsgMyINFO", &desc, &tag, &speed, &email, &share))
 						{
 							res = w_pack("sssss", desc, tag, speed, email, share);
-							log2("PY: [%d:%s] CallHook OnParsedMsgChat: returned ( %s, %s, %s, %s, %s )\n", id, name, desc, tag, speed, email, share);
+							log2("PY: [%d:%s] CallHook OnParsedMsgMyINFO: returned ( %s, %s, %s, %s, %s )\n", id, name, desc, tag, speed, email, share);
+							break;
+						}
+						else PyErr_Print();
+						break;
+					}
+			case W_OnFirstMyINFO:
+				if (PyTuple_Check(pValue))
+					if (PyTuple_Size(pValue) == 5)   //  (desc, tag, speed, email, sharesize)
+					{
+						char *desc = NULL;
+						char *tag = NULL;
+						char *speed = NULL;
+						char *email = NULL;
+						char *share = NULL;
+						if (PyArg_ParseTuple(pValue, "zzzzz:OnFirstMyINFO", &desc, &tag, &speed, &email, &share))
+						{
+							res = w_pack("sssss", desc, tag, speed, email, share);
+							log2("PY: [%d:%s] CallHook OnFirstMyINFO: returned ( %s, %s, %s, %s, %s )\n", id, name, desc, tag, speed, email, share);
 							break;
 						}
 						else PyErr_Print();
 						break;
 					}
 			//case W_OnParsedMsgAny:
+			//case W_OnParsedMsgAnyEx:
 			//case W_OnUnknownMsg:
 			//case W_OnOperatorKicks:
 			//case W_OnParsedMsgPM:
+			//case W_OnParsedMsgMCTo:
 			//case W_OnParsedMsgConnectToMe:
 			default:
 				if (pValue == Py_None) res = w_pack("l", (long)1);
@@ -1152,16 +1190,21 @@ const char * w_HookName(int hook)
 {
 	switch(hook)
 	{
-		case W_OnNewConn: 		return "OnNewConn";
+		case W_OnNewConn: 			return "OnNewConn";
 		case W_OnCloseConn: 		return "OnCloseConn";
 		case W_OnParsedMsgChat: 	return "OnParsedMsgChat";
 		case W_OnParsedMsgPM: 		return "OnParsedMsgPM";
+		case W_OnParsedMsgMCTo: 	return "OnParsedMsgMCTo";
 		case W_OnParsedMsgSearch: 	return "OnParsedMsgSearch";
 		case W_OnParsedMsgSR: 		return "OnParsedMsgSR";
 		case W_OnParsedMsgMyINFO: 	return "OnParsedMsgMyINFO";
+		case W_OnFirstMyINFO: 		return "OnFirstMyINFO";
 		case W_OnParsedMsgValidateNick: return "OnParsedMsgValidateNick";
 		case W_OnParsedMsgAny: 		return "OnParsedMsgAny";
+		case W_OnParsedMsgAnyEx:	return "OnParsedMsgAnyEx";
 		case W_OnParsedMsgSupport: 	return "OnParsedMsgSupport";
+		case W_OnParsedMsgBotINFO: 	return "OnParsedMsgBotINFO";
+		case W_OnParsedMsgVersion: 	return "OnParsedMsgVersion";
 		case W_OnParsedMsgMyPass: 	return "OnParsedMsgMyPass";
 		case W_OnParsedMsgConnectToMe: 	return "OnParsedMsgConnectToMe";
 		case W_OnParsedMsgRevConnectToMe: return "OnParsedMsgRevConnectToMe";
@@ -1194,6 +1237,7 @@ const char * w_CallName(int callback)
 		case W_GetUserHost: 		return "GetUserHost";
 		case W_GetUserIP: 		return "GetUserIP";
 		case W_GetUserCC: 		return "GetUserCC";
+		case W_GetIPCC: 		return "GetIPCC";
 		case W_GetNickList: 		return "GetNickList";
 		case W_GetOpList: 		return "GetOpList";
 		case W_Ban: 			return "Ban";

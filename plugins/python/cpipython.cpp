@@ -54,7 +54,7 @@ w_TLogLevel   cpiPython::lib_loglevel = NULL;
 w_Tpackprint  cpiPython::lib_packprint = NULL;
 string        cpiPython::botname = "";
 string        cpiPython::opchatname = "";
-int           cpiPython::log_level = 5;
+int           cpiPython::log_level = 1;
 cServerDC    *cpiPython::server = NULL;
 cpiPython    *cpiPython::me = NULL;
 
@@ -138,6 +138,7 @@ void cpiPython::OnLoad(cServerDC *server)
 	callbacklist[W_GetUserHost] = &_GetUserHost;
 	callbacklist[W_GetUserIP] = &_GetUserIP;
 	callbacklist[W_GetUserCC] = &_GetUserCC;
+	callbacklist[W_GetIPCC] = &_GetIPCC;
 	callbacklist[W_Ban] = &_Ban;
 	callbacklist[W_KickUser] = &_KickUser;
 	callbacklist[W_ParseCommand] = &_ParseCommand;
@@ -170,14 +171,19 @@ bool cpiPython::RegisterAll()
 	RegisterCallBack("VH_OnCloseConn");
 	RegisterCallBack("VH_OnParsedMsgChat");
 	RegisterCallBack("VH_OnParsedMsgPM");
+	RegisterCallBack("VH_OnParsedMsgMCTo");
 	RegisterCallBack("VH_OnParsedMsgSearch");
 	RegisterCallBack("VH_OnParsedMsgConnectToMe");
 	RegisterCallBack("VH_OnParsedMsgRevConnectToMe");
 	RegisterCallBack("VH_OnParsedMsgSR");
 	RegisterCallBack("VH_OnParsedMsgMyINFO");
+	RegisterCallBack("VH_OnFirstMyINFO");
 	RegisterCallBack("VH_OnParsedMsgValidateNick");
 	RegisterCallBack("VH_OnParsedMsgAny");
+	RegisterCallBack("VH_OnParsedMsgAnyEx");
 	RegisterCallBack("VH_OnParsedMsgSupport");
+	RegisterCallBack("VH_OnParsedMsgBotINFO");
+	RegisterCallBack("VH_OnParsedMsgVersion");
 	RegisterCallBack("VH_OnParsedMsgMyPass");
 	RegisterCallBack("VH_OnUnknownMsg");
 	RegisterCallBack("VH_OnOperatorCommand");
@@ -618,6 +624,16 @@ bool cpiPython::OnParsedMsgPM(cConnDC *conn, cMessageDC *msg)
 	return true;
 }
 
+bool cpiPython::OnParsedMsgMCTo(cConnDC *conn, cMessageDC *msg)
+{
+	if ((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL)) {
+		w_Targs* args = lib_pack("sss", conn->mpUser->mNick.c_str(), msg->ChunkString(eCH_MCTO_MSG).c_str(), msg->ChunkString(eCH_MCTO_TO).c_str());
+		return CallAll(W_OnParsedMsgMCTo, args);
+	}
+
+	return true;
+}
+
 bool cpiPython::OnParsedMsgSupport(cConnDC *conn, cMessageDC *msg)
 {
 	if((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL))
@@ -625,6 +641,26 @@ bool cpiPython::OnParsedMsgSupport(cConnDC *conn, cMessageDC *msg)
 		w_Targs* args = lib_pack( "ss", conn->mpUser->mNick.c_str(), msg->mStr.c_str());
 		return CallAll(W_OnParsedMsgSupport, args);
 	}
+	return true;
+}
+
+bool cpiPython::OnParsedMsgBotINFO(cConnDC *conn, cMessageDC *msg)
+{
+	if ((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL)) {
+		w_Targs* args = lib_pack("ss", conn->mpUser->mNick.c_str(), msg->mStr.c_str());
+		return CallAll(W_OnParsedMsgBotINFO, args);
+	}
+
+	return true;
+}
+
+bool cpiPython::OnParsedMsgVersion(cConnDC *conn, cMessageDC *msg)
+{
+	if ((conn != NULL) && (msg != NULL)) {
+		w_Targs* args = lib_pack("ss", conn->AddrIP().c_str(), msg->mStr.c_str());
+		return CallAll(W_OnParsedMsgVersion, args);
+	}
+
 	return true;
 }
 
@@ -759,6 +795,87 @@ bool cpiPython::OnParsedMsgMyINFO(cConnDC *conn, cMessageDC *msg)
 	return true; // true means further processing
 }
 
+bool cpiPython::OnFirstMyINFO(cConnDC *conn, cMessageDC *msg)
+{
+	if (!online) return true;
+	if((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL))
+	{
+		int func = W_OnFirstMyINFO;
+		const char *original = msg->mStr.c_str();
+		const char *origdesc = NULL, *origtag = NULL, *origspeed = NULL, *origmail = NULL, *origsize = NULL;
+		const char *n, *desc, *tag, *speed, *mail, *size; // will be assigned by SplitMyINFO (even with NULL values)
+		const char *nick = conn->mpUser->mNick.c_str();
+		if (!SplitMyINFO(original, &n, &origdesc, &origtag, &origspeed, &origmail, &origsize))
+		{ log1("PY: Call OnFirstMyINFO: malformed myinfo message: %s\n", original); return true; }
+		w_Targs* args = lib_pack( "ssssss", n, origdesc, origtag, origspeed, origmail, origsize);
+		log2("PY: Call %s: parameters %s\n", lib_hookname(func), lib_packprint(args));
+		bool ret = true;
+		w_Targs *result;
+		long l;
+
+
+		if(Size())
+		{
+			tvPythonInterpreter::iterator it;
+			for(it = mPython.begin(); it != mPython.end(); ++it)
+			{
+				result = (*it)->CallFunction(func, args);
+				if(!result)
+				{
+					log3("PY: Call %s: returned NULL\n", lib_hookname(func));
+					continue;
+				}
+				if(lib_unpack(result, "l", &l))  // default return value is 1L meaning: further processing,
+				{
+					log3("PY: Call %s: returned l:%ld\n", lib_hookname(func), l);
+					if (!l) ret = false;  // 0L means no more processing outside this plugin
+				}
+				else if (lib_unpack(result, "sssss", &desc, &tag, &speed, &mail, &size))  // script wants to change the contents of myinfo
+				{
+					log2("PY: modifying message - Call %s: returned %s\n", lib_hookname(func), lib_packprint(result));
+					if (desc || tag || speed || mail || size)
+					{
+						// message chunks need updating to new MyINFO
+						// $MyINFO $ALL <nick> <interest>$ $<speed\x01>$<e-mail>$<sharesize>$
+						// $MyINFO $ALL nick <++ V:0.668,M:P,H:39/0/0,S:1>$ $DSL$$74894830123$
+						string newinfo = "$MyINFO $ALL ";
+						newinfo += nick;
+						newinfo += " ";
+						newinfo += (desc) ? desc : origdesc;
+						newinfo += (tag) ? tag : origtag;
+						newinfo += "$ $";
+						newinfo += (speed) ? speed : origspeed;
+						newinfo += "$";
+						newinfo += (mail) ? mail : origmail;
+						newinfo += "$";
+						newinfo += (size) ? size : origsize;
+						newinfo += "$";
+
+						log3("myinfo: [ %s ] will become: [ %s ]\n", original, newinfo.c_str());
+
+						msg->ReInit();
+						msg->mStr = newinfo;
+						//msg->mType = eDC_MYNIFO;
+						msg->Parse();
+						if (msg->SplitChunks())
+							log1("cpiPython::OnFirstMyINFO: failed to split new MyINFO into chunks\n");
+						conn->mpUser->mEmail = msg->ChunkString(eCH_MI_MAIL);
+					}
+
+					ret = true;  // we've changed myinfo so we want the hub to store it now
+				}
+				else   // something unknown was returned... we will let the hub call other plugins
+					log1("PY: Call %s: unexpected return value: %s\n", lib_hookname(func), lib_packprint(result));
+				free(result);
+			}
+		}
+		freee(args);
+		freee(n); freee(origdesc); freee(origtag); freee(origspeed); freee(origmail); freee(origsize);
+		return ret;
+	}
+	return true; // true means further processing
+}
+
 bool cpiPython::OnParsedMsgValidateNick(cConnDC *conn, cMessageDC *msg)
 {
 	if((conn != NULL) && (conn->mpUser != NULL) && (msg != NULL))
@@ -776,6 +893,16 @@ bool cpiPython::OnParsedMsgAny(cConnDC *conn, cMessageDC *msg)
 		w_Targs* args = lib_pack( "ss", conn->mpUser->mNick.c_str(), msg->mStr.c_str());
 		return CallAll(W_OnParsedMsgAny, args);
 	}
+	return true;
+}
+
+bool cpiPython::OnParsedMsgAnyEx(cConnDC *conn, cMessageDC *msg)
+{
+	if ((conn != NULL) && (conn->mpUser == NULL) && (msg != NULL)) {
+		w_Targs* args = lib_pack("ss", conn->AddrIP().c_str(), msg->mStr.c_str());
+		return CallAll(W_OnParsedMsgAnyEx, args);
+	}
+
 	return true;
 }
 
@@ -1152,6 +1279,18 @@ w_Targs* _GetUserCC (int id, w_Targs* args) // (char* nick)
 	cUser *u = cpiPython::me->server->mUserList.GetUserByNick(nick);
 	if (u && u->mxConn) cc = u->mxConn->mCC.c_str();
 	return cpiPython::lib_pack( "s", strdup(cc));
+}
+
+w_Targs* _GetIPCC (int id, w_Targs* args) // (char* ip)
+{
+	char *ip;
+	if (!cpiPython::lib_unpack(args, "s", &ip)) return NULL;
+	if (!ip) return NULL;
+	string ccstr;
+	cpiPython::me->server->sGeoIP.GetCC(ip, ccstr);
+	const char *cc = "";
+	cc = ccstr.c_str();
+	return cpiPython::lib_pack("s", strdup(cc));
 }
 
 w_Targs* _Ban (int id, w_Targs* args) // (char *nick, long howlong, long bantype)

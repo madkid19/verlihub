@@ -48,6 +48,8 @@ namespace nVerliHub {
 	bool GetTempRights(char *nick,  map<string,int> &rights);
 	bool AddRegUser(char *nick, int uClass, char * passwd, char* op);
 	bool DelRegUser(char *nick);
+	bool ScriptCommand(string, string, string, string);
+
 	extern "C" {
 		int GetUsersCount();
 		char * GetNickList();

@@ -33,7 +33,7 @@
 #include <vector>
 #include <dlfcn.h>
 
-#define PYTHON_PI_IDENTIFIER "python"
+#define PYTHON_PI_IDENTIFIER "Python"
 #define PYTHON_PI_VERSION "1.1"
 
 using std::vector;
@@ -51,12 +51,17 @@ public:
 	virtual bool OnCloseConn(nSocket::cConnDC *);
 	virtual bool OnParsedMsgChat(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgPM(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgMCTo(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgSearch(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgSR(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgMyINFO(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnFirstMyINFO(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgValidateNick(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgAny(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgAnyEx(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgSupport(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgBotINFO(nSocket::cConnDC *, nProtocol::cMessageDC *);
+	virtual bool OnParsedMsgVersion(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgMyPass(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgConnectToMe(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgRevConnectToMe(nSocket::cConnDC *, nProtocol::cMessageDC *);
@@ -152,6 +157,7 @@ extern "C" w_Targs* _GetOpList         (int id, w_Targs* args);  //();
 extern "C" w_Targs* _GetUserHost       (int id, w_Targs* args);  //(char *nick);
 extern "C" w_Targs* _GetUserIP         (int id, w_Targs* args);  //(char *nick);
 extern "C" w_Targs* _GetUserCC         (int id, w_Targs* args);  //(char *nick);
+extern "C" w_Targs* _GetIPCC           (int id, w_Targs* args);  //(char *ip);
 extern "C" w_Targs* _Ban               (int id, w_Targs* args);  //(char *nick, long howlong, long bantype);
 extern "C" w_Targs* _KickUser          (int id, w_Targs* args);  //(char *op, char *nick, char *data);
 extern "C" w_Targs* _ParseCommand      (int id, w_Targs* args);  //(char *data);

@@ -113,7 +113,7 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("GetTopic", &_GetTopic);
 	RegisterFunction("SetTopic", &_SetTopic);
 
-	//RegisterFunction("ScriptCommand", &_ScriptCommand);
+	RegisterFunction("ScriptCommand", &_ScriptCommand);
 
 	lua_setglobal(mL, "VH");
 

@@ -447,6 +447,7 @@ bool AddRegUser(char *nick, int uClass, char * passwd, char* op)
 		return false;
 	return server->mR->AddRegUser(nick, conn, uClass, passwd);
 }
+
 bool DelRegUser(char *nick)
 {
 	cServerDC *server = GetCurrentVerlihub();
@@ -461,6 +462,22 @@ bool DelRegUser(char *nick)
 	if(ui.mClass == eUC_MASTER) return false;
 	return server->mR->DelReg(nick);
 }
+
+bool ScriptCommand(string cmd, string data, string plug, string script)
+{
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (serv == NULL) {
+		cerr << "ScriptCommand failed because server is not running or not found." << endl;
+		return false;
+	}
+
+	// do the restriction stuff, for example check cmd
+	// plug = "py" for python, "lua" for lua
+	serv->OnScriptCommand(cmd, data, plug, script);
+	return true;
+}
+
 extern "C" {
 	int GetUsersCount()
 	{

@@ -253,6 +253,11 @@ class cServerDC : public cAsyncSocketServer
 		*/
 		bool AddToList(cUser *usr);
 
+		/*
+		* This method is a forwarder for ScriptAPI::OnScriptCommand.
+		*/
+		void OnScriptCommand(string, string, string, string);
+
 		/**
 		* This method tells the server what the server can receive and what actions to perform depending on hub health.
 		* It is a kind of message filter.
@@ -745,7 +750,8 @@ private:
 			mOnUpdateClass(mgr, "VH_OnUpdateClass", &cVHPlugin::OnUpdateClass),
 			mOnHubName(mgr, "VH_OnHubName", &cVHPlugin::OnHubName),
 			mOnNewBan(mgr, "VH_OnNewBan", &cVHPlugin::OnNewBan),
-			mOnUnBan(mgr, "VH_OnUnBan", &cVHPlugin::OnUnBan)
+			mOnUnBan(mgr, "VH_OnUnBan", &cVHPlugin::OnUnBan),
+			mOnScriptCommand(mgr, "VH_OnScriptCommand", &cVHPlugin::OnScriptCommand)
 		{};
 
 		cVHCBL_Connection mOnNewConn;
@@ -785,6 +791,7 @@ private:
 		cVHCBL_Strings mOnHubName;
 		cVHCBL_UsrBan mOnNewBan;
 		cVHCBL_UsrStrStrStr mOnUnBan;
+		cVHCBL_StrStrStrStr mOnScriptCommand;
 	};
 	// Structure that holds all callbacks.
 	sCallBacks mCallBacks;

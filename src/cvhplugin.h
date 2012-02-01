@@ -414,6 +414,16 @@ public:
 	*/
 	virtual bool OnUpdateClass(cUser* User, string mNick, int oldClass, int newClass) {return true;}
 
+	/*
+	* Event handler function that is called when a script sends a command to other scripts.
+	* Use RegisterCallBack("VH_OnScriptCommand") to register it. This is not discardable.
+	* cmd = Command ID.
+	* data = Additional data.
+	* plug = ID of plugin that makes the call.
+	* script = ID of script that makes the call.
+	*/
+	virtual bool OnScriptCommand(string cmd, string data, string plug, string script) {return true;}
+
 	/// per-user data of the plugin
 	virtual cPluginUserData *GetPluginUserData( cUser * );
 	virtual cPluginUserData *SetPluginUserData( cUser *, cPluginUserData *NewData );

@@ -70,7 +70,6 @@ public:
 		temp->uMyINFO = MyINFO;
 		temp->uClass = Class;
 		botList.push_back(temp);
-		//cout << "BOTLIST size is " << botList.size() << endl;
 	}
 
 	void editBot(char * Nick, char * Share, char * MyINFO, int Class)

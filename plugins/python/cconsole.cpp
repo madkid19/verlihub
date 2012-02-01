@@ -164,7 +164,7 @@ bool cConsole::cfLogPythonScript::operator()()
 	ss.str("");
 	ss << level;
    	string newValue = ss.str();
-	(*mOS) << autosprintf(_("Updated %s.%s from '%s' to '%s'"), "pi_lua", "log_level", oldValue.c_str(), newValue.c_str()) << "\r\n";
+	(*mOS) << autosprintf(_("Updated %s.%s from '%s' to '%s'"), "pi_python", "log_level", oldValue.c_str(), newValue.c_str()) << "\r\n";
 	cpiPython::me->LogLevel( atoi(level.c_str()) );
 	return true;
 }

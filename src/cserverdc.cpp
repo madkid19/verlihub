@@ -436,6 +436,11 @@ bool cServerDC::RemoveNick(cUser *User)
 	return true;
 }
 
+void cServerDC::OnScriptCommand(string cmd, string data, string plug, string script)
+{
+	mCallBacks.mOnScriptCommand.CallAll(cmd, data, plug, script);
+}
+
 void cServerDC::SendToAll(string &data, int cm,int cM)
 {
 	cConnDC *conn;
