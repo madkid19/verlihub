@@ -49,7 +49,7 @@ OPERATOR (class 3) [Some commands may not be available depending of hub configur
 
 !hideme <class>              Hides yourself from users below the specified class
 
-hubinfo                      Show information about the hub
+!hubinfo                      Show information about the hub
 
 !hublist                     Send your hub information to the public hublist
 
