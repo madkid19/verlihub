@@ -252,7 +252,7 @@ void cDCConf::AddVars()
 	Add("tag_allow_unknown",tag_allow_unknown,1);
 	Add("tag_allow_passive",tag_allow_passive, true);
 	Add("tag_allow_sock5",tag_allow_sock5, true);
-	Add("tag_sum_hubs", tag_sum_hubs, 2);
+	Add("tag_sum_hubs", tag_sum_hubs, 3);
 	Add("tag_min_class_ignore",tag_min_class_ignore ,(int)eUC_OPERATOR);
 	Add("show_desc_len",show_desc_len,-1);
 	Add("desc_insert_mode", desc_insert_mode, false);
