@@ -25,6 +25,7 @@
 #include "cconntypes.h"
 #include <string>
 #include <iostream>
+#include <math.h>
 #include "cdcconf.h"
 #include "i18n.h"
 
@@ -64,6 +65,7 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 	}
 
 	// not parsed or unknown tag
+
 	if ((mClientMode == eCM_SOCK5) && !mServer->mC.tag_allow_sock5) {
 		os << _("Connections through proxy server are not allowed in this hub.");
 		code = eTC_SOCK5;
@@ -71,13 +73,13 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 	}
 
 	if ((mClientMode == eCM_PASSIVE) && !mServer->mC.tag_allow_passive) {
-		os << _("Passive connections are restricted. Consider changing to active.");
+		os << _("Passive connections are restricted, consider changing to active.");
 		code = eTC_PASSIVE;
 		return false;
 	}
 
-	if ((mTotHubs <= 0) || (mSlots < 0)) {
-		os << _("Error: Your client tag is reporting 0 or less hubs or less than 0 slots.");
+	if ((mTotHubs < 0) || (mSlots < 0)) {
+		os << _("Your client tag is reporting less than 0 hubs or less than 0 slots, looks like a bug in your client.");
 		code = eTC_PARSE;
 		return false;
 	}
@@ -132,22 +134,25 @@ bool cDCTag::ValidateTag(ostream &os, cConnType *conn_type, int &code)
 		return false;
 	}
 
-	if ((mServer->mC.tag_min_hs_ratio > 0) && ((mSlots / mTotHubs) < mServer->mC.tag_min_hs_ratio)) {
-		os << autosprintf(_("Your slots per hub ratio %.2f is too low, minimum is %.2f."), (double)(mSlots/mTotHubs), mServer->mC.tag_min_hs_ratio);
-		os << " " << autosprintf(_("Open %d slots for %d hubs."), (int)(mTotHubs*mServer->mC.tag_min_hs_ratio), mTotHubs);
+	double ratio = 0;
+	if (mTotHubs > 0) ratio = (double)mSlots / mTotHubs;
+
+	if ((mServer->mC.tag_min_hs_ratio > 0) && (ratio < mServer->mC.tag_min_hs_ratio)) {
+		os << autosprintf(_("Your slots per hub ratio %.2f is too low, minimum is %.2f."), ratio, mServer->mC.tag_min_hs_ratio);
+		os << " " << autosprintf(_("Open %d slots for %d hubs."), (int)(ceil((double)mTotHubs * mServer->mC.tag_min_hs_ratio)), mTotHubs);
 		code = eTC_MIN_HS_RATIO;
 		return false;
 	}
 
-	if ((mServer->mC.tag_max_hs_ratio > 0) && ((mSlots / mTotHubs) > mServer->mC.tag_max_hs_ratio)) {
-		os << autosprintf(_("Your slots per hub ratio %.2f is too high, maximum is %.2f."), (double)(mSlots/mTotHubs), mServer->mC.tag_max_hs_ratio);
-		os << " " << autosprintf(_("Open %d slots for %d hubs."), (int)(mTotHubs*mServer->mC.tag_max_hs_ratio), mTotHubs);
+	if ((mServer->mC.tag_max_hs_ratio > 0) && (ratio > mServer->mC.tag_max_hs_ratio)) {
+		os << autosprintf(_("Your slots per hub ratio %.2f is too high, maximum is %.2f."), ratio, mServer->mC.tag_max_hs_ratio);
+		os << " " << autosprintf(_("Open %d slots for %d hubs."), (int)(ceil((double)mTotHubs * mServer->mC.tag_max_hs_ratio)), mTotHubs);
 		code = eTC_MAX_HS_RATIO;
 		return false;
 	}
 
 	if (mLimit >= 0) {
-		// well, DCGUI bug, if (tag->mClientType == eCT_DCGUI) limit *= slot;
+		// well, DCGUI bug, if (tag->mClientType == eCT_DCGUI) limit *= mSlots;
 		if ((conn_type->mTagMinLimit) > mLimit) {
 			os << autosprintf(_("Too low upload limit for your connection type %s, minimum upload rate is %.2f."), conn_type->mIdentifier.c_str(), conn_type->mTagMinLimit);
 			code = eTC_MIN_LIMIT;

@@ -564,7 +564,7 @@ static PyObject * __SQL(PyObject *self, PyObject *args)  // (query, limit)
 	char **fields;
 	long rows, cols, res;
 	if (!Call( W_SQL, args, "s|l", "lllp", &res, &rows, &cols, (void**) &fields )) return Py_BuildValue ( "(lO)", (long)0, PyList_New (0) );
-	if (!fields) return Py_BuildValue ( "(lO)", (long)0, PyList_New (0) );
+	if (!fields) return Py_BuildValue ( "(lO)", res, PyList_New (0) );
 	PyObject* ret = PyTuple_New (2);
 	PyObject* lst = PyList_New (0);
 	for (int row=0; row < rows && res > 0; row++)
