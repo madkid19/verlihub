@@ -741,9 +741,9 @@ int cDCProto::DC_UserIP(cMessageDC * msg, cConnDC * conn)
 	* and we should ignore it
 	*/
 
-	if (msg->SplitChunks()) return -1;
-	if (!conn->mpUser || !conn->mpUser->mInList) return -1;
+	if (!msg || !conn || !conn->mpUser || !conn->mpUser->mInList) return -1;
 	if (conn->mpUser->mClass < eUC_OPERATOR) return -1;
+	if (msg->SplitChunks()) return -1;
 	string lst = msg->ChunkString(eCH_1_PARAM);
 	if (lst.empty()) return -1;
 	string sep("$$");
@@ -759,7 +759,7 @@ int cDCProto::DC_UserIP(cMessageDC * msg, cConnDC * conn)
 		if (!nick.empty()) {
 			other = mS->mUserList.GetUserByNick(nick);
 
-			if (other) {
+			if (other && other->mxConn && other->mxConn->mpUser && other->mxConn->mpUser->mInList) {
 				userip.append(nick);
 				userip.append(" ");
 				userip.append(other->mxConn->AddrIP());
