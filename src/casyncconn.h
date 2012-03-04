@@ -24,7 +24,7 @@
 
 //Buffer
 #define MAX_MESS_SIZE 0x2FFFF           // max length of message that we accept
-#define MAX_SEND_SIZE 0x1FFFFE         // max size of output buffer
+#define MAX_SEND_SIZE 0x3FFFFC         // max size of output buffer, 1FFFFE
 #define MAX_SEND_FILL_SIZE 0x15FFFE    // on this level, incoming data is blocked
 #define MAX_SEND_UNBLOCK_SIZE 0x07FFFFE // under this level it's unblocked again
 #include "cobj.h"
