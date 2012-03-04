@@ -71,7 +71,7 @@ int cDCProto::TreatMsg(cMessageParser *Msg, cAsyncConn *Conn)
 	//@todo tMsgAct action = this->mS->Filter(tDCMsg(msg->mType),conn);
 	if(strlen(Msg->mStr.data()) < Msg->mStr.size())
 	{
-		mS->ReportUserToOpchat(conn, _("Sending null chars, probably attempt of an attack")); // Msg->mStr
+		if (mS->mC.nullchars_report) mS->ReportUserToOpchat(conn, _("Probably attempt of an attack with NULL characters")); // Msg->mStr
 		conn->CloseNow();
 		return -1;
 	}
@@ -204,7 +204,8 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 
 		if (mS->mC.max_users_total == 0) os << " " << _("This is a registered users only hub.");
 		if (conn->Log(2)) conn->LogStream() << "Hub is full: " << mS->mUserCountTot << "/" << limit << " :: " << mS->mUserCount[conn->mGeoZone] << "/" << limit_cc << " :: " << conn->mCC << endl;
-		omsg = "$HubIsFull"; conn->Send(omsg);
+		omsg = "$HubIsFull";
+		conn->Send(omsg);
 		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
 		return -1;
 	} else {
@@ -219,7 +220,8 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 
 		if (cnt >= mS->mC.max_users_from_ip) {
 			os << autosprintf(_("User limit from IP address %s exceeded at %d online users."), conn->mAddrIP.c_str(), cnt);
-			omsg = "$HubIsFull"; conn->Send(omsg);
+			omsg = "$HubIsFull";
+			conn->Send(omsg);
 			mS->ConnCloseMsg(conn, os.str(), 1000, eCR_USERLIMIT);
 			return -1;
 		}
@@ -239,7 +241,7 @@ int cDCProto::DC_ValidateNick(cMessageDC *msg, cConnDC *conn)
 	// check authorization ip
 	if (conn->mRegInfo && !conn->mRegInfo->mAuthIP.empty() && (conn->mRegInfo->mAuthIP != conn->mAddrIP)) {
 		mS->mR->LoginError(conn, nick); // important
-		if (mS->mC.wrongauthip_report) mS->ReportUserToOpchat(conn, autosprintf(_("Authorization IP mismatch from %s"), nick.c_str()));
+		if (conn->GetTheoricalClass() >= mS->mC.wrongauthip_report) mS->ReportUserToOpchat(conn, autosprintf(_("Authorization IP mismatch from %s"), nick.c_str()));
 		os << autosprintf(_("Authorization IP for this account doesn't match your IP address: %s"), conn->mAddrIP.c_str());
 		mS->ConnCloseMsg(conn, os.str(), 1000, eCR_LOGIN_ERR);
 		return -1;
@@ -357,7 +359,7 @@ int cDCProto::DC_MyPass(cMessageDC * msg, cConnDC * conn)
 		if (conn->mRegInfo && conn->mRegInfo->getClass() > 0) {
 			omsg = "$BadPass";
 			conn->Send(omsg);
-		 	if (mS->mC.wrongpassword_report) mS->ReportUserToOpchat(conn, _("Wrong password"));
+		 	if (conn->mRegInfo->getClass() >= mS->mC.wrongpassword_report) mS->ReportUserToOpchat(conn, _("Wrong password"));
 
 			if (!mS->mC.wrongpass_message.empty())
 				omsg = mS->mC.wrongpass_message;
@@ -622,7 +624,7 @@ int cDCProto::DC_MyINFO(cMessageDC *msg, cConnDC *conn)
 	#endif
 
 	string myinfo_full, myinfo_basic, desc, email, speed, sShare;
-	// $MyINFO $ALL <nick> <description>$ $<speed>$<email>$<sharesize>$
+	// $MyINFO $ALL <nick> <description+tag>$ $<speed+status>$<email>$<sharesize>$
 	// todo: tag.mPositionInDesc may be incorrect after the description has been modified by a plugin
 	mS->mCo->mDCClients->ParsePos(msg->ChunkString(eCH_MI_DESC));
 	desc.assign(msg->ChunkString(eCH_MI_DESC), 0, mS->mCo->mDCClients->mPositionInDesc);

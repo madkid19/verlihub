@@ -215,7 +215,8 @@ public:
 	int pwd_tmpban;
 	string wrongpass_message;
 	int wrongpassword_report;
-	bool wrongauthip_report;
+	int wrongauthip_report;
+	bool nullchars_report;
 	int botinfo_report;
 	double timeout_length[6];
 

@@ -590,8 +590,9 @@ bool cServerDC::VerifyUniqueNick(cConnDC *conn)
 				if(old_usr->mxConn) {
 					if(old_usr->mxConn->Log(2))
 						old_usr->mxConn->LogStream() << "Closing because of a new connection" << endl;
-					omsg = _("Another user is already logged in from this IP address. Disconnecting.");
-					old_usr->mxConn->Send(omsg,true);
+					omsg = _("Another user has logged in with same nick and IP address.");
+					//old_usr->mxConn->Send(omsg,true);
+					DCPublicHS(omsg, old_usr->mxConn);
 					old_usr->mxConn->CloseNow();
 				} else {
 					if(ErrLog(1))
