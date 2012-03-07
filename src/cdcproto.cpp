@@ -935,104 +935,89 @@ int cDCProto::DC_MCTo(cMessageDC * msg, cConnDC * conn)
 
 bool cDCProto::CheckChatMsg(const string &text, cConnDC *conn)
 {
-	if(!conn || !conn->mxServer)
-		return true;
-
+	if (!conn || !conn->mxServer) return true;
 	cServerDC *Server = conn->Server();
-	int count = text.size(), limit = Server->mC.max_chat_msg;
-	bool IsWrong = false;
+	ostringstream errmsg;
+	int count = text.size();
 
-
-	ostringstream errorMessage;
-	if(count > limit) {
-		IsWrong = true;
-		errorMessage << autosprintf(_("Too long chat message (%d/%d) : %s"), count, limit, text.c_str());
-	} else if(!LimitLines(text,Server->mC.max_chat_lines)) {
-		limit = Server->mC.max_chat_lines;
-		errorMessage << autosprintf(_("Too many chat lines (>%d): %s"), limit, text.c_str());
-		IsWrong = true;
-	} else
-		return true;
-
-	if(IsWrong) {
-		Server->DCPublicHS(errorMessage.str(),conn);
+	if ((Server->mC.max_chat_msg == 0) || (count > Server->mC.max_chat_msg)) {
+		errmsg << autosprintf(_("Your chat message contains %d characters but maximum allowed is %d characters."), count, Server->mC.max_chat_msg);
+		Server->DCPublicHS(errmsg.str(), conn);
 		return false;
 	}
-	return false;
+
+	count = CountLines(text);
+
+	if ((Server->mC.max_chat_lines == 0) || (count > Server->mC.max_chat_lines)) {
+		errmsg << autosprintf(_("Your chat message contains %d lines but maximum allowed is %d lines."), count, Server->mC.max_chat_lines);
+		Server->DCPublicHS(errmsg.str(), conn);
+		return false;
+	}
+
+	return true;
 }
 
-int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
+int cDCProto::DC_Chat(cMessageDC *msg, cConnDC *conn)
 {
-	if(msg->SplitChunks())
-		return -1;
-	if(!conn->mpUser)
-		return -2;
-	if(!conn->mpUser->mInList)
-		return -3;
-	if(!conn->mpUser->Can(eUR_CHAT, mS->mTime.Sec(), 0))
-		return -4;
-
-	if(conn->mpUser->mClass < mS->mC.mainchat_class) {
-		mS->DCPublicHS(_("Mainchat is currently disabled for non registered users."),conn);
-		return 0;
-	}
-
-	cUser::tFloodHashType Hash = 0;
-	Hash = tHashArray<void*>::HashString(msg->mStr);
-	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_CHAT])) {
-		return -5;
-	}
-	conn->mpUser->mFloodHashes[eFH_CHAT] = Hash;
-
+	if (!msg) return -1;
+	if (msg->SplitChunks()) return -1;
+	if (!conn) return -2;
+	if (!conn->mpUser) return -2;
+	if (!conn->mpUser->mInList) return -3;
 	stringstream omsg;
-	bool send = false;
-	// Set minimum chat delay
-	long delay = mS->mC.int_chat_ms;
-	if(conn->mpUser->mClass >=  eUC_VIPUSER) delay=0;
 
-	// Check if nick is ok
-	if( (msg->ChunkString(eCH_CH_NICK) != conn->mpUser->mNick) ) {
-		omsg << "You are not " << msg->ChunkString(eCH_CH_NICK) << ".";
-		mS->DCPublicHS(omsg.str(),conn);
+	// check if nick is ok
+	if ((msg->ChunkString(eCH_CH_NICK) != conn->mpUser->mNick)) {
+		omsg << autosprintf(_("You nick is not %s but %s."), msg->ChunkString(eCH_CH_NICK).c_str(), conn->mpUser->mNick.c_str());
+		mS->DCPublicHS(omsg.str(), conn);
 		conn->CloseNice(1000, eCR_CHAT_NICK);
 		return -2;
 	}
 
-	string &text= msg->ChunkString(eCH_CH_MSG);
+	// check if delay is ok
+	if (conn->mpUser->mClass < eUC_VIPUSER) {
+		long delay = mS->mC.int_chat_ms;
 
-	// Check if delay is ok
-	if(!mS->MinDelayMS(conn->mpUser->mT.chat,delay)) {
-		cTime now;
-		cTime diff=now-conn->mpUser->mT.chat;
-		omsg << autosprintf(_("Not sent: %s"), text.c_str()) << endl;
-		omsg << autosprintf(_("Minimum delay for chat is %lu ms but you made %s"), delay, diff.AsPeriod().AsString().c_str());
-		mS->DCPublicHS(omsg.str(),conn);
+		if (!mS->MinDelayMS(conn->mpUser->mT.chat, delay)) {
+			cTime now;
+			cTime diff = now - conn->mpUser->mT.chat;
+			omsg << autosprintf(_("Not sent because minimum chat delay is %lu ms but you made %s."), delay, diff.AsPeriod().AsString().c_str());
+			mS->DCPublicHS(omsg.str(), conn);
+			return 0;
+		}
+	}
+
+	// check for commands
+	string &text = msg->ChunkString(eCH_CH_MSG);
+	if (ParseForCommands(text, conn, 0)) return 0;
+
+	// check if user is allowed to use main chat
+	if (!conn->mpUser->Can(eUR_CHAT, mS->mTime.Sec(), 0)) return -4;
+
+	if (conn->mpUser->mClass < mS->mC.mainchat_class) {
+		mS->DCPublicHS(_("Mainchat is currently disabled for non registered users."), conn);
 		return 0;
 	}
 
-	send = true;
-	if (ParseForCommands(text, conn, 0)) return 0;
+	// check flood
+	cUser::tFloodHashType Hash = 0;
+	Hash = tHashArray<void*>::HashString(msg->mStr);
+	if (Hash && (conn->mpUser->mClass < eUC_OPERATOR) && (Hash == conn->mpUser->mFloodHashes[eFH_CHAT])) return -5;
+	conn->mpUser->mFloodHashes[eFH_CHAT] = Hash;
 
-	////////// here is the part that finally distributes messages
-	// check message length only for less than vip regs
-	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text, conn))
-		return 0;
+	// check message length
+	if (conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text, conn)) return 0;
 
-	// If this is a kick message, process it separately
-	if( (mKickChatPattern.Exec(text) >= 4) &&
-		(
-			!mKickChatPattern.PartFound(1) ||
-			(mKickChatPattern.Compare(2,text,conn->mpUser->mNick) == 0)
-		)
-	){
+	// if this is a kick message, process it separately
+	if ((mKickChatPattern.Exec(text) >= 4) && (!mKickChatPattern.PartFound(1) || (mKickChatPattern.Compare(2, text, conn->mpUser->mNick) == 0))) {
 		if (conn->mpUser->mClass >= eUC_OPERATOR) {
 			string kick_reason;
-			mKickChatPattern.Extract(4,text,kick_reason);
+			mKickChatPattern.Extract(4, text, kick_reason);
 			string nick;
-			mKickChatPattern.Extract(3,text,nick);
-
+			mKickChatPattern.Extract(3, text, nick);
 			mS->DCKickNick(NULL, conn->mpUser, nick, kick_reason, eKCK_Reason);
 		}
+
 		return 0;
 	}
 
@@ -1041,7 +1026,7 @@ int cDCProto::DC_Chat(cMessageDC * msg, cConnDC * conn)
 	#endif
 
 	// finally send the message
-	if (send) mS->mChatUsers.SendToAll(msg->mStr);
+	mS->mChatUsers.SendToAll(msg->mStr);
 	return 0;
 }
 

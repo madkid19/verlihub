@@ -464,25 +464,39 @@ int cDCConsole::CmdMyIp(istringstream & cmd_line, cConnDC * conn)
 
 int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 {
-	ostringstream os;
-	string query,text;
-	string tmpline;
-
-	getline(cmd_line,text);
-	if ((mOwner->mC.disable_me_cmd) || (mOwner->mC.mainchat_class > 0 && conn->mpUser->mClass < eUC_REGUSER)) {
-		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
+	// check if command is disabled
+	if (mOwner->mC.disable_me_cmd) {
+		mOwner->DCPublicHS(_("This functionality is currently disabled."), conn);
 		return 1;
 	}
-	while(cmd_line.good()) {
-		tmpline="";
-		getline(cmd_line,tmpline);
+
+	// check if user is allowed to use main chat
+	if (!conn->mpUser->Can(eUR_CHAT, mOwner->mTime.Sec(), 0)) return 1;
+
+	if (conn->mpUser->mClass < mOwner->mC.mainchat_class) {
+		mOwner->DCPublicHS(_("Mainchat is currently disabled for non registered users."), conn);
+		return 1;
+	}
+
+	// prepare text
+	string text;
+	getline(cmd_line, text);
+	string tmpline;
+
+	while (cmd_line.good()) {
+		tmpline = "";
+		getline(cmd_line, tmpline);
 		text += "\r\n" + tmpline;
 	}
 
-	if(conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text,conn))
-		return 0;
+	if (text[0] == ' ') text = text.substr(1);
 
-	os << "** " <<  conn->mpUser->mNick << text;
+	// check message length
+	if (conn->mpUser->mClass < eUC_VIPUSER && !cDCProto::CheckChatMsg(text, conn)) return 1;
+
+	// send message
+	ostringstream os;
+	os << "** " << conn->mpUser->mNick << " " << text;
 	string msg = os.str();
 	mOwner->mUserList.SendToAll(msg, true);
 	os.str(mOwner->mEmpty);
