@@ -19,6 +19,7 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
+
 #ifndef NUTILSCGEOIP_H
 #define NUTILSCGEOIP_H
 #include <string>
@@ -48,13 +49,21 @@ namespace nVerliHub {
 				*/
 				~cGeoIP();
 
-				/**
-				* Return the country code for the given hostname.
-				* @param hostname The hostname.
-				* @param CC String where to store country code.
-				* @return True if it is possible to get country code, false otherwise.
+				/*
+				* Return country code for the given hostname.
+				* hostname = The hostname.
+				* cc = String where to store country code.
+				* return = True if it is possible to get country code, false otherwise.
 				*/
 				bool GetCC(const string &hostname, string &cc);
+
+				/*
+				* Return country name for the given hostname.
+				* hostname = The hostname.
+				* cn = String where to store country name.
+				* return = True if it is possible to get country name, false otherwise.
+				*/
+				bool GetCN(const string &hostname, string &cn);
 			private:
 				/// Pointer to GeoIP instance.
 				GeoIP * mGI;

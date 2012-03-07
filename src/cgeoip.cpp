@@ -19,20 +19,19 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
+
 #include "cgeoip.h"
 
 namespace nVerliHub {
-	namespace nUtils {
+namespace nUtils {
 
-cGeoIP::cGeoIP()
-: mGI(GeoIP_new(GEOIP_STANDARD))
-{
-}
+cGeoIP::cGeoIP(): mGI(GeoIP_new(GEOIP_STANDARD)) {}
 
 bool cGeoIP::GetCC(const string &hostname, string &cc)
 {
-	const char * country_code;
+	const char *country_code;
 	country_code = GeoIP_country_code_by_name(mGI, hostname.c_str());
+
 	if (country_code == NULL) {
 		cc = "--";
 		return false;
@@ -42,9 +41,24 @@ bool cGeoIP::GetCC(const string &hostname, string &cc)
 	}
 }
 
+bool cGeoIP::GetCN(const string &hostname, string &cn)
+{
+	const char *country_name;
+	country_name = GeoIP_country_name_by_name(mGI, hostname.c_str());
+
+	if (country_name == NULL) {
+		cn = "--";
+		return false;
+	} else {
+		cn = country_name;
+		return true;
+	}
+}
+
 cGeoIP::~cGeoIP()
 {
 	GeoIP_delete(mGI);
 }
-	}; // namespace nUtils
+
+}; // namespace nUtils
 }; // namespace nVerliHub

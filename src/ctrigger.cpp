@@ -24,6 +24,9 @@
 #include "cconndc.h"
 #include "curr_date_time.h"
 #include "stringutils.h"
+#if HAVE_LIBGEOIP
+#include "cgeoip.h"
+#endif
 #include <stdlib.h>
 #include <time.h>
 #ifdef HAVE_CONFIG_H
@@ -124,6 +127,13 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 
 	  if(!timeTrigger) {
 		ReplaceVarInString(buf, "CC", buf, conn->mCC);
+
+		string cn;
+		#if HAVE_LIBGEOIP
+		server.sGeoIP.GetCN(conn->AddrIP(), cn);
+		#endif
+		ReplaceVarInString(buf, "CN", buf, cn);
+
 		ReplaceVarInString(buf, "IP", buf, conn->AddrIP());
 		ReplaceVarInString(buf, "HOST", buf, conn->AddrHost());
 		ReplaceVarInString(buf, "NICK", buf, conn->mpUser->mNick);
