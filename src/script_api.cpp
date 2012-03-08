@@ -189,6 +189,23 @@ string GetIPCC(const string ip)
 		return "";
 }
 
+string GetIPCN(const string ip)
+{
+	cServerDC *server = GetCurrentVerlihub();
+
+	if (!server) {
+		cerr << "Verlihub server is unfortunately not running or not found." << endl;
+		return "";
+	}
+
+	string cn;
+
+	if (server->sGeoIP.GetCN(ip, cn))
+		return cn;
+	else
+		return "";
+}
+
 char *GetMyINFO(char *nick)
 {
 	cUser *usr = GetUser(nick);

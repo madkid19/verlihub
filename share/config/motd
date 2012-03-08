@@ -1,16 +1,16 @@
 
-This file contains the text that will be displayed to users upon entering the hub.
-Change it to suit your needs or use the file trigger definition to store your motd.
 
-Welcome to VerliHub
+ This file contains the text that will be displayed to users upon entering the hub.
+ Change it to suit your needs or use the file trigger definition to store your MOTD.
 
-+rules		-- Display a list of hub rules.
-+faq		-- Display a list of helpful links if you are having trouble.
-+motd		-- Display this message.
-+help		-- Display a list of all available commands to you.
+ Welcome to Verlihub.
 
-Some usefull links for you:
+ +rules		-- Display a list of hub rules
+ +faq		-- Display a list of helpful links if you are having trouble
+ +help		-- Display a list of all available to you commands
 
-* Verlihub homepage: http://www.verlihub-project.org
-* Verlihub forums: http://www.verlihub-project.org/discussions
-* Verlihub manual: http://www.verlihub-project.org/page
+ Some useful links for you:
+
+ [*] Verlihub website: http://www.verlihub.net/
+ [*] Verlihub forum: http://forum.verlihub.net/
+ [*] VAZ: dchub://hub.verlihub.net:7777/

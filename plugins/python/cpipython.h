@@ -158,6 +158,7 @@ extern "C" w_Targs* _GetUserHost       (int id, w_Targs* args);  //(char *nick);
 extern "C" w_Targs* _GetUserIP         (int id, w_Targs* args);  //(char *nick);
 extern "C" w_Targs* _GetUserCC         (int id, w_Targs* args);  //(char *nick);
 extern "C" w_Targs* _GetIPCC           (int id, w_Targs* args);  //(char *ip);
+extern "C" w_Targs* _GetIPCN           (int id, w_Targs* args);  //(char *ip);
 extern "C" w_Targs* _Ban               (int id, w_Targs* args);  //(char *nick, long howlong, long bantype);
 extern "C" w_Targs* _KickUser          (int id, w_Targs* args);  //(char *op, char *nick, char *data);
 extern "C" w_Targs* _ParseCommand      (int id, w_Targs* args);  //(char *data);

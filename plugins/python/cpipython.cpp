@@ -139,6 +139,7 @@ void cpiPython::OnLoad(cServerDC *server)
 	callbacklist[W_GetUserIP] = &_GetUserIP;
 	callbacklist[W_GetUserCC] = &_GetUserCC;
 	callbacklist[W_GetIPCC] = &_GetIPCC;
+	callbacklist[W_GetIPCN] = &_GetIPCN;
 	callbacklist[W_Ban] = &_Ban;
 	callbacklist[W_KickUser] = &_KickUser;
 	callbacklist[W_ParseCommand] = &_ParseCommand;
@@ -1291,6 +1292,18 @@ w_Targs* _GetIPCC (int id, w_Targs* args) // (char* ip)
 	const char *cc = "";
 	cc = ccstr.c_str();
 	return cpiPython::lib_pack("s", strdup(cc));
+}
+
+w_Targs* _GetIPCN (int id, w_Targs* args) // (char* ip)
+{
+	char *ip;
+	if (!cpiPython::lib_unpack(args, "s", &ip)) return NULL;
+	if (!ip) return NULL;
+	string cnstr;
+	cpiPython::me->server->sGeoIP.GetCN(ip, cnstr);
+	const char *cn = "";
+	cn = cnstr.c_str();
+	return cpiPython::lib_pack("s", strdup(cn));
 }
 
 w_Targs* _Ban (int id, w_Targs* args) // (char *nick, long howlong, long bantype)

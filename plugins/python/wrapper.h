@@ -51,7 +51,7 @@ enum { W_OnNewConn, W_OnCloseConn, W_OnParsedMsgChat, W_OnParsedMsgPM, W_OnParse
 const int W_MAX_HOOKS = 50;
 
 // function positions in the callback table
-enum { W_SendDataToUser, W_SendDataToAll, W_SendPMToAll, W_CloseConnection, W_GetMyINFO, W_SetMyINFO, W_GetUserClass, W_GetUserHost, W_GetUserIP, W_GetUserCC, W_GetIPCC, W_GetNickList, W_GetOpList, W_Ban, W_KickUser, W_ParseCommand, W_SetConfig, W_GetConfig, W_AddRobot, W_DelRobot, W_SQL, W_SQLQuery, W_SQLFetch, W_SQLFree, W_GetUsersCount, W_GetTotalShareSize, W_UserRestrictions, W_Topic, W_mc, W_usermc, W_classmc, W_pm };
+enum { W_SendDataToUser, W_SendDataToAll, W_SendPMToAll, W_CloseConnection, W_GetMyINFO, W_SetMyINFO, W_GetUserClass, W_GetUserHost, W_GetUserIP, W_GetUserCC, W_GetIPCC, W_GetIPCN, W_GetNickList, W_GetOpList, W_Ban, W_KickUser, W_ParseCommand, W_SetConfig, W_GetConfig, W_AddRobot, W_DelRobot, W_SQL, W_SQLQuery, W_SQLFetch, W_SQLFree, W_GetUsersCount, W_GetTotalShareSize, W_UserRestrictions, W_Topic, W_mc, W_usermc, W_classmc, W_pm };
 
 // the maximum number of values that can be returned inside w_Treturn
 #define W_MAX_RETVALS 10

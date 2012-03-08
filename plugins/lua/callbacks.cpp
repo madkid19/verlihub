@@ -324,6 +324,35 @@ int _GetIPCC(lua_State *L)
 	}
 }
 
+int _GetIPCN(lua_State *L)
+{
+	if (lua_gettop(L) == 2) {
+		if (!lua_isstring(L, 2)) {
+			luaerror(L, ERR_PARAM);
+			return 2;
+		}
+
+		string ip, cn;
+		ip = (char*)lua_tostring(L, 2);
+		cn = GetIPCN((char*)ip.c_str());
+
+		if (cn.empty()) {
+			lua_pushboolean(L, 0);
+			luaerror(L, "Unable to get country name");
+		} else {
+			lua_pushboolean(L, 1);
+			lua_pushstring(L, (char*)cn.c_str());
+		}
+
+		return 2;
+	} else {
+		luaL_error(L, "Error calling VH:GetIPCN; expected 1 argument but got %d", lua_gettop(L) - 1);
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 2;
+	}
+}
+
 int _GetNickList(lua_State *L)
 {
 	char *nicklist;

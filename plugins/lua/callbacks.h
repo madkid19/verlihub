@@ -39,6 +39,7 @@ namespace nVerliHub {
 	int _GetMyINFO(lua_State *);
 	int _GetUserCC(lua_State *);
 	int _GetIPCC(lua_State *);
+	int _GetIPCN(lua_State *);
 	int _GetVHCfgDir(lua_State *);
 	int _GetUpTime(lua_State *L);
 	int _RegBot(lua_State *);

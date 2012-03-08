@@ -529,6 +529,18 @@ static PyObject * __GetIPCC(PyObject *self, PyObject *args)  // (ip)
 	Py_RETURN_NONE;
 }
 
+static PyObject * __GetIPCN(PyObject *self, PyObject *args)  // (ip)
+{
+	char *res;
+	if (Call( W_GetIPCN, args, "s", "s", &res ))
+	{
+		PyObject *p = Py_BuildValue ( "s", res );
+		freee(res);
+		return p;
+	}
+	Py_RETURN_NONE;
+}
+
 static PyObject * __Ban(PyObject *self, PyObject *args)  // (nick, time, type)
 {	return pybool( BasicCall( W_Ban, args, "ssl" ) );	}
 
@@ -728,6 +740,7 @@ static PyMethodDef w_vh_methods[] = {
 	{"GetUserIP",			__GetUserIP,			METH_VARARGS},
 	{"GetUserCC",			__GetUserCC,			METH_VARARGS},
 	{"GetIPCC",			    __GetIPCC,			    METH_VARARGS},
+	{"GetIPCN",			    __GetIPCN,			    METH_VARARGS},
 	{"Ban",				__Ban,				METH_VARARGS},
 	{"KickUser",			__KickUser,			METH_VARARGS},
 	{"ParseCommand",		__ParseCommand,			METH_VARARGS},
@@ -1238,6 +1251,7 @@ const char * w_CallName(int callback)
 		case W_GetUserIP: 		return "GetUserIP";
 		case W_GetUserCC: 		return "GetUserCC";
 		case W_GetIPCC: 		return "GetIPCC";
+		case W_GetIPCN: 		return "GetIPCN";
 		case W_GetNickList: 		return "GetNickList";
 		case W_GetOpList: 		return "GetOpList";
 		case W_Ban: 			return "Ban";

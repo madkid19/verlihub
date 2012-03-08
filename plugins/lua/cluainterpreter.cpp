@@ -70,6 +70,7 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("StopHub", &_StopHub);
 	RegisterFunction("GetUserCC",   &_GetUserCC);
 	RegisterFunction("GetIPCC", &_GetIPCC);
+	RegisterFunction("GetIPCN", &_GetIPCN);
 	RegisterFunction("GetMyINFO",         &_GetMyINFO);
 	RegisterFunction("GetUpTime",         &_GetUpTime);
 	RegisterFunction("RegBot",          &_RegBot);
