@@ -1342,7 +1342,7 @@ void cServerDC::SendHeaders(cConnDC * conn, int where)
 			os << "<" << mC.hub_security << "> " << autosprintf(_("System status: %s"), mStatus.c_str()) << "|";
 			if (!mC.hub_version_special.empty()) os << "<" << mC.hub_security << "> " << mC.hub_version_special << "|";
 		} else
-			os << autosprintf(_("Running %s %s build %s%s ][ Runtime: %s ][ User count: %d"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS, mC.hub_version_special.c_str(), runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
+			os << "<" << mC.hub_security << "> " << autosprintf(_("Running %s %s build %s%s ][ Runtime: %s ][ User count: %d"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS, mC.hub_version_special.c_str(), runtime.AsPeriod().AsString().c_str(), mUserCountTot) << "|";
 
 		string res = os.str();
 		conn->Send(res, false);
