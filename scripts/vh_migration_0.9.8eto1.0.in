@@ -30,6 +30,9 @@ function help_me()
 function migrate_hub() #path_to_dbconfig
 {
 
+      
+
+
 	# Check config directory
 	if [ "_$1" != "_" ]; then
 		if ! set_path $1 ; then
@@ -67,14 +70,14 @@ function migrate_hub() #path_to_dbconfig
 		sleep 2
 
 		echo "-- Deleting other variables"
-		OTHER_MESSAGES=(save_lang chat_msg_long chat_msg_lines pwd_cannot pwd_can pwd_min pwd_success pwd_set_error pwd_setup ip nick user host ip_range because op type not_in_userlist error success wrong_dc_tag tag_max_hubs tag_max_slots tag_min_slots tag_max_hs_ratio tag_min_limit tag_min_ls_ratio tag_no_sock msg_downgrade msg_upgrade msg_topic_set msg_topic_reset autoreg_nick_prefix autoreg_already_reg autoreg_success autoreg_error timeout_any operation_timeout msg_chat_onoff msg_change_pwd msg_banned msg_hub_full msg_nick_prefix msg_downgrade msg_upgrade msg_replace_ban login_share_min login_share_max autoreg_min_share search_share_min ctm_share_min max_attempts_threshold)
+		OTHER_MESSAGES=(save_lang chat_msg_long chat_msg_lines pwd_cannot pwd_can pwd_min pwd_success pwd_set_error pwd_setup ip nick user host ip_range because op type not_in_userlist error success wrong_dc_tag tag_max_slots tag_min_slots tag_min_limit tag_min_ls_ratio tag_no_sock msg_downgrade msg_upgrade msg_topic_set msg_topic_reset autoreg_nick_prefix autoreg_already_reg autoreg_success autoreg_error timeout_any operation_timeout msg_chat_onoff msg_change_pwd msg_banned msg_hub_full msg_nick_prefix msg_replace_ban login_share_min login_share_max autoreg_min_share search_share_min ctm_share_min max_attempts_threshold)
 		for VAR in ${OTHER_MESSAGES[@]}; do
 			_delete_lang_var $VAR
 		done
 		sleep 2
 
 		echo "-- Copying new help file for commands"
-		if ! cp $DATADIR/config/help_* $CHOOSEN_FOLDER 	; then
+		if ! cp $DATADIR/config/help_* $CONFIG_DIR 	; then
 			echo_s "-- Error copying help_* files from $DATADIR\n" $RED
 		fi
 
@@ -84,6 +87,12 @@ function migrate_hub() #path_to_dbconfig
 			echo_s "-- Error truncating 'pi_plugin' table; make it manually using '$QUERY'\n" $RED
 		fi
 	
+        QUERY="UPDATE SetupList SET var =  'always_ask_password' WHERE  file = 'config' AND var = 'allways_ask_password'";
+        echo "-- Renaming allways_ask_password var to always_ask_password"
+        if ! _mysql_query $QUERY; then
+            echo_s "-- Error renaming allways_ask_password variable; make it manually using '$QUERY'\n" $RED
+        fi
+
 		echo "-- Renaming variable 'lang_name' to 'locale' in dbconfig file"
 		sed -i "s/lang_name/locale/g" "$CONFIG_DIR/dbconfig" > /dev/null 2>&1
 
@@ -102,7 +111,7 @@ function migrate_clean()
 	fi
 	echo_s "-- Welcome to VerliHub migration script to version 1.0 to clean up old files\n" $RED_BOLD
 	if $(yes_or_no "Do you want to continue with hub migration?") ; then
-		OLD_SCRIPTS=(vh_getcfg vh_getdb vh_install vh_regnick vh_restart vh_runhub vh_setup vh_trigger verlihub_config)
+		OLD_SCRIPTS=(vh_getcfg vh_getdb vh_manage vh_manage_cli vh_install vh_regnick vh_restart vh_runhub vh_setup vh_trigger verlihub_config)
 
 		for VAR in ${OLD_SCRIPTS[@]}; do
 			FILE="$BINDIR/$VAR"

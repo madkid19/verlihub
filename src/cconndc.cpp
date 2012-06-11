@@ -311,7 +311,7 @@ bool cConnDC::NeedsPassword()
 		(!mRegInfo->mPwdChange ||
 		 (
 		   mRegInfo->mPasswd.size() &&
-		   Server()->mC.allways_ask_password
+		   Server()->mC.always_ask_password
 		 )
 		)
 	);

@@ -209,7 +209,7 @@ public:
 	bool use_reglist_cache;
 	bool use_penlist_cache;
 	bool chat_default_on;
-	bool allways_ask_password;
+	bool always_ask_password;
 	int default_password_encryption;
 	int password_min_len;
 	int pwd_tmpban;
