@@ -36,3 +36,6 @@ MACRO_LOG_FEATURE(ENABLE_PLUGIN "replacer" "Replace given patterns in text messa
 
 ADD_PLUGIN(ENABLE_PLUGIN floodprot)
 MACRO_LOG_FEATURE(ENABLE_PLUGIN "floodprot" "Offer more control from users flooding the hub")
+
+# ADD_PLUGIN(ENABLE_PLUGIN pisg)
+# MACRO_LOG_FEATURE(ENABLE_PLUGIN "pisg" "Create log file to be used with pisg that is a statistics generator")

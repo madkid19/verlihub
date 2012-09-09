@@ -24,6 +24,7 @@
 #define CPIPISG_H
 
 #include "src/cvhplugin.h"
+#include "src/cconndc.h"
 #include "src/ctimeout.h"
 #include "src/cmeanfrequency.h"
 #include <fstream>
@@ -41,7 +42,11 @@ public:
 	virtual bool RegisterAll();
 	bool OnParsedMsgChat(cConnDC *conn, cMessageDC *msg);
 private:
-	ofstream logFile;
+    ofstream logFile;
+    int mStats;
+    long int mStatsTimer;
+    int mFreqSearchA;
+    int mFreqSearchP;
 };
 
 
