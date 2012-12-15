@@ -10,10 +10,10 @@ Optional dependencies:
     Lua 5.1
     Python 2.5
 
-
 To install VerliHub, run the following commands:
-./configure
+cd verlihub
+mkdir build
+cd buld
+cmake ..
 make
-make install
-
-
+make install (as super user)
