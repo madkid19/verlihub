@@ -276,7 +276,7 @@ function _create_mysql_tables() # get_socket
 	
 	$BINDIR/verlihub 2&>$VERLIHUB_CFG/install_log &
 	PID=$!
-	sleep 5
+	sleep 15
 	kill -9 $PID &>/dev/null
 	_is_table_exists "reglist" "SetupList" || return 1
 	return 0
