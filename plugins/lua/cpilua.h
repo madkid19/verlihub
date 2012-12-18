@@ -46,6 +46,7 @@ public:
 	virtual bool RegisterAll();
 	virtual bool OnNewConn(nSocket::cConnDC *);
 	virtual bool OnCloseConn(nSocket::cConnDC *);
+	virtual bool OnCloseConnEx(nSocket::cConnDC *);
 	virtual bool OnParsedMsgChat(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgPM(nSocket::cConnDC *, nProtocol::cMessageDC *);
 	virtual bool OnParsedMsgMCTo(nSocket::cConnDC *, nProtocol::cMessageDC *);
