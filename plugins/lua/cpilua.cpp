@@ -84,6 +84,7 @@ bool cpiLua::RegisterAll()
 {
 	RegisterCallBack("VH_OnNewConn");
 	RegisterCallBack("VH_OnCloseConn");
+	RegisterCallBack("VH_OnCloseConnEx");
 	RegisterCallBack("VH_OnParsedMsgChat");
 	RegisterCallBack("VH_OnParsedMsgPM");
 	RegisterCallBack("VH_OnParsedMsgMCTo");
@@ -204,6 +205,32 @@ bool cpiLua::OnCloseConn(cConnDC *conn)
 			};
 
 			return CallAll("VH_OnCloseConn", args, conn);
+		}
+	}
+
+	return true;
+}
+
+bool cpiLua::OnCloseConnEx(cConnDC *conn) // @todo: dont include this callback in your final scripts, it might change before final release
+{
+	if (conn != NULL) {
+		if (conn->mpUser != NULL) {
+			char * args[] = {
+				(char *)conn->AddrIP().c_str(),
+				(char *)toString(conn->mCloseReason),
+				(char *)conn->mpUser->mNick.c_str(),
+				NULL
+			};
+
+			return CallAll("VH_OnCloseConnEx", args, conn);
+		} else {
+			char * args[] = {
+				(char *)conn->AddrIP().c_str(),
+				(char *)toString(conn->mCloseReason),
+				NULL
+			};
+
+			return CallAll("VH_OnCloseConnEx", args, conn);
 		}
 	}
 
