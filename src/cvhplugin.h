@@ -114,6 +114,13 @@ public:
 	 */
 	virtual bool OnCloseConn(nSocket::cConnDC* conn){ return true; }
 
+	/*
+	* Extended event handler function that is called when a connection is closed.
+	* Use RegisterCallBack("VH_OnCloseConnEx") to register it. This event isnt discardable.
+	* conn = The connection to be closed.
+	*/
+	virtual bool OnCloseConnEx(nSocket::cConnDC* conn) {return true;}
+
 	//! Event handler function that is called when an unknown message is sent from a connection
 	/*!
 	 * 	Use RegisterCallBack("VH_OnUnknownMsg") to register it. This event cannot be discardable.
