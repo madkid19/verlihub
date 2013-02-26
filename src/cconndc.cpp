@@ -374,6 +374,7 @@ void cDCConnFactory::DeleteConn(cAsyncConn * &connection)
 	if (conn) {
 		#ifndef WITHOUT_PLUGINS
 		mServer->mCallBacks.mOnCloseConn.CallAll(conn);
+		mServer->mCallBacks.mOnCloseConnEx.CallAll(conn);
 		#endif
 		if(conn->GetLSFlag(eLS_ALLOWED)) {
 			mServer->mUserCountTot--;

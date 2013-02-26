@@ -716,6 +716,7 @@ private:
 		sCallBacks(cVHPluginMgr * mgr) :
 			mOnNewConn(mgr, "VH_OnNewConn", &cVHPlugin::OnNewConn),
 			mOnCloseConn(mgr, "VH_OnCloseConn", &cVHPlugin::OnCloseConn),
+			mOnCloseConnEx(mgr, "VH_OnCloseConnEx", &cVHPlugin::OnCloseConnEx),
 			mOnUnknownMsg(mgr, "VH_OnUnknownMsg", &cVHPlugin::OnUnknownMsg),
 			mOnParsedMsgSupport(mgr, "VH_OnParsedMsgSupport", &cVHPlugin::OnParsedMsgSupport),
 			mOnParsedMsgBotINFO(mgr, "VH_OnParsedMsgBotINFO", &cVHPlugin::OnParsedMsgBotINFO),
@@ -756,6 +757,7 @@ private:
 
 		cVHCBL_Connection mOnNewConn;
 		cVHCBL_Connection mOnCloseConn;
+		cVHCBL_Connection mOnCloseConnEx;
 		cVHCBL_Message mOnUnknownMsg;
 		cVHCBL_Message mOnParsedMsgSupport;
 		cVHCBL_Message mOnParsedMsgBotINFO;
