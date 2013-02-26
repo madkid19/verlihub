@@ -49,7 +49,7 @@ bool tPluginBase::Open()
 	dlerror();
 	#endif
 
-	mHandle = dlopen(mFileName.c_str(), RTLD_NOW);
+	mHandle = dlopen(mFileName.c_str(), RTLD_NOW | RTLD_LAZY | RTLD_GLOBAL);
 	if(!mHandle)
 	#endif
 	{

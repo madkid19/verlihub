@@ -47,8 +47,10 @@ cpiLua::cpiLua() : mConsole(this), mQuery(NULL)
 
 cpiLua::~cpiLua()
 {
-	mQuery->Clear();
-	delete mQuery;
+	if(mQuery != NULL) {
+		mQuery->Clear();
+		delete mQuery;
+	}
 	this->Empty();
 }
 

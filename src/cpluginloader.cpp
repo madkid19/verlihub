@@ -60,7 +60,7 @@ bool cPluginLoader::Open()
 	dlerror();
 	#endif
 
-	mHandle = dlopen(mFileName.c_str(), RTLD_NOW);
+	mHandle = dlopen(mFileName.c_str(), RTLD_NOW | RTLD_LAZY | RTLD_GLOBAL);
 	if(!mHandle || IsError()) // Note that || operator evaluates only the first statement if that one is true
 	{
 		if (!mHandle) IsError(); // Call it again
