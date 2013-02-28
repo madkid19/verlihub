@@ -1322,20 +1322,22 @@ void cServerDC::SendHeaders(cConnDC * conn, int where)
 	* 2 = send headers on connection
 	*/
 
-	cTime runtime;
-	runtime -= mStartTime;
-	mStatus = _("Not available");
-
-	if (mFrequency.mNumFill > 0) {
-		if (mSysLoad == eSL_RECOVERY) mStatus = _("Recovery mode");
-		else if (mSysLoad == eSL_CAPACITY) mStatus = _("Near capacity");
-		else if (mSysLoad == eSL_PROGRESSIVE) mStatus = _("Progressive mode");
-		else if (mSysLoad == eSL_NORMAL) mStatus = _("Normal mode");
-	}
 
 	if (((mC.host_header > 2) ? 2 : mC.host_header) == where) {
 		ostringstream os;
+		cTime runtime;
+		runtime -= mStartTime;
+
 		if (mC.extended_welcome_message) {
+			mStatus = _("Not available");
+
+			if (mFrequency.mNumFill > 0) {
+				if (mSysLoad == eSL_RECOVERY) mStatus = _("Recovery mode");
+				else if (mSysLoad == eSL_CAPACITY) mStatus = _("Near capacity");
+				else if (mSysLoad == eSL_PROGRESSIVE) mStatus = _("Progressive mode");
+				else if (mSysLoad == eSL_NORMAL) mStatus = _("Normal mode");
+			}
+
 			os << "<" << mC.hub_security << "> " << autosprintf(_("Running %s %s build %s"), HUB_VERSION_NAME, VERSION, HUB_VERSION_CLASS) << "|";
 			os << "<" << mC.hub_security << "> " << autosprintf(_("Runtime: %s"), runtime.AsPeriod().AsString().c_str()) << "|";
 			os << "<" << mC.hub_security << "> " << autosprintf(_("User count: %d"), mUserCountTot) << "|";
