@@ -547,62 +547,80 @@ int cDCConsole::CmdRInfo(istringstream &cmd_line, cConnDC * conn)
 
 int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 {
-	string uType, cType, hubOwner, hubHealth;
-	int sInt = 0;
-
 	if (mOwner->mC.disable_usr_cmds) {
-		mOwner->DCPublicHS(_("This functionality is currently disabled."),conn);
+		mOwner->DCPublicHS(_("This functionality is currently disabled."), conn);
 		return 1;
 	}
+
 	if(!conn->mpUser) {
 		return 0;
 	}
+
+	string uType, cType, hubOwner;
+	int sInt = 0;
+
 	if (conn->GetTheoricalClass() == eUC_NORMUSER) {
-		uType = _("Unregistered"); sInt = mOwner->mC.int_search;
+		uType = _("Unregistered");
+		sInt = mOwner->mC.int_search;
+	} else if (conn->GetTheoricalClass() == eUC_REGUSER) {
+		uType = _("Registered");
+		sInt = mOwner->mC.int_search_reg;
+	} else if (conn->GetTheoricalClass() == eUC_VIPUSER) {
+		uType = _("VIP");
+		sInt = mOwner->mC.int_search_vip;
+	} else if (conn->GetTheoricalClass() == eUC_OPERATOR) {
+		uType = _("Operator");
+		sInt = mOwner->mC.int_search_op;
+	} else if (conn->GetTheoricalClass() == eUC_CHEEF) {
+		uType = _("Super OP");
+		sInt = mOwner->mC.int_search_op;
+	} else if (conn->GetTheoricalClass() == eUC_ADMIN) {
+		uType = _("Admin");
+		sInt = mOwner->mC.int_search_op;
+	} else if (conn->GetTheoricalClass() == eUC_MASTER) {
+		uType = _("Master");
+		sInt = mOwner->mC.int_search_op;
 	}
-	if (conn->GetTheoricalClass() == eUC_REGUSER) {
-		uType = _("Registered"); sInt = mOwner->mC.int_search_reg;
-	}
-	if (conn->GetTheoricalClass() == eUC_VIPUSER) {
-		uType = _("VIP"); sInt = mOwner->mC.int_search_vip;
-	}
-	if (conn->GetTheoricalClass() == eUC_OPERATOR) {
-		uType = _("Operator"); sInt = mOwner->mC.int_search_op;
-	}
-	if (conn->GetTheoricalClass() == eUC_CHEEF) {
-		uType = _("Super OP"); sInt = mOwner->mC.int_search_op;
-	}
-	if (conn->GetTheoricalClass() == eUC_ADMIN) {
-		uType = _("Admin"); sInt = mOwner->mC.int_search_op;
-	}
-	if (conn->GetTheoricalClass() == eUC_MASTER) {
-		uType = _("Master"); sInt = mOwner->mC.int_search_op;
-	}
+
 	if (!conn->mpUser->IsPassive == true) {
 		cType = _("Active");
 	} else {
-		cType = _("Passive");  sInt = mOwner->mC.int_search_pas;
+		cType = _("Passive");
+		sInt = mOwner->mC.int_search_pas;
 	}
+
 	ostringstream os;
 	string omsg;
 	os << "\r\n";
+
 	if(!mOwner->mC.hub_owner.empty())
 		hubOwner = mOwner->mC.hub_owner;
 	else
 		hubOwner = "--";
-// 	hubHealth
+
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub owner") << hubOwner << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Address") << mOwner->mC.hub_host.c_str() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Total users") << mServer->mUserCountTot << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Total bots") <<  mServer->mRobotList.Size() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Total share") << convertByte(mServer->mTotalShare, false).c_str() << endl;
+
+	// hub health
+	mServer->mStatus = _("Not available");
+
+	if (mServer->mFrequency.mNumFill > 0) {
+		if (mServer->mSysLoad == eSL_RECOVERY) mServer->mStatus = _("Recovery mode");
+		else if (mServer->mSysLoad == eSL_CAPACITY) mServer->mStatus = _("Near capacity");
+		else if (mServer->mSysLoad == eSL_PROGRESSIVE) mServer->mStatus = _("Progressive mode");
+		else if (mServer->mSysLoad == eSL_NORMAL) mServer->mStatus = _("Normal mode");
+	}
+
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Hub health") << mServer->mStatus.c_str() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Your status") << uType.c_str() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Your can search every") << autosprintf(ngettext("%d second", "%d seconds", sInt), sInt) << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Connection type") << cType.c_str() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("You are sharing") << convertByte(conn->mpUser->mShare, false).c_str();
 	omsg = os.str();
-	mOwner->DCPublicHS(omsg,conn);
+	mOwner->DCPublicHS(omsg, conn);
 	return 1;
 }
 
