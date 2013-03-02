@@ -21,6 +21,7 @@
 ***************************************************************************/
 #include "cserverdc.h"
 #include "ctrigger.h"
+#include "cuser.h"
 #include "cconndc.h"
 #include "curr_date_time.h"
 #include "stringutils.h"
@@ -76,120 +77,136 @@ cTrigger::~cTrigger(){}
 int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bool timer)
 {
 	bool timeTrigger = timer && conn == NULL;
+	int uclass = 0;
+
+	if (!timeTrigger) { // check if it has been triggered by timeout, if not, check the connection and the user rights
+		if (!conn) return 0;
+		if (!conn->mpUser) return 0;
+		uclass = conn->mpUser->mClass;
+		if ((uclass < this->mMinClass) || (uclass > this->mMaxClass)) return 0;
+	}
+
 	string buf, filename, sender;
 	string par1, end1, parall;
 
-	// Check if it has been triggered by timeout. If not, check the connection and the user rights
-	if(!timeTrigger) {
-		if(!conn) return 0;
-		if(!conn->mpUser) return 0;
-
-		int uclass = conn->mpUser->mClass;
-		if ((uclass < this->mMinClass)  || (uclass > this->mMaxClass)) return 0;
+	if (cmd_line.str().size() > mCommand.size()) {
+		parall.assign(cmd_line.str(), mCommand.size() + 1, string::npos);
 	}
 
-	if(cmd_line.str().size() > mCommand.size()) {
-		parall.assign(cmd_line.str(),mCommand.size()+1,string::npos);
-	}
 	cmd_line >> par1;
 	end1 = cmd_line.str();
-
-	// Replace sender
-	sender = server.mC.hub_security;
+	sender = server.mC.hub_security; // replace sender
 	if (mSendAs.size()) sender = mSendAs;
-
 	ReplaceVarInString(sender, "PAR1", sender, par1);
-	if(!timeTrigger) ReplaceVarInString(sender, "NICK", sender, conn->mpUser->mNick);
+	if (!timeTrigger) ReplaceVarInString(sender, "NICK", sender, conn->mpUser->mNick);
 
 	if (mFlags & eTF_DB) {
-	  buf = mDefinition;
+		buf = mDefinition;
 	} else {
-	  ReplaceVarInString(mDefinition,"CFG", filename, server.mConfigBaseDir);
-	  if(!timeTrigger) ReplaceVarInString(filename,"CC", filename, conn->mCC);
-	  if (!LoadFileInString(filename,buf)) return 0;
+		ReplaceVarInString(mDefinition, "CFG", filename, server.mConfigBaseDir);
+		if (!timeTrigger) ReplaceVarInString(filename, "CC", filename, conn->mCC);
+		if (!LoadFileInString(filename, buf)) return 0;
 	}
+
 	if (mFlags & eTF_VARS) {
-	cTime theTime(server.mTime);
-	time_t curr_time;
-	time(&curr_time);
-	#ifdef _WIN32
-		//TODO: do we really need reentrant version?
-		struct tm *lt = localtime(&curr_time);
-	#else
+		cTime theTime(server.mTime);
+		time_t curr_time;
+		time(&curr_time);
+		#ifdef _WIN32
+		struct tm *lt = localtime(&curr_time); // todo: do we really need reentrant version?
+		#else
 		struct tm *lt = new tm();
 		localtime_r(&curr_time, lt);
-	#endif
-
-	  theTime -= server.mStartTime;
-	  ReplaceVarInString(buf, "PARALL", buf, parall);
-	  ReplaceVarInString(buf, "PAR1", buf, par1);
-	  ReplaceVarInString(buf, "END1", buf, end1);
-
-	  if(!timeTrigger) {
-		ReplaceVarInString(buf, "CC", buf, conn->mCC);
-
-		string cn;
-		#if HAVE_LIBGEOIP
-		server.sGeoIP.GetCN(conn->AddrIP(), cn);
 		#endif
-		ReplaceVarInString(buf, "CN", buf, cn);
+		theTime -= server.mStartTime;
+		ReplaceVarInString(buf, "PARALL", buf, parall);
+		ReplaceVarInString(buf, "PAR1", buf, par1);
+		ReplaceVarInString(buf, "END1", buf, end1);
 
-		ReplaceVarInString(buf, "IP", buf, conn->AddrIP());
-		ReplaceVarInString(buf, "HOST", buf, conn->AddrHost());
-		ReplaceVarInString(buf, "NICK", buf, conn->mpUser->mNick);
-		ReplaceVarInString(buf, "CLASS", buf, (int)conn->mpUser->mClass);
-		ReplaceVarInString(buf, "SHARE", buf, convertByte(conn->mpUser->mShare, false));
-	  }
+		if (!timeTrigger) {
+			ReplaceVarInString(buf, "CC", buf, conn->mCC);
+			#if HAVE_LIBGEOIP
+			string cn;
+			server.sGeoIP.GetCN(conn->AddrIP(), cn);
+			ReplaceVarInString(buf, "CN", buf, cn);
+			#endif
+			ReplaceVarInString(buf, "IP", buf, conn->AddrIP());
+			ReplaceVarInString(buf, "HOST", buf, conn->AddrHost());
+			ReplaceVarInString(buf, "NICK", buf, conn->mpUser->mNick);
+			ReplaceVarInString(buf, "CLASS", buf, uclass);
 
-	  ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.Size());
-	  ReplaceVarInString(buf, "USERS_ACTIVE", buf, (int)server.mActiveUsers.Size());
-	  ReplaceVarInString(buf, "USERS_PASSIVE", buf, (int)server.mPassiveUsers.Size());
-	  ReplaceVarInString(buf, "USERSPEAK", buf, (int)server.mUsersPeak);
-	  ReplaceVarInString(buf, "UPTIME", buf, theTime.AsPeriod().AsString());
-	  ReplaceVarInString(buf, "VERSION", buf, VERSION);
-	  ReplaceVarInString(buf, "HUBNAME", buf, server.mC.hub_name);
-	  ReplaceVarInString(buf, "HUBTOPIC", buf,server.mC.hub_topic);
-	  ReplaceVarInString(buf, "HUBDESC", buf,server.mC.hub_desc);
-	  ReplaceVarInString(buf, "VERSION_DATE", buf, __CURR_DATE_TIME__);
-	  ReplaceVarInString(buf, "TOTAL_SHARE", buf, convertByte(server.mTotalShare, false));
-	  char tmf[3];
-	  sprintf(tmf,"%02d",lt->tm_sec);
-	  ReplaceVarInString(buf, "ss",buf, tmf);
-	  sprintf(tmf,"%02d",lt->tm_min);
-	  ReplaceVarInString(buf, "mm",buf, tmf);
-	  sprintf(tmf,"%02d",lt->tm_hour);
-	  ReplaceVarInString(buf, "HH",buf, tmf);
-	  sprintf(tmf,"%02d",lt->tm_mday);
-	  ReplaceVarInString(buf, "DD",buf, tmf);
-	  sprintf(tmf,"%02d",lt->tm_mon+1);
-	  ReplaceVarInString(buf, "MM",buf, tmf);
-	  ReplaceVarInString(buf, "YY",buf, 1900 + lt->tm_year);
-	  #ifndef _WIN32
-	  delete lt;
-	  #endif
+			if (uclass == eUC_PINGER) {
+				ReplaceVarInString(buf, "CLASSNAME", buf, _("Pinger"));
+			} else if (uclass == eUC_NORMUSER) {
+				ReplaceVarInString(buf, "CLASSNAME", buf, _("Guest"));
+			} else if (uclass == eUC_REGUSER) {
+				ReplaceVarInString(buf, "CLASSNAME", buf, _("Registered"));
+			} else if (uclass == eUC_VIPUSER) {
+				ReplaceVarInString(buf, "CLASSNAME", buf, _("VIP"));
+			} else if (uclass == eUC_OPERATOR) {
+				ReplaceVarInString(buf, "CLASSNAME", buf, _("Operator"));
+			} else if (uclass == eUC_CHEEF) {
+				ReplaceVarInString(buf, "CLASSNAME", buf, _("Cheef"));
+			} else if (uclass == eUC_ADMIN) {
+				ReplaceVarInString(buf, "CLASSNAME", buf, _("Administator"));
+			} else if (uclass == eUC_MASTER) {
+				ReplaceVarInString(buf, "CLASSNAME", buf, _("Master"));
+			} else {
+				ReplaceVarInString(buf, "CLASSNAME", buf, _("Unknown"));
+			}
+
+			ReplaceVarInString(buf, "SHARE", buf, convertByte(conn->mpUser->mShare, false));
+		}
+
+		ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.Size());
+		ReplaceVarInString(buf, "USERS_ACTIVE", buf, (int)server.mActiveUsers.Size());
+		ReplaceVarInString(buf, "USERS_PASSIVE", buf, (int)server.mPassiveUsers.Size());
+		ReplaceVarInString(buf, "USERSPEAK", buf, (int)server.mUsersPeak);
+		ReplaceVarInString(buf, "UPTIME", buf, theTime.AsPeriod().AsString());
+		ReplaceVarInString(buf, "VERSION", buf, VERSION);
+		ReplaceVarInString(buf, "HUBNAME", buf, server.mC.hub_name);
+		ReplaceVarInString(buf, "HUBTOPIC", buf, server.mC.hub_topic);
+		ReplaceVarInString(buf, "HUBDESC", buf, server.mC.hub_desc);
+		ReplaceVarInString(buf, "VERSION_DATE", buf, __CURR_DATE_TIME__);
+		ReplaceVarInString(buf, "TOTAL_SHARE", buf, convertByte(server.mTotalShare, false));
+		char tmf[3];
+		sprintf(tmf, "%02d", lt->tm_sec);
+		ReplaceVarInString(buf, "ss", buf, tmf);
+		sprintf(tmf, "%02d", lt->tm_min);
+		ReplaceVarInString(buf, "mm", buf, tmf);
+		sprintf(tmf, "%02d", lt->tm_hour);
+		ReplaceVarInString(buf, "HH", buf, tmf);
+		sprintf(tmf, "%02d", lt->tm_mday);
+		ReplaceVarInString(buf, "DD", buf, tmf);
+		sprintf(tmf, "%02d", lt->tm_mon + 1);
+		ReplaceVarInString(buf, "MM", buf, tmf);
+		ReplaceVarInString(buf, "YY", buf, 1900 + lt->tm_year);
+
+		#ifndef _WIN32
+			delete lt;
+		#endif
 	}
 
-	if(timeTrigger) {
-	  server.DCPublicToAll(sender,buf);
-	  return 1;
+	if (timeTrigger) {
+		server.DCPublicToAll(sender, buf);
+		return 1;
 	}
 
-
-	// @CHANGED by dReiska +BEGINS+
+	// @dreiska
 	if (mFlags & eTF_SENDTOALL) {
-	  if (!(mFlags & eTF_SENDPM)) {
-	    server.DCPublicToAll(sender,buf);
-	  } else {/*
-	    server.DCPrivateToAll(sender,buf);
-	    */
-	  }
+		if (!(mFlags & eTF_SENDPM)) {
+			server.DCPublicToAll(sender, buf);
+		} else {
+			//server.DCPrivateToAll(sender, buf);
+		}
 	} else {
-	  if (!(mFlags & eTF_SENDPM)) {
-	    server.DCPublic(sender, buf, conn);
-	  } else {
-	    server.DCPrivateHS(buf, conn, &sender);
-	  }
+		if (!(mFlags & eTF_SENDPM)) {
+			server.DCPublic(sender, buf, conn);
+		} else {
+			server.DCPrivateHS(buf, conn, &sender);
+		}
 	}
+
 	return 1;
 }
 
