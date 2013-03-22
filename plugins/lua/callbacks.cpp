@@ -2,7 +2,7 @@
 *   Original Author: Daniel Muller (dan at verliba dot cz)                *
 *                    Janos Horvath (bourne at freemail dot hu) 2004-05    *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -402,7 +402,7 @@ int _GetBotList(lua_State *L)
 	if(lua_gettop(L) == 1) {
 		cServerDC *server = GetCurrentVerlihub();
 		if(server) {
-			botlist = (char*) server->mRobotList.GetNickList().c_str(); // @fixme: mRobotList is empty
+			botlist = (char*) server->mRobotList.GetNickList().c_str();
 			if(strlen(botlist) < 1) result = 0;
 			lua_pushboolean(L, result);
 			lua_pushstring(L, botlist);
@@ -736,10 +736,52 @@ int _GetConfig(lua_State *L)
 	}
 }
 
+int _GetLuaBots(lua_State *L)
+{
+	cLuaInterpreter *li;
+	int vSize,z,key=0;
+	vSize = cpiLua::me->Size();
+	lua_newtable(L);
+	z = lua_gettop(L);
+
+	for(int i = 0; i < vSize; i++) {
+		li = cpiLua::me->mLua[i];
+
+		for(unsigned int j = 0; j < li->botList.size(); j++) {
+			lua_pushnumber(L, ++key);
+			lua_newtable(L);
+			int k = lua_gettop(L);
+
+			lua_pushliteral(L, "sScriptname");
+			lua_pushstring(L, (char*)li->mScriptName.c_str());
+			lua_rawset(L, k);
+
+			lua_pushliteral(L, "sNick");
+			lua_pushstring (L, (char*)li->botList[j]->uNick);
+			lua_rawset(L, k);
+
+			lua_pushliteral(L, "sMyINFO");
+			lua_pushstring(L, (char*)li->botList[j]->uMyINFO);
+			lua_rawset(L, k);
+
+			lua_pushliteral(L, "iShare");
+			lua_pushnumber(L, (int)li->botList[j]->uShare);
+			lua_rawset(L, k);
+
+			lua_pushliteral(L, "iClass");
+			lua_pushnumber(L, (int)li->botList[j]->uClass);
+			lua_rawset(L, k);
+
+			lua_rawset(L, z);
+		}
+	}
+	return 1;
+}
+
 int _RegBot(lua_State *L)
 {
 	string nick, desc, speed, email, share;
-	int uclass;
+	int uclass, ushare;
 
 	if(lua_gettop(L) == 7) {
 		cServerDC *server = GetCurrentVerlihub();
@@ -784,11 +826,15 @@ int _RegBot(lua_State *L)
 		}
 		email = (char *)lua_tostring(L, 6);
 
-		if(!lua_isstring(L, 7)) {
+		if (lua_isstring(L, 7)) {
+			share = (char*)lua_tostring(L, 7);
+			istringstream(share) >> ushare;
+		} else if (lua_isnumber(L, 7)) {
+			ushare = (int)lua_tonumber(L, 7);
+		} else {
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
-		share = (char *)lua_tostring(L, 7);
 
 		cPluginRobot *robot = pi->NewRobot(nick, uclass);
 
@@ -801,8 +847,7 @@ int _RegBot(lua_State *L)
 				luaerror(L,"Lua not found");
 				return 2;
 			}
-			//li->addBot(nick, share, robot->mMyINFO, uclass);
-			li->addBot((char *) nick.c_str(), (char *) share.c_str(), (char *) robot->mMyINFO.c_str(), uclass);
+			li->addBot((char *) nick.c_str(), (char *) robot->mMyINFO.c_str(), (int)ushare, (int)uclass);
 			string omsg = "$Hello ";
 			omsg+= robot->mNick;
 			server->mHelloUsers.SendToAll(omsg, server->mC.delayed_myinfo, true);
@@ -828,7 +873,7 @@ int _RegBot(lua_State *L)
 int _EditBot(lua_State *L)
 {
 	string nick, desc, speed, email, share;
-	int uclass;
+	int uclass, ushare;
 
 	if(lua_gettop(L) == 7) {
 		cServerDC *server = GetCurrentVerlihub();
@@ -873,11 +918,15 @@ int _EditBot(lua_State *L)
 		}
 		email = (char *)lua_tostring(L, 6);
 
-		if(!lua_isstring(L, 7)) {
+		if (lua_isstring(L, 7)) {
+			share = (char*)lua_tostring(L, 7);
+			istringstream(share) >> ushare;
+		} else if (lua_isnumber(L, 7)) {
+			ushare = (int)lua_tonumber(L, 7);
+		} else {
 			luaerror(L, ERR_PARAM);
 			return 2;
 		}
-		share = (char *)lua_tostring(L, 7);
 
 		if(!server->mRobotList.ContainsNick(nick)) {
 			lua_pushboolean(L, 0);
@@ -896,10 +945,10 @@ int _EditBot(lua_State *L)
 			robot->mMyINFO = "";
 			server->mP.Create_MyINFO(robot->mMyINFO, robot->mNick, desc, speed, email, share);
 			robot->mMyINFO_basic = robot->mMyINFO;
-			li->editBot((char *) nick.c_str(), (char *) share.c_str(), (char *) robot->mMyINFO.c_str(), uclass);
+			li->editBot((char *) nick.c_str(), (char *) robot->mMyINFO.c_str(), (int)ushare, (int)uclass);
 			string omsg = server->mP.GetMyInfo(robot, eUC_NORMUSER);
 			server->mUserList.SendToAll(omsg, false, true);
-			if(uclass >= 3)
+			if(uclass >= 3) // todo: we dont need to send oplist again, it was already sent with robot nick
 				server->mUserList.SendToAll(server->mOpList.GetNickList(), true);
 		} else
 			lua_pushboolean(L, 0);
@@ -1317,48 +1366,6 @@ cLuaInterpreter *FindLua(lua_State *L)
 	return NULL;
 }
 
-int _GetBots(lua_State *L)
-{
-	cLuaInterpreter *li;
-	int vSize,z,key=0;
-	vSize = cpiLua::me->Size();
-	lua_newtable(L);
-	z = lua_gettop(L);
-
-	for(int i = 0; i < vSize; i++) {
-		li = cpiLua::me->mLua[i];
-
-		for(unsigned int j = 0; j < li->botList.size(); j++) {
-			lua_pushnumber(L, ++key);
-
-				lua_newtable(L);
-				int k = lua_gettop(L);
-				lua_pushliteral(L, "sScriptname");
-				lua_pushstring(L, (char *) li->mScriptName.c_str());
-				lua_rawset(L, k);
-
-				lua_pushliteral(L, "sNick");
-				lua_pushstring (L, li->botList[j]->uNick);
-				lua_rawset(L, k);
-
-				lua_pushliteral(L, "iClass");
-				lua_pushnumber(L, li->botList[j]->uClass);
-				lua_rawset(L, k);
-
-				lua_pushliteral(L, "iShare");
-				lua_pushstring(L, li->botList[j]->uShare);
-				lua_rawset(L, k);
-
-				lua_pushliteral(L, "sMyINFO");
-				lua_pushstring(L, li->botList[j]->uMyINFO);
-				lua_rawset(L, k);
-
-			lua_rawset(L, z);
-		}
-	}
-	return 1;
-}
-
 int _AddRegUser(lua_State *L)
 {
 	string nick, password, op;
@@ -1442,6 +1449,7 @@ int _SetTopic(lua_State *L)
 	string message;
 	cDCProto::Create_HubName(message, server->mC.hub_name, topic);
 	server->SendToAll(message, eUC_NORMUSER, eUC_MASTER);
+	SetConfig((char*)"config", (char*)"hub_topic", (char*)topic.c_str());
 	lua_pushboolean(L, 1);
 	return 1;
 }
@@ -1478,7 +1486,7 @@ int _ScriptCommand(lua_State *L)
 	return 1;
 }
 
-void luaerror(lua_State *L, const char * errstr)
+void luaerror(lua_State *L, const char *errstr)
 {
 	lua_pushboolean(L, 0);
 	lua_pushstring(L, errstr);
