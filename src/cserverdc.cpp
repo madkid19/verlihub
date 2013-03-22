@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -86,6 +86,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	mUserList(true,true, true, &mCallBacks.mNickListNicks, &mCallBacks.mNickListInfos),
 	mOpList(true, false, false, &mCallBacks.mOpListNicks, NULL),
 	mOpchatList(true),
+	mRobotList(true),
 	mUserCountTot(0),
 	mTotalShare(0),
 	mSlowTimer(30.0, 0.0, mTime),
@@ -133,9 +134,12 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	mUserList.SetNickListStart(nctmp);
 	nctmp="$OpList ";
 	mOpList.SetNickListStart(nctmp);
+	nctmp="$BotList ";
+	mRobotList.SetNickListStart(nctmp);
 	nctmp="$$";
 	mUserList.SetNickListSeparator(nctmp);
 	mOpList.SetNickListSeparator(nctmp);
+	mRobotList.SetNickListSeparator(nctmp);
 	mOpchatList.SetNickListSeparator("\r\n");
 	nctmp="$ActiveList ";
 	mActiveUsers.SetNickListStart(nctmp);
@@ -327,8 +331,7 @@ bool cServerDC::AddRobot(cUserRobot *robot)
 		mRobotList.Add(robot);
 		robot->mxServer = this;
 		return true;
-	}
-	else return false;
+	} else return false;
 }
 
 bool cServerDC::DelRobot(cUserRobot *robot)
@@ -336,8 +339,7 @@ bool cServerDC::DelRobot(cUserRobot *robot)
 	if (this->RemoveNick(robot)) {
 		mRobotList.Remove(robot);
 		return true;
-	}
-	else return false;
+	} else return false;
 }
 
 bool cServerDC::AddToList(cUser *usr)
@@ -1321,7 +1323,6 @@ void cServerDC::SendHeaders(cConnDC * conn, int where)
 	* 1 = send headers on login
 	* 2 = send headers on connection
 	*/
-
 
 	if (((mC.host_header > 2) ? 2 : mC.host_header) == where) {
 		ostringstream os;
