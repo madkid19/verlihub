@@ -2,7 +2,7 @@
 *   Original Author: Daniel Muller (dan at verliba dot cz)                *
 *                    Janos Horvath (bourne at freemail dot hu) 2004-05    *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -55,7 +55,6 @@ bool cLuaInterpreter::Init()
 {
 
 	luaL_openlibs(mL);
-
 	lua_newtable(mL);
 
 	RegisterFunction("SendDataToUser",    &_SendToUser); /* back compatibility */
@@ -83,7 +82,6 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("GetHubSecAlias",          &_GetHubSecAlias);
 	RegisterFunction("AddRegUser",          &_AddRegUser);
 	RegisterFunction("DelRegUser",          &_DelRegUser);
-
 	RegisterFunction("GetUserClass",      &_GetUserClass);
 	RegisterFunction("GetUserHost",       &_GetUserHost);
 	RegisterFunction("GetUserIP",         &_GetUserIP);
@@ -96,18 +94,16 @@ bool cLuaInterpreter::Init()
 	RegisterFunction("ParseCommand", &_ParseCommand);
 	RegisterFunction("SetConfig",         &_SetConfig);
 	RegisterFunction("GetConfig",         &_GetConfig);
-
-
 	RegisterFunction("SQLQuery",          &_SQLQuery);
 	RegisterFunction("SQLFetch",          &_SQLFetch);
 	RegisterFunction("SQLFree",           &_SQLFree);
-
 	RegisterFunction("GetUsersCount",     &_GetUsersCount);
 	RegisterFunction("GetTotalShareSize", &_GetTotalShareSize);
 	RegisterFunction("GetNickList",       &_GetNickList);
 	RegisterFunction("GetOPList",       &_GetOPList);
 	RegisterFunction("GetBotList",       &_GetBotList);
-	RegisterFunction("GetBots",       &_GetBots);
+	RegisterFunction("GetLuaBots", &_GetLuaBots);
+	RegisterFunction("GetBots", &_GetLuaBots); /* back compatibility */
 	RegisterFunction("GetTempRights",       &_GetTempRights);
 	RegisterFunction("SetTempRights",       &_SetTempRights);
 	RegisterFunction("GetVHCfgDir",       &_GetVHCfgDir);
