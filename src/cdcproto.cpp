@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -1540,12 +1540,7 @@ int cDCProto::NickList(cConnDC *conn)
 		}
 
 		conn->Send(mS->mOpList.GetNickList(), true); // send $OpList
-
-		/*if (mS->mRobotList.Size() > 0) { // send $BotList, @fixme: mRobotList is empty
-			string botlist = mS->mRobotList.GetNickList();
-			botlist = "$BotList " + botlist;
-			conn->Send(botlist, true);
-		}*/
+		conn->Send(mS->mRobotList.GetNickList(), true); // send $BotList
 	} catch(...) {
 		if (conn->ErrLog(2)) conn->LogStream() << "Exception in cDCProto::NickList" << endl;
 		conn->CloseNow();
