@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -52,11 +52,15 @@ cVHPlugin::~cVHPlugin()
 
 bool cVHPlugin::AddRobot(cUserRobot *robot)
 {
-	if (!mServer->AddRobot(robot)) return false;
+	if (!mServer->AddRobot(robot))
+		return false;
+
 	if (!mRobots.Add((cUser*)robot)) {
 		mServer->DelRobot(robot);
 		return false;
 	}
+
+	mServer->mUserList.SendToAll(mServer->mRobotList.GetNickList(), true); // send $BotList
 	return true;
 }
 
@@ -66,9 +70,8 @@ cPluginRobot * cVHPlugin::NewRobot(const string &Nick, int uclass)
 	//set class before adding to list, otherwise user can't be op
 	robot->mClass = tUserCl(uclass);
 	if (AddRobot(robot))
-			return robot;
-	else
-	{
+		return robot;
+	else {
 		delete robot;
 		return NULL;
 	}
