@@ -372,10 +372,11 @@ bool cServerDC::AddToList(cUser *usr)
 		mOpchatList.AddWithHash(usr, Hash);
 	if(usr->mxConn && !(usr->mxConn->mFeatures & eSF_NOHELLO))
 		mHelloUsers.AddWithHash(usr, Hash);
-	if((usr->mClass >= eUC_OPERATOR) || mC.chat_default_on)
+
+	if ((usr->mClass >= eUC_OPERATOR) || mC.chat_default_on)
 		mChatUsers.AddWithHash(usr, Hash);
 	else
-		DCPublicHS(_("<< To turn your chat on use command +chat; turn it off with +nochat >>"), usr->mxConn);
+		DCPublicHS(_("You won't see public chat messages, to restore use +chat command."), usr->mxConn);
 
 	if(usr->mxConn && usr->mxConn->Log(3))
 		usr->mxConn->LogStream() << "Adding at the end of Nicklist" << endl;
