@@ -984,7 +984,7 @@ int _UnRegBot(lua_State *L)
 		    return 2;
 		}
 		nick = (char *)lua_tostring(L, 2);
-		cPluginRobot *robot = (cPluginRobot *)server->mUserList.GetUserByNick(nick);
+		cUserRobot *robot = (cUserRobot*) server->mRobotList.GetUserBaseByNick(nick);
 		if(robot != NULL) {
 			cLuaInterpreter *li = FindLua(L);
 			if(li == NULL) {
@@ -1021,7 +1021,7 @@ int _IsBot(lua_State *L)
 			return 2;
 		}
 		string nick = (char *)lua_tostring(L, 2);
-		cPluginRobot *robot = (cPluginRobot *)server->mUserList.GetUserByNick(nick);
+		cUserRobot *robot = (cUserRobot*) server->mRobotList.GetUserBaseByNick(nick);
 		lua_pushboolean(L, (robot == NULL) ? 0 : 1);
 		//lua_pushnil(L); // dont need this
 		return 2;
