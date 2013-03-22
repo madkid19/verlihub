@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -202,7 +202,7 @@ int cDCConsole::UsrCommand(const string &str, cConnDC * conn)
 	string cmd;
 
 	if (mOwner->mC.disable_usr_cmds) {
-		mOwner->DCPublicHS(_("All user commands are currently disabled."), conn);
+		mOwner->DCPublicHS(_("User commands are currently disabled."), conn);
 		return 1;
 	}
 
@@ -503,27 +503,31 @@ int cDCConsole::CmdMe(istringstream &cmd_line, cConnDC *conn)
 	return 1;
 }
 
-int cDCConsole::CmdChat (istringstream & cmd_line, cConnDC * conn, bool switchon)
+int cDCConsole::CmdChat(istringstream &cmd_line, cConnDC *conn, bool switchon)
 {
-	if(!conn->mpUser) {
-		return 0;
+	if (!conn) return 0;
+	if (!conn->mpUser) return 0;
+
+	if (switchon) { // chat
+		if (!mOwner->mChatUsers.ContainsNick(conn->mpUser->mNick)) {
+			mOwner->DCPublicHS(_("Now you will see public chat messages, to disable use +nochat command."), conn);
+			mOwner->mChatUsers.Add(conn->mpUser);
+		} else
+			mOwner->DCPublicHS(_("You already see public chat messages, to disable use +nochat command."), conn);
+	} else { // nochat
+		if (mOwner->mChatUsers.ContainsNick(conn->mpUser->mNick)) {
+			mOwner->DCPublicHS(_("Now you won't see public chat messages, to restore use +chat command."), conn);
+			mOwner->mChatUsers.Remove(conn->mpUser);
+		} else
+			mOwner->DCPublicHS(_("You already don't see public chat messages, to restore use +chat command."), conn);
 	}
-	if (switchon && !mOwner->mChatUsers.ContainsNick(conn->mpUser->mNick)) {
-		mOwner->mChatUsers.Add(conn->mpUser);
-	} else if (!switchon && mOwner->mChatUsers.ContainsNick(conn->mpUser->mNick)) {
-		mOwner->mChatUsers.Remove(conn->mpUser);
-	}
+
 	return 1;
 }
 
 int cDCConsole::CmdRInfo(istringstream &cmd_line, cConnDC * conn)
 {
 	if (!conn->mpUser) return 0;
-
-	if (mOwner->mC.disable_usr_cmds) { // why double check?
-		mOwner->DCPublicHS(_("All user commands are currently disabled."), conn);
-		return 1;
-	}
 
 	ostringstream os;
 	string omsg;
@@ -547,15 +551,7 @@ int cDCConsole::CmdRInfo(istringstream &cmd_line, cConnDC * conn)
 
 int cDCConsole::CmdUInfo(istringstream & cmd_line, cConnDC * conn)
 {
-	if (mOwner->mC.disable_usr_cmds) {
-		mOwner->DCPublicHS(_("This functionality is currently disabled."), conn);
-		return 1;
-	}
-
-	if(!conn->mpUser) {
-		return 0;
-	}
-
+	if (!conn->mpUser) return 0;
 	string uType, cType, hubOwner;
 	int sInt = 0;
 
