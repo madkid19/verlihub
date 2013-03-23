@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -129,7 +129,7 @@ void cInfoServer::Output(ostream &os, int Class)
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("In progress users") << mServer->mInProgresUsers.Size() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Active user count") << mServer->mActiveUsers.Size() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Passive user count") << mServer->mPassiveUsers.Size() << endl;
-	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("OP user count") << mServer->mOpchatList.Size() << endl;
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("OP user count") << mServer->mOpchatList.Size() << endl; // why is mOpchatList used here instead of mOpList?
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) <<_("Bot user count") << mServer->mRobotList.Size() << endl;
 	os << "    " << string(30,'=') << endl;
 	double total = 0, curr;
