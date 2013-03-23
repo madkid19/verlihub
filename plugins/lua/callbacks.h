@@ -79,6 +79,8 @@ namespace nVerliHub {
 
 	nLuaPlugin::cLuaInterpreter *FindLua(lua_State *L);
 	void luaerror(lua_State *L, const char *errstr);
+	string IntToStr(int val);
+	int StrToInt(string const &str);
 }; // namespace nVerliHub
 
 #endif
