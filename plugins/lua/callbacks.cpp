@@ -20,9 +20,12 @@
 *   Free Software Foundation, Inc.,                                       *
 *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
 ***************************************************************************/
+
 #define ERR_PARAM "Wrong parameters"
 #define ERR_CALL "Call error"
 #define ERR_SERV "Error getting server"
+#define ERR_LUA "Error getting Lua"
+#define ERR_PLUG "Error getting plugin"
 
 extern "C"
 {
@@ -38,14 +41,16 @@ extern "C"
 #include "src/cuser.h"
 #include "src/script_api.h"
 #include <iostream>
+#include <sstream>
 #include <string>
-#define lua_tablepush(L, key, value) lua_pushstring(L, key); lua_pushnumber(L, value); lua_settable(L, -3);
 
 using namespace std;
+
 namespace nVerliHub {
 	using namespace nSocket;
 	using namespace nEnums;
 	using namespace nLuaPlugin;
+
 cServerDC * GetCurrentVerlihub()
 {
 	return (cServerDC *)cServerDC::sCurrentServer;
@@ -739,15 +744,15 @@ int _GetConfig(lua_State *L)
 int _GetLuaBots(lua_State *L)
 {
 	cLuaInterpreter *li;
-	int vSize,z,key=0;
-	vSize = cpiLua::me->Size();
+	int key = 0;
+	int isize = cpiLua::me->Size();
 	lua_newtable(L);
-	z = lua_gettop(L);
+	int z = lua_gettop(L);
 
-	for(int i = 0; i < vSize; i++) {
+	for (int i = 0; i < isize; i++) {
 		li = cpiLua::me->mLua[i];
 
-		for(unsigned int j = 0; j < li->botList.size(); j++) {
+		for (unsigned int j = 0; j < li->botList.size(); j++) {
 			lua_pushnumber(L, ++key);
 			lua_newtable(L);
 			int k = lua_gettop(L);
@@ -775,263 +780,277 @@ int _GetLuaBots(lua_State *L)
 			lua_rawset(L, z);
 		}
 	}
+
 	return 1;
 }
 
 int _RegBot(lua_State *L)
 {
-	string nick, desc, speed, email, share;
-	int uclass, ushare;
-
-	if(lua_gettop(L) == 7) {
-		cServerDC *server = GetCurrentVerlihub();
-		if(server == NULL) {
-			luaerror(L, "Error getting server");
-			return 2;
-		}
-
-		cpiLua *pi = (cpiLua *)server->mPluginManager.GetPlugin(LUA_PI_IDENTIFIER);
-		if(pi == NULL) {
-			luaerror(L, "Error getting LUA plugin");
-			return 2;
-		}
-
-		if(!lua_isstring(L, 2)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		nick = (char *)lua_tostring(L, 2);
-
-		if(!lua_isnumber(L, 3)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		uclass = (int)lua_tonumber(L, 3);
-
-		if(!lua_isstring(L, 4)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		desc = (char *)lua_tostring(L, 4);
-
-		if(!lua_isstring(L, 5)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		speed = (char *)lua_tostring(L, 5);
-
-		if(!lua_isstring(L, 6)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		email = (char *)lua_tostring(L, 6);
-
-		if (lua_isstring(L, 7)) {
-			share = (char*)lua_tostring(L, 7);
-			istringstream(share) >> ushare;
-		} else if (lua_isnumber(L, 7)) {
-			ushare = (int)lua_tonumber(L, 7);
-		} else {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-
-		cPluginRobot *robot = pi->NewRobot(nick, uclass);
-
-		if(robot != NULL) {
-			server->mP.Create_MyINFO(robot->mMyINFO, robot->mNick, desc, speed, email, share);
-			robot->mMyINFO_basic = robot->mMyINFO;
-
-			cLuaInterpreter *li = FindLua(L);
-			if(li == NULL) {
-				luaerror(L,"Lua not found");
-				return 2;
-			}
-			li->addBot((char *) nick.c_str(), (char *) robot->mMyINFO.c_str(), (int)ushare, (int)uclass);
-			string omsg = "$Hello ";
-			omsg+= robot->mNick;
-			server->mHelloUsers.SendToAll(omsg, server->mC.delayed_myinfo, true);
-			omsg = server->mP.GetMyInfo(robot, eUC_NORMUSER);
-			server->mUserList.SendToAll(omsg, true, true);
-			if(uclass >= 3)
-				server->mUserList.SendToAll(server->mOpList.GetNickList(), true);
-		} else {
-			lua_pushboolean(L, 0);
-		    luaerror(L, "Error adding bot; it may already exist");
-		    return 2;
-		}
-	} else {
-		luaL_error(L, "Error calling VH:RegBot; expected 6 argument but got %d", lua_gettop(L) - 1);
+	if (lua_gettop(L) < 7) {
+		luaL_error(L, "Error calling VH:RegBot, expected 6 argument but got %d.", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
 	}
+
+	if (!lua_isstring(L, 2) || !lua_isnumber(L, 3) || !lua_isstring(L, 4) || !lua_isstring(L, 5) || !lua_isstring(L, 6) || (!lua_isstring(L, 7) && !lua_isnumber(L, 7))) {
+		luaerror(L, ERR_PARAM);
+		return 2;
+	}
+
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (serv == NULL) {
+		luaerror(L, ERR_SERV);
+		return 2;
+	}
+
+	cpiLua *plug = (cpiLua*)serv->mPluginManager.GetPlugin(LUA_PI_IDENTIFIER);
+
+	if (plug == NULL) {
+		luaerror(L, ERR_PLUG);
+		return 2;
+	}
+
+	cLuaInterpreter *li = FindLua(L);
+
+	if (li == NULL) {
+		luaerror(L, ERR_LUA);
+		return 2;
+	}
+
+	string nick = (char*)lua_tostring(L, 2);
+
+	if (serv->mRobotList.ContainsNick(nick)) {
+		luaerror(L, "Bot already exists");
+		return 2;
+	}
+
+	int iclass = (int)lua_tonumber(L, 3);
+	cPluginRobot *robot = plug->NewRobot(nick, iclass);
+
+	if (robot == NULL) {
+		luaerror(L, "Error registering bot");
+		return 2;
+	}
+
+	string desc = (char*)lua_tostring(L, 4);
+	string speed = (char*)lua_tostring(L, 5);
+	string email = (char*)lua_tostring(L, 6);
+	string share;
+	int ishare;
+
+	if (lua_isstring(L, 7)) {
+		share = (char*)lua_tostring(L, 7);
+		ishare = StrToInt(share);
+	} else {
+		ishare = (int)lua_tonumber(L, 7);
+		share = IntToStr(ishare);
+	}
+
+	serv->mP.Create_MyINFO(robot->mMyINFO, robot->mNick, desc, speed, email, share); // create myinfo
+	robot->mMyINFO_basic = robot->mMyINFO;
+	string omsg = "$Hello "; // send hello
+	omsg += robot->mNick;
+	serv->mHelloUsers.SendToAll(omsg, serv->mC.delayed_myinfo, true);
+	omsg = serv->mP.GetMyInfo(robot, eUC_NORMUSER); // send myinfo
+	serv->mUserList.SendToAll(omsg, true, true);
+
+	if (iclass >= 3) // send oplist
+		serv->mUserList.SendToAll(serv->mOpList.GetNickList(), true);
+
+	li->addBot((char*)nick.c_str(), (char*)robot->mMyINFO.c_str(), (int)ishare, (int)iclass); // add to lua bots
 	lua_pushboolean(L, 1);
+	lua_pushnil(L);
 	return 1;
 }
 
 int _EditBot(lua_State *L)
 {
-	string nick, desc, speed, email, share;
-	int uclass, ushare;
-
-	if(lua_gettop(L) == 7) {
-		cServerDC *server = GetCurrentVerlihub();
-		if(server == NULL) {
-			luaerror(L, "Error getting server");
-			return 2;
-		}
-
-		cpiLua *pi = (cpiLua *)server->mPluginManager.GetPlugin(LUA_PI_IDENTIFIER);
-		if(pi == NULL) {
-			luaerror(L, "Error getting LUA plugin");
-			return 2;
-		}
-
-		if(!lua_isstring(L, 2)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		nick = (char *)lua_tostring(L, 2);
-
-		if(!lua_isnumber(L, 3)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		uclass = (int)lua_tonumber(L, 3);
-
-		if(!lua_isstring(L, 4)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		desc = (char *)lua_tostring(L, 4);
-
-		if(!lua_isstring(L, 5)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		speed = (char *)lua_tostring(L, 5);
-
-		if(!lua_isstring(L, 6)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		email = (char *)lua_tostring(L, 6);
-
-		if (lua_isstring(L, 7)) {
-			share = (char*)lua_tostring(L, 7);
-			istringstream(share) >> ushare;
-		} else if (lua_isnumber(L, 7)) {
-			ushare = (int)lua_tonumber(L, 7);
-		} else {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-
-		if(!server->mRobotList.ContainsNick(nick)) {
-			lua_pushboolean(L, 0);
-			luaerror(L, "Bot not found");
-			return 2;
-		}
-		cUserRobot *robot = (cUserRobot*) server->mRobotList.GetUserBaseByNick(nick);
-
-		if(robot != NULL) {
-			cLuaInterpreter *li = FindLua(L);
-			if(li == NULL) {
-				luaerror(L,"Lua not found");
-				return 2;
-			}
-			//Clear myinfo
-			robot->mMyINFO = "";
-			server->mP.Create_MyINFO(robot->mMyINFO, robot->mNick, desc, speed, email, share);
-			robot->mMyINFO_basic = robot->mMyINFO;
-			li->editBot((char *) nick.c_str(), (char *) robot->mMyINFO.c_str(), (int)ushare, (int)uclass);
-			string omsg = server->mP.GetMyInfo(robot, eUC_NORMUSER);
-			server->mUserList.SendToAll(omsg, false, true);
-			if(uclass >= 3) // todo: we dont need to send oplist again, it was already sent with robot nick
-				server->mUserList.SendToAll(server->mOpList.GetNickList(), true);
-		} else
-			lua_pushboolean(L, 0);
-	} else {
-		luaL_error(L, "Error calling VH:EditBot; expected 6 argument but got %d", lua_gettop(L) - 1);
+	if (lua_gettop(L) < 7) {
+		luaL_error(L, "Error calling VH:EditBot, expected 6 argument but got %d.", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
 	}
+
+	if (!lua_isstring(L, 2) || !lua_isnumber(L, 3) || !lua_isstring(L, 4) || !lua_isstring(L, 5) || !lua_isstring(L, 6) || (!lua_isstring(L, 7) && !lua_isnumber(L, 7))) {
+		luaerror(L, ERR_PARAM);
+		return 2;
+	}
+
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (serv == NULL) {
+		luaerror(L, ERR_SERV);
+		return 2;
+	}
+
+	cLuaInterpreter *li = FindLua(L);
+
+	if (li == NULL) {
+		luaerror(L, ERR_LUA);
+		return 2;
+	}
+
+	string nick = (char*)lua_tostring(L, 2);
+
+	if (!serv->mRobotList.ContainsNick(nick)) {
+		luaerror(L, "Bot not found");
+		return 2;
+	}
+
+	cUserRobot *robot = (cUserRobot*)serv->mRobotList.GetUserBaseByNick(nick);
+
+	if (robot == NULL) {
+		luaerror(L, "Error getting bot");
+		return 2;
+	}
+
+	int iclass = (int)lua_tonumber(L, 3);
+	string desc = (char*)lua_tostring(L, 4);
+	string speed = (char*)lua_tostring(L, 5);
+	string email = (char*)lua_tostring(L, 6);
+	string share;
+	int ishare;
+
+	if (lua_isstring(L, 7)) {
+		share = (char*)lua_tostring(L, 7);
+		ishare = StrToInt(share);
+	} else {
+		ishare = (int)lua_tonumber(L, 7);
+		share = IntToStr(ishare);
+	}
+
+	robot->mMyINFO = ""; // clear old and create new myinfo
+	serv->mP.Create_MyINFO(robot->mMyINFO, robot->mNick, desc, speed, email, share);
+	robot->mMyINFO_basic = robot->mMyINFO;
+	string omsg = serv->mP.GetMyInfo(robot, eUC_NORMUSER); // send new myinfo
+	serv->mUserList.SendToAll(omsg, false, true);
+
+	if (robot->mClass != iclass) { // different class
+		if ((robot->mClass < eUC_OPERATOR) && (iclass >= eUC_OPERATOR)) { // changing to op
+			if (!serv->mOpList.ContainsNick(nick)) // add to oplist
+				serv->mOpList.Add(robot);
+
+			if (!serv->mOpchatList.ContainsNick(nick)) // add to opchat list
+				serv->mOpchatList.Add(robot);
+
+			serv->mUserList.SendToAll(serv->mOpList.GetNickList(), true); // send oplist
+		} else if ((robot->mClass >= eUC_OPERATOR) && (iclass < eUC_OPERATOR)) { // changing from op
+			if (serv->mOpList.ContainsNick(nick)) // remove from oplist
+				serv->mOpList.Remove(robot);
+
+			if (serv->mOpchatList.ContainsNick(nick)) // remove from opchat list
+				serv->mOpchatList.Remove(robot);
+
+			// dont need to send oplist here
+		}
+
+		robot->mClass = (tUserCl)iclass; // set new class
+	}
+
+	li->editBot((char*)nick.c_str(), (char*)robot->mMyINFO.c_str(), (int)ishare, (int)iclass); // edit in lua bots
 	lua_pushboolean(L, 1);
+	lua_pushnil(L);
 	return 1;
 }
 
 int _UnRegBot(lua_State *L)
 {
-	string nick;
-
-	if(lua_gettop(L) == 2) {
-		cServerDC *server = GetCurrentVerlihub();
-		if(server == NULL) {
-			luaerror(L, "Error getting server");
-			return 2;
-		}
-
-		cpiLua *pi = (cpiLua *)server->mPluginManager.GetPlugin(LUA_PI_IDENTIFIER);
-		if(pi == NULL) {
-			luaerror(L, "Error getting LUA plugin");
-			return 2;
-		}
-
-		if(!lua_isstring(L, 2)) {
-		    luaerror(L, ERR_PARAM);
-		    return 2;
-		}
-		nick = (char *)lua_tostring(L, 2);
-		cUserRobot *robot = (cUserRobot*) server->mRobotList.GetUserBaseByNick(nick);
-		if(robot != NULL) {
-			cLuaInterpreter *li = FindLua(L);
-			if(li == NULL) {
-				luaerror(L,"Lua not found");
-				return 2;
-			}
-			li->delBot((char *) nick.c_str() );
-			pi->DelRobot(robot);
-		} else {
-			lua_pushboolean(L, 0);
-		    luaerror(L, "Bot doesn't exist");
-		    return 2;
-		}
-	} else {
-		luaL_error(L, "Error calling VH:UnRegBot; expected 1 argument but got %d", lua_gettop(L) - 1);
+	if (lua_gettop(L) < 2) {
+		luaL_error(L, "Error calling VH:UnRegBot, expected 1 argument but got %d.", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
 	}
+
+	if (!lua_isstring(L, 2)) {
+		luaerror(L, ERR_PARAM);
+		return 2;
+	}
+
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (serv == NULL) {
+		luaerror(L, ERR_SERV);
+		return 2;
+	}
+
+	cpiLua *plug = (cpiLua*)serv->mPluginManager.GetPlugin(LUA_PI_IDENTIFIER);
+
+	if (plug == NULL) {
+		luaerror(L, ERR_PLUG);
+		return 2;
+	}
+
+	cLuaInterpreter *li = FindLua(L);
+
+	if (li == NULL) {
+		luaerror(L, ERR_LUA);
+		return 2;
+	}
+
+	string nick = (char*)lua_tostring(L, 2);
+
+	if (!serv->mRobotList.ContainsNick(nick)) {
+		luaerror(L, "Bot not found");
+		return 2;
+	}
+
+	cUserRobot *robot = (cUserRobot*)serv->mRobotList.GetUserBaseByNick(nick);
+
+	if (robot == NULL) {
+		luaerror(L, "Error getting bot");
+		return 2;
+	}
+
+	li->delBot((char*)nick.c_str()); // delete from lua bots
+	plug->DelRobot(robot); // delete bot
 	lua_pushboolean(L, 1);
+	lua_pushnil(L);
 	return 1;
 }
 
 int _IsBot(lua_State *L)
 {
-	if(lua_gettop(L) == 2) {
-		cServerDC *server = GetCurrentVerlihub();
-		if(server == NULL) {
-			luaerror(L, "Error getting server");
-			return 2;
-		}
-		if(!lua_isstring(L, 2)) {
-			luaerror(L, ERR_PARAM);
-			return 2;
-		}
-		string nick = (char *)lua_tostring(L, 2);
-		cUserRobot *robot = (cUserRobot*) server->mRobotList.GetUserBaseByNick(nick);
-		lua_pushboolean(L, (robot == NULL) ? 0 : 1);
-		//lua_pushnil(L); // dont need this
-		return 2;
-	} else {
-		luaL_error(L, "Error calling VH:IsBot; expected 1 argument but got %d", lua_gettop(L) - 1);
+	if (lua_gettop(L) < 2) {
+		luaL_error(L, "Error calling VH:IsBot, expected 1 argument but got %d.", lua_gettop(L) - 1);
 		lua_pushboolean(L, 0);
 		lua_pushnil(L);
 		return 2;
 	}
 
+	if (!lua_isstring(L, 2)) {
+		luaerror(L, ERR_PARAM);
+		return 2;
+	}
+
+	cServerDC *serv = GetCurrentVerlihub();
+
+	if (serv == NULL) {
+		luaerror(L, ERR_SERV);
+		return 2;
+	}
+
+	string nick = (char*)lua_tostring(L, 2);
+
+	if (!serv->mRobotList.ContainsNick(nick)) {
+		lua_pushboolean(L, 0);
+		lua_pushnil(L);
+		return 1;
+	}
+
+	cUserRobot *robot = (cUserRobot*)serv->mRobotList.GetUserBaseByNick(nick);
+
+	if (robot == NULL) {
+		luaerror(L, "Error getting bot");
+		return 2;
+	}
+
+	lua_pushboolean(L, 1);
+	lua_pushnil(L);
+	return 1;
 }
 
 int _SQLQuery(lua_State *L)
@@ -1491,4 +1510,20 @@ void luaerror(lua_State *L, const char *errstr)
 	lua_pushboolean(L, 0);
 	lua_pushstring(L, errstr);
 }
+
+string IntToStr(int val)
+{
+	stringstream ss;
+	ss << val;
+	return ss.str();
+}
+
+int StrToInt(string const &str)
+{
+	stringstream ss(str);
+	int val;
+	ss >> val;
+	return val;
+}
+
 }; // namespace nVerliHub
