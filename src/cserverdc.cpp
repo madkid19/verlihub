@@ -1030,6 +1030,7 @@ int cServerDC::OnTimer(cTime &now)
 	mPassiveUsers.FlushCache();
 	mChatUsers.FlushCache();
 	mInProgresUsers.FlushCache();
+	mRobotList.FlushCache();
 
 	mSysLoad = eSL_NORMAL;
 	if(mFrequency.mNumFill > 0) {
@@ -1085,6 +1086,7 @@ int cServerDC::OnTimer(cTime &now)
 	mOpList.AutoResize();
 	mOpchatList.AutoResize();
 	mInProgresUsers.AutoResize();
+	mRobotList.AutoResize();
 
 	mBanList->mTempNickBanlist.AutoResize();
 	mBanList->mTempIPBanlist.AutoResize();
