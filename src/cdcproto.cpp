@@ -1448,7 +1448,7 @@ int cDCProto::DCE_Supports(cMessageDC * msg, cConnDC * conn)
 	}
 	#endif
 
-	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO HubTopic ZPipe MCTo"); // @todo: BotList
+	string omsg("$Supports OpPlus NoGetINFO NoHello UserIP2 HubINFO HubTopic ZPipe MCTo BotList");
 	conn->Send(omsg);
 	return 0;
 }
