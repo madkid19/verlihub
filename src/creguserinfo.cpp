@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -28,6 +28,7 @@ using namespace std;
 #define _XOPEN_SOURCE
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 #include <iomanip>
 #include <openssl/md5.h>
 #include "creguserinfo.h"
@@ -62,23 +63,32 @@ cRegUserInfo::~cRegUserInfo(){}
 bool cRegUserInfo::PWVerify(const string &pass)
 {
 	string crypted_p;
-	unsigned char buf[MD5_DIGEST_LENGTH+1];
+	unsigned char buf[MD5_DIGEST_LENGTH + 1];
 	bool Result = false;
-	switch (mPWCrypt)
-	{
+	string res; // used for hexadecimal conversion
+	char hex[32];
+
+	switch (mPWCrypt) {
 		case eCRYPT_ENCRYPT:
-			crypted_p = crypt(pass.c_str(),mPasswd.c_str());
+			crypted_p = crypt(pass.c_str(), mPasswd.c_str());
 			Result = crypted_p == mPasswd;
-		break;
+			break;
 		case eCRYPT_MD5:
 			MD5((const unsigned char*)pass.data(), pass.length(), buf);
 			buf[MD5_DIGEST_LENGTH] = 0;
-			Result = mPasswd == string((const char*)buf);
-		break;
+
+			for (int i = 0; i < 16; i++) { // convert to hexadecimal
+				sprintf(hex, "%02x", buf[i]);
+				res.append(hex);
+			}
+
+			Result = mPasswd == res; // string((const char*)buf)
+			break;
 		case eCRYPT_NONE:
 			Result = pass == mPasswd;
 			break;
 	}
+
 	return Result;
 }
 
@@ -135,29 +145,33 @@ void cRegUserInfo::SetPass(string str, int crypt_method)
 	string salt;
 	mPwdChange = !str.size();
 
-	if(str.size()) {
+	if (str.size()) {
 		static const char *saltchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmlopqrstuvwxyz0123456789./";
 		static const int saltcharsnum = strlen(saltchars);
-
-		unsigned char charsalt[2] = {((char*)&str)[0],((char*)&str)[1]};
-		unsigned char buf[MD5_DIGEST_LENGTH+1];
+		unsigned char charsalt[2] = {((char*)&str)[0], ((char*)&str)[1]};
+		unsigned char buf[MD5_DIGEST_LENGTH + 1];
+		string res; // used for hexadecimal conversion
+		char hex[32];
 
 		switch (crypt_method) {
 			case eCRYPT_ENCRYPT:
 				charsalt[0] = saltchars[charsalt[0] % saltcharsnum];
 				charsalt[1] = saltchars[charsalt[1] % saltcharsnum];
-				salt.assign((char *)charsalt,2);
-
-				mPasswd = crypt(str.c_str(),salt.c_str());
+				salt.assign((char*)charsalt, 2);
+				mPasswd = crypt(str.c_str(), salt.c_str());
 				mPWCrypt = eCRYPT_ENCRYPT;
-			break;
+				break;
 			case eCRYPT_MD5:
+				MD5((const unsigned char*)str.c_str(), str.size(), buf);
+				buf[MD5_DIGEST_LENGTH] = 0;
 
-				MD5((const unsigned char *)str.c_str(), str.size(), buf);
-				buf[MD5_DIGEST_LENGTH]=0;
-				mPasswd = string((char*)buf);
+				for (int i = 0; i < 16; i++) { // convert to hexadecimal
+					sprintf(hex, "%02x", buf[i]);
+					res.append(hex);
+				}
+
+				mPasswd = res; // string((char*)buf)
 				mPWCrypt = eCRYPT_MD5;
-
 				break;
 			case eCRYPT_NONE:
 				mPasswd = str;
