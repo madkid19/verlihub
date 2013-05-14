@@ -3,7 +3,7 @@
 ###########################################################################
 #   Author: Verlihub Team  (devs at verlihub-project dot org )            #
 #                                                                         #
-#   Copyright (C) 2006-2011 by Verlihub Project                           #
+#   Copyright (C) 2006-2013 by Verlihub Project                           #
 #   devs at verlihub-project dot org                                      #
 #                                                                         #
 #   This program is free software; you can redistribute it and/or modify  #
@@ -59,7 +59,7 @@ function _register() # nickname, class, password, input_password_crypt, reg_date
 			case "$ENCRYPTION" in
 				0) PASSWORD="'$3'" && ENCRYPTION=0;;
 				1) PASSWORD="ENCRYPT('$3')" && ENCRYPTION=1;;
-				2) PASSWORD="UNHEX(MD5('$3'))" && ENCRYPTION=2;;
+				2) PASSWORD="MD5('$3')" && ENCRYPTION=2;;
 				*) PASSWORD="ENCRYPT('$3')" && ENCRYPTION=1;;
 			esac;
 			SQL_VALUES="$SQL_VALUES,$PASSWORD,'0','$ENCRYPTION'"
