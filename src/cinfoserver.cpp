@@ -129,7 +129,7 @@ void cInfoServer::Output(ostream &os, int Class)
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("In progress users") << mServer->mInProgresUsers.Size() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Active user count") << mServer->mActiveUsers.Size() << endl;
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("Passive user count") << mServer->mPassiveUsers.Size() << endl;
-	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("OP user count") << mServer->mOpchatList.Size() << endl; // why is mOpchatList used here instead of mOpList?
+	os << " [*] " << setw(PADDING) << setiosflags(ios::left) << _("OP user count") << mServer->mOpchatList.Size() << endl; // todo: why is mOpchatList used here instead of mOpList?
 	os << " [*] " << setw(PADDING) << setiosflags(ios::left) <<_("Bot user count") << mServer->mRobotList.Size() << endl;
 	os << "    " << string(30,'=') << endl;
 	double total = 0, curr;
