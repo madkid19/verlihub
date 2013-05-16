@@ -593,6 +593,11 @@ int cDCProto::DC_MyINFO(cMessageDC *msg, cConnDC *conn)
 	mS->mTotalShare -= conn->mpUser->mShare;
 	conn->mpUser->mShare = shareB;
 	mS->mTotalShare += conn->mpUser->mShare;
+
+	// peak total share
+	if (mS->mTotalShare > mS->mTotalSharePeak)
+		mS->mTotalSharePeak = mS->mTotalShare;
+
 	conn->mpUser->mEmail = msg->ChunkString(eCH_MI_MAIL);
 
 	// user sent myinfo for the first time
