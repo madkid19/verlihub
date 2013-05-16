@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -169,6 +169,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 		ReplaceVarInString(buf, "HUBDESC", buf, server.mC.hub_desc);
 		ReplaceVarInString(buf, "VERSION_DATE", buf, __CURR_DATE_TIME__);
 		ReplaceVarInString(buf, "TOTAL_SHARE", buf, convertByte(server.mTotalShare, false));
+		ReplaceVarInString(buf, "SHAREPEAK", buf, convertByte(server.mTotalSharePeak, false)); // peak total share
 		char tmf[3];
 		sprintf(tmf, "%02d", lt->tm_sec);
 		ReplaceVarInString(buf, "ss", buf, tmf);
