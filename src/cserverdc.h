@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -697,6 +697,8 @@ protected: // Protected methods
 	int mUserCountTot;
 	// Total share of the hub
 	__int64 mTotalShare;
+	// peak total share
+	__int64 mTotalSharePeak;
 	// Health of the hub
 	string mStatus;
 	// cTime object when the hub was started
