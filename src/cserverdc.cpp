@@ -89,6 +89,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	mRobotList(true),
 	mUserCountTot(0),
 	mTotalShare(0),
+	mTotalSharePeak(0),
 	mSlowTimer(30.0, 0.0, mTime),
 	mHublistTimer(0.0,0.0, mTime),
 	mReloadcfgTimer(0.0,0.0,mTime),
@@ -166,6 +167,7 @@ cServerDC::cServerDC( string CfgBase , const string &ExecPath):
 	net_log.append( "/net_out.log");
 	mNetOutLog.open(net_log.c_str(),ios::out);
 	mTotalShare = 0;
+	mTotalSharePeak = 0;
 
 	mFactory = new cDCConnFactory(this);
 
@@ -656,7 +658,7 @@ void cServerDC::AfterUserLogin(cConnDC *conn)
 	if(mUserList.Size() > mUsersPeak)
 		mUsersPeak = mUserList.Size();
 	#ifndef WITHOUT_PLUGINS
-	if (!mCallBacks.mOnUserLogin.CallAll(conn->mpUser)) {
+	if (!mCallBacks.mOnUserLogin.CallAll(conn->mpUser)) { // todo: i think we need to move this before hubtopic and userinfo
 		conn->CloseNow();
 		return;
 	}
