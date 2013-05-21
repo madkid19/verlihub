@@ -1110,8 +1110,8 @@ int cDCProto::DC_ConnectToMe(cMessageDC * msg, cConnDC * conn)
 	if(!other || !other->mxConn)
 		return -1;
 
-	// Check if the user can download and also if the other user hides the share
-	if((conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) || other->mHideShare)
+	// check if user can download and if other user hides share
+	if ((conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) || other->mHideShare)
 		return -4;
 
 	if(!CheckIP(conn,msg->ChunkString(eCH_CM_IP))) {
@@ -1173,7 +1173,9 @@ int cDCProto::DC_RevConnectToMe(cMessageDC * msg, cConnDC *conn)
 		return -2;
 	}
 
-	if (conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) return -4;
+	// check if user can download and if other user hides share
+	if ((conn->mpUser->mClass + mS->mC.classdif_download < other->mClass) || other->mHideShare)
+		return -4;
 
 	#ifndef WITHOUT_PLUGINS
 	if (!mS->mCallBacks.mOnParsedMsgRevConnectToMe.CallAll(conn, msg)) return -2;
