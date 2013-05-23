@@ -525,24 +525,31 @@ int cDCConsole::CmdChat(istringstream &cmd_line, cConnDC *conn, bool switchon)
 	return 1;
 }
 
-int cDCConsole::CmdRInfo(istringstream &cmd_line, cConnDC * conn)
+int cDCConsole::CmdRInfo(istringstream &cmd_line, cConnDC *conn)
 {
-	if (!conn->mpUser) return 0;
+	if (!conn->mpUser)
+		return 0;
 
 	ostringstream os;
 	string omsg;
 
-	os << "Verlihub " VERSION " build " __CURR_DATE_TIME__ << "\r\n";
-	os << " == " << toUpper(_("Authors")) << " ==\r\n\tDavide Simoncelli (netcelli@verlihub-project.org)" << "\r\n";
+	os << "Verlihub " << VERSION << " build " << __CURR_DATE_TIME__ << "\r\n";
+	os << " == " << toUpper(_("Authors")) << " ==\r\n";
+	os << "\tDaniel Muller (dan@verliba.cz)" << "\r\n";
+	os << "\tDavide Simoncelli (netcelli@verlihub-project.org)" << "\r\n";
 	os << "\tchaosuk (chaos@dchublist.com)" << "\r\n";
-	os << " == " << toUpper(_("Translators")) << " ==\r\n\tCzech (Uhlik), Italian (netcelli), Russian (plugman)" << "\r\n";
-	os << " == " << toUpper(_("Contributors")) << " ==\r\n\tStefano, Intruder, RoLex, Frog" << "\r\n";
-	os << " == " << toUpper(_("Web part")) << " ==\r\n\tStefano Simoncelli (netcelli@verlihub-project.org)" << "\r\n";
-	os << " == " << toUpper(_("Credits")) << " ==\r\n\tWe would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << "\r\n";
-	os << " == " << toUpper(_("More")) << " ==\r\n\tWebsite: http://www.verlihub-project.org/" << "\r\n";
-	os << "\tForums: http://www.verlihub-project.org/discussions" << "\r\n";
-	os << "\tManual: http://www.verlihub-project.org/page/index" << "\r\n";
-	os << "\tSupport hub: dchub://hub.verlihub-project.org:7777/";
+	os << " == " << toUpper(_("Translators")) << " ==\r\n";
+	os << "\tCzech (Uhlik), Italian (netcelli), Russian (plugman)" << "\r\n";
+	os << " == " << toUpper(_("Contributors")) << " ==\r\n";
+	os << "\tStefano, Intruder, RoLex, Frog" << "\r\n";
+	os << " == " << toUpper(_("Web part")) << " ==\r\n";
+	os << "\tStefano Simoncelli (netcelli@verlihub-project.org)" << "\r\n";
+	os << " == " << toUpper(_("Credits")) << " ==\r\n";
+	os << "\tWe would like to thank everyone in VAZ for their input and valuable support and of course everyone who continues to use this great hubsoft." << "\r\n";
+	os << " == " << toUpper(_("More")) << " ==\r\n";
+	os << "\tWebsite: http://verlihub-project.org/" << "\r\n";
+	os << "\tManual: http://verlihub-project.org/doc/" << "\r\n";
+	os << "\tSupport hub: dchub://hub.verlihub.net:7777/";
 
 	omsg = os.str();
 	mOwner->DCPublicHS(omsg, conn);
@@ -1804,8 +1811,9 @@ bool cDCConsole::cfRegUsr::operator()()
 	mIdRex->Extract(2, mIdStr, tmp);
 	int Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames) / sizeof(char*));
 	if (Action < 0) return false;
+	int MyClass = this->mConn->mpUser->mClass;
 
-	if ((this->mConn->mpUser->mClass < eUC_OPERATOR) || ((Action != eAC_INFO) && (!this->mConn->mpUser->Can(eUR_REG, mS->mTime.Sec())))) {
+	if ((MyClass < eUC_OPERATOR) || ((Action != eAC_INFO) && (!this->mConn->mpUser->Can(eUR_REG, mS->mTime.Sec())))) {
 		(*mOS) << _("You have no rights to do this.");
 		return false;
 	}
@@ -1814,8 +1822,6 @@ bool cDCConsole::cfRegUsr::operator()()
 		(*mOS) << _("Valid classdif_reg value must be between 1 and 5, please correct this first.");
 		return false;
 	}
-
-	int MyClass = this->mConn->mpUser->mClass;
 
 	if (Action == eAC_LIST) {
 		int cls = 0;
