@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -221,19 +221,51 @@ void cTriggerConsole::GetHelp(ostream &os)
 {
 	string help;
 
-	help = "Available trigger flags are:\r\n";
-	help += "0  \tSend to main chat (visible to user only)\r\n";
-	help += "1  \tExecute command\r\n";
-	help += "2  \tMessage is sent to PM\r\n";
-	help += "4  \tAutomatically trigger when user logs in\r\n";
-	help += "8  \tTrigger on +help/!help command\r\n";
-	help += "16\tThe definition is the text\r\n";
-	help += "32\tAllow replacing of variables\r\n";
-	help += "64\tMessage is sent to everyone in the main chat window\r\n";
+	help = "http://verlihub-project.org/doc/page/manual.messages#File_Triggers\r\n\r\n"
 
-	help += "\r\nRemember to make the sum of the selected flags above\n";
-	help += "For more help please visit http://dev.verlihub-project.org/page/index/Manage_the_hub#FileTriggers\r\n";
-	cDCProto::EscapeChars(help,help);
+	help += " Available trigger flags:\r\n\r\n";
+	help += " 0\t- Send to main chat (visible to user only)\r\n";
+	help += " 1\t- Execute command\r\n";
+	help += " 2\t- Message is sent to PM\r\n";
+	help += " 4\t- Automatically trigger when user logs in\r\n";
+	help += " 8\t- Trigger on help command\r\n";
+	help += " 16\t- The definition is the text\r\n";
+	help += " 32\t- Allow replacing of variables\r\n";
+	help += " 64\t- Message is sent to everyone in main chat\r\n";
+	help += " Remember to make the sum of selected flags.\r\n\r\n";
+
+	help += " Available variables:\r\n\r\n";
+	help += " %[PARALL]\t- Trigger parameters\r\n";
+	help += " %[PAR1]\t- First trigger parameter, separated by space\r\n";
+	help += " %[END1]\t- Last trigger parameter, separated by space\r\n";
+	help += " %[CC]\t- User country code\r\n";
+	help += " %[CN]\t- User country name\r\n";
+	help += " %[IP]\t- User IP\r\n";
+	help += " %[HOST]\t- User host\r\n";
+	help += " %[NICK]\t- User nick\r\n";
+	help += " %[CLASS]\t- User class number\r\n";
+	help += " %[CLASSNAME]\t- User class name\r\n";
+	help += " %[SHARE]\t- User share\r\n";
+	help += " %[USERS]\t- Online users\r\n";
+	help += " %[USERS_ACTIVE]\t- Online active users\r\n";
+	help += " %[USERS_PASSIVE]\t- Online passive users\r\n";
+	help += " %[USERSPEAK]\t- Peak online users\r\n";
+	help += " %[UPTIME]\t- Hub uptime\r\n";
+	help += " %[VERSION]\t- Hub version\r\n";
+	help += " %[HUBNAME]\t- Hub name\r\n";
+	help += " %[HUBTOPIC]\t- Hub topic\r\n";
+	help += " %[HUBDESC]\t- Hub description\r\n";
+	help += " %[VERSION_DATE]\t- Hub version date\r\n";
+	help += " %[TOTAL_SHARE]\t- Total share\r\n";
+	help += " %[SHAREPEAK]\t- Peak total share\r\n";
+	help += " %[ss]\t- Current second, 2 digits\r\n";
+	help += " %[mm]\t- Current minute, 2 digits\r\n";
+	help += " %[HH]\t- Current hour, 2 digits\r\n";
+	help += " %[DD]\t- Current day, 2 digits\r\n";
+	help += " %[MM]\t- Current month, 2 digits\r\n";
+	help += " %[YY]\t- Current year, 4 digits\r\n";
+
+	cDCProto::EscapeChars(help, help);
 	os << help;
 }
 
@@ -408,4 +440,3 @@ bool cTriggerConsole::IsConnAllowed(cConnDC *conn,int cmd)
 
 };
 };
-
