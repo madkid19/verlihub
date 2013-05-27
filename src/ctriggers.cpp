@@ -221,7 +221,7 @@ void cTriggerConsole::GetHelp(ostream &os)
 {
 	string help;
 
-	help = "http://verlihub-project.org/doc/page/manual.messages#File_Triggers\r\n\r\n"
+	help = "http://verlihub-project.org/doc/page/manual.messages#File_Triggers\r\n\r\n";
 
 	help += " Available trigger flags:\r\n\r\n";
 	help += " 0\t- Send to main chat (visible to user only)\r\n";
