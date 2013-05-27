@@ -1,7 +1,7 @@
 /**************************************************************************
 *   Original Author: Daniel Muller (dan at verliba dot cz) 2003-05        *
 *                                                                         *
-*   Copyright (C) 2006-2011 by Verlihub Project                           *
+*   Copyright (C) 2006-2013 by Verlihub Project                           *
 *   devs at verlihub-project dot org                                      *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
@@ -176,19 +176,22 @@ namespace nVerliHub {
 	void cRedirectConsole::GetHelp(ostream &os)
 	{
 		string help;
-		help = "Available redirect flags are:\r\n";
-		help += "0  \tFor any other reason\r\n";
-		help += "1  \tBan and kick\r\n";
-		help += "2  \tHub full\r\n";
-		help += "4  \tUser does not enforce share rules\r\n";
-		help += "8  \tWrong or unknown tag\r\n";
-		help += "16\tWrong password\r\n";
-		help += "32\tInvalid key\r\n";
-		help += "64\tHub is busy\r\n";
-		help += "128\tUser tries to reconnect too fast\r\n";
 
-		help += "\r\nRemember to make the sum of the selected flags above\r\n";
-		cDCProto::EscapeChars(help,help);
+		help = "http://verlihub-project.org/doc/page/manual.redirects\r\n\r\n";
+
+		help += " Available redirect flags:\r\n\r\n"
+		help += " 0\t\t\t- For any other reason\r\n";
+		help += " 1\t\t\t- Ban and kick\r\n";
+		help += " 2\t\t\t- Hub is full\r\n";
+		help += " 4\t\t\t- Too low or too high share\r\n";
+		help += " 8\t\t\t- Wrong or unknown tag\r\n";
+		help += " 16\t\t\t- Wrong password\r\n";
+		help += " 32\t\t\t- Invalid key\r\n";
+		help += " 64\t\t\t- Hub is busy\r\n";
+		help += " 128\t\t\t- Too fast reconnect\r\n\r\n";
+		help += " Remember to make the sum of selected above flags.\r\n";
+
+		cDCProto::EscapeChars(help, help);
 		os << help;
 	}
 
@@ -245,5 +248,3 @@ namespace nVerliHub {
 	}
 	}; // namespace nTables
 }; // namespace nVerliHub
-
-
