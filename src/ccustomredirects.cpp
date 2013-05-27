@@ -179,7 +179,7 @@ namespace nVerliHub {
 
 		help = "http://verlihub-project.org/doc/page/manual.redirects\r\n\r\n";
 
-		help += " Available redirect flags:\r\n\r\n"
+		help += " Available redirect flags:\r\n\r\n";
 		help += " 0\t\t\t- For any other reason\r\n";
 		help += " 1\t\t\t- Ban and kick\r\n";
 		help += " 2\t\t\t- Hub is full\r\n";
