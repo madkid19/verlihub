@@ -156,6 +156,7 @@ int cTrigger::DoIt(istringstream &cmd_line, cConnDC *conn, cServerDC &server, bo
 			}
 
 			ReplaceVarInString(buf, "SHARE", buf, convertByte(conn->mpUser->mShare, false));
+			ReplaceVarInString(buf, "SHARE_EXACT", buf, (__int64)conn->mpUser->mShare); // exact share size
 		}
 
 		ReplaceVarInString(buf, "USERS", buf, (int)server.mUserList.Size());
