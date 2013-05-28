@@ -999,7 +999,7 @@ int cDCConsole::CmdReload(istringstream &cmd_line, cConnDC *conn)
 {
 	ostringstream os;
 
-	os << _("Reloading triggers, custom redirects, configuration and reglist cache...") << endl;
+	os << _("Reloading triggers, custom redirects, configuration and registration list cache.");
 	mTriggers->ReloadAll();
 	mRedirects->ReloadAll();
 	mOwner->mC.Load();
@@ -1450,7 +1450,7 @@ bool cDCConsole::cfTrigger::operator()()
 		}
 
 		break;
-	default: (*mOS) << _("This command is not implemented.") << endl;
+	default: (*mOS) << _("This command is not implemented.");
 		break;
 	};
 		return result;
