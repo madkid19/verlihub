@@ -246,7 +246,7 @@ void cTriggerConsole::GetHelp(ostream &os)
 	help += " %[CLASS]\t\t- User class number\r\n";
 	help += " %[CLASSNAME]\t\t- User class name\r\n";
 	help += " %[SHARE]\t\t- User share size\r\n";
-	help += " %[SHARE_EXACT]\t- User exact share size\r\n";
+	help += " %[SHARE_EXACT]\t\t- User exact share size\r\n";
 	help += " %[USERS]\t\t- Online users\r\n";
 	help += " %[USERS_ACTIVE]\t- Online active users\r\n";
 	help += " %[USERS_PASSIVE]\t- Online passive users\r\n";
