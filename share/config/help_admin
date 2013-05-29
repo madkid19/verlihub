@@ -52,3 +52,5 @@ ADMIN (class 5)
 !regset <nickname> note_op <message>  Add a note for the registered user in the database
 
 !replug <nick>                  Reloads the plugin, turning it off then on
+
+!proto<action>_<target> <data>  Send protocol command to users
