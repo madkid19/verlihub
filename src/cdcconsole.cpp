@@ -1044,79 +1044,115 @@ bool cDCConsole::cfReport::operator()()
 
 bool cDCConsole::cfRaw::operator()()
 {
-	enum { eRW_ALL, eRW_USR, eRW_HELLO, eRW_PASSIVE , eRW_ACTIVE};
-	static const char * actionnames [] = { "all","user","hello","active" };
-	static const int actionids [] = { eRW_ALL, eRW_USR, eRW_HELLO, eRW_ACTIVE };
+	if (!mConn || !mConn->mpUser) return false;
+	if (mConn->mpUser->mClass < eUC_ADMIN) return false;
 
-	enum { eRC_HUBNAME, eRC_HELLO, eRC_QUIT, eRC_REDIR, eRC_PM, eRC_CHAT };
-	static const char * cmdnames [] = { "hubname","hello","quit", "redir", "pm", "chat" };
-	static const int cmdids [] = { eRC_HUBNAME, eRC_HELLO, eRC_QUIT, eRC_REDIR , eRC_PM, eRC_CHAT};
+	enum {eRW_ALL, eRW_USR, eRW_HELLO, eRW_PASSIVE, eRW_ACTIVE};
+	static const char *actionnames[] = {"all", "user", "usr", "hello", "hel", "passive", "pas", "active", "act"};
+	static const int actionids[] = {eRW_ALL, eRW_USR, eRW_USR, eRW_HELLO, eRW_HELLO, eRW_PASSIVE, eRW_PASSIVE, eRW_ACTIVE, eRW_ACTIVE};
+	enum {eRC_HUBNAME, eRC_HELLO, eRC_QUIT, eRC_REDIR, eRC_PM, eRC_CHAT};
+	static const char *cmdnames[] = {"hubname", "name", "hello", "quit", "redir", "move", "pm", "chat", "mc"};
+	static const int cmdids[] = {eRC_HUBNAME, eRC_HUBNAME, eRC_HELLO, eRC_QUIT, eRC_REDIR, eRC_REDIR, eRC_PM, eRC_CHAT, eRC_CHAT};
 
 	int Action = -1;
 	int CmdID = -1;
-
 	string tmp;
-
-
-	if (this->mConn->mpUser->mClass < eUC_ADMIN)
-		return false;
-	mIdRex->Extract(1,mIdStr,tmp);
-	Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames)/sizeof(char*));
-	if (Action < 0)
-		return false;
-
-	mIdRex->Extract(2,mIdStr,tmp);
-	CmdID  = this->StringToIntFromList(tmp, cmdnames, cmdids, sizeof(cmdnames)/sizeof(char*));
-	if (CmdID <0) return false;
-
+	mIdRex->Extract(1, mIdStr, tmp);
+	Action = this->StringToIntFromList(tmp, actionnames, actionids, sizeof(actionnames) / sizeof(char*));
+	if (Action < 0) return false;
+	mIdRex->Extract(2, mIdStr, tmp);
+	CmdID = this->StringToIntFromList(tmp, cmdnames, cmdids, sizeof(cmdnames) / sizeof(char*));
+	if (CmdID < 0) return false;
 	string theCommand, endOfCommand;
 	string param, nick;
-	GetParStr(1,param);
+	GetParStr(1, param);
 	bool WithNick = false;
 
 	switch (CmdID) {
-		case eRC_HUBNAME: theCommand = "$HubName "; break;
-		case eRC_HELLO: theCommand = "$Hello "; break;
-		case eRC_QUIT: cDCProto::Create_Quit(theCommand , ""); break;
-		case eRC_REDIR: theCommand = "$ForceMove "; break;
+		case eRC_HUBNAME:
+			theCommand = "$HubName ";
+			break;
+		case eRC_HELLO:
+			theCommand = "$Hello ";
+			break;
+		case eRC_QUIT:
+			cDCProto::Create_Quit(theCommand, "");
+			break;
+		case eRC_REDIR:
+			theCommand = "$ForceMove ";
+			break;
 		case eRC_PM:
-			mS->mP.Create_PMForBroadcast(
-				theCommand,
-				endOfCommand,
-				mS->mC.hub_security,
-				mConn->mpUser->mNick,
-				param);
+			mS->mP.Create_PMForBroadcast(theCommand, endOfCommand, mS->mC.hub_security, mConn->mpUser->mNick, param);
 			WithNick = true;
-		break;
-		case eRC_CHAT: theCommand = "<" + mConn->mpUser->mNick +"> "; break;
-		default : return false; break;
+			break;
+		case eRC_CHAT:
+			theCommand = "<" + mConn->mpUser->mNick +"> ";
+			break;
+		default:
+			return false;
+			break;
 	}
 
-	if(!WithNick) {
+	if (!WithNick) {
 		theCommand += param;
 		theCommand += "|";
 	}
 
 	cUser *target_usr = NULL;
+
 	switch (Action) {
-		case eRW_ALL: if(!WithNick) mS->mUserList.SendToAll(theCommand);
-			else mS->mUserList.SendToAllWithNick(theCommand, endOfCommand); break;
-		case eRW_HELLO: if(!WithNick) mS->mHelloUsers.SendToAll(theCommand);
-			else mS->mHelloUsers.SendToAllWithNick(theCommand, endOfCommand);break;
-		case eRW_ACTIVE: if(!WithNick) mS->mActiveUsers.SendToAll(theCommand);
-			else mS->mActiveUsers.SendToAllWithNick(theCommand, endOfCommand); break;
+		case eRW_ALL:
+			if (!WithNick)
+				mS->mUserList.SendToAll(theCommand);
+			else
+				mS->mUserList.SendToAllWithNick(theCommand, endOfCommand);
+
+			break;
+
+		case eRW_HELLO:
+			if (!WithNick)
+				mS->mHelloUsers.SendToAll(theCommand);
+			else
+				mS->mHelloUsers.SendToAllWithNick(theCommand, endOfCommand);
+
+			break;
+
+		case eRW_PASSIVE:
+			if (!WithNick)
+				mS->mPassiveUsers.SendToAll(theCommand);
+			else
+				mS->mPassiveUsers.SendToAllWithNick(theCommand, endOfCommand);
+
+			break;
+
+		case eRW_ACTIVE:
+			if (!WithNick)
+				mS->mActiveUsers.SendToAll(theCommand);
+			else
+				mS->mActiveUsers.SendToAllWithNick(theCommand, endOfCommand);
+
+			break;
+
 		case eRW_USR:
 			target_usr = mS->mUserList.GetUserByNick(nick);
+
 			if (target_usr && target_usr->mxConn) {
-				if(WithNick) {
+				if (WithNick) {
 					theCommand += nick;
 					theCommand += endOfCommand;
 				}
+
 				target_usr->mxConn->Send(theCommand);
 			}
-		break;
-		default: return false; break;
+
+			break;
+
+		default:
+			return false;
+			break;
 	}
+
+	(*mOS) << _("Protocol command successfully sent.");
 	return true;
 }
 
